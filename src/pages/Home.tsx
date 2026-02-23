@@ -19,22 +19,20 @@ export const Home: React.FC = () => {
                 <div className={styles.heroGrid}>
                     <div className={styles.heroContent}>
                         <h1 className={styles.heroTitle}>
-                            Escala tu negocio con{' '}
-                            <span className="text-gradient">claridad.</span>
-                            <br />
-                            Tecnología que une cercanía y datos.
+                            Tu negocio crece.<br />
+                            Tus procesos, <span className="text-gradient">todavía no.</span>
                         </h1>
                         <p className={styles.heroSubtitle}>
-                            Dejamos atrás la gestión manual. Te acompañamos en el camino para
-                            digitalizar tu empresa con soluciones a medida o herramientas listas
-                            para usar.
+                            Automatizamos lo que te roba tiempo, construimos lo que necesitas
+                            y conectamos las herramientas que ya usas.
+                            Para autónomos, startups y PYMEs en España.
                         </p>
                         <div className={styles.ctaGroup}>
-                            <Link to="/services">
-                                <Button variant="primary" size="lg">Ver el camino</Button>
-                            </Link>
                             <Link to="/contact">
-                                <Button variant="outline" size="lg">Hablemos de tu proyecto</Button>
+                                <Button variant="primary" size="lg">Cuéntanos qué te frena</Button>
+                            </Link>
+                            <Link to="/services">
+                                <Button variant="outline" size="lg">Ver qué hacemos</Button>
                             </Link>
                         </div>
                     </div>
@@ -62,14 +60,13 @@ export const Home: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* Floating elements */}
                         <div className={`${styles.floatingBadge} ${styles.badge1} anim-float`}>
                             <span className={styles.badgeIcon}>📊</span>
-                            <span>+42% Eficiencia</span>
+                            <span>Sin más Excels</span>
                         </div>
                         <div className={`${styles.floatingBadge} ${styles.badge2} anim-float-slow`}>
                             <span className={styles.badgeIcon}>⚡</span>
-                            <span>Automatizado</span>
+                            <span>Procesos que se gestionan solos</span>
                         </div>
                     </div>
                 </div>
@@ -80,7 +77,7 @@ export const Home: React.FC = () => {
                 <div className={styles.container} ref={problemRef}>
                     <div className={`${styles.sectionHeader} reveal`}>
                         <span className={styles.sectionTag}>El problema</span>
-                        <h2 className={styles.sectionTitle}>¿Te sientes identificado?</h2>
+                        <h2 className={styles.sectionTitle}>¿Alguna de estas te suena?</h2>
                     </div>
                     <div className={styles.problemGrid}>
                         <div className={`${styles.problemCard} reveal`}>
@@ -93,9 +90,10 @@ export const Home: React.FC = () => {
                                     <polyline points="10 9 9 9 8 9" />
                                 </svg>
                             </div>
-                            <h3 className={styles.problemTitle}>Caos Manual</h3>
+                            <h3 className={styles.problemTitle}>Horas perdidas en lo de siempre</h3>
                             <p className={styles.problemText}>
-                                Horas perdidas en gestiones repetitivas y Excel interminables.
+                                Presupuestos a mano, seguimientos por WhatsApp, facturas en Excel.
+                                El día se va en cosas que podrían hacerse solas.
                             </p>
                         </div>
                         <div className={`${styles.problemCard} reveal`}>
@@ -105,9 +103,10 @@ export const Home: React.FC = () => {
                                     <line x1="4" y1="22" x2="4" y2="15" />
                                 </svg>
                             </div>
-                            <h3 className={styles.problemTitle}>Herramientas Desconectadas</h3>
+                            <h3 className={styles.problemTitle}>Herramientas que no se hablan entre sí</h3>
                             <p className={styles.problemText}>
-                                Software caro, genérico y datos dispersos que no te dicen nada.
+                                Un programa aquí, una hoja allá, el email por otro lado.
+                                Datos por todas partes que no te dicen nada útil.
                             </p>
                         </div>
                         <div className={`${styles.problemCard} reveal`}>
@@ -117,9 +116,10 @@ export const Home: React.FC = () => {
                                     <circle cx="12" cy="7" r="4" />
                                 </svg>
                             </div>
-                            <h3 className={styles.problemTitle}>Soledad Digital</h3>
+                            <h3 className={styles.problemTitle}>Sin nadie que te oriente de verdad</h3>
                             <p className={styles.problemText}>
-                                Ausencia de acompañamiento técnico real para tomar decisiones.
+                                Sabes que hay mejores formas de hacer las cosas, pero no tienes
+                                a nadie de confianza que te diga cuál y cómo.
                             </p>
                         </div>
                     </div>
@@ -131,22 +131,23 @@ export const Home: React.FC = () => {
                 <div className={styles.container} ref={solutionsRef}>
                     <div className={`${styles.sectionHeader} reveal`}>
                         <span className={styles.sectionTag}>Nuestras soluciones</span>
-                        <h2 className={styles.sectionTitle}>Un camino, dos opciones</h2>
+                        <h2 className={styles.sectionTitle}>Dos formas de ayudarte</h2>
                     </div>
                     <div className={styles.solutionsGrid}>
                         <div className={`${styles.solutionCard} reveal`}>
                             <div className={styles.solutionIcon}>🎨</div>
-                            <span className={styles.solutionLabel}>Artesanía Digital</span>
+                            <span className={styles.solutionLabel}>Lo construimos juntos</span>
                             <h3 className={styles.solutionTitle}>Servicios a Medida</h3>
                             <p className={styles.solutionText}>
-                                Creamos lo que tú necesitas. Desde tu identidad visual hasta
-                                automatizaciones complejas.
+                                Analizamos tu negocio y construimos exactamente lo que necesitas.
+                                Web, app, CRM, automatización. Con presupuesto cerrado
+                                y sin desaparecer cuando acabamos el proyecto.
                             </p>
                             <ul className={styles.solutionFeatures}>
-                                <li>Web corporativa</li>
-                                <li>Apps desde cero</li>
-                                <li>Branding completo</li>
-                                <li>Pago único + mantenimiento reducido</li>
+                                <li>Web corporativa desde 200€</li>
+                                <li>Apps y automatizaciones desde 500€</li>
+                                <li>Mantenimiento mensual desde 10€/mes</li>
+                                <li>Precio cerrado, sin sorpresas</li>
                             </ul>
                             <Link to="/services">
                                 <Button variant="outline" size="md">Explorar Servicios</Button>
@@ -154,17 +155,17 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.solutionCard} ${styles.solutionCardHighlight} reveal`}>
                             <div className={styles.solutionIcon}>🚀</div>
-                            <span className={styles.solutionLabel}>SaaS</span>
-                            <h3 className={styles.solutionTitle}>Productos / Catálogo</h3>
+                            <span className={styles.solutionLabel}>Listo para usar hoy</span>
+                            <h3 className={styles.solutionTitle}>Nuestros Productos</h3>
                             <p className={styles.solutionText}>
-                                Soluciones nicho listas para usar. Suscríbete y soluciona un
-                                problema específico hoy mismo.
+                                Software propio desarrollado para problemas específicos donde las herramientas genéricas no llegan. ERP, CRM, presupuestador y herramientas de nicho.
+                                Suscríbete y empieza hoy.
                             </p>
                             <ul className={styles.solutionFeatures}>
-                                <li>Software específico por sector</li>
-                                <li>Suscripción mensual/anual</li>
-                                <li>Prueba inmediata</li>
-                                <li>Soporte incluido</li>
+                                <li>ERP para pequeña y mediana empresa</li>
+                                <li>CRM adaptable a tu sector</li>
+                                <li>Presupuestador para reformistas</li>
+                                <li>OCR inteligente para comerciales de energía</li>
                             </ul>
                             <Link to="/product">
                                 <Button variant="primary" size="md">Ver Productos</Button>
@@ -180,39 +181,43 @@ export const Home: React.FC = () => {
                     <div className={`${styles.sectionHeader} reveal`}>
                         <span className={styles.sectionTag}>Nuestro método</span>
                         <h2 className={styles.sectionTitle}>
-                            No solo entregamos código,<br />entregamos resultados.
+                            Así trabajamos contigo.<br />Sin reuniones eternas, sin documentos de 40 páginas.
                         </h2>
                     </div>
                     <div className={styles.processGrid}>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.stepNumber}>01</div>
                             <div className={styles.stepConnector}></div>
-                            <h3 className={styles.stepTitle}>Análisis</h3>
+                            <h3 className={styles.stepTitle}>Te escuchamos</h3>
                             <p className={styles.stepText}>
-                                Conocemos tu negocio y tu cliente a fondo.
+                                Una llamada de 30 minutos para entender tu negocio,
+                                tu equipo y qué te está frenando ahora mismo.
                             </p>
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.stepNumber}>02</div>
                             <div className={styles.stepConnector}></div>
-                            <h3 className={styles.stepTitle}>Estandarización</h3>
+                            <h3 className={styles.stepTitle}>Localizamos el problema real</h3>
                             <p className={styles.stepText}>
-                                Detectamos fugas de tiempo y procesos mejorables.
+                                Identificamos qué procesos te roban tiempo, qué herramientas
+                                no funcionan y qué está faltando en tu flujo.
                             </p>
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.stepNumber}>03</div>
                             <div className={styles.stepConnector}></div>
-                            <h3 className={styles.stepTitle}>Decisión</h3>
+                            <h3 className={styles.stepTitle}>Te proponemos algo concreto</h3>
                             <p className={styles.stepText}>
-                                Usamos datos fiables para guiar tu siguiente paso.
+                                Un plan claro con opciones reales, precio cerrado y plazos.
+                                Tú decides si seguimos adelante.
                             </p>
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.stepNumber}>04</div>
-                            <h3 className={styles.stepTitle}>Acompañamiento</h3>
+                            <h3 className={styles.stepTitle}>Lo hacemos y nos quedamos</h3>
                             <p className={styles.stepText}>
-                                No te soltamos tras la entrega.
+                                Construimos, implementamos y no desaparecemos.
+                                Seguimos contigo mientras nos necesites.
                             </p>
                         </div>
                     </div>
@@ -226,28 +231,28 @@ export const Home: React.FC = () => {
                         <div className={`${styles.caseContent} reveal`}>
                             <span className={styles.sectionTag}>Caso de éxito</span>
                             <h2 className={styles.caseTitle}>
-                                J.R. Rodríguez: De la gestión tradicional a la automatización total.
+                                J.R. Rodríguez: De la libreta al sistema que trabaja solo.
                             </h2>
                             <ul className={styles.caseChecklist}>
                                 <li>
                                     <span className={styles.checkIcon}>✓</span>
-                                    Creación de marca e identidad desde cero.
+                                    Marca e identidad visual creadas desde cero. Ahora tienen una presencia que transmite profesionalidad.
                                 </li>
                                 <li>
                                     <span className={styles.checkIcon}>✓</span>
-                                    Presupuestador Web con IA: Generación de imágenes realistas de reformas para sus clientes.
+                                    Presupuestador con IA: genera imágenes realistas de la reforma antes de empezar. Los clientes dicen que sí más fácil.
                                 </li>
                                 <li>
                                     <span className={styles.checkIcon}>✓</span>
-                                    Automatización WhatsApp: Citas y visitas gestionadas solas.
+                                    WhatsApp automatizado: citas y visitas gestionadas sin intervención manual. Cero llamadas para confirmar.
                                 </li>
                                 <li>
                                     <span className={styles.checkIcon}>✓</span>
-                                    CRM a Medida: Control total de facturación y estado del cliente.
+                                    CRM a medida: control total de clientes, estados de obra y facturación en un solo lugar. Nada se pierde.
                                 </li>
                             </ul>
                             <div className={styles.caseResult}>
-                                <p>"Una empresa tradicional convertida en referente tecnológico local."</p>
+                                <p>Una empresa familiar de reformas que triplicó su capacidad de atención en 3 meses sin contratar a nadie más.</p>
                             </div>
                         </div>
                         <div className={`${styles.caseVisual} reveal`}>
@@ -288,14 +293,18 @@ export const Home: React.FC = () => {
                     <div className={`${styles.ctaBlock} reveal`} ref={ctaRef}>
                         <div className={`${styles.ctaGlow} anim-pulse-glow`}></div>
                         <h2 className={styles.ctaTitle}>
-                            ¿Dudando? Prueba nuestras soluciones<br />o déjanos asesorarte gratis.
+                            ¿Por dónde empieza tu negocio?
                         </h2>
+                        <p className={styles.ctaSub} style={{ textAlign: 'center', color: 'var(--color-dark-text-muted)', marginBottom: 'var(--spacing-8)' }}>
+                            30 minutos de llamada gratuita. Te decimos qué podemos hacer por ti y cuánto costaría.<br />
+                            Sin compromiso, sin presión.
+                        </p>
                         <div className={styles.ctaButtons}>
-                            <Link to="/demo">
-                                <Button variant="primary" size="lg">Empezar prueba gratuita</Button>
-                            </Link>
                             <Link to="/contact">
-                                <Button variant="outline" size="lg">Agendar consultoría</Button>
+                                <Button variant="primary" size="lg">Reservar diagnóstico gratuito</Button>
+                            </Link>
+                            <Link to="/product">
+                                <Button variant="outline" size="lg">Ver nuestros productos</Button>
                             </Link>
                         </div>
                     </div>

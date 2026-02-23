@@ -21,7 +21,7 @@ export const Cases: React.FC = () => {
                         <span className="text-gradient">resultados medibles.</span>
                     </h1>
                     <p className={styles.heroSub}>
-                        Cada proyecto que entregamos tiene un impacto directo en el negocio de nuestros clientes. Aquí te mostramos cómo.
+                        No te pedimos un acto de fe. Te enseñamos qué problemas tenían otras empresas y cómo los resolvimos con datos y rentabilidad.
                     </p>
                 </div>
             </section>
@@ -81,26 +81,15 @@ export const Cases: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container} ref={gridRef}>
                     <div className={`${styles.sectionHeader} reveal`}>
-                        <h2 className={styles.sectionTitle}>Más historias</h2>
-                        <p className={styles.sectionSub}>Diferentes sectores, misma metodología.</p>
+                        <h2 className={styles.sectionTitle}>Más historias en proceso</h2>
+                        <p className={styles.sectionSub}>Estamos trabajando en nuevos casos de éxito. Pronto compartiremos más resultados reales.</p>
                     </div>
                     <div className={styles.grid}>
-                        {[
-                            { sector: 'Hostelería', title: 'Hotel Boutique Levante', desc: 'Automatizaron check-in/out y comunicación con huéspedes. Redujeron recepción a 1 persona por turno.', s1: '-50%', l1: 'Costes de personal', s2: '4.9★', l2: 'Google Reviews' },
-                            { sector: 'Gimnasios', title: 'FitZone Studio', desc: 'Sistema de reserva de clases, pagos recurrentes y comunicación automática por email y WhatsApp.', s1: '+120%', l1: 'Retención socios', s2: '€0', l2: 'Impagos mes' },
-                            { sector: 'Clínica dental', title: 'Clínica Dra. López', desc: 'Agenda inteligente con recordatorios automáticos. Reducción de ausencias y facturación simplificada.', s1: '-80%', l1: 'No-shows', s2: '+40%', l2: 'Productividad' },
-                            { sector: 'E-commerce', title: 'NaturalBox', desc: 'Integración de tienda online, CRM y logística automatizada. Pedidos procesados sin intervención manual.', s1: '3x', l1: 'Pedidos/día', s2: '-90%', l2: 'Errores envío' },
-                        ].map((c) => (
-                            <div key={c.title} className={`${styles.caseCard} reveal`}>
-                                <span className={styles.caseSector}>{c.sector}</span>
-                                <h3 className={styles.caseTitle}>{c.title}</h3>
-                                <p className={styles.caseDesc}>{c.desc}</p>
-                                <div className={styles.caseStats}>
-                                    <div><strong>{c.s1}</strong><span>{c.l1}</span></div>
-                                    <div><strong>{c.s2}</strong><span>{c.l2}</span></div>
-                                </div>
-                            </div>
-                        ))}
+                        <div className={`${styles.caseCard} reveal`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px', gridColumn: '1 / -1', border: '1px dashed rgba(255,255,255,0.1)', background: 'transparent' }}>
+                            <span style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏗️</span>
+                            <h3 className={styles.caseTitle}>Construyendo nuevos casos</h3>
+                            <p className={styles.caseDesc} style={{ textAlign: 'center', color: 'var(--color-dark-text-muted)' }}>Nuestros clientes están consiguiendo resultados en este mismo momento. Muy pronto los publicaremos aquí con datos reales y medibles.</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -109,10 +98,10 @@ export const Cases: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container}>
                     <div className={`${styles.ctaBlock} reveal`} ref={ctaRef}>
-                        <h2 className={styles.ctaTitle}>¿Quieres ser el próximo caso de éxito?</h2>
-                        <p className={styles.ctaSub}>Analizamos tu negocio gratis y te proponemos un plan de acción claro.</p>
+                        <h2 className={styles.ctaTitle}>¿Tú también quieres que tu negocio trabaje solo?</h2>
+                        <p className={styles.ctaSub}>Cuéntanos tu caso y te proponemos un plan de acción sin compromiso.</p>
                         <div className={styles.ctaRow}>
-                            <Link to="/contact"><Button variant="primary" size="lg">Empezar ahora</Button></Link>
+                            <Link to="/contact"><Button variant="primary" size="lg">Empezar diagnóstico gratuito</Button></Link>
                             <Link to="/services"><Button variant="outline" size="lg">Ver servicios</Button></Link>
                         </div>
                     </div>

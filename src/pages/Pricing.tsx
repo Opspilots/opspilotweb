@@ -17,12 +17,11 @@ export const Pricing: React.FC = () => {
                 <div className={styles.heroContent}>
                     <span className={styles.tag}>Precios</span>
                     <h1 className={styles.heroTitle}>
-                        Transparencia total,{' '}
-                        <span className="text-gradient">sin letra pequeña.</span>
+                        Precios de nuestros{' '}
+                        <span className="text-gradient">Productos SaaS.</span>
                     </h1>
                     <p className={styles.heroSub}>
-                        Precios claros para productos SaaS. Para servicios a medida,
-                        hablemos de tu caso específico.
+                        Para servicios a medida (web, apps, branding), el precio se define tras el diagnóstico gratuito. Lo que ves aquí aplica a nuestras herramientas listas para usar.
                     </p>
                 </div>
             </section>
@@ -30,43 +29,46 @@ export const Pricing: React.FC = () => {
             {/* Pricing Grid */}
             <section className={styles.section}>
                 <div className={styles.container} ref={pricingRef}>
+                    <div className={`${styles.sectionHeader} reveal`} style={{ textAlign: 'center', marginBottom: 'var(--spacing-12)' }}>
+                        <p style={{ color: 'var(--color-dark-text-muted)', maxWidth: '600px', margin: '0 auto' }}>
+                            Nota: Los siguientes planes son un esquema general. Cada producto (ReformaPilot, CRM, etc.) tiene su propio precio base.
+                        </p>
+                    </div>
                     <div className={styles.grid}>
                         {/* Starter */}
                         <div className={`${styles.card} reveal`}>
                             <span className={styles.planName}>Starter</span>
-                            <p className={styles.planDesc}>Para autónomos y negocios que empiezan.</p>
+                            <p className={styles.planDesc}>Para probar y validar.</p>
                             <div className={styles.priceRow}>
                                 <span className={styles.price}>29€</span>
                                 <span className={styles.period}>/mes</span>
                             </div>
                             <ul className={styles.features}>
                                 <li><span className={styles.check}>✓</span>1 usuario</li>
-                                <li><span className={styles.check}>✓</span>CRM básico</li>
-                                <li><span className={styles.check}>✓</span>App sector</li>
-                                <li><span className={styles.check}>✓</span>Soporte email</li>
+                                <li><span className={styles.check}>✓</span>Acceso completo a funciones core</li>
+                                <li><span className={styles.check}>✓</span>Soporte por email</li>
                                 <li><span className={styles.check}>✓</span>Actualizaciones incluidas</li>
                             </ul>
-                            <Link to="/demo"><Button variant="outline" fullWidth>Probar gratis</Button></Link>
+                            <Link to="/contact"><Button variant="outline" fullWidth>Ver en acción</Button></Link>
                         </div>
 
                         {/* Pro */}
                         <div className={`${styles.card} ${styles.cardPro} reveal`}>
                             <div className={styles.badge}>Más Popular</div>
                             <span className={styles.planName}>Pro</span>
-                            <p className={styles.planDesc}>Para PYMEs que necesitan escalar.</p>
+                            <p className={styles.planDesc}>Para equipos en crecimiento.</p>
                             <div className={styles.priceRow}>
                                 <span className={styles.price}>69€</span>
                                 <span className={styles.period}>/mes</span>
                             </div>
                             <ul className={styles.features}>
                                 <li><span className={styles.check}>✓</span>Hasta 5 usuarios</li>
-                                <li><span className={styles.check}>✓</span>CRM avanzado + automatizaciones</li>
                                 <li><span className={styles.check}>✓</span>WhatsApp integrado</li>
-                                <li><span className={styles.check}>✓</span>Dashboard + analítica</li>
+                                <li><span className={styles.check}>✓</span>Automatizaciones de flujos</li>
+                                <li><span className={styles.check}>✓</span>Analítica avanzada</li>
                                 <li><span className={styles.check}>✓</span>Soporte prioritario</li>
-                                <li><span className={styles.check}>✓</span>Onboarding guiado</li>
                             </ul>
-                            <Link to="/demo"><Button variant="primary" fullWidth>Empezar ahora</Button></Link>
+                            <Link to="/contact"><Button variant="primary" fullWidth>Empezar ahora</Button></Link>
                         </div>
 
                         {/* Business */}
@@ -79,10 +81,9 @@ export const Pricing: React.FC = () => {
                             </div>
                             <ul className={styles.features}>
                                 <li><span className={styles.check}>✓</span>Usuarios ilimitados</li>
-                                <li><span className={styles.check}>✓</span>Todo lo de Pro</li>
-                                <li><span className={styles.check}>✓</span>API acceso completo</li>
-                                <li><span className={styles.check}>✓</span>Integraciones personalizadas</li>
+                                <li><span className={styles.check}>✓</span>Integraciones a medida</li>
                                 <li><span className={styles.check}>✓</span>Account manager dedicado</li>
+                                <li><span className={styles.check}>✓</span>Soporte prioritario 24/7</li>
                                 <li><span className={styles.check}>✓</span>SLA garantizado</li>
                             </ul>
                             <Link to="/contact"><Button variant="outline" fullWidth>Hablar con ventas</Button></Link>
@@ -97,16 +98,15 @@ export const Pricing: React.FC = () => {
                     <div className={`${styles.customBlock} reveal`} ref={customRef}>
                         <div className={styles.customContent}>
                             <span className={styles.tag}>Servicios a medida</span>
-                            <h2 className={styles.customTitle}>¿Necesitas algo más específico?</h2>
+                            <h2 className={styles.customTitle}>¿La herramienta existe pero no como tú quieres?</h2>
                             <p className={styles.customText}>
-                                Si nuestros productos SaaS no encajan al 100%, diseñamos tu solución desde cero.
-                                Branding, web, apps, automatización — todo como servicio, con precio cerrado o mantenimiento mensual.
+                                Si nuestros productos SaaS no encajan al 100%, diseñamos tu solución desde cero o adaptamos una existente para ti.
+                                Descubre nuestro enfoque de trabajo.
                             </p>
                             <div className={styles.customPrices}>
-                                <div><strong>Branding & Web</strong><span>Desde 200€</span></div>
-                                <div><strong>Apps & Automatización</strong><span>Desde 500€</span></div>
+                                <Link to="/contact"><Button variant="primary">Agendar diagnóstico</Button></Link>
+                                <Link to="/services" style={{ marginLeft: '1rem' }}><Button variant="outline">Ver portfolio de servicios</Button></Link>
                             </div>
-                            <Link to="/services"><Button variant="primary">Ver servicios</Button></Link>
                         </div>
                     </div>
                 </div>
@@ -120,10 +120,10 @@ export const Pricing: React.FC = () => {
                     </div>
                     <div className={styles.faqGrid}>
                         {[
-                            { q: '¿Puedo cambiar de plan?', a: 'Sí, puedes subir o bajar de plan en cualquier momento. Los cambios se aplican en el siguiente ciclo de facturación.' },
-                            { q: '¿Hay compromiso de permanencia?', a: 'No. Todos los planes son mensuales y puedes cancelar cuando quieras.' },
-                            { q: '¿Qué métodos de pago aceptáis?', a: 'Tarjeta de crédito/débito, transferencia bancaria y Bizum para clientes en España.' },
-                            { q: '¿Incluye migración de datos?', a: 'Sí, el onboarding incluye importación de tus datos existentes. Te ayudamos en el proceso.' },
+                            { q: '¿Hay coste de instalación inicial?', a: 'Depende del producto. Algunos son plug-and-play y otros requieren configuración de nuestra parte. Te lo dejamos claro en el diagnóstico.' },
+                            { q: '¿Qué pasa si mi equipo crece?', a: 'Puedes pasar del plan Starter al Pro en cualquier momento. Nos avisas y ampliamos tus licencias en el día.' },
+                            { q: '¿El pago es mensual o anual?', a: 'Ofrecemos ambas opciones. El pago anual suele llevar un descuento equivalente a dos meses gratis.' },
+                            { q: '¿Me ayudáis a migrar mis Excels actuales?', a: 'Sí. Dentro del onboarding de los planes Pro y Business, incluimos la importación de tu base de datos actual.' },
                         ].map((f) => (
                             <div key={f.q} className={`${styles.faqCard} reveal`}>
                                 <h4>{f.q}</h4>

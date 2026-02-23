@@ -12,13 +12,13 @@ export const Demo: React.FC = () => {
             <section className={styles.hero}>
                 <div className={`${styles.heroGlow} anim-pulse-glow`}></div>
                 <div className={styles.heroContent}>
-                    <span className={styles.tag}>Prueba gratuita</span>
+                    <span className={styles.tag}>Diagnóstico gratuito</span>
                     <h1 className={styles.heroTitle}>
-                        Experimenta el{' '}
-                        <span className="text-gradient">futuro</span> de tu negocio.
+                        ¿No sabes por dónde empezar?<br />
+                        <span className="text-gradient">Te ayudamos a decidir.</span>
                     </h1>
                     <p className={styles.heroSub}>
-                        Solicita una demo personalizada o activa tu prueba gratuita de 14 días. Sin tarjeta, sin compromiso.
+                        Reserva 30 minutos con nosotros. Analizamos cómo trabajas hoy, qué te está frenando y te damos una ruta clara. Cero compromiso, cero coste.
                     </p>
                 </div>
             </section>
@@ -29,8 +29,8 @@ export const Demo: React.FC = () => {
                     <div className={styles.demoGrid}>
                         {/* Form */}
                         <div className={`${styles.formCard} reveal`}>
-                            <h2 className={styles.formTitle}>Agenda tu demostración</h2>
-                            <p className={styles.formSub}>Completa el formulario y te contactaremos en menos de 24h.</p>
+                            <h2 className={styles.formTitle}>Agenda tu diagnóstico</h2>
+                            <p className={styles.formSub}>Déjanos tus datos y te contactamos hoy mismo para fijar la llamada.</p>
                             <form className={styles.form}>
                                 <div className={styles.row}>
                                     <div className={styles.field}>
@@ -44,26 +44,25 @@ export const Demo: React.FC = () => {
                                 </div>
                                 <div className={styles.field}>
                                     <label htmlFor="demoCompany">Empresa</label>
-                                    <input id="demoCompany" type="text" placeholder="Nombre de tu empresa" />
+                                    <input id="demoCompany" type="text" placeholder="¿Cómo se llama tu negocio?" />
                                 </div>
                                 <div className={styles.field}>
-                                    <label htmlFor="demoInterest">¿Qué te interesa?</label>
+                                    <label htmlFor="demoInterest">¿Cuál es tu mayor cuello de botella ahora mismo?</label>
                                     <select id="demoInterest" required>
                                         <option value="">Selecciona una opción</option>
-                                        <option value="reformapilot">ReformaPilot</option>
-                                        <option value="hotelpilot">HotelPilot</option>
-                                        <option value="gympilot">GymPilot</option>
-                                        <option value="clinicpilot">ClinicPilot</option>
-                                        <option value="custom">Servicio a medida</option>
-                                        <option value="other">Otro / No estoy seguro</option>
+                                        <option value="manual_tasks">Pierdo mucho tiempo en tareas manuales</option>
+                                        <option value="disconnected_tools">Mis herramientas actuales no se conectan</option>
+                                        <option value="dont_know">No sé qué tecnología necesito</option>
+                                        <option value="automation">Quiero automatizar mi captación de clientes</option>
+                                        <option value="other">Otro</option>
                                     </select>
                                 </div>
                                 <div className={styles.field}>
                                     <label htmlFor="demoNotes">Notas (opcional)</label>
-                                    <textarea id="demoNotes" rows={4} placeholder="Cuéntanos qué problema quieres resolver..."></textarea>
+                                    <textarea id="demoNotes" rows={4} placeholder="Cuéntanos un poco más sobre el problema (opcional pero ayuda)"></textarea>
                                 </div>
                                 <Button variant="primary" fullWidth size="lg" type="submit">
-                                    Solicitar demo
+                                    Reservar mis 30 minutos
                                 </Button>
                             </form>
                         </div>
@@ -72,22 +71,23 @@ export const Demo: React.FC = () => {
                         <div className={styles.benefits}>
                             <div className={`${styles.benefitCard} reveal`}>
                                 <span className={styles.benefitIcon}>🎯</span>
-                                <h4>Demo personalizada</h4>
-                                <p>Te mostramos cómo se aplica OpsPilot a tu sector y caso concreto.</p>
+                                <h4>Análisis Real</h4>
+                                <p>Miramos tus procesos actuales, no te hacemos una presentación de ventas.</p>
                             </div>
                             <div className={`${styles.benefitCard} reveal`}>
-                                <span className={styles.benefitIcon}>⚡</span>
-                                <h4>14 días gratis</h4>
-                                <p>Prueba el producto completo sin coste ni tarjeta.</p>
+                                <span className={styles.benefitIcon}>🗺️</span>
+                                <h4>Ruta Clara</h4>
+                                <p>Sales de la llamada sabiendo exactamente qué herramientas o cambios necesitas.</p>
+                            </div>
+                            <div className={`${styles.benefitCard} reveal`}>
+                                <span className={styles.benefitIcon}>💰</span>
+                                <h4>Precio Transparente</h4>
+                                <p>Si podemos ayudarte, te decimos cuánto cuesta. Sin asteriscos.</p>
                             </div>
                             <div className={`${styles.benefitCard} reveal`}>
                                 <span className={styles.benefitIcon}>🤝</span>
-                                <h4>Onboarding guiado</h4>
-                                <p>Te acompañamos en la configuración inicial paso a paso.</p>
-                            </div>
-                            <div className={`${styles.benefitBig} reveal anim-border-glow`}>
-                                <div className={styles.bigNumber}>+50</div>
-                                <p>Empresas ya confían en OpsPilot para gestionar su día a día.</p>
+                                <h4>100% Sin Compromiso</h4>
+                                <p>Nos enfocamos en aportar valor. Tú decides los siguientes pasos.</p>
                             </div>
                         </div>
                     </div>

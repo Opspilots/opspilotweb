@@ -17,11 +17,11 @@ export const Product: React.FC = () => {
                 <div className={styles.heroContent}>
                     <span className={styles.tag}>Productos</span>
                     <h1 className={styles.heroTitle}>
-                        Catálogo SaaS:{' '}
-                        <span className="text-gradient">soluciones que ya funcionan.</span>
+                        Software que soluciona problemas concretos.{' '}
+                        <span className="text-gradient">Hoy mismo.</span>
                     </h1>
                     <p className={styles.heroSub}>
-                        Software por sector, listo para usar. Suscríbete, configura y empieza a gestionar tu negocio hoy mismo.
+                        Ni desarrollos interminables ni herramientas que hacen de todo pero nada bien. Elige tu problema, suscríbete y empieza a trabajar mejor.
                     </p>
                 </div>
             </section>
@@ -30,17 +30,15 @@ export const Product: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container} ref={productsRef}>
                     <div className={`${styles.sectionHeader} reveal`}>
-                        <h2 className={styles.sectionTitle}>Elige tu sector</h2>
-                        <p className={styles.sectionSub}>Cada producto está diseñado para resolver los problemas específicos de tu industria.</p>
+                        <h2 className={styles.sectionTitle}>Nuestros Productos</h2>
+                        <p className={styles.sectionSub}>Sistemas propios, probados y listos para integrarse en tu día a día.</p>
                     </div>
                     <div className={styles.grid}>
                         {[
-                            { emoji: '🔧', name: 'ReformaPilot', desc: 'Gestión de obras, presupuestos con IA y citas automáticas para empresas de reformas.', price: '69€/mes', sector: 'Reformas' },
-                            { emoji: '🏨', name: 'HotelPilot', desc: 'Check-in/out automatizado, gestión de reservas y comunicación con huéspedes.', price: '89€/mes', sector: 'Hostelería' },
-                            { emoji: '🏋️', name: 'GymPilot', desc: 'Reserva de clases, pagos recurrentes y comunicación automática con socios.', price: '59€/mes', sector: 'Gimnasios' },
-                            { emoji: '🦷', name: 'ClinicPilot', desc: 'Agenda inteligente, recordatorios y facturación simplificada para clínicas.', price: '79€/mes', sector: 'Clínicas' },
-                            { emoji: '📦', name: 'LogiPilot', desc: 'Gestión de pedidos, inventario en tiempo real y logística automatizada.', price: '99€/mes', sector: 'Logística' },
-                            { emoji: '🍽️', name: 'RestoPilot', desc: 'Reservas, comandas digitales y control de stock para restaurantes.', price: '69€/mes', sector: 'Restauración' },
+                            { emoji: '🏢', name: 'ERP OpsPilot', desc: 'Control total de tu empresa. Finanzas, ventas, compras e inventario en un solo lugar. Adiós a los Excel inconexos.', price: 'Desde 150€/mes', sector: 'Gestión Integral' },
+                            { emoji: '🤝', name: 'CRM OpsPilot', desc: 'Gestiona tus clientes sin perder una sola oportunidad. Simple, visual y conectado con tu WhatsApp.', price: 'Desde 80€/mes', sector: 'Ventas y Clientes' },
+                            { emoji: '🏗️', name: 'Presupuestador Pro', desc: 'Calcula presupuestos de reformas en minutos y genera renders con IA para que el cliente diga "sí" más rápido.', price: 'Desde 60€/mes', sector: 'Reformas' },
+                            { emoji: '⚡', name: 'TarifaOCR', desc: 'Para comerciales de energía. Escanea la factura de la competencia, compara y genera tu propuesta en segundos.', price: 'Consultar precio', sector: 'Sector Energético' },
                         ].map((p) => (
                             <div key={p.name} className={`${styles.productCard} reveal`}>
                                 <span className={styles.productIcon}>{p.emoji}</span>
@@ -48,7 +46,7 @@ export const Product: React.FC = () => {
                                 <h3 className={styles.productName}>{p.name}</h3>
                                 <p className={styles.productDesc}>{p.desc}</p>
                                 <div className={styles.productPrice}>{p.price}</div>
-                                <Link to="/demo"><Button variant="outline" size="sm" fullWidth>Probar gratis</Button></Link>
+                                <Link to="/contact"><Button variant="outline" size="sm" fullWidth>Saber más</Button></Link>
                             </div>
                         ))}
                     </div>
@@ -59,14 +57,14 @@ export const Product: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container} ref={advantagesRef}>
                     <div className={`${styles.sectionHeader} reveal`}>
-                        <h2 className={styles.sectionTitle}>Ventajas del modelo SaaS</h2>
+                        <h2 className={styles.sectionTitle}>¿Por qué usar nuestras soluciones?</h2>
                     </div>
                     <div className={styles.whyGrid}>
                         {[
-                            { icon: '🚀', title: 'Implementación rápida', desc: 'Activo en 48 horas. Sin esperas de desarrollo.' },
-                            { icon: '💰', title: 'Coste predecible', desc: 'Suscripción mensual sin sorpresas. Cancela cuando quieras.' },
-                            { icon: '🔄', title: 'Actualizaciones continuas', desc: 'Mejoras constantes sin coste adicional.' },
-                            { icon: '🛡️', title: 'Soporte incluido', desc: 'Equipo técnico disponible para resolver cualquier duda.' },
+                            { icon: '⏳', title: 'Tiempo de reacción 0', desc: 'El sistema ya existe. Te damos acceso, lo configuramos a tus datos reales y empiezas a trabajar en días, no meses.' },
+                            { icon: '💰', title: 'Sin grandes inversiones', desc: 'Una suscripción mensual clara. Sin sorpresas, gastos ocultos ni ataduras de por vida.' },
+                            { icon: '🔄', title: 'Mejora continua', desc: 'Actualizamos el sistema basándonos en el feedback de todos los usuarios. Siempre tendrás la mejor versión.' },
+                            { icon: '🛡️', title: 'Tú te enfocas en tu negocio', desc: 'Nosotros nos encargamos de que el software funcione, sea seguro y no se caiga. Soporte real incluido.' },
                         ].map((a) => (
                             <div key={a.title} className={`${styles.whyCard} reveal`}>
                                 <span className={styles.whyEmoji}>{a.icon}</span>
@@ -82,11 +80,11 @@ export const Product: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container}>
                     <div className={`${styles.ctaBlock} reveal`} ref={ctaRef}>
-                        <h2 className={styles.ctaTitle}>¿Necesitas algo más personalizado?</h2>
-                        <p className={styles.ctaSub}>Exploramos juntos la mejor solución para tu caso.</p>
+                        <h2 className={styles.ctaTitle}>¿Tu problema es tan específico que no encaja aquí?</h2>
+                        <p className={styles.ctaSub}>Para eso está nuestra línea de Servicios a Medida. Analizamos tu caso y construimos tu propia herramienta.</p>
                         <div className={styles.ctaRow}>
-                            <Link to="/services"><Button variant="primary" size="lg">Ver servicios a medida</Button></Link>
-                            <Link to="/contact"><Button variant="outline" size="lg">Hablar con un experto</Button></Link>
+                            <Link to="/contact"><Button variant="primary" size="lg">Cuéntanos qué necesitas</Button></Link>
+                            <Link to="/services"><Button variant="outline" size="lg">Ver Servicios a Medida</Button></Link>
                         </div>
                     </div>
                 </div>

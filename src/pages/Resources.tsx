@@ -17,11 +17,11 @@ export const Resources: React.FC = () => {
                 <div className={styles.heroContent}>
                     <span className={styles.tag}>Recursos</span>
                     <h1 className={styles.heroTitle}>
-                        Todo lo que necesitas para{' '}
-                        <span className="text-gradient">tomar mejores decisiones.</span>
+                        Conocimiento abierto para{' '}
+                        <span className="text-gradient">empresas que quieren más.</span>
                     </h1>
                     <p className={styles.heroSub}>
-                        Guías, artículos y herramientas gratuitas sobre transformación digital, automatización y gestión empresarial.
+                        Ni humo ni teoría. Compartimos lo que aprendemos conectando herramientas y automatizando negocios reales.
                     </p>
                 </div>
             </section>
@@ -54,14 +54,14 @@ export const Resources: React.FC = () => {
                 <div className={styles.container}>
                     <div className={`${styles.newsletter} reveal`} ref={nlRef}>
                         <div className={styles.nlContent}>
-                            <h2 className={styles.nlTitle}>Recibe insights cada semana</h2>
+                            <h2 className={styles.nlTitle}>Documentamos lo que construimos</h2>
                             <p className={styles.nlText}>
-                                Un email semanal con ideas prácticas sobre digitalización, automatización y crecimiento. Sin spam, solo valor.
+                                Apúntate a nuestra lista. Mandamos un email (muy de vez en cuando) con casos de uso reales, herramientas que descubrimos y errores que hemos cometido para que no los cometas tú.
                             </p>
                         </div>
                         <form className={styles.nlForm}>
                             <input type="email" placeholder="tu@email.com" className={styles.nlInput} required />
-                            <Button variant="primary" type="submit">Suscribirme</Button>
+                            <Button variant="primary" type="submit">Unirme a la lista</Button>
                         </form>
                     </div>
                 </div>
@@ -71,9 +71,9 @@ export const Resources: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container}>
                     <div className={`${styles.ctaBlock} reveal`} ref={ctaRef}>
-                        <h2 className={styles.ctaTitle}>¿Necesitas ayuda personalizada?</h2>
-                        <p className={styles.ctaSub}>Agenda una consultoría gratuita y hablamos de tu caso concreto.</p>
-                        <Link to="/contact"><Button variant="primary" size="lg">Agendar consultoría</Button></Link>
+                        <h2 className={styles.ctaTitle}>¿Prefieres que lo hagamos nosotros?</h2>
+                        <p className={styles.ctaSub}>Leer está muy bien, pero delegar es más rápido.</p>
+                        <Link to="/contact"><Button variant="primary" size="lg">Agendar diagnóstico gratuito</Button></Link>
                     </div>
                 </div>
             </section>
