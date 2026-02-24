@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
+import { Logo } from './Logo';
 import Aurora from './Aurora';
 import styles from './Navbar.module.css';
 
@@ -17,8 +18,8 @@ export const Navbar: React.FC = () => {
                 </div>
                 <div className={styles.navbarBackground}></div>
                 <div className={styles.container}>
-                    <Link to="/" className={styles.logo}>
-                        <span className={styles.logoIcon}>◆</span>
+                    <Link to="/" className={styles.logo} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Logo size={28} />
                         OpsPilot
                     </Link>
 

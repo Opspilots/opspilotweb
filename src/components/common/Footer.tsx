@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
+import { Logo } from './Logo';
 
 export const Footer: React.FC = () => {
     return (
@@ -9,8 +10,8 @@ export const Footer: React.FC = () => {
                 <div className={styles.grid}>
                     {/* Brand */}
                     <div className={styles.brand}>
-                        <h2 className={styles.logo}>
-                            <span className={styles.logoIcon}>◆</span> OpsPilot
+                        <h2 className={styles.logo} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Logo size={24} /> OpsPilot
                         </h2>
                         <p className={styles.tagline}>
                             Tecnología que funciona para empresas que crecen.
