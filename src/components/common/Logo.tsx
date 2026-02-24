@@ -15,12 +15,12 @@ export const Logo: React.FC<LogoProps> = ({ className, size = 32 }) => {
             xmlns="http://www.w3.org/2000/svg"
             className={className}
         >
-            <path
-                d="M 15 40 A 38 38 0 0 0 85 30"
-                stroke="#39ce86"
-                strokeWidth="22"
-                strokeLinecap="butt"
-            />
+            <g transform="rotate(-90 50 50)">
+                {/* White part of the logo */}
+                <circle cx="50" cy="50" r="35" stroke="#ffffff" strokeWidth="22" strokeDasharray="55 165" strokeDashoffset="0" />
+                {/* Green part of the logo */}
+                <circle cx="50" cy="50" r="35" stroke="#39ce86" strokeWidth="22" strokeDasharray="110 110" strokeDashoffset="-55" />
+            </g>
         </svg>
     );
 };
