@@ -14,11 +14,13 @@ export const Demo: React.FC = () => {
                 <div className={styles.heroContent}>
                     <span className={styles.tag}>Diagnóstico gratuito</span>
                     <h1 className={styles.heroTitle}>
-                        ¿No sabes por dónde empezar?<br />
-                        <span className="text-gradient">Te ayudamos a decidir.</span>
+                        30 minutos que pueden{' '}
+                        <span className="text-gradient">cambiar tu negocio.</span>
                     </h1>
                     <p className={styles.heroSub}>
-                        Reserva 30 minutos con nosotros. Analizamos cómo trabajas hoy, qué te está frenando y te damos una ruta clara. Cero compromiso, cero coste.
+                        Una llamada donde analizamos qué procesos te están costando tiempo y dinero
+                        y te proponemos un plan concreto para resolverlo.
+                        Sin PowerPoints, sin presión de ventas.
                     </p>
                 </div>
             </section>
@@ -29,40 +31,42 @@ export const Demo: React.FC = () => {
                     <div className={styles.demoGrid}>
                         {/* Form */}
                         <div className={`${styles.formCard} reveal`}>
-                            <h2 className={styles.formTitle}>Agenda tu diagnóstico</h2>
-                            <p className={styles.formSub}>Déjanos tus datos y te contactamos hoy mismo para fijar la llamada.</p>
+                            <h2 className={styles.formTitle}>Reserva tu sesión de diagnóstico</h2>
+                            <p className={styles.formSub}>Rellena esto y te contactamos para confirmar día y hora.</p>
                             <form className={styles.form}>
                                 <div className={styles.row}>
                                     <div className={styles.field}>
-                                        <label htmlFor="demoName">Nombre</label>
-                                        <input id="demoName" type="text" placeholder="Tu nombre" required />
+                                        <label htmlFor="demoName">Tu nombre</label>
+                                        <input id="demoName" type="text" placeholder="¿Cómo te llamas?" required />
                                     </div>
                                     <div className={styles.field}>
-                                        <label htmlFor="demoEmail">Email</label>
+                                        <label htmlFor="demoEmail">Tu email</label>
                                         <input id="demoEmail" type="email" placeholder="tu@email.com" required />
                                     </div>
                                 </div>
                                 <div className={styles.field}>
-                                    <label htmlFor="demoCompany">Empresa</label>
-                                    <input id="demoCompany" type="text" placeholder="¿Cómo se llama tu negocio?" />
+                                    <label htmlFor="demoCompany">Tu empresa o proyecto</label>
+                                    <input id="demoCompany" type="text" placeholder="¿En qué trabajas?" />
                                 </div>
                                 <div className={styles.field}>
-                                    <label htmlFor="demoInterest">¿Cuál es tu mayor cuello de botella ahora mismo?</label>
+                                    <label htmlFor="demoInterest">¿Cuál es tu mayor problema ahora mismo?</label>
                                     <select id="demoInterest" required>
                                         <option value="">Selecciona una opción</option>
-                                        <option value="manual_tasks">Pierdo mucho tiempo en tareas manuales</option>
-                                        <option value="disconnected_tools">Mis herramientas actuales no se conectan</option>
-                                        <option value="dont_know">No sé qué tecnología necesito</option>
-                                        <option value="automation">Quiero automatizar mi captación de clientes</option>
-                                        <option value="other">Otro</option>
+                                        <option value="tiempo">Pierdo demasiado tiempo en tareas repetitivas</option>
+                                        <option value="clientes">Pierdo clientes por falta de seguimiento</option>
+                                        <option value="presupuestos">Hacer presupuestos me lleva demasiado tiempo</option>
+                                        <option value="energia">Gestiono tarifas eléctricas y facturas a mano</option>
+                                        <option value="herramientas">Mis herramientas no se conectan entre sí</option>
+                                        <option value="web">Mi web no genera negocio</option>
+                                        <option value="other">No sé por dónde empezar, necesito orientación</option>
                                     </select>
                                 </div>
                                 <div className={styles.field}>
-                                    <label htmlFor="demoNotes">Notas (opcional)</label>
-                                    <textarea id="demoNotes" rows={4} placeholder="Cuéntanos un poco más sobre el problema (opcional pero ayuda)"></textarea>
+                                    <label htmlFor="demoNotes">Cuéntanos más (opcional)</label>
+                                    <textarea id="demoNotes" rows={4} placeholder="Cualquier detalle que nos ayude a preparar mejor la sesión..."></textarea>
                                 </div>
                                 <Button variant="primary" fullWidth size="lg" type="submit">
-                                    Reservar mis 30 minutos
+                                    Reservar mi diagnóstico gratuito
                                 </Button>
                             </form>
                         </div>
@@ -71,23 +75,23 @@ export const Demo: React.FC = () => {
                         <div className={styles.benefits}>
                             <div className={`${styles.benefitCard} reveal`}>
                                 <span className={styles.benefitIcon}>🎯</span>
-                                <h4>Análisis Real</h4>
-                                <p>Miramos tus procesos actuales, no te hacemos una presentación de ventas.</p>
+                                <h4>Análisis real, no una charla de ventas</h4>
+                                <p>Miramos tu negocio con ojos frescos y te decimos qué procesos te están costando dinero o tiempo.</p>
                             </div>
                             <div className={`${styles.benefitCard} reveal`}>
-                                <span className={styles.benefitIcon}>🗺️</span>
-                                <h4>Ruta Clara</h4>
-                                <p>Sales de la llamada sabiendo exactamente qué herramientas o cambios necesitas.</p>
-                            </div>
-                            <div className={`${styles.benefitCard} reveal`}>
-                                <span className={styles.benefitIcon}>💰</span>
-                                <h4>Precio Transparente</h4>
-                                <p>Si podemos ayudarte, te decimos cuánto cuesta. Sin asteriscos.</p>
+                                <span className={styles.benefitIcon}>⚡</span>
+                                <h4>Un plan concreto, no genérico</h4>
+                                <p>Al terminar sabes exactamente qué pasos dar, en qué orden y cuánto costaría cada uno.</p>
                             </div>
                             <div className={`${styles.benefitCard} reveal`}>
                                 <span className={styles.benefitIcon}>🤝</span>
-                                <h4>100% Sin Compromiso</h4>
-                                <p>Nos enfocamos en aportar valor. Tú decides los siguientes pasos.</p>
+                                <h4>Sin compromiso de contratar</h4>
+                                <p>Si no podemos ayudarte, te lo decimos. Si podemos, decides tú si seguimos adelante.</p>
+                            </div>
+                            <div className={`${styles.benefitCard} reveal`}>
+                                <span className={styles.benefitIcon}>💰</span>
+                                <h4>100% gratuito</h4>
+                                <p>El diagnóstico no tiene coste. Nos importa que salgas de la llamada con claridad, contrates o no.</p>
                             </div>
                         </div>
                     </div>

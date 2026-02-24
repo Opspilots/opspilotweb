@@ -28,6 +28,8 @@ export const Navbar: React.FC = () => {
                         <Link to="/services" className={styles.navLink}>Servicios</Link>
                         <Link to="/product" className={styles.navLink}>Productos</Link>
                         <Link to="/cases" className={styles.navLink}>Casos de Éxito</Link>
+                        <Link to="/pricing" className={styles.navLink}>Precios</Link>
+                        <Link to="/resources" className={styles.navLink}>Recursos</Link>
                         <Link to="/contact">
                             <Button variant="primary" size="sm">Hablemos</Button>
                         </Link>
@@ -50,6 +52,8 @@ export const Navbar: React.FC = () => {
                 <Link to="/services" className={styles.mobileNavLink} onClick={toggleMenu}>Servicios</Link>
                 <Link to="/product" className={styles.mobileNavLink} onClick={toggleMenu}>Productos</Link>
                 <Link to="/cases" className={styles.mobileNavLink} onClick={toggleMenu}>Casos de Éxito</Link>
+                <Link to="/pricing" className={styles.mobileNavLink} onClick={toggleMenu}>Precios</Link>
+                <Link to="/resources" className={styles.mobileNavLink} onClick={toggleMenu}>Recursos</Link>
                 <Link to="/contact" className={styles.mobileNavLink} onClick={toggleMenu}>Contacto</Link>
                 <div className={styles.mobileCta}>
                     <Link to="/contact" onClick={toggleMenu} style={{ width: '100%' }}>

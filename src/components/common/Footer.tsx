@@ -13,7 +13,10 @@ export const Footer: React.FC = () => {
                             <span className={styles.logoIcon}>◆</span> OpsPilot
                         </h2>
                         <p className={styles.tagline}>
-                            Partners tecnológicos. Transformamos negocios tradicionales en referentes digitales con cercanía y datos.
+                            Tecnología que funciona para empresas que crecen.
+                        </p>
+                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-dark-text-muted)', marginTop: 'var(--spacing-2)' }}>
+                            opspilot.contact@gmail.com
                         </p>
                         <div className={styles.socials}>
                             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink} aria-label="LinkedIn">
@@ -45,9 +48,10 @@ export const Footer: React.FC = () => {
 
                     <div className={styles.links}>
                         <h4 className={styles.heading}>Más</h4>
-                        <Link to="/contact" className={styles.link}>Contacto</Link>
-                        <Link to="/demo" className={styles.link}>Demo</Link>
                         <Link to="/pricing" className={styles.link}>Precios</Link>
+                        <Link to="/resources" className={styles.link}>Recursos</Link>
+                        <Link to="/contact" className={styles.link}>Contacto</Link>
+                        <Link to="/demo" className={styles.link}>Diagnóstico gratuito</Link>
                     </div>
                 </div>
 

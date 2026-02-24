@@ -17,11 +17,12 @@ export const Cases: React.FC = () => {
                 <div className={styles.heroContent}>
                     <span className={styles.tag}>Casos de Éxito</span>
                     <h1 className={styles.heroTitle}>
-                        Historias reales,{' '}
-                        <span className="text-gradient">resultados medibles.</span>
+                        Empresas reales,{' '}
+                        <span className="text-gradient">problemas resueltos.</span>
                     </h1>
                     <p className={styles.heroSub}>
-                        No te pedimos un acto de fe. Te enseñamos qué problemas tenían otras empresas y cómo los resolvimos con datos y rentabilidad.
+                        No hace falta ser una gran empresa para necesitar buenos procesos.
+                        Aquí tienes lo que hemos hecho por empresas como la tuya.
                     </p>
                 </div>
             </section>
@@ -35,9 +36,10 @@ export const Cases: React.FC = () => {
                             <span className={styles.sector}>Reformas</span>
                             <h2 className={styles.featuredTitle}>J.R. Rodríguez: De la libreta al sistema inteligente</h2>
                             <p className={styles.featuredText}>
-                                Empresa familiar de reformas en Madrid. Gestionaban todo con Excel, llamadas y libretas.
-                                Con OpsPilot implementamos un CRM a medida, presupuestador con IA y sistema de citas
-                                automatizado vía WhatsApp. En 3 meses triplicaron su capacidad de atención sin contratar personal.
+                                Empresa familiar de reformas en Madrid. Lo gestionaban todo con Excel, llamadas y una libreta.
+                                Diseñamos su marca desde cero, implementamos un CRM a medida, un presupuestador con IA
+                                que genera imágenes realistas de reformas y citas automáticas vía WhatsApp.
+                                En 3 meses triplicaron su capacidad de atención sin contratar a nadie más.
                             </p>
                             <div className={styles.statsRow}>
                                 <div className={styles.stat}>
@@ -81,15 +83,46 @@ export const Cases: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container} ref={gridRef}>
                     <div className={`${styles.sectionHeader} reveal`}>
-                        <h2 className={styles.sectionTitle}>Más historias en proceso</h2>
-                        <p className={styles.sectionSub}>Estamos trabajando en nuevos casos de éxito. Pronto compartiremos más resultados reales.</p>
+                        <h2 className={styles.sectionTitle}>Más casos</h2>
+                        <p className={styles.sectionSub}>Diferentes problemas, mismo compromiso.</p>
                     </div>
                     <div className={styles.grid}>
-                        <div className={`${styles.caseCard} reveal`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px', gridColumn: '1 / -1', border: '1px dashed rgba(255,255,255,0.1)', background: 'transparent' }}>
-                            <span style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏗️</span>
-                            <h3 className={styles.caseTitle}>Construyendo nuevos casos</h3>
-                            <p className={styles.caseDesc} style={{ textAlign: 'center', color: 'var(--color-dark-text-muted)' }}>Nuestros clientes están consiguiendo resultados en este mismo momento. Muy pronto los publicaremos aquí con datos reales y medibles.</p>
-                        </div>
+                        {[
+                            {
+                                sector: 'Sector energético',
+                                title: 'Comercial de energía eléctrica',
+                                desc: 'Le ayudamos a automatizar el análisis de facturas y la comparativa de tarifas. Lo que antes tardaba media hora por cliente, ahora lo hace en segundos.',
+                                s1: '↓ 90%',
+                                l1: 'Tiempo por análisis',
+                                s2: '+2x',
+                                l2: 'Cierre de contratos',
+                            },
+                            {
+                                sector: '¿El siguiente eres tú?',
+                                title: 'Cuéntanos tu caso',
+                                desc: 'Analizamos tu negocio en 30 minutos y te proponemos un plan. El primer paso es gratis y sin compromiso.',
+                                s1: '30',
+                                l1: 'minutos',
+                                s2: '0€',
+                                l2: 'sin compromiso',
+                            },
+                        ].map((c) => (
+                            <div key={c.title} className={`${styles.caseCard} reveal`}>
+                                <span className={styles.caseSector}>{c.sector}</span>
+                                <h3 className={styles.caseTitle}>{c.title}</h3>
+                                <p className={styles.caseDesc}>{c.desc}</p>
+                                <div className={styles.caseStats}>
+                                    <div className={styles.caseStat}>
+                                        <span className={styles.caseStatNum}>{c.s1}</span>
+                                        <span className={styles.caseStatLabel}>{c.l1}</span>
+                                    </div>
+                                    <div className={styles.caseStat}>
+                                        <span className={styles.caseStatNum}>{c.s2}</span>
+                                        <span className={styles.caseStatLabel}>{c.l2}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -98,10 +131,10 @@ export const Cases: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container}>
                     <div className={`${styles.ctaBlock} reveal`} ref={ctaRef}>
-                        <h2 className={styles.ctaTitle}>¿Tú también quieres que tu negocio trabaje solo?</h2>
-                        <p className={styles.ctaSub}>Cuéntanos tu caso y te proponemos un plan de acción sin compromiso.</p>
+                        <h2 className={styles.ctaTitle}>¿Tu empresa podría ser la siguiente?</h2>
+                        <p className={styles.ctaSub}>Analizamos tu situación en 30 minutos y te decimos qué podríamos hacer por ti. Sin compromiso.</p>
                         <div className={styles.ctaRow}>
-                            <Link to="/contact"><Button variant="primary" size="lg">Empezar diagnóstico gratuito</Button></Link>
+                            <Link to="/contact"><Button variant="primary" size="lg">Empezar mi diagnóstico gratuito</Button></Link>
                             <Link to="/services"><Button variant="outline" size="lg">Ver servicios</Button></Link>
                         </div>
                     </div>

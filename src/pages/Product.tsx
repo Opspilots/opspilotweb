@@ -17,11 +17,12 @@ export const Product: React.FC = () => {
                 <div className={styles.heroContent}>
                     <span className={styles.tag}>Productos</span>
                     <h1 className={styles.heroTitle}>
-                        Software que soluciona problemas concretos.{' '}
-                        <span className="text-gradient">Hoy mismo.</span>
+                        Software propio para problemas{' '}
+                        <span className="text-gradient">que el mercado ignora.</span>
                     </h1>
                     <p className={styles.heroSub}>
-                        Ni desarrollos interminables ni herramientas que hacen de todo pero nada bien. Elige tu problema, suscríbete y empieza a trabajar mejor.
+                        Desarrollamos nuestras propias herramientas para nichos donde el software genérico no llega.
+                        Listos para usar, con soporte incluido y sin configuraciones de meses.
                     </p>
                 </div>
             </section>
@@ -30,15 +31,47 @@ export const Product: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container} ref={productsRef}>
                     <div className={`${styles.sectionHeader} reveal`}>
-                        <h2 className={styles.sectionTitle}>Nuestros Productos</h2>
-                        <p className={styles.sectionSub}>Sistemas propios, probados y listos para integrarse en tu día a día.</p>
+                        <h2 className={styles.sectionTitle}>Nuestros productos</h2>
+                        <p className={styles.sectionSub}>Cuatro herramientas construidas para problemas reales que encontramos en nuestros clientes.</p>
                     </div>
                     <div className={styles.grid}>
                         {[
-                            { emoji: '🏢', name: 'ERP OpsPilot', desc: 'Control total de tu empresa. Finanzas, ventas, compras e inventario en un solo lugar. Adiós a los Excel inconexos.', price: 'Desde 150€/mes', sector: 'Gestión Integral' },
-                            { emoji: '🤝', name: 'CRM OpsPilot', desc: 'Gestiona tus clientes sin perder una sola oportunidad. Simple, visual y conectado con tu WhatsApp.', price: 'Desde 80€/mes', sector: 'Ventas y Clientes' },
-                            { emoji: '🏗️', name: 'Presupuestador Pro', desc: 'Calcula presupuestos de reformas en minutos y genera renders con IA para que el cliente diga "sí" más rápido.', price: 'Desde 60€/mes', sector: 'Reformas' },
-                            { emoji: '⚡', name: 'TarifaOCR', desc: 'Para comerciales de energía. Escanea la factura de la competencia, compara y genera tu propuesta en segundos.', price: 'Consultar precio', sector: 'Sector Energético' },
+                            {
+                                emoji: '🏢',
+                                name: 'ERP OpsPilot',
+                                desc: 'Gestión completa de tu empresa en un solo lugar: empleados, horarios, calendario, reservas, inventario, proveedores, facturación y analítica básica. Sin sobre-ingeniería, sin curva de aprendizaje imposible.',
+                                price: 'Desde 29€/mes',
+                                sector: 'Pequeña y mediana empresa',
+                                cta: 'Probar gratis',
+                                href: '/demo'
+                            },
+                            {
+                                emoji: '🎯',
+                                name: 'CRM OpsPilot',
+                                desc: 'Gestión de clientes, seguimientos, pipeline de ventas y comunicaciones en un solo lugar. Adaptable a cómo trabaja tu equipo, no al revés. Porque cada negocio tiene su propia forma de vender.',
+                                price: 'Desde 19€/mes',
+                                sector: 'Cualquier sector',
+                                cta: 'Probar gratis',
+                                href: '/demo'
+                            },
+                            {
+                                emoji: '📋',
+                                name: 'Presupuestador Pro',
+                                desc: 'Crea presupuestos profesionales al estilo Presto en minutos. Añade partidas, asigna precios, crea packs reutilizables y envía propuestas que cierran ventas. Diseñado junto a reformistas, para reformistas.',
+                                price: 'Desde 25€/mes',
+                                sector: 'Reformas y construcción',
+                                cta: 'Probar gratis',
+                                href: '/demo'
+                            },
+                            {
+                                emoji: '⚡',
+                                name: 'TarifaOCR',
+                                desc: 'Sube la factura de tu cliente y en segundos tienes la mejor propuesta de tarifa disponible, optimizada por precio final o por tu comisión. Adiós al análisis tarifa por tarifa. Gestiona toda tu cartera desde un solo panel.',
+                                price: 'Consultar precio',
+                                sector: 'Comerciales de energía',
+                                cta: 'Solicitar información',
+                                href: '/contact'
+                            },
                         ].map((p) => (
                             <div key={p.name} className={`${styles.productCard} reveal`}>
                                 <span className={styles.productIcon}>{p.emoji}</span>
@@ -46,7 +79,7 @@ export const Product: React.FC = () => {
                                 <h3 className={styles.productName}>{p.name}</h3>
                                 <p className={styles.productDesc}>{p.desc}</p>
                                 <div className={styles.productPrice}>{p.price}</div>
-                                <Link to="/contact"><Button variant="outline" size="sm" fullWidth>Saber más</Button></Link>
+                                <Link to={p.href}><Button variant="outline" size="sm" fullWidth>{p.cta}</Button></Link>
                             </div>
                         ))}
                     </div>
@@ -57,14 +90,14 @@ export const Product: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container} ref={advantagesRef}>
                     <div className={`${styles.sectionHeader} reveal`}>
-                        <h2 className={styles.sectionTitle}>¿Por qué usar nuestras soluciones?</h2>
+                        <h2 className={styles.sectionTitle}>Por qué nuestros productos</h2>
                     </div>
                     <div className={styles.whyGrid}>
                         {[
-                            { icon: '⏳', title: 'Tiempo de reacción 0', desc: 'El sistema ya existe. Te damos acceso, lo configuramos a tus datos reales y empiezas a trabajar en días, no meses.' },
-                            { icon: '💰', title: 'Sin grandes inversiones', desc: 'Una suscripción mensual clara. Sin sorpresas, gastos ocultos ni ataduras de por vida.' },
-                            { icon: '🔄', title: 'Mejora continua', desc: 'Actualizamos el sistema basándonos en el feedback de todos los usuarios. Siempre tendrás la mejor versión.' },
-                            { icon: '🛡️', title: 'Tú te enfocas en tu negocio', desc: 'Nosotros nos encargamos de que el software funcione, sea seguro y no se caiga. Soporte real incluido.' },
+                            { icon: '🚀', title: 'Funciona desde el primer día', desc: 'Sin meses de desarrollo ni configuraciones infinitas. En 48 horas estás gestionando con él.' },
+                            { icon: '💰', title: 'Coste fijo y predecible', desc: 'Sabes exactamente lo que pagas cada mes. Sin sorpresas, sin costes ocultos, sin letra pequeña.' },
+                            { icon: '🔄', title: 'Siempre actualizado', desc: 'Mejoramos en base a lo que piden los usuarios. Las actualizaciones llegan solas, incluidas en tu suscripción.' },
+                            { icon: '🛡️', title: 'Soporte real incluido', desc: 'Personas reales que responden. No un chatbot, no un PDF de preguntas frecuentes.' },
                         ].map((a) => (
                             <div key={a.title} className={`${styles.whyCard} reveal`}>
                                 <span className={styles.whyEmoji}>{a.icon}</span>
@@ -80,11 +113,11 @@ export const Product: React.FC = () => {
             <section className={styles.section}>
                 <div className={styles.container}>
                     <div className={`${styles.ctaBlock} reveal`} ref={ctaRef}>
-                        <h2 className={styles.ctaTitle}>¿Tu problema es tan específico que no encaja aquí?</h2>
-                        <p className={styles.ctaSub}>Para eso está nuestra línea de Servicios a Medida. Analizamos tu caso y construimos tu propia herramienta.</p>
+                        <h2 className={styles.ctaTitle}>¿Tu caso necesita algo diferente?</h2>
+                        <p className={styles.ctaSub}>Si ninguno de nuestros productos encaja exactamente, lo construimos a medida. Cuéntanos qué necesitas.</p>
                         <div className={styles.ctaRow}>
-                            <Link to="/contact"><Button variant="primary" size="lg">Cuéntanos qué necesitas</Button></Link>
-                            <Link to="/services"><Button variant="outline" size="lg">Ver Servicios a Medida</Button></Link>
+                            <Link to="/contact"><Button variant="primary" size="lg">Pedir desarrollo a medida</Button></Link>
+                            <Link to="/services"><Button variant="outline" size="lg">Ver servicios</Button></Link>
                         </div>
                     </div>
                 </div>
