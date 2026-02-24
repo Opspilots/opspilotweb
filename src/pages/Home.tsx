@@ -19,20 +19,20 @@ export const Home: React.FC = () => {
                 <div className={styles.heroGrid}>
                     <div className={styles.heroContent}>
                         <h1 className={styles.heroTitle}>
-                            Tu negocio crece.<br />
-                            Tus procesos, <span className="text-gradient">todavía no.</span>
+                            Gestiona tu negocio como las grandes empresas.<br />
+                            <span className="text-gradient">Sin su presupuesto ni su complejidad.</span>
                         </h1>
                         <p className={styles.heroSubtitle}>
-                            Automatizamos lo que te roba tiempo, construimos lo que necesitas
-                            y conectamos las herramientas que ya usas.
-                            Para autónomos, startups y PYMEs en España.
+                            Software propio para gestionar tu empresa, presupuestar en minutos,
+                            analizar tarifas y automatizar lo que te roba tiempo.
+                            O lo construimos a medida si tu caso lo necesita.
                         </p>
                         <div className={styles.ctaGroup}>
                             <Link to="/contact">
                                 <Button variant="primary" size="lg">Cuéntanos qué te frena</Button>
                             </Link>
-                            <Link to="/services">
-                                <Button variant="outline" size="lg">Ver qué hacemos</Button>
+                            <Link to="/soluciones">
+                                <Button variant="outline" size="lg">¿Cuál es tu problema?</Button>
                             </Link>
                         </div>
                     </div>
@@ -66,7 +66,7 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.floatingBadge} ${styles.badge2} anim-float-slow`}>
                             <span className={styles.badgeIcon}>⚡</span>
-                            <span>Procesos que se gestionan solos</span>
+                            <span>Presupuesto en 2 minutos</span>
                         </div>
                     </div>
                 </div>
@@ -126,51 +126,59 @@ export const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* ═══ SECTION 3: NUESTRAS SOLUCIONES ═══ */}
+            {/* ═══ SECTION 3: ENCUENTRA TU SOLUCIÓN ═══ */}
             <section className={styles.solutionsSection}>
                 <div className={styles.container} ref={solutionsRef}>
                     <div className={`${styles.sectionHeader} reveal`}>
-                        <span className={styles.sectionTag}>Nuestras soluciones</span>
-                        <h2 className={styles.sectionTitle}>Dos formas de ayudarte</h2>
+                        <span className={styles.sectionTag}>¿Para quién es OpsPilot?</span>
+                        <h2 className={styles.sectionTitle}>Encuentra tu solución en segundos</h2>
+                        <p style={{ color: 'var(--color-dark-text-muted)', marginTop: 'var(--spacing-4)', maxWidth: '520px', margin: 'var(--spacing-4) auto 0' }}>
+                            Cada negocio tiene su problema. Elige el tuyo y te mostramos exactamente qué tenemos para ti.
+                        </p>
                     </div>
                     <div className={styles.solutionsGrid}>
                         <div className={`${styles.solutionCard} reveal`}>
-                            <div className={styles.solutionIcon}>🎨</div>
-                            <span className={styles.solutionLabel}>Lo construimos juntos</span>
-                            <h3 className={styles.solutionTitle}>Servicios a Medida</h3>
+                            <div className={styles.solutionIcon}>📋</div>
+                            <h3 className={styles.solutionTitle}>Presupuestar y cotizar me roba el día</h3>
                             <p className={styles.solutionText}>
-                                Analizamos tu negocio y construimos exactamente lo que necesitas.
-                                Web, app, CRM, automatización. Con presupuesto cerrado
-                                y sin desaparecer cuando acabamos el proyecto.
+                                Para reformistas, fontaneros, instaladores y cualquier oficio
+                                que necesite generar presupuestos profesionales en minutos.
                             </p>
-                            <ul className={styles.solutionFeatures}>
-                                <li>Web corporativa desde 200€</li>
-                                <li>Apps y automatizaciones desde 500€</li>
-                                <li>Mantenimiento mensual desde 10€/mes</li>
-                                <li>Precio cerrado, sin sorpresas</li>
-                            </ul>
-                            <Link to="/services">
-                                <Button variant="outline" size="md">Explorar Servicios</Button>
+                            <span className={styles.solutionLabel}>Presupuestador Pro · Desde 25€/mes</span>
+                            <Link to="/product#presupuestador">
+                                <Button variant="outline" size="md">Ver solución →</Button>
+                            </Link>
+                        </div>
+                        <div className={`${styles.solutionCard} reveal`}>
+                            <div className={styles.solutionIcon}>⚡</div>
+                            <h3 className={styles.solutionTitle}>Analizo tarifas eléctricas a mano</h3>
+                            <p className={styles.solutionText}>
+                                Para comerciales de energía que necesitan proponer la mejor tarifa
+                                a cada cliente sin perder horas en análisis manuales.
+                            </p>
+                            <span className={styles.solutionLabel}>TarifaOCR · Consultar precio</span>
+                            <Link to="/product#tarifaocr">
+                                <Button variant="outline" size="md">Ver solución →</Button>
                             </Link>
                         </div>
                         <div className={`${styles.solutionCard} ${styles.solutionCardHighlight} reveal`}>
-                            <div className={styles.solutionIcon}>🚀</div>
-                            <span className={styles.solutionLabel}>Listo para usar hoy</span>
-                            <h3 className={styles.solutionTitle}>Nuestros Productos</h3>
+                            <div className={styles.solutionIcon}>🏢</div>
+                            <h3 className={styles.solutionTitle}>Mi empresa se gestiona con Excel y se me escapa todo</h3>
                             <p className={styles.solutionText}>
-                                Software propio desarrollado para problemas específicos donde las herramientas genéricas no llegan. ERP, CRM, presupuestador y herramientas de nicho.
-                                Suscríbete y empieza hoy.
+                                Para PYMEs y autónomos que necesitan control real:
+                                empleados, inventario, ventas, proveedores y analítica en un solo lugar.
                             </p>
-                            <ul className={styles.solutionFeatures}>
-                                <li>ERP para pequeña y mediana empresa</li>
-                                <li>CRM adaptable a tu sector</li>
-                                <li>Presupuestador para reformistas</li>
-                                <li>OCR inteligente para comerciales de energía</li>
-                            </ul>
-                            <Link to="/product">
-                                <Button variant="primary" size="md">Ver Productos</Button>
+                            <span className={styles.solutionLabel}>ERP OpsPilot · Desde 29€/mes</span>
+                            <Link to="/product#erp">
+                                <Button variant="primary" size="md">Ver solución →</Button>
                             </Link>
                         </div>
+                    </div>
+                    <div className={`${styles.solutionsFooter} reveal`} style={{ textAlign: 'center', marginTop: 'var(--spacing-10)' }}>
+                        <p style={{ color: 'var(--color-dark-text-muted)', marginBottom: 'var(--spacing-4)' }}>¿No encuentras tu caso aquí?</p>
+                        <Link to="/soluciones">
+                            <Button variant="outline" size="md">Ver todas las soluciones</Button>
+                        </Link>
                     </div>
                 </div>
             </section>

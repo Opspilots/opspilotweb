@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
@@ -73,7 +73,7 @@ export const Services: React.FC = () => {
                                 </div>
                                 <h3 className={styles.cardTitle}>Apps &amp; Automatización</h3>
                             </div>
-                            <p className={styles.cardText}>¿Cuántas horas pierdes a la semana haciendo cosas que podría hacer una máquina? Construimos o configuramos exactamente lo que necesitas.</p>
+                            <p className={styles.cardText}>¿Tu negocio necesita algo que no existe en el mercado? Lo construimos. Apps, automatizaciones, integraciones o cualquier proceso específico que el software estándar no puede resolver.</p>
                             <ul className={styles.cardFeatures}>
                                 <li>
                                     <span className={styles.featureCheck}>✓</span> Apps web y móvil a medida

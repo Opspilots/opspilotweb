@@ -37,43 +37,47 @@ export const Product: React.FC = () => {
                     <div className={styles.grid}>
                         {[
                             {
+                                id: 'erp',
                                 emoji: '🏢',
                                 name: 'ERP OpsPilot',
-                                desc: 'Gestión completa de tu empresa en un solo lugar: empleados, horarios, calendario, reservas, inventario, proveedores, facturación y analítica básica. Sin sobre-ingeniería, sin curva de aprendizaje imposible.',
+                                desc: 'Gestión completa de tu empresa en un solo lugar: empleados, horarios, calendario, reservas, inventario, proveedores, facturación y analítica básica. El control que tienen las grandes empresas, al alcance de cualquier PYME.',
                                 price: 'Desde 29€/mes',
                                 sector: 'Pequeña y mediana empresa',
-                                cta: 'Probar gratis',
-                                href: '/demo'
+                                cta: 'Solicitar acceso',
+                                href: '/contact'
                             },
                             {
+                                id: 'crm',
                                 emoji: '🎯',
                                 name: 'CRM OpsPilot',
                                 desc: 'Gestión de clientes, seguimientos, pipeline de ventas y comunicaciones en un solo lugar. Adaptable a cómo trabaja tu equipo, no al revés. Porque cada negocio tiene su propia forma de vender.',
                                 price: 'Desde 19€/mes',
                                 sector: 'Cualquier sector',
-                                cta: 'Probar gratis',
-                                href: '/demo'
+                                cta: 'Solicitar acceso',
+                                href: '/contact'
                             },
                             {
+                                id: 'presupuestador',
                                 emoji: '📋',
                                 name: 'Presupuestador Pro',
-                                desc: 'Crea presupuestos profesionales al estilo Presto en minutos. Añade partidas, asigna precios, crea packs reutilizables y envía propuestas que cierran ventas. Diseñado junto a reformistas, para reformistas.',
+                                desc: 'Crea presupuestos profesionales en minutos. Añade partidas, asigna precios, crea packs reutilizables y envía propuestas que cierran ventas. Diseñado junto a reformistas, para reformistas.',
                                 price: 'Desde 25€/mes',
-                                sector: 'Reformas y construcción',
-                                cta: 'Probar gratis',
-                                href: '/demo'
+                                sector: 'Reformas, construcción y oficios',
+                                cta: 'Solicitar acceso',
+                                href: '/contact'
                             },
                             {
+                                id: 'tarifaocr',
                                 emoji: '⚡',
                                 name: 'TarifaOCR',
-                                desc: 'Sube la factura de tu cliente y en segundos tienes la mejor propuesta de tarifa disponible, optimizada por precio final o por tu comisión. Adiós al análisis tarifa por tarifa. Gestiona toda tu cartera desde un solo panel.',
+                                desc: 'Sube la factura de tu cliente y en segundos tienes la mejor propuesta de tarifa disponible, optimizada por precio final o por tu comisión. Gestiona toda tu cartera desde un solo panel. Adiós al análisis manual.',
                                 price: 'Consultar precio',
-                                sector: 'Comerciales de energía',
+                                sector: 'Comerciales de energía eléctrica',
                                 cta: 'Solicitar información',
                                 href: '/contact'
                             },
                         ].map((p) => (
-                            <div key={p.name} className={`${styles.productCard} reveal`}>
+                            <div key={p.name} id={p.id} className={`${styles.productCard} reveal`}>
                                 <span className={styles.productIcon}>{p.emoji}</span>
                                 <span className={styles.productSector}>{p.sector}</span>
                                 <h3 className={styles.productName}>{p.name}</h3>

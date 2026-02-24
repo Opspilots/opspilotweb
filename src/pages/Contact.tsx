@@ -103,7 +103,7 @@ export const Contact: React.FC = () => {
                                         <span>📍</span>
                                         <div>
                                             <strong>Ubicación</strong>
-                                            <p>Teletrabajamos desde España para todo el mundo.</p>
+                                            <p>Teletrabajamos desde España. Atendemos todo el territorio nacional.</p>
                                         </div>
                                     </div>
                                 </div>

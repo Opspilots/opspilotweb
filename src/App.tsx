@@ -8,6 +8,7 @@ import { Pricing } from './pages/Pricing';
 import { Resources } from './pages/Resources';
 import { Contact } from './pages/Contact';
 import { Demo } from './pages/Demo';
+import { Soluciones } from './pages/Soluciones';
 import './index.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Layout>
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/soluciones" element={<Soluciones />} />
                     <Route path="/product" element={<Product />} />
                     <Route path="/services" element={<Services />} />
                     <Route path="/cases" element={<Cases />} />

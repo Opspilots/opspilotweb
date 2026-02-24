@@ -52,13 +52,13 @@ export const Demo: React.FC = () => {
                                     <label htmlFor="demoInterest">¿Cuál es tu mayor problema ahora mismo?</label>
                                     <select id="demoInterest" required>
                                         <option value="">Selecciona una opción</option>
-                                        <option value="tiempo">Pierdo demasiado tiempo en tareas repetitivas</option>
-                                        <option value="clientes">Pierdo clientes por falta de seguimiento</option>
-                                        <option value="presupuestos">Hacer presupuestos me lleva demasiado tiempo</option>
-                                        <option value="energia">Gestiono tarifas eléctricas y facturas a mano</option>
-                                        <option value="herramientas">Mis herramientas no se conectan entre sí</option>
-                                        <option value="web">Mi web no genera negocio</option>
-                                        <option value="other">No sé por dónde empezar, necesito orientación</option>
+                                        <option value="presupuestos">Crear presupuestos me lleva demasiado tiempo</option>
+                                        <option value="energia">Analizo tarifas eléctricas manualmente</option>
+                                        <option value="erp">Gestiono mi empresa con Excel y se me escapa todo</option>
+                                        <option value="crm">Pierdo clientes por falta de seguimiento</option>
+                                        <option value="web">No tengo web o la que tengo no genera nada</option>
+                                        <option value="custom">Necesito una app o automatización a medida</option>
+                                        <option value="orientacion">No sé por dónde empezar, necesito orientación</option>
                                     </select>
                                 </div>
                                 <div className={styles.field}>

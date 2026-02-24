@@ -25,13 +25,12 @@ export const Navbar: React.FC = () => {
                     {/* Desktop Menu */}
                     <div className={styles.desktopMenu}>
                         <Link to="/" className={styles.navLink}>Inicio</Link>
+                        <Link to="/soluciones" className={styles.navLink}>Soluciones</Link>
                         <Link to="/services" className={styles.navLink}>Servicios</Link>
                         <Link to="/product" className={styles.navLink}>Productos</Link>
                         <Link to="/cases" className={styles.navLink}>Casos de Éxito</Link>
-                        <Link to="/pricing" className={styles.navLink}>Precios</Link>
-                        <Link to="/resources" className={styles.navLink}>Recursos</Link>
-                        <Link to="/contact">
-                            <Button variant="primary" size="sm">Hablemos</Button>
+                        <Link to="/demo">
+                            <Button variant="primary" size="sm">Diagnóstico gratuito</Button>
                         </Link>
                     </div>
 
@@ -49,15 +48,14 @@ export const Navbar: React.FC = () => {
             {/* Mobile Menu */}
             <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
                 <Link to="/" className={styles.mobileNavLink} onClick={toggleMenu}>Inicio</Link>
+                <Link to="/soluciones" className={styles.mobileNavLink} onClick={toggleMenu}>Soluciones</Link>
                 <Link to="/services" className={styles.mobileNavLink} onClick={toggleMenu}>Servicios</Link>
                 <Link to="/product" className={styles.mobileNavLink} onClick={toggleMenu}>Productos</Link>
                 <Link to="/cases" className={styles.mobileNavLink} onClick={toggleMenu}>Casos de Éxito</Link>
-                <Link to="/pricing" className={styles.mobileNavLink} onClick={toggleMenu}>Precios</Link>
-                <Link to="/resources" className={styles.mobileNavLink} onClick={toggleMenu}>Recursos</Link>
                 <Link to="/contact" className={styles.mobileNavLink} onClick={toggleMenu}>Contacto</Link>
                 <div className={styles.mobileCta}>
-                    <Link to="/contact" onClick={toggleMenu} style={{ width: '100%' }}>
-                        <Button variant="primary" fullWidth>Hablemos</Button>
+                    <Link to="/demo" onClick={toggleMenu} style={{ width: '100%' }}>
+                        <Button variant="primary" fullWidth>Diagnóstico gratuito</Button>
                     </Link>
                 </div>
             </div>
