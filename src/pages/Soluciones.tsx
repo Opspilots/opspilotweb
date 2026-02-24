@@ -4,9 +4,11 @@ import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import styles from './Soluciones.module.css';
 
+import { ClipboardList, Zap, Building2, Target, Globe, Settings } from 'lucide-react';
+
 const filtros = [
     {
-        icon: '📋',
+        icon: <ClipboardList size={28} />,
         title: 'Crear presupuestos me lleva demasiado tiempo',
         who: 'Reformistas, fontaneros, electricistas, instaladores y cualquier oficio',
         solution: 'Presupuestador Pro — partidas, precios unitarios y packs reutilizables',
@@ -14,7 +16,7 @@ const filtros = [
         href: '/product#presupuestador',
     },
     {
-        icon: '⚡',
+        icon: <Zap size={28} />,
         title: 'Analizo tarifas eléctricas a mano cliente por cliente',
         who: 'Comerciales de energía eléctrica y gas',
         solution: 'TarifaOCR — sube la factura, obtén la mejor propuesta en segundos',
@@ -22,7 +24,7 @@ const filtros = [
         href: '/product#tarifaocr',
     },
     {
-        icon: '🏢',
+        icon: <Building2 size={28} />,
         title: 'Gestiono mi empresa con Excel y se me escapa todo',
         who: 'PYMEs y autónomos de cualquier sector',
         solution: 'ERP OpsPilot — empleados, inventario, proveedores, facturación y analítica',
@@ -30,7 +32,7 @@ const filtros = [
         href: '/product#erp',
     },
     {
-        icon: '🎯',
+        icon: <Target size={28} />,
         title: 'Pierdo clientes porque no les hago seguimiento',
         who: 'Cualquier negocio que vende servicios o productos',
         solution: 'CRM OpsPilot — pipeline, seguimientos y comunicaciones centralizadas',
@@ -38,7 +40,7 @@ const filtros = [
         href: '/product#crm',
     },
     {
-        icon: '🌐',
+        icon: <Globe size={28} />,
         title: 'No tengo web o la que tengo no me genera nada',
         who: 'Autónomos, negocios locales y PYMEs sin presencia digital',
         solution: 'Web corporativa desde 200€, diseñada para convertir visitas en clientes',
@@ -46,7 +48,7 @@ const filtros = [
         href: '/services#web',
     },
     {
-        icon: '⚙️',
+        icon: <Settings size={28} />,
         title: 'Lo mío es específico y no encuentro nada que encaje',
         who: 'Cualquiera con un proceso único que el software estándar no resuelve',
         solution: 'Desarrollo a medida — analizamos tu caso y construimos lo que necesitas',

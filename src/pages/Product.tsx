@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { TrendingUp, Target, Home, Bath, Zap, ArrowDown, CircleDollarSign, Building2, ClipboardList, Rocket, Banknote, RefreshCw, ShieldCheck } from 'lucide-react';
 import styles from './Product.module.css';
 
 // Mockup Components for each product
@@ -37,7 +38,7 @@ const ERPMockup = () => (
             </div>
         </div>
         <div className={`${styles.floatingBadge} ${styles.badgeERP}`}>
-            <span>📈</span> Control total
+            <TrendingUp size={16} /> Control total
         </div>
     </div>
 );
@@ -61,7 +62,7 @@ const CRMMockup = () => (
             </div>
         </div>
         <div className={`${styles.floatingBadge} ${styles.badgeCRM}`}>
-            <span>🎯</span> +30% Conversión
+            <Target size={16} /> +30% Conversión
         </div>
     </div>
 );
@@ -73,14 +74,14 @@ const PresupuestadorMockup = () => (
             <div className={styles.phoneContent}>
                 <div className={styles.quoteHeader}>PRESUPUESTO #0042</div>
                 <div className={styles.quoteCard}>
-                    <div className={styles.quoteImage}>🏠</div>
+                    <div className={styles.quoteImage}><Home size={20} /></div>
                     <div className={styles.quoteInfo}>
                         <div className={styles.quoteTitle}>Reforma Cocina</div>
                         <div className={styles.quotePrice}>€4.200</div>
                     </div>
                 </div>
                 <div className={styles.quoteCard}>
-                    <div className={styles.quoteImage}>🛁</div>
+                    <div className={styles.quoteImage}><Bath size={20} /></div>
                     <div className={styles.quoteInfo}>
                         <div className={styles.quoteTitle}>Reforma Baño</div>
                         <div className={styles.quotePrice}>€2.800</div>
@@ -91,7 +92,7 @@ const PresupuestadorMockup = () => (
                     <span className={styles.quoteTotalAmount}>€7.000</span>
                 </div>
                 <div className={`${styles.floatingBadge} ${styles.badgePresupuesto}`}>
-                    <span>⚡</span> Enviado en 2 min
+                    <Zap size={16} /> Enviado en 2 min
                 </div>
             </div>
         </div>
@@ -107,14 +108,14 @@ const TarifaOCRMockup = () => (
                 <div className={styles.facturaTitle}>Factura Actual (Iberdrola)</div>
                 <div className={styles.facturaPrice}>150 €/mes</div>
             </div>
-            <div className={styles.scanArrow}>⬇️</div>
+            <div className={styles.scanArrow}><ArrowDown size={24} /></div>
             <div className={styles.facturaNueva}>
                 <div className={styles.facturaTitle}>Propuesta Óptima (Endesa)</div>
                 <div className={styles.facturaPriceSuccess}>120 €/mes</div>
             </div>
         </div>
         <div className={`${styles.floatingBadge} ${styles.badgeTarifa}`}>
-            <span>💸</span> Ahorro del 20%
+            <CircleDollarSign size={16} /> Ahorro del 20%
         </div>
     </div>
 );
@@ -128,7 +129,7 @@ export const Product: React.FC = () => {
     const products = [
         {
             id: 'erp',
-            emoji: '🏢',
+            emoji: <Building2 className="icon-md" />,
             name: 'ERP OpsPilot',
             desc: 'Gestión completa de tu empresa en un solo lugar: empleados, horarios, calendario, reservas, inventario, proveedores, facturación y analítica básica. El control que tienen las grandes empresas, al alcance de cualquier PYME.',
             price: 'Desde 29€/mes',
@@ -139,7 +140,7 @@ export const Product: React.FC = () => {
         },
         {
             id: 'crm',
-            emoji: '🎯',
+            emoji: <Target className="icon-md" />,
             name: 'CRM OpsPilot',
             desc: 'Gestión de clientes, seguimientos, pipeline de ventas y comunicaciones en un solo lugar. Adaptable a cómo trabaja tu equipo, no al revés. Porque cada negocio tiene su propia forma de vender.',
             price: 'Desde 19€/mes',
@@ -150,7 +151,7 @@ export const Product: React.FC = () => {
         },
         {
             id: 'presupuestador',
-            emoji: '📋',
+            emoji: <ClipboardList className="icon-md" />,
             name: 'Presupuestador Pro',
             desc: 'Crea presupuestos profesionales en minutos. Añade partidas, asigna precios, crea packs reutilizables y envía propuestas que cierran ventas. Diseñado junto a reformistas, para reformistas.',
             price: 'Desde 25€/mes',
@@ -161,7 +162,7 @@ export const Product: React.FC = () => {
         },
         {
             id: 'tarifaocr',
-            emoji: '⚡',
+            emoji: <Zap className="icon-md" />,
             name: 'TarifaOCR',
             desc: 'Sube la factura de tu cliente y en segundos tienes la mejor propuesta de tarifa disponible, optimizada por precio final o por tu comisión. Gestiona toda tu cartera desde un solo panel. Adiós al análisis manual.',
             price: 'Consultar precio',
@@ -225,10 +226,10 @@ export const Product: React.FC = () => {
                     </div>
                     <div className={styles.whyGrid}>
                         {[
-                            { icon: '🚀', title: 'Funciona desde el primer día', desc: 'Sin meses de desarrollo ni configuraciones infinitas. En 48 horas estás gestionando con él.' },
-                            { icon: '💰', title: 'Coste fijo y predecible', desc: 'Sabes exactamente lo que pagas cada mes. Sin sorpresas, sin costes ocultos, sin letra pequeña.' },
-                            { icon: '🔄', title: 'Siempre actualizado', desc: 'Mejoramos en base a lo que piden los usuarios. Las actualizaciones llegan solas, incluidas en tu suscripción.' },
-                            { icon: '🛡️', title: 'Soporte real incluido', desc: 'Personas reales que responden. No un chatbot, no un PDF de preguntas frecuentes.' },
+                            { icon: <Rocket size={24} />, title: 'Funciona desde el primer día', desc: 'Sin meses de desarrollo ni configuraciones infinitas. En 48 horas estás gestionando con él.' },
+                            { icon: <Banknote size={24} />, title: 'Coste fijo y predecible', desc: 'Sabes exactamente lo que pagas cada mes. Sin sorpresas, sin costes ocultos, sin letra pequeña.' },
+                            { icon: <RefreshCw size={24} />, title: 'Siempre actualizado', desc: 'Mejoramos en base a lo que piden los usuarios. Las actualizaciones llegan solas, incluidas en tu suscripción.' },
+                            { icon: <ShieldCheck size={24} />, title: 'Soporte real incluido', desc: 'Personas reales que responden. No un chatbot, no un PDF de preguntas frecuentes.' },
                         ].map((a) => (
                             <div key={a.title} className={`${styles.whyCard} reveal`}>
                                 <span className={styles.whyEmoji}>{a.icon}</span>

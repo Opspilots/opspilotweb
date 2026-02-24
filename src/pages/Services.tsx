@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import styles from './Services.module.css';
+import { Palette, Zap, BarChart3, Handshake, TrendingUp, MessageSquare } from 'lucide-react';
 
 export const Services: React.FC = () => {
     const servicesRef = useScrollReveal<HTMLDivElement>({ stagger: true });
@@ -39,7 +40,7 @@ export const Services: React.FC = () => {
                         <div className={`${styles.serviceCard} reveal`}>
                             <div className={styles.cardHeader}>
                                 <div className={styles.cardIcon}>
-                                    <span style={{ fontSize: '1.5rem' }}>🎨</span>
+                                    <Palette size={24} />
                                 </div>
                                 <h3 className={styles.cardTitle}>Branding &amp; Web</h3>
                             </div>
@@ -69,7 +70,7 @@ export const Services: React.FC = () => {
                         <div className={`${styles.serviceCard} ${styles.serviceCardHighlight} reveal`}>
                             <div className={styles.cardHeader}>
                                 <div className={styles.cardIcon}>
-                                    <span style={{ fontSize: '1.5rem' }}>⚡</span>
+                                    <Zap size={24} />
                                 </div>
                                 <h3 className={styles.cardTitle}>Apps &amp; Automatización</h3>
                             </div>
@@ -109,7 +110,7 @@ export const Services: React.FC = () => {
                     <div className={styles.valueGrid}>
                         <div className={`${styles.valueCard} reveal`}>
                             <div className={styles.valueIcon}>
-                                <span style={{ fontSize: '1.5rem' }}>📊</span>
+                                <BarChart3 className="icon-md" />
                             </div>
                             <h4 className={styles.valueTitle}>Precio cerrado siempre</h4>
                             <p className={styles.valueText}>
@@ -119,7 +120,7 @@ export const Services: React.FC = () => {
                         </div>
                         <div className={`${styles.valueCard} reveal`}>
                             <div className={styles.valueIcon}>
-                                <span style={{ fontSize: '1.5rem' }}>🤝</span>
+                                <Handshake className="icon-md" />
                             </div>
                             <h4 className={styles.valueTitle}>Somos tu equipo, no un proveedor</h4>
                             <p className={styles.valueText}>
@@ -129,7 +130,7 @@ export const Services: React.FC = () => {
                         </div>
                         <div className={`${styles.valueCard} reveal`}>
                             <div className={styles.valueIcon}>
-                                <span style={{ fontSize: '1.5rem' }}>📈</span>
+                                <TrendingUp className="icon-md" />
                             </div>
                             <h4 className={styles.valueTitle}>Empezamos donde estás tú</h4>
                             <p className={styles.valueText}>
@@ -182,7 +183,7 @@ export const Services: React.FC = () => {
                         <div className={styles.ctaButtons}>
                             <Link to="/contact"><Button variant="primary" size="lg">Reservar diagnóstico gratuito</Button></Link>
                             <a href="https://wa.me/34640756126" target="_blank" rel="noopener noreferrer">
-                                <Button variant="outline" size="lg">💬 WhatsApp directo</Button>
+                                <Button variant="outline" size="lg"><MessageSquare size={20} style={{ marginRight: '8px' }} /> WhatsApp directo</Button>
                             </a>
                         </div>
                     </div>

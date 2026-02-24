@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { ClipboardList, Zap, Building2, Home as HomeIcon, Bath, MessageSquare } from 'lucide-react';
 import styles from './Home.module.css';
 
 export const Home: React.FC = () => {
@@ -138,7 +139,7 @@ export const Home: React.FC = () => {
                     </div>
                     <div className={styles.solutionsGrid}>
                         <div className={`${styles.solutionCard} reveal`}>
-                            <div className={styles.solutionIcon}>📋</div>
+                            <div className={styles.solutionIcon}><ClipboardList size={40} /></div>
                             <h3 className={styles.solutionTitle}>Presupuestar y cotizar me roba el día</h3>
                             <p className={styles.solutionText}>
                                 Para reformistas, fontaneros, instaladores y cualquier oficio
@@ -150,7 +151,7 @@ export const Home: React.FC = () => {
                             </Link>
                         </div>
                         <div className={`${styles.solutionCard} reveal`}>
-                            <div className={styles.solutionIcon}>⚡</div>
+                            <div className={styles.solutionIcon}><Zap size={40} /></div>
                             <h3 className={styles.solutionTitle}>Analizo tarifas eléctricas a mano</h3>
                             <p className={styles.solutionText}>
                                 Para comerciales de energía que necesitan proponer la mejor tarifa
@@ -162,7 +163,7 @@ export const Home: React.FC = () => {
                             </Link>
                         </div>
                         <div className={`${styles.solutionCard} ${styles.solutionCardHighlight} reveal`}>
-                            <div className={styles.solutionIcon}>🏢</div>
+                            <div className={styles.solutionIcon}><Building2 size={40} /></div>
                             <h3 className={styles.solutionTitle}>Mi empresa se gestiona con Excel y se me escapa todo</h3>
                             <p className={styles.solutionText}>
                                 Para PYMEs y autónomos que necesitan control real:
@@ -271,21 +272,25 @@ export const Home: React.FC = () => {
                                     </div>
                                     <div className={styles.phoneContent}>
                                         <div className={styles.reformCard}>
-                                            <div className={styles.reformImage}></div>
+                                            <div className={styles.reformImage}>
+                                                <HomeIcon size={32} opacity={0.5} color="#fff" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+                                            </div>
                                             <div className={styles.reformInfo}>
                                                 <div className={styles.reformTitle}>Reforma Cocina</div>
                                                 <div className={styles.reformPrice}>€4.200</div>
                                             </div>
                                         </div>
                                         <div className={styles.reformCard}>
-                                            <div className={`${styles.reformImage} ${styles.reform2}`}></div>
+                                            <div className={`${styles.reformImage} ${styles.reform2}`}>
+                                                <Bath size={32} opacity={0.5} color="#fff" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+                                            </div>
                                             <div className={styles.reformInfo}>
                                                 <div className={styles.reformTitle}>Reforma Baño</div>
                                                 <div className={styles.reformPrice}>€2.800</div>
                                             </div>
                                         </div>
                                         <div className={`${styles.whatsappBadge} anim-border-glow`}>
-                                            <span>💬</span> 3 citas hoy
+                                            <MessageSquare size={16} /> 3 citas hoy
                                         </div>
                                     </div>
                                 </div>

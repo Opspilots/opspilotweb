@@ -726,22 +726,8 @@
     position: relative;
 }
 
-.reformImage::after {
-    content: '🏠';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2rem;
-    opacity: 0.5;
-}
-
 .reform2 {
     background: linear-gradient(135deg, rgba(57, 206, 134, 0.1) 0%, rgba(100, 130, 220, 0.1) 50%, rgba(22, 33, 48, 0.5) 100%);
-}
-
-.reform2::after {
-    content: '🛁';
 }
 
 .reformInfo {

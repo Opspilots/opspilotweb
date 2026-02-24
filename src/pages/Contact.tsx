@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import styles from './Contact.module.css';
+import { Mail, MessageSquare, MapPin } from 'lucide-react';
 
 export const Contact: React.FC = () => {
     const contactRef = useScrollReveal<HTMLDivElement>({ stagger: true });
@@ -86,21 +87,21 @@ export const Contact: React.FC = () => {
                                 <h3>Contacto directo</h3>
                                 <div className={styles.methods}>
                                     <div className={styles.method}>
-                                        <span>📧</span>
+                                        <span><Mail className="icon-md" /></span>
                                         <div>
                                             <strong>Email</strong>
                                             <p>opspilot.contact@gmail.com</p>
                                         </div>
                                     </div>
                                     <div className={styles.method}>
-                                        <span>💬</span>
+                                        <span><MessageSquare className="icon-md" /></span>
                                         <div>
                                             <strong>WhatsApp</strong>
                                             <p>+34 640 75 61 26</p>
                                         </div>
                                     </div>
                                     <div className={styles.method}>
-                                        <span>📍</span>
+                                        <span><MapPin className="icon-md" /></span>
                                         <div>
                                             <strong>Ubicación</strong>
                                             <p>Teletrabajamos desde España. Atendemos todo el territorio nacional.</p>
@@ -118,7 +119,7 @@ export const Contact: React.FC = () => {
                                     rel="noopener noreferrer"
                                 >
                                     <Button variant="primary" fullWidth>
-                                        💬 Escribir por WhatsApp
+                                        <MessageSquare size={20} style={{ marginRight: '8px' }} /> Escribir por WhatsApp
                                     </Button>
                                 </a>
                             </div>
