@@ -182,6 +182,7 @@ export const Home: React.FC = () => {
                 <div className={styles.heroNoise} aria-hidden="true" />
                 <div className={styles.heroSpotlight} ref={spotlightRef} aria-hidden="true" />
 
+                <div className={styles.heroInner}>
                 <div className={styles.heroContentCentered}>
                     <h1 className={styles.heroTitle}>
                         <span className={styles.heroLine}>Construimos software</span>
@@ -220,6 +221,7 @@ export const Home: React.FC = () => {
                             Sin compromiso
                         </li>
                     </ul>
+                </div>
                 </div>
             </section>
 
