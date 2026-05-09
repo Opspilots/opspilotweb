@@ -49,7 +49,6 @@ jobs:
     name: Deploy to VPS
     runs-on: ubuntu-latest
     needs: build
-    environment: production
     steps:
       - name: Download dist artifact
         uses: actions/download-artifact@v4
