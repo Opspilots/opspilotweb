@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
+import { ROUTES } from '../lib/routes';
 import sys from '../styles/page-system.module.css';
 import styles from './Cases.module.css';
 
@@ -118,8 +119,8 @@ export const Cases: React.FC = () => {
                             por ti. Sin compromiso.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to="/contacto"><Button variant="primary" size="lg">Reservar diagnóstico</Button></Link>
-                            <Link to="/servicios"><Button variant="outline" size="lg">Ver servicios</Button></Link>
+                            <Link to={ROUTES.contacto}><Button variant="primary" size="lg">Reservar diagnóstico</Button></Link>
+                            <Link to={ROUTES.servicios}><Button variant="outline" size="lg">Ver servicios</Button></Link>
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Logo } from './Logo';
+import { ROUTES } from '../../lib/routes';
 import styles from './Navbar.module.css';
 
 export const Navbar: React.FC = () => {
@@ -9,7 +10,7 @@ export const Navbar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { pathname } = useLocation();
 
-    const isHomePage = pathname === '/';
+    const isHomePage = pathname === ROUTES.home;
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 12);
@@ -34,17 +35,20 @@ export const Navbar: React.FC = () => {
         <>
             <nav className={`${styles.navbar} ${isOpaque ? styles.scrolled : ''}`}>
                 <div className={styles.container}>
-                    <Link to="/" className={styles.logo}>
+                    <Link to={ROUTES.home} className={styles.logo}>
                         <Logo size={50} />
                         OpsPilot
                     </Link>
 
                     <div className={styles.desktopMenu}>
-                        <NavLink to="/" end className={navLinkClass}>Inicio</NavLink>
-                        <NavLink to="/soluciones" className={navLinkClass}>Soluciones</NavLink>
-                        <NavLink to="/servicios" className={navLinkClass}>Servicios</NavLink>
-                        <NavLink to="/casos" className={navLinkClass}>Casos de Éxito</NavLink>
-                        <Link to="/contacto">
+                        <NavLink to={ROUTES.home} end className={navLinkClass}>Inicio</NavLink>
+                        <NavLink to={ROUTES.productos} className={navLinkClass}>Productos</NavLink>
+                        <NavLink to={ROUTES.soluciones} className={navLinkClass}>Soluciones</NavLink>
+                        <NavLink to={ROUTES.servicios} className={navLinkClass}>Servicios</NavLink>
+                        <NavLink to={ROUTES.casos} className={navLinkClass}>Casos de Éxito</NavLink>
+                        <NavLink to={ROUTES.precios} className={navLinkClass}>Precios</NavLink>
+                        <Link to={ROUTES.contacto}>
+
                             <Button variant="primary" size="sm">Diagnóstico gratuito</Button>
                         </Link>
                     </div>
@@ -60,13 +64,17 @@ export const Navbar: React.FC = () => {
             </nav>
 
             <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
-                <NavLink to="/" end className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Inicio</NavLink>
-                <NavLink to="/soluciones" className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Soluciones</NavLink>
-                <NavLink to="/servicios" className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Servicios</NavLink>
-                <NavLink to="/casos" className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Casos de Éxito</NavLink>
-                <NavLink to="/contacto" className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Contacto</NavLink>
+                <NavLink to={ROUTES.home} end className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Inicio</NavLink>
+                <NavLink to={ROUTES.productos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Productos</NavLink>
+                <NavLink to={ROUTES.soluciones} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Soluciones</NavLink>
+                <NavLink to={ROUTES.servicios} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Servicios</NavLink>
+                <NavLink to={ROUTES.casos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Casos de Éxito</NavLink>
+                <NavLink to={ROUTES.precios} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Precios</NavLink>
+                <NavLink to={ROUTES.recursos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Recursos</NavLink>
+                <NavLink to={ROUTES.contacto} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Contacto</NavLink>
                 <div className={styles.mobileCta}>
-                    <Link to="/contacto" onClick={() => setIsMenuOpen(false)} style={{ width: '100%' }}>
+                    <Link to={ROUTES.contacto} onClick={() => setIsMenuOpen(false)} style={{ width: '100%' }}>
+
                         <Button variant="primary" fullWidth>Diagnóstico gratuito</Button>
                     </Link>
                 </div>

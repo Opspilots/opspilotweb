@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 import { Logo } from './Logo';
 import { Button } from '../ui/Button';
+import { ROUTES } from '../../lib/routes';
 
 export const Footer: React.FC = () => {
     return (
@@ -49,17 +50,19 @@ export const Footer: React.FC = () => {
 
                     {/* Links */}
                     <div className={styles.links}>
-                        <h4 className={styles.heading}>Navegación</h4>
-                        <Link to="/" className={styles.link}>Inicio</Link>
-                        <Link to="/soluciones" className={styles.link}>Soluciones</Link>
-                        <Link to="/servicios" className={styles.link}>Servicios</Link>
+                        <h4 className={styles.heading}>Producto</h4>
+                        <Link to={ROUTES.productos} className={styles.link}>Productos verticales</Link>
+                        <Link to={ROUTES.soluciones} className={styles.link}>Soluciones por sector</Link>
+                        <Link to={ROUTES.servicios} className={styles.link}>Servicios a medida</Link>
+                        <Link to={ROUTES.precios} className={styles.link}>Precios</Link>
                     </div>
 
                     <div className={styles.links}>
-                        <h4 className={styles.heading}>Más</h4>
-                        <Link to="/casos" className={styles.link}>Casos de Éxito</Link>
-                        <Link to="/contacto" className={styles.link}>Contacto</Link>
-                        <Link to="/contacto" className={styles.link}>Diagnóstico gratuito</Link>
+                        <h4 className={styles.heading}>Empresa</h4>
+                        <Link to={ROUTES.casos} className={styles.link}>Casos de Éxito</Link>
+                        <Link to={ROUTES.recursos} className={styles.link}>Recursos</Link>
+                        <Link to={ROUTES.contacto} className={styles.link}>Contacto</Link>
+                        <Link to={ROUTES.contacto} className={styles.link}>Diagnóstico gratuito</Link>
                     </div>
                 </div>
 

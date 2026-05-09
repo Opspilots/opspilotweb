@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { Check } from 'lucide-react';
+import { ROUTES } from '../lib/routes';
 import sys from '../styles/page-system.module.css';
 import styles from './Pricing.module.css';
 
@@ -81,7 +82,7 @@ export const Pricing: React.FC = () => {
                             <p className={styles.customFooterText}>
                                 Mantenimiento mensual desde <strong>10&nbsp;€/mes</strong> — opcional según el caso.
                             </p>
-                            <Link to="/contacto">
+                            <Link to={ROUTES.contacto}>
                                 <Button variant="primary" size="lg">Pedir presupuesto cerrado</Button>
                             </Link>
                         </div>
@@ -118,7 +119,7 @@ export const Pricing: React.FC = () => {
                                 <li><span className={styles.check}><Check size={16} strokeWidth={2} /></span>Actualizaciones incluidas</li>
                                 <li><span className={styles.check}><Check size={16} strokeWidth={2} /></span>Sin permanencia</li>
                             </ul>
-                            <Link to="/contacto"><Button variant="outline" fullWidth>Probar gratis</Button></Link>
+                            <Link to={ROUTES.contacto}><Button variant="outline" fullWidth>Probar gratis</Button></Link>
                         </div>
 
                         <div className={`${styles.card} ${styles.cardPro} reveal`}>
@@ -139,7 +140,7 @@ export const Pricing: React.FC = () => {
                                 <li><span className={styles.check}><Check size={16} strokeWidth={2} /></span>Soporte prioritario</li>
                                 <li><span className={styles.check}><Check size={16} strokeWidth={2} /></span>Onboarding incluido</li>
                             </ul>
-                            <Link to="/contacto"><Button variant="primary" fullWidth>Empezar ahora</Button></Link>
+                            <Link to={ROUTES.contacto}><Button variant="primary" fullWidth>Empezar ahora</Button></Link>
                         </div>
 
                         <div className={`${styles.card} reveal`}>
@@ -158,7 +159,7 @@ export const Pricing: React.FC = () => {
                                 <li><span className={styles.check}><Check size={16} strokeWidth={2} /></span>Account manager dedicado</li>
                                 <li><span className={styles.check}><Check size={16} strokeWidth={2} /></span>SLA garantizado</li>
                             </ul>
-                            <Link to="/contacto"><Button variant="outline" fullWidth>Hablar con nosotros</Button></Link>
+                            <Link to={ROUTES.contacto}><Button variant="outline" fullWidth>Hablar con nosotros</Button></Link>
                         </div>
                     </div>
                 </div>
@@ -202,7 +203,7 @@ export const Pricing: React.FC = () => {
                             con plazo y alcance.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to="/contacto"><Button variant="primary" size="lg">Pedir presupuesto</Button></Link>
+                            <Link to={ROUTES.contacto}><Button variant="primary" size="lg">Pedir presupuesto</Button></Link>
                         </div>
                     </div>
                 </div>

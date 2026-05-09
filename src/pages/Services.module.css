@@ -1,44 +1,33 @@
 /* ═══════════════════════════════════════════
-   Services — específicos
+   Services — grid de servicios y valores
    ═══════════════════════════════════════════ */
-
-.servicesSection {
-    padding: var(--space-section-loose) 0;
-}
 
 .servicesGrid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--spacing-1);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-2xl);
-    overflow: hidden;
-    background: var(--color-border-subtle);
+    gap: var(--spacing-6);
 }
 
 @media (min-width: 700px) {
     .servicesGrid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media (min-width: 1024px) {
-    .servicesGrid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 .serviceCard {
-    padding: var(--spacing-10) var(--spacing-8);
-    background: var(--color-bg-elevated);
-    transition: background var(--transition-normal);
-    position: relative;
     display: flex;
     flex-direction: column;
-}
-
-.serviceCard:hover {
-    background: var(--color-bg-raised);
+    gap: var(--spacing-5);
+    padding: var(--spacing-10) var(--spacing-9);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    transition:
+        background var(--transition-normal),
+        border-color var(--transition-normal),
+        transform var(--transition-normal);
+    position: relative;
+    overflow: hidden;
 }
 
 .serviceCard::before {
@@ -54,101 +43,24 @@
     transition: transform var(--transition-normal);
 }
 
+.serviceCard:hover {
+    background: var(--color-bg-raised);
+    border-color: var(--color-border-mint);
+    transform: translateY(-3px);
+}
+
 .serviceCard:hover::before {
     transform: scaleX(1);
 }
 
-.serviceIcon {
-    width: 44px;
-    height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--spacing-7);
-    transition: transform var(--transition-normal);
-}
-
-.serviceCard:hover .serviceIcon {
-    transform: scale(1.06);
-}
-
-.serviceTitle {
-    font-family: var(--font-family-display);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-strong);
-    margin-bottom: var(--spacing-4);
-    letter-spacing: var(--tracking-tight);
-    line-height: 1.2;
-}
-
-.serviceText {
-    font-size: var(--font-size-base);
-    color: var(--color-text-muted);
-    line-height: 1.65;
-    margin-bottom: var(--spacing-6);
-}
-
-.serviceFeatures {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
-}
-
-.serviceFeatures li {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-subtle);
-    letter-spacing: var(--tracking-wide);
-    padding-left: var(--spacing-4);
-    position: relative;
-}
-
-.serviceFeatures li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: var(--color-mint);
-    font-weight: var(--font-weight-bold);
-}
-
-/* ═══════════════════════════════════════════
-   Compromisos
-   ═══════════════════════════════════════════ */
-
-.valueGrid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacing-7);
-}
-
-@media (min-width: 768px) {
-    .valueGrid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-.valueCard {
-    padding: var(--spacing-10) var(--spacing-8);
-    background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-2xl);
-    transition: border-color var(--transition-normal), transform var(--transition-normal);
-}
-
-.valueCard:hover {
+.serviceCardHighlight {
+    background: linear-gradient(180deg,
+        rgba(57, 206, 134, 0.06) 0%,
+        var(--color-bg-raised) 100%);
     border-color: var(--color-border-mint);
-    transform: translateY(-2px);
 }
 
-.valueIcon {
+.cardIcon {
     width: 48px;
     height: 48px;
     display: inline-flex;
@@ -158,7 +70,103 @@
     background: var(--color-mint-soft);
     border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-lg);
-    margin-bottom: var(--spacing-6);
+}
+
+.cardTitle {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-strong);
+    line-height: 1.15;
+    letter-spacing: var(--tracking-tight);
+    text-wrap: balance;
+    margin: 0;
+}
+
+.cardText {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    line-height: 1.65;
+    margin: 0;
+}
+
+.cardFeatures {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.cardFeatures li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+.featureCheck {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    background: var(--color-mint-soft);
+    color: var(--color-mint);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════
+   Valores
+   ═══════════════════════════════════════════ */
+
+.valueGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+}
+
+@media (min-width: 768px) {
+    .valueGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.valueCard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    padding: var(--spacing-9) var(--spacing-8);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    transition:
+        border-color var(--transition-normal),
+        transform var(--transition-normal);
+}
+
+.valueCard:hover {
+    border-color: var(--color-border-mint);
+    transform: translateY(-3px);
+}
+
+.valueIcon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mint);
+    background: var(--color-mint-soft);
+    border: 1px solid var(--color-border-mint);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-2);
 }
 
 .valueTitle {
@@ -166,13 +174,14 @@
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-strong);
-    margin-bottom: var(--spacing-3);
-    letter-spacing: var(--tracking-tight);
     line-height: 1.25;
+    letter-spacing: var(--tracking-tight);
+    margin: 0;
 }
 
 .valueText {
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
     line-height: 1.65;
+    margin: 0;
 }

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
+import { ROUTES } from '../lib/routes';
 import sys from '../styles/page-system.module.css';
 import styles from './Resources.module.css';
 
@@ -171,7 +172,7 @@ export const Resources: React.FC = () => {
                             Diagnóstico gratuito de 30 minutos. Sin compromiso.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to="/contacto">
+                            <Link to={ROUTES.contacto}>
                                 <Button variant="primary" size="lg">Reservar diagnóstico</Button>
                             </Link>
                         </div>

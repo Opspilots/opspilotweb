@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
+import { ROUTES } from '../lib/routes';
 import {
     FileSpreadsheet,
     Zap,
@@ -313,8 +314,8 @@ export const Product: React.FC = () => {
                             con presupuesto cerrado.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to="/contacto"><Button variant="primary" size="lg">Pedir desarrollo a medida</Button></Link>
-                            <Link to="/servicios"><Button variant="outline" size="lg">Ver servicios</Button></Link>
+                            <Link to={ROUTES.contacto}><Button variant="primary" size="lg">Pedir desarrollo a medida</Button></Link>
+                            <Link to={ROUTES.servicios}><Button variant="outline" size="lg">Ver servicios</Button></Link>
                         </div>
                     </div>
                 </div>

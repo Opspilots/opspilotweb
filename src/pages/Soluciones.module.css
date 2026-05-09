@@ -1,10 +1,6 @@
 /* ═══════════════════════════════════════════
-   Soluciones — específicos
+   Soluciones — grid de sectores
    ═══════════════════════════════════════════ */
-
-.gridSection {
-    padding: var(--space-section-loose) 0;
-}
 
 .grid {
     display: grid;
@@ -14,7 +10,7 @@
 
 @media (min-width: 700px) {
     .grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -24,26 +20,23 @@
     }
 }
 
-.filterCard {
+.card {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-5);
-    padding: var(--spacing-9);
+    padding: var(--spacing-9) var(--spacing-8);
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-2xl);
-    transition: border-color var(--transition-normal), background var(--transition-normal), transform var(--transition-normal);
+    transition:
+        border-color var(--transition-normal),
+        background var(--transition-normal),
+        transform var(--transition-normal);
     position: relative;
     overflow: hidden;
 }
 
-.filterCard:hover {
-    border-color: var(--color-border-mint);
-    background: var(--color-bg-raised);
-    transform: translateY(-2px);
-}
-
-.filterCard::before {
+.card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -56,19 +49,19 @@
     transition: transform var(--transition-normal);
 }
 
-.filterCard:hover::before {
+.card:hover {
+    border-color: var(--color-border-mint);
+    background: var(--color-bg-raised);
+    transform: translateY(-3px);
+}
+
+.card:hover::before {
     transform: scaleX(1);
 }
 
-.filterCardHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.filterIcon {
-    width: 44px;
-    height: 44px;
+.cardIcon {
+    width: 48px;
+    height: 48px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -76,29 +69,25 @@
     background: var(--color-mint-soft);
     border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-2);
 }
 
-.filterIndex {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-subtle);
-    letter-spacing: var(--tracking-wide);
-}
-
-.filterTitle {
+.cardTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
     color: var(--color-text-strong);
-    line-height: 1.25;
+    line-height: 1.2;
     letter-spacing: var(--tracking-tight);
     text-wrap: balance;
+    margin: 0;
 }
 
-.filterWho {
+.cardWho {
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
     line-height: 1.55;
+    margin: 0;
 }
 
 .whoLabel {
@@ -107,37 +96,10 @@
     color: var(--color-text-subtle);
     letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
-    margin-right: var(--spacing-1);
+    margin-right: var(--spacing-2);
 }
 
-.filterBenefits {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
-}
-
-.filterBenefits li {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-    letter-spacing: var(--tracking-wide);
-    padding-left: var(--spacing-4);
-    position: relative;
-}
-
-.filterBenefits li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: var(--color-mint);
-    font-weight: var(--font-weight-bold);
-}
-
-.filterSolution {
-    margin-top: auto;
+.cardSolution {
     padding: var(--spacing-4) var(--spacing-5);
     background: var(--color-bg);
     border-left: 2px solid var(--color-mint);
@@ -146,10 +108,57 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-strong);
-    line-height: 1.45;
+    line-height: 1.5;
     letter-spacing: var(--tracking-tight);
+    margin: 0;
+}
+
+.benefitsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.benefitsList li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+.check {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    background: var(--color-mint-soft);
+    color: var(--color-mint);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
 }
 
 .cardLink {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-top: auto;
+    padding-top: var(--spacing-4);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-mint);
+    transition: gap var(--transition-fast), color var(--transition-fast);
+}
+
+.cardLink:hover {
+    gap: var(--spacing-3);
+    color: var(--color-text-strong);
 }
