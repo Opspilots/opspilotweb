@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import sys from '../styles/page-system.module.css';
 import styles from './Soluciones.module.css';
@@ -66,6 +67,12 @@ const sectores = [
 ];
 
 export const Soluciones: React.FC = () => {
+    usePageSEO({
+        title: 'Soluciones por sector — Asesorías, energía, obra y agencias · OpsPilot',
+        description: 'Soluciones digitales adaptadas a tu sector: asesorías y despachos, comercializadoras de energía, reformas e instalaciones, agencias y PYMEs. Tecnología que encaja con cómo trabajas.',
+        canonical: 'https://opspilot.es/soluciones',
+    });
+
     const gridRef = useScrollReveal<HTMLDivElement>({ stagger: true });
 
     return (

@@ -42,6 +42,22 @@ export function usePageSEO({ title, description, canonical }: PageSEO) {
                 document.head.appendChild(link);
             }
             link.setAttribute('href', canonical);
+
+            const setAlt = (hreflang: string) => {
+                let alt = document.querySelector(`link[rel="alternate"][hreflang="${hreflang}"]`);
+                if (!alt) {
+                    alt = document.createElement('link');
+                    alt.setAttribute('rel', 'alternate');
+                    alt.setAttribute('hreflang', hreflang);
+                    document.head.appendChild(alt);
+                }
+                alt.setAttribute('href', canonical);
+            };
+            setAlt('es-ES');
+            setAlt('x-default');
+
+            const ogUrl = document.querySelector('meta[property="og:url"]');
+            if (ogUrl) ogUrl.setAttribute('content', canonical);
         }
     }, [title, description, canonical]);
 }

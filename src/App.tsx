@@ -22,6 +22,7 @@ function App() {
             <Layout>
                 <Suspense fallback={null}>
                     <Routes>
+                        {/* Rutas canónicas en español */}
                         <Route path={ROUTES.home} element={<Home />} />
                         <Route path={ROUTES.soluciones} element={<Soluciones />} />
                         <Route path={ROUTES.productos} element={<Product />} />
@@ -32,6 +33,7 @@ function App() {
                         <Route path={ROUTES.contacto} element={<Contact />} />
                         <Route path={ROUTES.diagnostico} element={<Navigate to={ROUTES.contacto} replace />} />
 
+                        {/* Redirects desde URLs antiguas en inglés (red de seguridad client-side) */}
                         {LEGACY_REDIRECTS.map(([from, to]) => (
                             <Route key={from} path={from} element={<Navigate to={to} replace />} />
                         ))}

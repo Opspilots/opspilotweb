@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import sys from '../styles/page-system.module.css';
 import styles from './Services.module.css';
@@ -84,6 +85,12 @@ const VALUES = [
 ];
 
 export const Services: React.FC = () => {
+    usePageSEO({
+        title: 'Servicios — Desarrollo de software a medida y automatización · OpsPilot',
+        description: 'Automatizaciones, integraciones, asistentes IA y software a medida para PYMEs. Te escuchamos primero, proponemos algo concreto y nos quedamos contigo cuando lo necesitas.',
+        canonical: 'https://opspilot.es/servicios',
+    });
+
     const servicesRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const valueRef = useScrollReveal<HTMLDivElement>({ stagger: true });
 

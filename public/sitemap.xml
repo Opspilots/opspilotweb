@@ -1,43 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://opspilot.es/</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://opspilot.es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opspilot.es/" />
   </url>
   <url>
     <loc>https://opspilot.es/soluciones</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://opspilot.es/soluciones" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opspilot.es/soluciones" />
   </url>
   <url>
     <loc>https://opspilot.es/servicios</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://opspilot.es/servicios" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opspilot.es/servicios" />
   </url>
   <url>
     <loc>https://opspilot.es/productos</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://opspilot.es/productos" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opspilot.es/productos" />
   </url>
   <url>
     <loc>https://opspilot.es/casos</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://opspilot.es/casos" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opspilot.es/casos" />
   </url>
   <url>
     <loc>https://opspilot.es/precios</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://opspilot.es/recursos</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://opspilot.es/precios" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opspilot.es/precios" />
   </url>
   <url>
     <loc>https://opspilot.es/contacto</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://opspilot.es/contacto" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opspilot.es/contacto" />
+  </url>
+  <url>
+    <loc>https://opspilot.es/recursos</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://opspilot.es/recursos" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opspilot.es/recursos" />
   </url>
 </urlset>

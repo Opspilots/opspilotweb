@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import {
     LayoutGrid,
@@ -89,6 +90,12 @@ const CASES = [
 ];
 
 export const Home: React.FC = () => {
+    usePageSEO({
+        title: 'OpsPilot — Software a medida y productos verticales para PYMEs en España',
+        description: 'Diseñamos y construimos contigo el software que tu empresa necesita. Trato cercano, presupuesto cerrado, respuesta en menos de 24h. Productos verticales (fiscalidad, energía, obra, ERP) y desarrollo a medida.',
+        canonical: 'https://opspilot.es/',
+    });
+
     const heroRef = useRef<HTMLDivElement>(null);
     const rotatorRef = useRef<HTMLSpanElement>(null);
     const spotlightRef = useRef<HTMLDivElement>(null);

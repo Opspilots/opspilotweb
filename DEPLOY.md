@@ -54,3 +54,57 @@ Si tu aplicación usa variables de entorno (como `VITE_SUPABASE_URL`), asegúrat
 Vite "incrusta" estas variables en el código JavaScript durante el comando `npm run build`. No necesitas subir el archivo `.env` al servidor.
 
 ¡Tu sitio debería estar línea!
+
+---
+
+## Despliegue en Nginx (VPS)
+
+Si el sitio se hospeda en un VPS con Nginx, las reglas de `.htaccess` no aplican. La configuración equivalente debe vivir en el bloque `server { ... }` de Nginx (típicamente en `/etc/nginx/sites-available/opspilot.es`).
+
+### Bloque server completo (referencia)
+
+```nginx
+server {
+  listen 443 ssl http2;
+  server_name opspilot.es;
+  root /var/www/opspilot/dist;
+  index index.html;
+
+  # ── Redirects 301 inglés → español ──
+  # Preserva el SEO de URLs antiguas que Google ya pueda haber indexado.
+  location = /services  { return 301 /servicios; }
+  location = /cases     { return 301 /casos; }
+  location = /pricing   { return 301 /precios; }
+  location = /resources { return 301 /recursos; }
+  location = /contact   { return 301 /contacto; }
+  location = /product   { return 301 /productos; }
+  location = /demo      { return 301 /contacto; }
+
+  # ── SPA fallback ──
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+
+  # ── Cache largo para assets fingerprinted ──
+  location /assets/ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+  }
+}
+```
+
+Tras editar la configuración:
+```bash
+sudo nginx -t            # Valida sintaxis
+sudo systemctl reload nginx
+```
+
+### Verificación de redirects
+
+```bash
+curl -I https://opspilot.es/services   # Debe responder 301 Location: /servicios
+curl -I https://opspilot.es/contact    # → 301 /contacto
+curl -I https://opspilot.es/demo       # → 301 /contacto
+```
+
+> Los `<Navigate>` definidos en `src/App.tsx` actúan como red de seguridad client-side, pero **los redirects 301 server-side son críticos para SEO**: solo así Google transfiere la autoridad de las URLs antiguas a las nuevas.

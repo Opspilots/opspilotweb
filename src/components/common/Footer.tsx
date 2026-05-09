@@ -59,7 +59,7 @@ export const Footer: React.FC = () => {
 
                     <div className={styles.links}>
                         <h4 className={styles.heading}>Empresa</h4>
-                        <Link to={ROUTES.casos} className={styles.link}>Casos de éxito</Link>
+                        <Link to={ROUTES.casos} className={styles.link}>Casos de Éxito</Link>
                         <Link to={ROUTES.recursos} className={styles.link}>Recursos</Link>
                         <Link to={ROUTES.contacto} className={styles.link}>Contacto</Link>
                         <Link to={ROUTES.contacto} className={styles.link}>Diagnóstico gratuito</Link>
