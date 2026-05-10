@@ -1,96 +1,34 @@
-name: Deploy
-
-# Standalone deploy workflow — builds and deploys opspilotweb to VPS via rsync over SSH.
-# Inlined from the reusable workflow at Opspilots/agenciaopspilot to avoid cross-repo
-# private-workflow access issues.
-#
-# Required repo or org secrets:
-#   VPS_HOST              — VPS IP or hostname
-#   VPS_USER              — SSH user (e.g. deploy)
-#   VPS_SSH_PRIVATE_KEY   — Private key for that user
-#   VPS_PORT              — (optional, default 22)
-
+name: Deploy opspilotweb
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-env:
-  PROJECT_NAME: opspilotweb
-  NODE_VERSION: "20"
+concurrency:
+  group: deploy-opspilotweb
+  cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-${{ env.PROJECT_NAME }}-${{ github.sha }}
-          path: dist/
-          retention-days: 1
-
-  deploy:
-    name: Deploy to VPS
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Download dist artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-${{ env.PROJECT_NAME }}-${{ github.sha }}
-          path: dist/
-
-      - name: Resolve deploy path
-        id: path
+      - name: Setup SSH
         run: |
-          echo "path=/var/www/${PROJECT_NAME}/html" >> "$GITHUB_OUTPUT"
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Setup SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-
-      - name: Add VPS to known hosts
+      - name: Rsync static site
         run: |
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-          ssh-keyscan -p "$PORT" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
-
-      - name: Ensure remote directory exists
-        run: |
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-          ssh -p "$PORT" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "mkdir -p ${{ steps.path.outputs.path }}"
-
-      - name: Deploy via rsync
-        run: |
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
           rsync -avz --delete \
-            -e "ssh -p $PORT" \
-            dist/ \
-            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ steps.path.outputs.path }}/"
+            --exclude '.git' --exclude '.github' --exclude 'node_modules' \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
+            ./html/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/opspilotweb/html/
 
-      - name: Reload Nginx
+      - name: Reload nginx
         run: |
-          PORT="${{ secrets.VPS_PORT }}"
-          PORT="${PORT:-22}"
-          ssh -p "$PORT" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "sudo nginx -t && sudo systemctl reload nginx"
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+            "sudo /usr/bin/systemctl reload nginx"
