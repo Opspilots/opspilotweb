@@ -25,10 +25,20 @@
 .pageHero {
     position: relative;
     padding: var(--spacing-20) 0 var(--spacing-16);
-    border-bottom: 1px solid var(--color-border-subtle);
     background:
         radial-gradient(ellipse 60% 80% at 50% 0%, rgba(57, 206, 134, 0.08) 0%, transparent 70%),
         var(--color-bg-deep);
+}
+
+.pageHero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--color-mint) 35%, var(--color-mint) 65%, transparent 100%);
+    opacity: 0.45;
 }
 
 @media (min-width: 1024px) {
@@ -206,16 +216,6 @@
     .endCtaBlock { animation: none; }
 }
 
-.endCtaBlock::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--color-mint), transparent);
-}
 
 .endCtaTitle {
     font-family: var(--font-family-display);

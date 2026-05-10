@@ -24,6 +24,7 @@ import {
     ArrowRight,
 } from 'lucide-react';
 import styles from './Home.module.css';
+import sys from '../styles/page-system.module.css';
 import Aurora from '../components/common/Aurora';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -471,31 +472,19 @@ export const Home: React.FC = () => {
                         })}
                     </div>
 
-                    <div className={styles.caseDots}>
-                        {CASES.map((_, i) => (
-                            <button
-                                key={i}
-                                className={`${styles.caseDot} ${i === activeCase ? styles.caseDotActive : ''}`}
-                                onClick={() => setActiveCase(i)}
-                                aria-label={`Ver caso ${i + 1}`}
-                            />
-                        ))}
-                    </div>
                 </div>
             </section>
 
             {/* ═══ CTA ═══ */}
-            <section className={styles.ctaSection}>
+            <section className={sys.endCta}>
                 <div className={styles.container}>
-                    <div className={styles.ctaBlock} ref={ctaRef}>
-                        <div className={styles.ctaLeft}>
-                            <h2 className={styles.ctaTitle}>¿Hablamos?</h2>
-                            <p className={styles.ctaSub}>
-                                30 minutos. Sin compromiso. Te decimos qué tiene sentido
-                                construir y qué no — sin venderte nada.
-                            </p>
-                        </div>
-                        <div className={styles.ctaRight}>
+                    <div className={sys.endCtaBlock} ref={ctaRef}>
+                        <h2 className={sys.endCtaTitle}>¿Hablamos?</h2>
+                        <p className={sys.endCtaSub}>
+                            30 minutos. Sin compromiso. Te decimos qué tiene sentido
+                            construir y qué no — sin venderte nada.
+                        </p>
+                        <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>
                                 <Button variant="primary" size="lg">Reservar diagnóstico</Button>
                             </Link>
