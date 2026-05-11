@@ -4,17 +4,16 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import { useCountUp } from '../hooks/useCountUp';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import {
+    Code2,
     LayoutGrid,
     Sparkles,
     Plug,
     Workflow,
     Database,
     Rocket,
-    Code2,
     MessagesSquare,
     Search,
     FileCheck,
@@ -23,11 +22,9 @@ import {
     PencilRuler,
     Check,
     ArrowRight,
-    ClipboardList,
-    Zap,
-    Building2,
-    Target,
-    ArrowUpRight,
+    Clock,
+    GitMerge,
+    TrendingUp,
 } from 'lucide-react';
 import styles from './Home.module.css';
 import sys from '../styles/page-system.module.css';
@@ -96,72 +93,28 @@ const CASES = [
     },
 ];
 
-const VERTICALS = [
+const PROBLEMS = [
     {
-        icon: <ClipboardList size={22} strokeWidth={1.6} />,
-        label: 'Asesorías fiscales',
-        claim: 'Cierra el mes sin carreras — tu equipo revisa, la IA prepara.',
-        color: 'mint',
-        href: ROUTES.soluciones,
+        icon: <Clock size={22} strokeWidth={1.6} />,
+        title: 'Procesos que devoran tiempo',
+        text: 'Tu equipo dedica horas a tareas que podría hacer un sistema. Copiar datos, enviar emails, rellenar formularios — trabajo que no debería depender de una persona.',
     },
     {
-        icon: <Zap size={22} strokeWidth={1.6} />,
-        label: 'Sector energético',
-        claim: 'Analiza tarifas y onboarding en segundos, no en días.',
-        color: 'warm',
-        href: ROUTES.soluciones,
+        icon: <GitMerge size={22} strokeWidth={1.6} />,
+        title: 'Información fragmentada',
+        text: 'Los datos de tu negocio viven en emails, hojas y apps distintas que no hablan entre sí. Cuando necesitas un número, primero tienes que buscarlo.',
     },
     {
-        icon: <Building2 size={22} strokeWidth={1.6} />,
-        label: 'Empresas de obra',
-        claim: 'De la visita al cobro sin una sola llamada de seguimiento.',
-        color: 'blue',
-        href: ROUTES.soluciones,
+        icon: <Layers size={22} strokeWidth={1.6} />,
+        title: 'Software que no se adapta',
+        text: 'Las herramientas del mercado son demasiado genéricas o demasiado complejas. Acabas adaptando tu forma de trabajar al software, cuando debería ser al revés.',
     },
     {
-        icon: <Target size={22} strokeWidth={1.6} />,
-        label: 'Agencias y servicios',
-        claim: 'Un sistema que sustituye cinco herramientas y no pierde nada.',
-        color: 'violet',
-        href: ROUTES.soluciones,
+        icon: <TrendingUp size={22} strokeWidth={1.6} />,
+        title: 'Crecer sin poder escalar',
+        text: 'Quieres atender más clientes o proyectos, pero cada nuevo cliente añade más carga manual. No puedes contratar a alguien nuevo para cada cosa.',
     },
 ];
-
-/* Simple terminal component — CSS-only typewriter feel */
-const TerminalDemo: React.FC = () => (
-    <div className={styles.terminal} aria-hidden="true">
-        <div className={styles.terminalBar}>
-            <span className={`${styles.terminalDot} ${styles.terminalRed}`} />
-            <span className={`${styles.terminalDot} ${styles.terminalYellow}`} />
-            <span className={`${styles.terminalDot} ${styles.terminalGreen}`} />
-            <span className={styles.terminalTitle}>agente.opspilot</span>
-        </div>
-        <div className={styles.terminalBody}>
-            <p className={`${styles.terminalLine} ${styles.terminalCmd}`}>
-                <span className={styles.terminalPrompt}>›</span> agenda --confirm mañana 10:00
-            </p>
-            <p className={`${styles.terminalLine} ${styles.terminalOk} ${styles.terminalDelay1}`}>
-                <span className={styles.terminalCheck}>✓</span> Reunión confirmada · López &amp; Asociados
-            </p>
-            <p className={`${styles.terminalLine} ${styles.terminalCmd} ${styles.terminalDelay2}`}>
-                <span className={styles.terminalPrompt}>›</span> informe --mes mayo --pdf
-            </p>
-            <p className={`${styles.terminalLine} ${styles.terminalOk} ${styles.terminalDelay3}`}>
-                <span className={styles.terminalCheck}>✓</span> Informe generado y enviado por email
-            </p>
-            <p className={`${styles.terminalLine} ${styles.terminalCmd} ${styles.terminalDelay4}`}>
-                <span className={styles.terminalPrompt}>›</span> presupuesto --auto --cliente nuevo
-            </p>
-            <p className={`${styles.terminalLine} ${styles.terminalOk} ${styles.terminalDelay5}`}>
-                <span className={styles.terminalCheck}>✓</span> 3 presupuestos enviados automáticamente
-            </p>
-            <p className={`${styles.terminalLine} ${styles.terminalCursor} ${styles.terminalDelay6}`}>
-                <span className={styles.terminalPrompt}>›</span>
-                <span className={styles.terminalBlink}>▌</span>
-            </p>
-        </div>
-    </div>
-);
 
 export const Home: React.FC = () => {
     usePageSEO({
@@ -175,19 +128,13 @@ export const Home: React.FC = () => {
     const spotlightRef = useRef<HTMLDivElement>(null);
 
     const problemRef = useScrollReveal<HTMLDivElement>({ stagger: true });
-    const buildRef = useScrollReveal<HTMLDivElement>({ stagger: true });
-    const verticalsRef = useScrollReveal<HTMLDivElement>({ stagger: true });
+    const problemsAltRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const methodScrollRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const caseRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const ctaRef = useScrollReveal<HTMLDivElement>();
 
     const [activeCase, setActiveCase] = useState(0);
     const [carouselPaused, setCarouselPaused] = useState(false);
-
-    /* Count-up refs for stats strip */
-    const statProjects = useCountUp<HTMLSpanElement>({ end: 20, duration: 1.6, format: n => `${Math.round(n)}+` });
-    const statResp = useCountUp<HTMLSpanElement>({ end: 24, duration: 1.2, format: n => `<${Math.round(n)}h` });
-    const statBudget = useCountUp<HTMLSpanElement>({ end: 100, duration: 1.8, format: n => `${Math.round(n)}%` });
 
     useEffect(() => {
         const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -204,10 +151,9 @@ export const Home: React.FC = () => {
         const ctx = gsap.context(() => {
             if (!reduce) {
                 const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-                tl.from(`.${styles.heroBadge}`, { opacity: 0, y: -14, duration: 0.6 })
-                    .from(`.${styles.heroTitle} .${styles.heroLine}`, {
-                        opacity: 0, y: 32, duration: 0.95, stagger: 0.1,
-                    }, '-=0.3')
+                tl.from(`.${styles.heroTitle} .${styles.heroLine}`, {
+                    opacity: 0, y: 32, duration: 0.95, stagger: 0.1,
+                })
                     .from(`.${styles.heroSubtitle}`, { opacity: 0, y: 18, duration: 0.7 }, '-=0.55')
                     .from(`.${styles.ctaGroup} > *`, { opacity: 0, y: 14, duration: 0.55, stagger: 0.08 }, '-=0.45')
                     .from(`.${styles.trustList} li`, { opacity: 0, y: 10, duration: 0.5, stagger: 0.06 }, '-=0.35');
@@ -269,13 +215,6 @@ export const Home: React.FC = () => {
 
                 <div className={styles.heroInner}>
                     <div className={styles.heroContentCentered}>
-                        {/* Announcement badge */}
-                        <a href={ROUTES.soluciones} className={styles.heroBadge}>
-                            <span className={styles.heroBadgeDot} aria-hidden="true" />
-                            Soluciones por sector — fiscal, energía, obra, agencias
-                            <ArrowRight size={13} strokeWidth={2} />
-                        </a>
-
                         <h1 className={styles.heroTitle}>
                             <span className={styles.heroLine}>Construimos software</span>
                             <span className={styles.heroLine}>
@@ -310,10 +249,6 @@ export const Home: React.FC = () => {
                             </li>
                             <li>
                                 <span className={styles.trustDot} aria-hidden="true" />
-                                Equipo en España
-                            </li>
-                            <li>
-                                <span className={styles.trustDot} aria-hidden="true" />
                                 Sin compromiso
                             </li>
                         </ul>
@@ -337,33 +272,6 @@ export const Home: React.FC = () => {
                     ))}
                 </div>
             </aside>
-
-            {/* ═══ STATS STRIP ═══ */}
-            <section className={styles.statsStrip} aria-label="En números">
-                <div className={styles.container}>
-                    <div className={styles.statsGrid}>
-                        <div className={styles.statItem}>
-                            <span className={styles.statNum} ref={statProjects}>20+</span>
-                            <span className={styles.statDesc}>proyectos entregados</span>
-                        </div>
-                        <div className={styles.statDivider} aria-hidden="true" />
-                        <div className={styles.statItem}>
-                            <span className={styles.statNum} ref={statResp}>&lt;24h</span>
-                            <span className={styles.statDesc}>tiempo de respuesta garantizado</span>
-                        </div>
-                        <div className={styles.statDivider} aria-hidden="true" />
-                        <div className={styles.statItem}>
-                            <span className={styles.statNum} ref={statBudget}>100%</span>
-                            <span className={styles.statDesc}>presupuestos cerrados respetados</span>
-                        </div>
-                        <div className={styles.statDivider} aria-hidden="true" />
-                        <div className={styles.statItem}>
-                            <span className={styles.statNum}>🇪🇸</span>
-                            <span className={styles.statDesc}>equipo 100% en España</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* ═══ PROBLEMA ═══ */}
             <section className={styles.problemSection}>
@@ -415,107 +323,25 @@ export const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* ═══ QUÉ HACEMOS — BENTO ═══ */}
-            <section className={styles.buildSection}>
-                <div className={styles.container} ref={buildRef}>
+            {/* ═══ TIPOS DE PROBLEMA ═══ */}
+            <section className={styles.problemsAltSection}>
+                <div className={styles.container} ref={problemsAltRef}>
                     <header className={`${styles.sectionHeader} reveal`}>
                         <span className={styles.eyebrow}>
                             <span className={styles.eyebrowDot} />
-                            Qué hacemos
+                            Lo que resolvemos
                         </span>
                         <h2 className={styles.sectionTitle}>
-                            Construimos lo que tu negocio necesita.
+                            Problemas reales que ralentizan empresas reales.
                         </h2>
                     </header>
-                    <div className={styles.buildBento}>
-                        {/* Featured: IA card (2/3 ancho) con terminal */}
-                        <article className={`${styles.buildCardFeatured} reveal`}>
-                            <div className={styles.buildCardFeaturedContent}>
-                                <div className={styles.buildIcon}><Sparkles size={22} strokeWidth={1.5} /></div>
-                                <h3 className={styles.buildCardTitle}>Asistentes que trabajan por ti</h3>
-                                <p className={styles.buildCardText}>
-                                    IA que opera tu negocio, no que solo te responde preguntas.
-                                    Cierra agendas, prepara informes y avisa cuando hace falta.
-                                </p>
+                    <div className={styles.problemsAltGrid}>
+                        {PROBLEMS.map((p, i) => (
+                            <div key={i} className={`${styles.problemsAltCard} reveal`}>
+                                <div className={styles.problemsAltIcon}>{p.icon}</div>
+                                <h3 className={styles.problemsAltTitle}>{p.title}</h3>
+                                <p className={styles.problemsAltText}>{p.text}</p>
                             </div>
-                            <TerminalDemo />
-                        </article>
-
-                        {/* Secondary: apps card (1/3 ancho) */}
-                        <article className={`${styles.buildCard} reveal`}>
-                            <div className={styles.buildIcon}><LayoutGrid size={22} strokeWidth={1.5} /></div>
-                            <h3 className={styles.buildCardTitle}>Apps y sitios para tu equipo</h3>
-                            <p className={styles.buildCardText}>
-                                La herramienta donde tu equipo trabaja todos los días — fácil de usar,
-                                rápida y pensada para cómo trabajáis vosotros.
-                            </p>
-                        </article>
-
-                        {/* Row 2: 4 cards iguales */}
-                        <article className={`${styles.buildCard} reveal`}>
-                            <div className={styles.buildIcon}><Plug size={22} strokeWidth={1.5} /></div>
-                            <h3 className={styles.buildCardTitle}>Conectamos tus herramientas</h3>
-                            <p className={styles.buildCardText}>
-                                Que el banco, el correo y las apps que ya usas hablen entre sí
-                                para que los datos no se pierdan ni se dupliquen.
-                            </p>
-                        </article>
-                        <article className={`${styles.buildCard} reveal`}>
-                            <div className={styles.buildIcon}><Workflow size={22} strokeWidth={1.5} /></div>
-                            <h3 className={styles.buildCardTitle}>Automatizamos lo aburrido</h3>
-                            <p className={styles.buildCardText}>
-                                Las tareas repetitivas que nadie quiere hacer — gestionadas solas,
-                                sin errores ni horas perdidas.
-                            </p>
-                        </article>
-                        <article className={`${styles.buildCard} reveal`}>
-                            <div className={styles.buildIcon}><Database size={22} strokeWidth={1.5} /></div>
-                            <h3 className={styles.buildCardTitle}>Tu sistema de gestión a medida</h3>
-                            <p className={styles.buildCardText}>
-                                Cuando lo estándar es excesivo o demasiado genérico, construimos
-                                el sistema que encaja con cómo funciona tu empresa.
-                            </p>
-                        </article>
-                        <article className={`${styles.buildCard} reveal`}>
-                            <div className={styles.buildIcon}><Rocket size={22} strokeWidth={1.5} /></div>
-                            <h3 className={styles.buildCardTitle}>Migrar al siguiente nivel</h3>
-                            <p className={styles.buildCardText}>
-                                Sacar tu negocio de hojas de cálculo y suscripciones sueltas
-                                sin perder un dato y sin parar la operativa.
-                            </p>
-                        </article>
-                    </div>
-                </div>
-            </section>
-
-            {/* ═══ VERTICALES ═══ */}
-            <section className={styles.verticalsSection}>
-                <div className={styles.container} ref={verticalsRef}>
-                    <header className={`${styles.sectionHeader} reveal`}>
-                        <span className={styles.eyebrow}>
-                            <span className={styles.eyebrowDot} />
-                            Soluciones por sector
-                        </span>
-                        <h2 className={styles.sectionTitle}>
-                            Conocemos tu sector. Ya lo hemos resuelto antes.
-                        </h2>
-                    </header>
-                    <div className={styles.verticalsGrid}>
-                        {VERTICALS.map((v, i) => (
-                            <Link
-                                key={i}
-                                to={v.href}
-                                className={`${styles.verticalCard} ${styles[`verticalCard_${v.color}`]} reveal`}
-                            >
-                                <div className={styles.verticalIconWrap}>
-                                    {v.icon}
-                                </div>
-                                <h3 className={styles.verticalLabel}>{v.label}</h3>
-                                <p className={styles.verticalClaim}>{v.claim}</p>
-                                <span className={styles.verticalArrow} aria-hidden="true">
-                                    <ArrowUpRight size={16} strokeWidth={2} />
-                                </span>
-                            </Link>
                         ))}
                     </div>
                 </div>
@@ -632,7 +458,6 @@ export const Home: React.FC = () => {
                             );
                         })}
                     </div>
-
                 </div>
             </section>
 
