@@ -40,6 +40,7 @@
 .primary:hover:not(:disabled) {
     background-color: var(--color-primary-light);
     border-color: var(--color-primary-light);
+    box-shadow: var(--glow-mint-sm);
 }
 
 .primary:active:not(:disabled) {

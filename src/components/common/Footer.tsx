@@ -68,6 +68,10 @@ export const Footer: React.FC = () => {
 
                 <div className={styles.bottom}>
                     <p>&copy; {new Date().getFullYear()} OpsPilot. Todos los derechos reservados.</p>
+                    <span className={styles.bottomBrand}>
+                        <span className={styles.bottomBrandDot} />
+                        Hecho con cuidado en España
+                    </span>
                 </div>
             </div>
         </footer>
