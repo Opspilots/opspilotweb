@@ -162,3 +162,20 @@
     gap: var(--spacing-3);
     color: var(--color-text-strong);
 }
+
+@media (max-width: 639px) {
+    .card {
+        padding: var(--spacing-7) var(--spacing-6);
+    }
+
+    .cardWho {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .benefitsList li:nth-child(n+4) {
+        display: none;
+    }
+}
