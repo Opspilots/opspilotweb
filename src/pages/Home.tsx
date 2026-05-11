@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useCountUp } from '../hooks/useCountUp';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import {
@@ -22,6 +23,11 @@ import {
     PencilRuler,
     Check,
     ArrowRight,
+    ClipboardList,
+    Zap,
+    Building2,
+    Target,
+    ArrowUpRight,
 } from 'lucide-react';
 import styles from './Home.module.css';
 import sys from '../styles/page-system.module.css';
@@ -90,6 +96,73 @@ const CASES = [
     },
 ];
 
+const VERTICALS = [
+    {
+        icon: <ClipboardList size={22} strokeWidth={1.6} />,
+        label: 'Asesorías fiscales',
+        claim: 'Cierra el mes sin carreras — tu equipo revisa, la IA prepara.',
+        color: 'mint',
+        href: ROUTES.soluciones,
+    },
+    {
+        icon: <Zap size={22} strokeWidth={1.6} />,
+        label: 'Sector energético',
+        claim: 'Analiza tarifas y onboarding en segundos, no en días.',
+        color: 'warm',
+        href: ROUTES.soluciones,
+    },
+    {
+        icon: <Building2 size={22} strokeWidth={1.6} />,
+        label: 'Empresas de obra',
+        claim: 'De la visita al cobro sin una sola llamada de seguimiento.',
+        color: 'blue',
+        href: ROUTES.soluciones,
+    },
+    {
+        icon: <Target size={22} strokeWidth={1.6} />,
+        label: 'Agencias y servicios',
+        claim: 'Un sistema que sustituye cinco herramientas y no pierde nada.',
+        color: 'violet',
+        href: ROUTES.soluciones,
+    },
+];
+
+/* Simple terminal component — CSS-only typewriter feel */
+const TerminalDemo: React.FC = () => (
+    <div className={styles.terminal} aria-hidden="true">
+        <div className={styles.terminalBar}>
+            <span className={`${styles.terminalDot} ${styles.terminalRed}`} />
+            <span className={`${styles.terminalDot} ${styles.terminalYellow}`} />
+            <span className={`${styles.terminalDot} ${styles.terminalGreen}`} />
+            <span className={styles.terminalTitle}>agente.opspilot</span>
+        </div>
+        <div className={styles.terminalBody}>
+            <p className={`${styles.terminalLine} ${styles.terminalCmd}`}>
+                <span className={styles.terminalPrompt}>›</span> agenda --confirm mañana 10:00
+            </p>
+            <p className={`${styles.terminalLine} ${styles.terminalOk} ${styles.terminalDelay1}`}>
+                <span className={styles.terminalCheck}>✓</span> Reunión confirmada · López &amp; Asociados
+            </p>
+            <p className={`${styles.terminalLine} ${styles.terminalCmd} ${styles.terminalDelay2}`}>
+                <span className={styles.terminalPrompt}>›</span> informe --mes mayo --pdf
+            </p>
+            <p className={`${styles.terminalLine} ${styles.terminalOk} ${styles.terminalDelay3}`}>
+                <span className={styles.terminalCheck}>✓</span> Informe generado y enviado por email
+            </p>
+            <p className={`${styles.terminalLine} ${styles.terminalCmd} ${styles.terminalDelay4}`}>
+                <span className={styles.terminalPrompt}>›</span> presupuesto --auto --cliente nuevo
+            </p>
+            <p className={`${styles.terminalLine} ${styles.terminalOk} ${styles.terminalDelay5}`}>
+                <span className={styles.terminalCheck}>✓</span> 3 presupuestos enviados automáticamente
+            </p>
+            <p className={`${styles.terminalLine} ${styles.terminalCursor} ${styles.terminalDelay6}`}>
+                <span className={styles.terminalPrompt}>›</span>
+                <span className={styles.terminalBlink}>▌</span>
+            </p>
+        </div>
+    </div>
+);
+
 export const Home: React.FC = () => {
     usePageSEO({
         title: 'OpsPilot — Software a medida y productos verticales para PYMEs en España',
@@ -100,16 +173,21 @@ export const Home: React.FC = () => {
     const heroRef = useRef<HTMLDivElement>(null);
     const rotatorRef = useRef<HTMLSpanElement>(null);
     const spotlightRef = useRef<HTMLDivElement>(null);
-    const methodRef = useRef<HTMLDivElement>(null);
 
     const problemRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const buildRef = useScrollReveal<HTMLDivElement>({ stagger: true });
+    const verticalsRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const methodScrollRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const caseRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const ctaRef = useScrollReveal<HTMLDivElement>();
 
     const [activeCase, setActiveCase] = useState(0);
     const [carouselPaused, setCarouselPaused] = useState(false);
+
+    /* Count-up refs for stats strip */
+    const statProjects = useCountUp<HTMLSpanElement>({ end: 20, duration: 1.6, format: n => `${Math.round(n)}+` });
+    const statResp = useCountUp<HTMLSpanElement>({ end: 24, duration: 1.2, format: n => `<${Math.round(n)}h` });
+    const statBudget = useCountUp<HTMLSpanElement>({ end: 100, duration: 1.8, format: n => `${Math.round(n)}%` });
 
     useEffect(() => {
         const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -126,15 +204,15 @@ export const Home: React.FC = () => {
         const ctx = gsap.context(() => {
             if (!reduce) {
                 const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-                tl.from(`.${styles.heroTitle} .${styles.heroLine}`, {
-                    opacity: 0, y: 32, duration: 0.95, stagger: 0.1,
-                })
+                tl.from(`.${styles.heroBadge}`, { opacity: 0, y: -14, duration: 0.6 })
+                    .from(`.${styles.heroTitle} .${styles.heroLine}`, {
+                        opacity: 0, y: 32, duration: 0.95, stagger: 0.1,
+                    }, '-=0.3')
                     .from(`.${styles.heroSubtitle}`, { opacity: 0, y: 18, duration: 0.7 }, '-=0.55')
                     .from(`.${styles.ctaGroup} > *`, { opacity: 0, y: 14, duration: 0.55, stagger: 0.08 }, '-=0.45')
                     .from(`.${styles.trustList} li`, { opacity: 0, y: 10, duration: 0.5, stagger: 0.06 }, '-=0.35');
             }
 
-            // Rotador
             if (rotatorRef.current && !reduce) {
                 const el = rotatorRef.current;
                 el.textContent = ROTATING_WORDS[0];
@@ -151,7 +229,6 @@ export const Home: React.FC = () => {
                 rotatorRef.current.textContent = ROTATING_WORDS[0];
             }
 
-            // Spotlight
             if (!reduce && !window.matchMedia?.('(hover: none)').matches && heroRef.current && spotlightRef.current) {
                 const xTo = gsap.quickTo(spotlightRef.current, '--mx' as any, { duration: 0.4, ease: 'power3.out' });
                 const yTo = gsap.quickTo(spotlightRef.current, '--my' as any, { duration: 0.4, ease: 'power3.out' });
@@ -191,45 +268,56 @@ export const Home: React.FC = () => {
                 <div className={styles.heroSpotlight} ref={spotlightRef} aria-hidden="true" />
 
                 <div className={styles.heroInner}>
-                <div className={styles.heroContentCentered}>
-                    <h1 className={styles.heroTitle}>
-                        <span className={styles.heroLine}>Construimos software</span>
-                        <span className={styles.heroLine}>
-                            a medida para{' '}
-                            <span className={styles.rotator}>
-                                <span className={styles.rotatorSpacer} aria-hidden="true">{ROTATOR_SPACER}</span>
-                                <span className={styles.rotatorWord} ref={rotatorRef}>{ROTATING_WORDS[0]}</span>
+                    <div className={styles.heroContentCentered}>
+                        {/* Announcement badge */}
+                        <a href={ROUTES.soluciones} className={styles.heroBadge}>
+                            <span className={styles.heroBadgeDot} aria-hidden="true" />
+                            Soluciones por sector — fiscal, energía, obra, agencias
+                            <ArrowRight size={13} strokeWidth={2} />
+                        </a>
+
+                        <h1 className={styles.heroTitle}>
+                            <span className={styles.heroLine}>Construimos software</span>
+                            <span className={styles.heroLine}>
+                                a medida para{' '}
+                                <span className={styles.rotator}>
+                                    <span className={styles.rotatorSpacer} aria-hidden="true">{ROTATOR_SPACER}</span>
+                                    <span className={styles.rotatorWord} ref={rotatorRef}>{ROTATING_WORDS[0]}</span>
+                                </span>
                             </span>
-                        </span>
-                    </h1>
-                    <p className={styles.heroSubtitle}>
-                        Empresa de desarrollo de software en España. Diseñamos, construimos y
-                        mantenemos las herramientas digitales que tu negocio necesita —
-                        no las que te quieren vender.
-                    </p>
-                    <div className={styles.ctaGroup}>
-                        <Link to={ROUTES.contacto}>
-                            <Button variant="primary" size="lg">Reservar diagnóstico</Button>
-                        </Link>
-                        <Link to={ROUTES.servicios} className={styles.ctaSecondary}>
-                            Cómo trabajamos <ArrowRight size={16} strokeWidth={2} />
-                        </Link>
+                        </h1>
+                        <p className={styles.heroSubtitle}>
+                            Empresa de desarrollo de software en España. Diseñamos, construimos y
+                            mantenemos las herramientas digitales que tu negocio necesita —
+                            no las que te quieren vender.
+                        </p>
+                        <div className={styles.ctaGroup}>
+                            <Link to={ROUTES.contacto}>
+                                <Button variant="primary" size="lg">Reservar diagnóstico</Button>
+                            </Link>
+                            <Link to={ROUTES.servicios} className={styles.ctaSecondary}>
+                                Cómo trabajamos <ArrowRight size={16} strokeWidth={2} />
+                            </Link>
+                        </div>
+                        <ul className={styles.trustList} aria-label="Garantías">
+                            <li>
+                                <span className={styles.trustDot} aria-hidden="true" />
+                                Diagnóstico gratuito
+                            </li>
+                            <li>
+                                <span className={styles.trustDot} aria-hidden="true" />
+                                Respuesta &lt; 24h laborables
+                            </li>
+                            <li>
+                                <span className={styles.trustDot} aria-hidden="true" />
+                                Equipo en España
+                            </li>
+                            <li>
+                                <span className={styles.trustDot} aria-hidden="true" />
+                                Sin compromiso
+                            </li>
+                        </ul>
                     </div>
-                    <ul className={styles.trustList} aria-label="Garantías">
-                        <li>
-                            <span className={styles.trustDot} aria-hidden="true" />
-                            Diagnóstico gratuito
-                        </li>
-                        <li>
-                            <span className={styles.trustDot} aria-hidden="true" />
-                            Respuesta &lt; 24h laborables
-                        </li>
-                        <li>
-                            <span className={styles.trustDot} aria-hidden="true" />
-                            Sin compromiso
-                        </li>
-                    </ul>
-                </div>
                 </div>
             </section>
 
@@ -250,6 +338,33 @@ export const Home: React.FC = () => {
                 </div>
             </aside>
 
+            {/* ═══ STATS STRIP ═══ */}
+            <section className={styles.statsStrip} aria-label="En números">
+                <div className={styles.container}>
+                    <div className={styles.statsGrid}>
+                        <div className={styles.statItem}>
+                            <span className={styles.statNum} ref={statProjects}>20+</span>
+                            <span className={styles.statDesc}>proyectos entregados</span>
+                        </div>
+                        <div className={styles.statDivider} aria-hidden="true" />
+                        <div className={styles.statItem}>
+                            <span className={styles.statNum} ref={statResp}>&lt;24h</span>
+                            <span className={styles.statDesc}>tiempo de respuesta garantizado</span>
+                        </div>
+                        <div className={styles.statDivider} aria-hidden="true" />
+                        <div className={styles.statItem}>
+                            <span className={styles.statNum} ref={statBudget}>100%</span>
+                            <span className={styles.statDesc}>presupuestos cerrados respetados</span>
+                        </div>
+                        <div className={styles.statDivider} aria-hidden="true" />
+                        <div className={styles.statItem}>
+                            <span className={styles.statNum}>🇪🇸</span>
+                            <span className={styles.statDesc}>equipo 100% en España</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* ═══ PROBLEMA ═══ */}
             <section className={styles.problemSection}>
                 <div className={styles.container} ref={problemRef}>
@@ -264,8 +379,9 @@ export const Home: React.FC = () => {
                     </header>
                     <div className={styles.problemGrid}>
                         <div className={`${styles.problemCard} reveal`}>
+                            <div className={styles.problemNum} aria-hidden="true">01</div>
                             <div className={styles.problemIcon}>
-                                <Layers size={26} strokeWidth={1.5} aria-hidden="true" />
+                                <Layers size={22} strokeWidth={1.5} aria-hidden="true" />
                             </div>
                             <h3 className={styles.problemTitle}>Tu información vive en cuatro sitios</h3>
                             <p className={styles.problemText}>
@@ -274,8 +390,9 @@ export const Home: React.FC = () => {
                             </p>
                         </div>
                         <div className={`${styles.problemCard} reveal`}>
+                            <div className={styles.problemNum} aria-hidden="true">02</div>
                             <div className={styles.problemIcon}>
-                                <PencilRuler size={26} strokeWidth={1.5} aria-hidden="true" />
+                                <PencilRuler size={22} strokeWidth={1.5} aria-hidden="true" />
                             </div>
                             <h3 className={styles.problemTitle}>Lo importante lo llevas en hojas que se rompen</h3>
                             <p className={styles.problemText}>
@@ -284,8 +401,9 @@ export const Home: React.FC = () => {
                             </p>
                         </div>
                         <div className={`${styles.problemCard} reveal`}>
+                            <div className={styles.problemNum} aria-hidden="true">03</div>
                             <div className={styles.problemIcon}>
-                                <Workflow size={26} strokeWidth={1.5} aria-hidden="true" />
+                                <Workflow size={22} strokeWidth={1.5} aria-hidden="true" />
                             </div>
                             <h3 className={styles.problemTitle}>Tu equipo cambia de pestaña cada cinco minutos</h3>
                             <p className={styles.problemText}>
@@ -297,7 +415,7 @@ export const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* ═══ QUÉ HACEMOS ═══ */}
+            {/* ═══ QUÉ HACEMOS — BENTO ═══ */}
             <section className={styles.buildSection}>
                 <div className={styles.container} ref={buildRef}>
                     <header className={`${styles.sectionHeader} reveal`}>
@@ -309,7 +427,21 @@ export const Home: React.FC = () => {
                             Construimos lo que tu negocio necesita.
                         </h2>
                     </header>
-                    <div className={styles.buildGrid}>
+                    <div className={styles.buildBento}>
+                        {/* Featured: IA card (2/3 ancho) con terminal */}
+                        <article className={`${styles.buildCardFeatured} reveal`}>
+                            <div className={styles.buildCardFeaturedContent}>
+                                <div className={styles.buildIcon}><Sparkles size={22} strokeWidth={1.5} /></div>
+                                <h3 className={styles.buildCardTitle}>Asistentes que trabajan por ti</h3>
+                                <p className={styles.buildCardText}>
+                                    IA que opera tu negocio, no que solo te responde preguntas.
+                                    Cierra agendas, prepara informes y avisa cuando hace falta.
+                                </p>
+                            </div>
+                            <TerminalDemo />
+                        </article>
+
+                        {/* Secondary: apps card (1/3 ancho) */}
                         <article className={`${styles.buildCard} reveal`}>
                             <div className={styles.buildIcon}><LayoutGrid size={22} strokeWidth={1.5} /></div>
                             <h3 className={styles.buildCardTitle}>Apps y sitios para tu equipo</h3>
@@ -318,14 +450,8 @@ export const Home: React.FC = () => {
                                 rápida y pensada para cómo trabajáis vosotros.
                             </p>
                         </article>
-                        <article className={`${styles.buildCard} reveal`}>
-                            <div className={styles.buildIcon}><Sparkles size={22} strokeWidth={1.5} /></div>
-                            <h3 className={styles.buildCardTitle}>Asistentes que trabajan por ti</h3>
-                            <p className={styles.buildCardText}>
-                                IA que opera tu negocio, no que solo te responde preguntas.
-                                Cierra agendas, prepara informes y avisa cuando hace falta.
-                            </p>
-                        </article>
+
+                        {/* Row 2: 4 cards iguales */}
                         <article className={`${styles.buildCard} reveal`}>
                             <div className={styles.buildIcon}><Plug size={22} strokeWidth={1.5} /></div>
                             <h3 className={styles.buildCardTitle}>Conectamos tus herramientas</h3>
@@ -362,8 +488,41 @@ export const Home: React.FC = () => {
                 </div>
             </section>
 
+            {/* ═══ VERTICALES ═══ */}
+            <section className={styles.verticalsSection}>
+                <div className={styles.container} ref={verticalsRef}>
+                    <header className={`${styles.sectionHeader} reveal`}>
+                        <span className={styles.eyebrow}>
+                            <span className={styles.eyebrowDot} />
+                            Soluciones por sector
+                        </span>
+                        <h2 className={styles.sectionTitle}>
+                            Conocemos tu sector. Ya lo hemos resuelto antes.
+                        </h2>
+                    </header>
+                    <div className={styles.verticalsGrid}>
+                        {VERTICALS.map((v, i) => (
+                            <Link
+                                key={i}
+                                to={v.href}
+                                className={`${styles.verticalCard} ${styles[`verticalCard_${v.color}`]} reveal`}
+                            >
+                                <div className={styles.verticalIconWrap}>
+                                    {v.icon}
+                                </div>
+                                <h3 className={styles.verticalLabel}>{v.label}</h3>
+                                <p className={styles.verticalClaim}>{v.claim}</p>
+                                <span className={styles.verticalArrow} aria-hidden="true">
+                                    <ArrowUpRight size={16} strokeWidth={2} />
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* ═══ MÉTODO ═══ */}
-            <section className={styles.methodSection} ref={methodRef}>
+            <section className={styles.methodSection}>
                 <div className={styles.container} ref={methodScrollRef}>
                     <header className={`${styles.sectionHeader} reveal`}>
                         <span className={styles.eyebrow}>
@@ -374,48 +533,50 @@ export const Home: React.FC = () => {
                             Así trabajamos contigo.
                         </h2>
                     </header>
-                    <div className={styles.processWrapper}>
-                        <div className={styles.processGrid}>
-                            <div className={`${styles.processStep} reveal`}>
-                                <div className={styles.processStepIcon}>
-                                    <MessagesSquare size={22} strokeWidth={1.6} />
-                                </div>
-                                <h3 className={styles.stepTitle}>Te escuchamos</h3>
-                                <p className={styles.stepText}>
-                                    Una llamada de 30 minutos para entender tu negocio y qué te
-                                    está frenando ahora mismo.
-                                </p>
+                    <div className={styles.processGrid}>
+                        <div className={`${styles.processStep} reveal`}>
+                            <div className={styles.processNumWrap}>
+                                <span className={styles.processNumBg} aria-hidden="true">01</span>
+                                <span className={styles.processNumLabel}><MessagesSquare size={18} strokeWidth={1.6} /></span>
                             </div>
-                            <div className={`${styles.processStep} reveal`}>
-                                <div className={styles.processStepIcon}>
-                                    <Search size={22} strokeWidth={1.6} />
-                                </div>
-                                <h3 className={styles.stepTitle}>Localizamos el problema</h3>
-                                <p className={styles.stepText}>
-                                    Identificamos qué procesos te roban tiempo y qué pieza está
-                                    faltando en tu flujo.
-                                </p>
+                            <h3 className={styles.stepTitle}>Te escuchamos</h3>
+                            <p className={styles.stepText}>
+                                Una llamada de 30 minutos para entender tu negocio y qué te
+                                está frenando ahora mismo.
+                            </p>
+                        </div>
+                        <div className={`${styles.processStep} reveal`}>
+                            <div className={styles.processNumWrap}>
+                                <span className={styles.processNumBg} aria-hidden="true">02</span>
+                                <span className={styles.processNumLabel}><Search size={18} strokeWidth={1.6} /></span>
                             </div>
-                            <div className={`${styles.processStep} reveal`}>
-                                <div className={styles.processStepIcon}>
-                                    <FileCheck size={22} strokeWidth={1.6} />
-                                </div>
-                                <h3 className={styles.stepTitle}>Te proponemos algo concreto</h3>
-                                <p className={styles.stepText}>
-                                    Plan claro con opciones reales, precio cerrado y plazos.
-                                    Tú decides si seguimos.
-                                </p>
+                            <h3 className={styles.stepTitle}>Localizamos el problema</h3>
+                            <p className={styles.stepText}>
+                                Identificamos qué procesos te roban tiempo y qué pieza está
+                                faltando en tu flujo.
+                            </p>
+                        </div>
+                        <div className={`${styles.processStep} reveal`}>
+                            <div className={styles.processNumWrap}>
+                                <span className={styles.processNumBg} aria-hidden="true">03</span>
+                                <span className={styles.processNumLabel}><FileCheck size={18} strokeWidth={1.6} /></span>
                             </div>
-                            <div className={`${styles.processStep} reveal`}>
-                                <div className={styles.processStepIcon}>
-                                    <Wrench size={22} strokeWidth={1.6} />
-                                </div>
-                                <h3 className={styles.stepTitle}>Lo hacemos y nos quedamos</h3>
-                                <p className={styles.stepText}>
-                                    Construimos, implementamos y seguimos contigo mientras
-                                    nos necesites.
-                                </p>
+                            <h3 className={styles.stepTitle}>Te proponemos algo concreto</h3>
+                            <p className={styles.stepText}>
+                                Plan claro con opciones reales, precio cerrado y plazos.
+                                Tú decides si seguimos.
+                            </p>
+                        </div>
+                        <div className={`${styles.processStep} reveal`}>
+                            <div className={styles.processNumWrap}>
+                                <span className={styles.processNumBg} aria-hidden="true">04</span>
+                                <span className={styles.processNumLabel}><Wrench size={18} strokeWidth={1.6} /></span>
                             </div>
+                            <h3 className={styles.stepTitle}>Lo hacemos y nos quedamos</h3>
+                            <p className={styles.stepText}>
+                                Construimos, implementamos y seguimos contigo mientras
+                                nos necesites.
+                            </p>
                         </div>
                     </div>
                 </div>

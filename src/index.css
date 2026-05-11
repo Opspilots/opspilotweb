@@ -49,11 +49,31 @@ a {
     transition: color var(--transition-fast);
 }
 
+a:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+}
+
 button {
     font-family: inherit;
     cursor: pointer;
     border: none;
     background: none;
+}
+
+button:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: none;
+    border-color: var(--color-mint) !important;
+    box-shadow: 0 0 0 3px rgba(57, 206, 134, 0.15);
 }
 
 img,
