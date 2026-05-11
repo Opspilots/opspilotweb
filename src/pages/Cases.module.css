@@ -158,3 +158,29 @@
     letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
 }
+
+@media (max-width: 639px) {
+    .caseCard {
+        padding: var(--spacing-7) var(--spacing-6);
+        border-radius: var(--radius-2xl);
+    }
+
+    .caseHead {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .caseText {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .quote p {
+        font-size: var(--font-size-base);
+    }
+}

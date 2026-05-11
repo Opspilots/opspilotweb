@@ -467,3 +467,60 @@
     max-width: 56ch;
     line-height: 1.6;
 }
+
+@media (max-width: 639px) {
+    .sectionHeader {
+        margin-bottom: var(--spacing-10);
+    }
+
+    .sectionSub {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .productRow {
+        gap: var(--spacing-8);
+    }
+
+    .productDesc {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .productVisual {
+        padding: var(--spacing-6);
+    }
+
+    .productVisualDifferentiator {
+        font-size: var(--font-size-sm);
+    }
+
+    .ctaBlock {
+        padding: var(--spacing-10) var(--spacing-6);
+        border-radius: var(--radius-2xl);
+    }
+
+    .ctaSub {
+        font-size: var(--font-size-base);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .whyCard {
+        padding: var(--spacing-7) var(--spacing-6) var(--spacing-7) 0;
+    }
+
+    .whyCard p,
+    .whyText {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}

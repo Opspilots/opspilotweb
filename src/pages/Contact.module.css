@@ -239,3 +239,27 @@
     line-height: 1.55;
     margin: 0 0 var(--spacing-6);
 }
+
+@media (max-width: 639px) {
+    .formCard {
+        padding: var(--spacing-7) var(--spacing-5);
+        border-radius: var(--radius-xl);
+    }
+
+    .formSub {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .infoCard,
+    .waCard {
+        padding: var(--spacing-6) var(--spacing-5);
+    }
+
+    .infoCol {
+        gap: var(--spacing-5);
+    }
+}

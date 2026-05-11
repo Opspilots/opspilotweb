@@ -185,6 +185,19 @@
 }
 
 /* ═══════════════════════════════════════════
+   MOBILE — reduce section spacing
+   ═══════════════════════════════════════════ */
+@media (max-width: 639px) {
+    :root {
+        --space-section-tight:   2.5rem;
+        --space-section-default: 3.5rem;
+        --space-section-loose:   4.5rem;
+        --space-hero-top:        4rem;
+        --space-hero-bottom:     3rem;
+    }
+}
+
+/* ═══════════════════════════════════════════
    Card variants — shared building blocks
    ═══════════════════════════════════════════ */
 
