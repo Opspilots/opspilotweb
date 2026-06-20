@@ -41,6 +41,7 @@ interface Feature {
 }
 
 interface ProductCardProps {
+    id: string;
     icon: React.ReactNode;
     differentiator: string;
     features: Feature[];
@@ -53,7 +54,152 @@ const statusLabel: Record<ProductStatus, string> = {
     soon: 'Próximamente',
 };
 
-const ProductVisual: React.FC<ProductCardProps> = ({ icon, differentiator, features, status }) => (
+/* ─── Mockup components ─── */
+
+const FiscalidadMockup: React.FC = () => (
+    <div className={styles.mockupWindow}>
+        <div className={styles.mockupBar}>
+            <span className={styles.mockupDot} style={{ background: '#ff5f57' }} />
+            <span className={styles.mockupDot} style={{ background: '#febc2e' }} />
+            <span className={styles.mockupDot} style={{ background: '#28c840' }} />
+            <span className={styles.mockupTitle}>Fiscalidad · Panel</span>
+        </div>
+        <div className={styles.mockupBody}>
+            <div className={styles.mockupRow}>
+                <div className={styles.mockupCard}>
+                    <span className={styles.mockupLabel}>IVA pendiente</span>
+                    <span className={styles.mockupValue} style={{ color: 'var(--color-mint)' }}>3.420 €</span>
+                </div>
+                <div className={styles.mockupCard}>
+                    <span className={styles.mockupLabel}>Modelo 303</span>
+                    <span className={styles.mockupBadge} style={{ background: 'rgba(57,206,134,0.15)', color: 'var(--color-mint)' }}>Enviado</span>
+                </div>
+            </div>
+            <div className={styles.mockupRow}>
+                <div className={styles.mockupCard} style={{ flex: 2 }}>
+                    <span className={styles.mockupLabel}>Facturas este mes</span>
+                    <div className={styles.mockupBar2}>
+                        <div style={{ width: '72%', height: 6, background: 'var(--color-mint)', borderRadius: 3 }} />
+                    </div>
+                    <span className={styles.mockupSubval}>18 / 25 conciliadas</span>
+                </div>
+            </div>
+            <div className={styles.mockupRow}>
+                <div className={styles.mockupCard} style={{ flex: 1 }}>
+                    <span className={styles.mockupLabel}>SII</span>
+                    <span className={styles.mockupBadge} style={{ background: 'rgba(57,206,134,0.15)', color: 'var(--color-mint)' }}>Activo</span>
+                </div>
+                <div className={styles.mockupCard} style={{ flex: 1 }}>
+                    <span className={styles.mockupLabel}>VeriFactu</span>
+                    <span className={styles.mockupBadge} style={{ background: 'rgba(57,206,134,0.15)', color: 'var(--color-mint)' }}>OK</span>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+const EnergyDealMockup: React.FC = () => (
+    <div className={styles.mockupWindow}>
+        <div className={styles.mockupBar}>
+            <span className={styles.mockupDot} style={{ background: '#ff5f57' }} />
+            <span className={styles.mockupDot} style={{ background: '#febc2e' }} />
+            <span className={styles.mockupDot} style={{ background: '#28c840' }} />
+            <span className={styles.mockupTitle}>EnergyDeal · Pipeline</span>
+        </div>
+        <div className={styles.mockupBody}>
+            <div className={styles.mockupRow}>
+                <div className={styles.mockupCard} style={{ flex: 1 }}>
+                    <span className={styles.mockupLabel}>Clientes activos</span>
+                    <span className={styles.mockupValue} style={{ color: 'var(--color-mint)' }}>142</span>
+                </div>
+                <div className={styles.mockupCard} style={{ flex: 1 }}>
+                    <span className={styles.mockupLabel}>Comisiones mes</span>
+                    <span className={styles.mockupValue} style={{ color: 'var(--color-mint)' }}>8.920 €</span>
+                </div>
+            </div>
+            <div className={styles.mockupPipeline}>
+                {(['Prospecto', 'Comparativa', 'Propuesta', 'Firmado'] as const).map((s, i) => (
+                    <div key={s} className={styles.mockupPipelineStep}>
+                        <div
+                            className={styles.mockupPipelineNum}
+                            style={{
+                                background: i < 3 ? 'var(--color-mint-soft)' : 'var(--color-mint)',
+                                color: i < 3 ? 'var(--color-mint)' : '#0d141c',
+                                border: '1px solid var(--color-border-mint)',
+                            }}
+                        >
+                            {[24, 11, 6, 3][i]}
+                        </div>
+                        <span className={styles.mockupPipelineLabel}>{s}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+const PresupuestadorMockup: React.FC = () => (
+    <div className={styles.mockupWindow}>
+        <div className={styles.mockupBar}>
+            <span className={styles.mockupDot} style={{ background: '#ff5f57' }} />
+            <span className={styles.mockupDot} style={{ background: '#febc2e' }} />
+            <span className={styles.mockupDot} style={{ background: '#28c840' }} />
+            <span className={styles.mockupTitle}>Presupuestador · Obra ejemplo</span>
+        </div>
+        <div className={styles.mockupBody}>
+            <div className={styles.mockupTable}>
+                <div className={styles.mockupTableHead}>
+                    <span>Partida</span><span>Ud.</span><span>Precio</span><span>Total</span>
+                </div>
+                {[
+                    ['Demolición tabiques', 'm²', '18 €', '540 €'],
+                    ['Solado porcelánico', 'm²', '42 €', '2.100 €'],
+                    ['Pintura paredes', 'm²', '8 €', '640 €'],
+                ].map(([p, u, pr, t]) => (
+                    <div key={p} className={styles.mockupTableRow}>
+                        <span>{p}</span><span>{u}</span><span>{pr}</span>
+                        <span style={{ color: 'var(--color-mint)', fontWeight: 600 }}>{t}</span>
+                    </div>
+                ))}
+            </div>
+            <div className={styles.mockupTotal}>
+                <span>Total presupuesto</span>
+                <span style={{ color: 'var(--color-mint)', fontWeight: 700 }}>3.280 €</span>
+            </div>
+        </div>
+    </div>
+);
+
+const ErpMockup: React.FC = () => (
+    <div className={styles.mockupWindow}>
+        <div className={styles.mockupBar}>
+            <span className={styles.mockupDot} style={{ background: '#ff5f57' }} />
+            <span className={styles.mockupDot} style={{ background: '#febc2e' }} />
+            <span className={styles.mockupDot} style={{ background: '#28c840' }} />
+            <span className={styles.mockupTitle}>ERP OpsPilot · Proyectos</span>
+        </div>
+        <div className={styles.mockupBody}>
+            <div className={styles.mockupKanban}>
+                {[
+                    { col: 'En curso', items: ['Diseño web cliente A', 'Auditoría SEO'], color: 'var(--color-mint)' },
+                    { col: 'Revisión', items: ['Informe mensual'], color: 'var(--color-warm, #d99457)' },
+                    { col: 'Entregado', items: ['App móvil v2', 'Landing page'], color: 'var(--color-text-subtle)' },
+                ].map(({ col, items, color }) => (
+                    <div key={col} className={styles.mockupKanbanCol}>
+                        <div className={styles.mockupKanbanTitle} style={{ color }}>{col}</div>
+                        {items.map((item) => (
+                            <div key={item} className={styles.mockupKanbanCard}>{item}</div>
+                        ))}
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+/* ─── ProductVisual ─── */
+
+const ProductVisual: React.FC<ProductCardProps> = ({ id, icon, differentiator, features, status }) => (
     <div className={styles.productVisual}>
         <div className={styles.productVisualHeader}>
             <div className={styles.productVisualIcon}>{icon}</div>
@@ -62,6 +208,15 @@ const ProductVisual: React.FC<ProductCardProps> = ({ icon, differentiator, featu
                 {statusLabel[status]}
             </span>
         </div>
+
+        {/* Mini dashboard preview por producto */}
+        <div className={`${styles.productMockup} ${styles['mockup_' + id]}`}>
+            {id === 'fiscalidad' && <FiscalidadMockup />}
+            {id === 'energydeal' && <EnergyDealMockup />}
+            {id === 'presupuestador' && <PresupuestadorMockup />}
+            {id === 'erp' && <ErpMockup />}
+        </div>
+
         <p className={styles.productVisualDifferentiator}>{differentiator}</p>
         <ul className={styles.productVisualFeatures}>
             {features.map((f, i) => (
@@ -249,6 +404,7 @@ export const Product: React.FC = () => {
                                 </div>
                                 <div className={styles.productVisualContainer}>
                                     <ProductVisual
+                                        id={p.id}
                                         icon={p.icon}
                                         differentiator={p.differentiator}
                                         features={p.features}
