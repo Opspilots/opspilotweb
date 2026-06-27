@@ -163,20 +163,33 @@ export const Home: React.FC = () => {
                                 Ver soluciones <ArrowRight size={16} strokeWidth={2} />
                             </Link>
                         </div>
-                        <ul className={styles.trustList} aria-label="Garantías">
-                            <li>
-                                <span className={styles.trustDot} aria-hidden="true" />
-                                Diagnóstico gratuito
-                            </li>
-                            <li>
-                                <span className={styles.trustDot} aria-hidden="true" />
-                                Respuesta &lt; 24h laborables
-                            </li>
-                            <li>
-                                <span className={styles.trustDot} aria-hidden="true" />
-                                Sin compromiso
-                            </li>
-                        </ul>
+                    </div>
+
+                    <div className={styles.heroVisual} aria-hidden="true">
+                        <div className={styles.heroProofCard}>
+                            <div className={styles.heroProofBadge}>
+                                <Check size={12} strokeWidth={2.5} />
+                                Diagnóstico completado
+                            </div>
+                            <h4 className={styles.heroProofTitle}>Cuello de botella detectado</h4>
+                            <p className={styles.heroProofDetail}>
+                                Gestión de presupuestos fragmentada entre correo, Excel y llamadas — bloqueando el crecimiento del equipo.
+                            </p>
+                            <div className={styles.heroProofDivider} />
+                            <p className={styles.heroProofLabel}>Solución propuesta</p>
+                            <p className={styles.heroProofValue}>Sistema de presupuestado + firma digital</p>
+                            <div className={styles.heroProofFooter}>
+                                <span className={styles.heroProofFooterLeft}>Entrega en 6–8 semanas</span>
+                                <span className={styles.heroProofStatus}>
+                                    <span className={styles.heroProofDot} />
+                                    En producción
+                                </span>
+                            </div>
+                        </div>
+                        <div className={styles.heroProofFloater}>
+                            <Check size={13} strokeWidth={2.5} />
+                            Respuesta en menos de 24h
+                        </div>
                     </div>
                 </div>
             </section>
@@ -241,6 +254,55 @@ export const Home: React.FC = () => {
                 </div>
             </section>
 
+            {/* ═══ CASOS DE ÉXITO — carrusel ═══ */}
+            <section className={styles.caseSection}>
+                <div className={styles.container} ref={caseRef}>
+                    <header className={`${styles.sectionHeader} reveal`}>
+                        <h2 className={styles.sectionTitle}>
+                            Lo que construimos ya está trabajando.
+                        </h2>
+                    </header>
+
+                    <div
+                        className={styles.caseCarousel}
+                        onMouseEnter={() => setCarouselPaused(true)}
+                        onMouseLeave={() => setCarouselPaused(false)}
+                    >
+                        {CASES.map((c, i) => {
+                            const pos = getCasePosition(i);
+                            return (
+                                <article
+                                    key={i}
+                                    className={`${styles.caseCard} ${styles[`case_${pos}`]}`}
+                                    onClick={() => pos !== 'current' && pos !== 'far' && setActiveCase(i)}
+                                    aria-hidden={pos !== 'current'}
+                                >
+                                    <span className={styles.caseEyebrow}>{c.eyebrow}</span>
+                                    <h3 className={styles.caseCardTitle}>{c.title}</h3>
+                                    <p className={styles.caseCardSummary}>{c.summary}</p>
+                                    <ul className={styles.caseCardBullets}>
+                                        {c.bullets.map((b, j) => (
+                                            <li key={j}>
+                                                <span className={styles.caseCheck}><Check size={14} strokeWidth={2.2} /></span>
+                                                {b}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <div className={styles.caseCardStats}>
+                                        {c.stats.map((s, j) => (
+                                            <div className={styles.caseStat} key={j}>
+                                                <span className={styles.caseStatNumber}>{s.value}</span>
+                                                <span className={styles.caseStatLabel}>{s.label}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </article>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
             {/* ═══ MÉTODO ═══ */}
             <section className={styles.methodSection}>
                 <div className={styles.container} ref={methodScrollRef}>
@@ -290,55 +352,6 @@ export const Home: React.FC = () => {
                                 nos necesites.
                             </p>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ═══ CASOS DE ÉXITO — carrusel ═══ */}
-            <section className={styles.caseSection}>
-                <div className={styles.container} ref={caseRef}>
-                    <header className={`${styles.sectionHeader} reveal`}>
-                        <h2 className={styles.sectionTitle}>
-                            Lo que construimos ya está trabajando.
-                        </h2>
-                    </header>
-
-                    <div
-                        className={styles.caseCarousel}
-                        onMouseEnter={() => setCarouselPaused(true)}
-                        onMouseLeave={() => setCarouselPaused(false)}
-                    >
-                        {CASES.map((c, i) => {
-                            const pos = getCasePosition(i);
-                            return (
-                                <article
-                                    key={i}
-                                    className={`${styles.caseCard} ${styles[`case_${pos}`]}`}
-                                    onClick={() => pos !== 'current' && pos !== 'far' && setActiveCase(i)}
-                                    aria-hidden={pos !== 'current'}
-                                >
-                                    <span className={styles.caseEyebrow}>{c.eyebrow}</span>
-                                    <h3 className={styles.caseCardTitle}>{c.title}</h3>
-                                    <p className={styles.caseCardSummary}>{c.summary}</p>
-                                    <ul className={styles.caseCardBullets}>
-                                        {c.bullets.map((b, j) => (
-                                            <li key={j}>
-                                                <span className={styles.caseCheck}><Check size={14} strokeWidth={2.2} /></span>
-                                                {b}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <div className={styles.caseCardStats}>
-                                        {c.stats.map((s, j) => (
-                                            <div className={styles.caseStat} key={j}>
-                                                <span className={styles.caseStatNumber}>{s.value}</span>
-                                                <span className={styles.caseStatLabel}>{s.label}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </article>
-                            );
-                        })}
                     </div>
                 </div>
             </section>

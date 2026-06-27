@@ -90,14 +90,19 @@
     max-width: 1280px;
     margin: 0 auto;
     padding: 0 var(--spacing-7);
-    display: flex;
-    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
     align-items: center;
-    justify-content: center;
+    gap: var(--spacing-10);
+    flex: 1;
 }
 
 @media (min-width: 1024px) {
-    .heroInner { padding: 0 var(--spacing-10); }
+    .heroInner {
+        grid-template-columns: 1.15fr 0.85fr;
+        padding: 0 var(--spacing-10);
+        gap: var(--spacing-16);
+    }
 }
 
 .auroraBackground {
@@ -136,11 +141,145 @@
     position: relative;
     z-index: 2;
     width: 100%;
-    max-width: 720px;
     text-align: left;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+}
+
+/* ─── Hero Visual (panel derecho) ─── */
+.heroVisual {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-4);
+}
+
+@media (min-width: 1024px) {
+    .heroVisual { display: flex; }
+}
+
+.heroProofCard {
+    background: linear-gradient(160deg,
+        rgba(24, 34, 46, 0.92) 0%,
+        rgba(15, 22, 32, 0.95) 100%);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-2xl);
+    padding: var(--spacing-8);
+    position: relative;
+    overflow: hidden;
+}
+
+.heroProofCard::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+}
+
+.heroProofBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-mint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: var(--spacing-5);
+}
+
+.heroProofTitle {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-strong);
+    margin-bottom: var(--spacing-3);
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+}
+
+.heroProofDetail {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-6);
+}
+
+.heroProofDivider {
+    height: 1px;
+    background: var(--color-border-subtle);
+    margin-bottom: var(--spacing-5);
+}
+
+.heroProofLabel {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-subtle);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: var(--spacing-2);
+}
+
+.heroProofValue {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-strong);
+    margin-bottom: var(--spacing-6);
+    letter-spacing: -0.02em;
+}
+
+.heroProofFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.heroProofFooterLeft {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.heroProofStatus {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-mint);
+}
+
+.heroProofDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-mint);
+    flex-shrink: 0;
+    animation: heroPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes heroPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+.heroProofFloater {
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-mint);
+    border-radius: var(--radius-full);
+    padding: var(--spacing-3) var(--spacing-5);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-mint);
 }
 
 .heroTitle {
