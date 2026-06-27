@@ -125,10 +125,6 @@ export const Resources: React.FC = () => {
                 <div className={sys.container}>
                     <div className={`${styles.newsletter} reveal`} ref={nlRef}>
                         <div className={styles.nlContent}>
-                            <span className={sys.eyebrow}>
-                                <span className={sys.eyebrowDot} />
-                                Newsletter
-                            </span>
                             <h2 className={styles.nlTitle}>Una idea útil cada semana.</h2>
                             <p className={styles.nlText}>
                                 Un email semanal con automatizaciones prácticas, herramientas y casos

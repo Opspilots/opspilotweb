@@ -118,10 +118,6 @@ export const Services: React.FC = () => {
             <section className={sys.section}>
                 <div className={sys.container}>
                     <header className={`${sys.sectionHeader} reveal`}>
-                        <span className={sys.eyebrow}>
-                            <span className={sys.eyebrowDot} />
-                            Qué hacemos
-                        </span>
                         <h2 className={sys.sectionTitle}>
                             ¿Qué podemos hacer por ti?
                         </h2>
@@ -155,10 +151,6 @@ export const Services: React.FC = () => {
             <section className={`${sys.section} ${sys.sectionAlt}`}>
                 <div className={sys.container}>
                     <header className={`${sys.sectionHeader} reveal`}>
-                        <span className={sys.eyebrow}>
-                            <span className={sys.eyebrowDot} />
-                            Por qué OpsPilot
-                        </span>
                         <h2 className={sys.sectionTitle}>Lo que nos diferencia.</h2>
                     </header>
                     <div className={styles.valueGrid} ref={valueRef}>

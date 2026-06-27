@@ -46,10 +46,6 @@ export const Pricing: React.FC = () => {
             <section className={styles.customSection}>
                 <div className={sys.container}>
                     <header className={`${sys.sectionHeader}`}>
-                        <span className={sys.eyebrow}>
-                            <span className={sys.eyebrowDot} />
-                            Servicios a medida
-                        </span>
                         <h2 className={sys.sectionTitle}>
                             Cada proyecto es único. Por eso lo presupuestamos individualmente.
                         </h2>
@@ -94,10 +90,6 @@ export const Pricing: React.FC = () => {
             <section className={`${sys.sectionLoose} ${sys.sectionAlt}`}>
                 <div className={sys.container} ref={pricingRef}>
                     <header className={`${sys.sectionHeader} reveal`}>
-                        <span className={sys.eyebrow}>
-                            <span className={sys.eyebrowDot} />
-                            Productos verticales
-                        </span>
                         <h2 className={sys.sectionTitle}>
                             Suscripción mensual fija. Sin permanencia.
                         </h2>
@@ -169,10 +161,6 @@ export const Pricing: React.FC = () => {
             <section className={styles.faqSection}>
                 <div className={sys.container} ref={faqRef}>
                     <header className={`${sys.sectionHeader} reveal`}>
-                        <span className={sys.eyebrow}>
-                            <span className={sys.eyebrowDot} />
-                            Preguntas frecuentes
-                        </span>
                         <h2 className={sys.sectionTitle}>Lo que la gente nos pregunta.</h2>
                     </header>
                     <div className={styles.faqGrid}>

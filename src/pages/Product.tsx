@@ -375,10 +375,6 @@ export const Product: React.FC = () => {
             <section className={styles.section}>
                 <div className={sys.container} ref={productsRef}>
                     <header className={`${sys.sectionHeader} reveal`}>
-                        <span className={sys.eyebrow}>
-                            <span className={sys.eyebrowDot} />
-                            Catálogo
-                        </span>
                         <h2 className={sys.sectionTitle}>Nuestros productos.</h2>
                     </header>
                     <div className={styles.productsList}>
@@ -421,10 +417,6 @@ export const Product: React.FC = () => {
             <section className={`${sys.sectionLoose} ${sys.sectionAlt}`}>
                 <div className={sys.container} ref={advantagesRef}>
                     <header className={`${sys.sectionHeader} reveal`}>
-                        <span className={sys.eyebrow}>
-                            <span className={sys.eyebrowDot} />
-                            Por qué
-                        </span>
                         <h2 className={sys.sectionTitle}>Diseñados para España.</h2>
                     </header>
                     <div className={styles.whyGrid}>
