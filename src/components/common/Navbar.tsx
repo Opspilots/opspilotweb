@@ -45,6 +45,7 @@ export const Navbar: React.FC = () => {
                         <NavLink to={ROUTES.productos} className={navLinkClass}>Productos</NavLink>
                         <NavLink to={ROUTES.soluciones} className={navLinkClass}>Soluciones</NavLink>
                         <NavLink to={ROUTES.casos} className={navLinkClass}>Casos de Éxito</NavLink>
+                        <NavLink to={ROUTES.recursos} className={navLinkClass}>Recursos</NavLink>
                         <Link to={ROUTES.contacto}>
                             <Button variant="primary" size="sm">Diagnóstico gratuito</Button>
                         </Link>
