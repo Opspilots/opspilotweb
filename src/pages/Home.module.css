@@ -44,7 +44,6 @@
     height: 6px;
     border-radius: 50%;
     background: var(--color-mint);
-    box-shadow: 0 0 8px rgba(57, 206, 134, 0.6);
 }
 
 /* ─── Section header ─── */
@@ -133,43 +132,25 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.heroSpotlight {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    --mx: 50;
-    --my: 35;
-    background: radial-gradient(
-        circle 480px at calc(var(--mx) * 1%) calc(var(--my) * 1%),
-        rgba(57, 206, 134, 0.16) 0%,
-        rgba(57, 206, 134, 0.06) 28%,
-        transparent 60%
-    );
-    mix-blend-mode: screen;
-    transition: background 80ms linear;
-}
-
-.heroContentCentered {
+.heroContent {
     position: relative;
     z-index: 2;
     width: 100%;
-    max-width: 860px;
-    text-align: center;
+    max-width: 720px;
+    text-align: left;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
 }
 
 .heroTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(2rem, 4.5vw, 3.75rem);
+    font-size: clamp(2.5rem, 5.5vw, 5rem);
     font-weight: var(--font-weight-extrabold);
     color: var(--color-text-strong);
-    line-height: 1.05;
+    line-height: 1.04;
     margin-bottom: var(--spacing-8);
-    letter-spacing: -0.04em;
+    letter-spacing: -0.045em;
     text-wrap: balance;
     display: flex;
     flex-direction: column;
@@ -177,33 +158,6 @@
 }
 
 .heroLine { display: block; }
-
-.rotator {
-    display: inline-block;
-    position: relative;
-    vertical-align: top;
-    overflow: hidden;
-    line-height: inherit;
-}
-
-.rotatorSpacer {
-    display: inline-block;
-    visibility: hidden;
-    white-space: nowrap;
-    pointer-events: none;
-    user-select: none;
-}
-
-.rotatorWord {
-    position: absolute;
-    inset: 0;
-    white-space: nowrap;
-    background: var(--gradient-mint-text);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    will-change: transform, opacity;
-}
 
 .heroSubtitle {
     font-size: clamp(1.05rem, 1.4vw, 1.2rem);
@@ -218,7 +172,7 @@
     gap: var(--spacing-6);
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .ctaSecondary {
@@ -242,10 +196,10 @@
     list-style: none;
     margin: var(--spacing-8) 0 0;
     padding: 0;
-    display: inline-flex;
+    display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: var(--spacing-4) var(--spacing-7);
 }
 
@@ -265,7 +219,6 @@
     height: 6px;
     border-radius: 50%;
     background: var(--color-mint);
-    box-shadow: 0 0 8px rgba(57, 206, 134, 0.55);
     flex-shrink: 0;
 }
 
@@ -741,7 +694,6 @@
     height: 6px;
     border-radius: 50%;
     background: var(--color-mint);
-    box-shadow: 0 0 8px rgba(57, 206, 134, 0.6);
 }
 
 .caseCardTitle {
@@ -824,14 +776,10 @@
     font-family: var(--font-family-display);
     font-size: clamp(1.875rem, 3vw, 2.5rem);
     font-weight: var(--font-weight-bold);
-    color: var(--color-text-strong);
+    color: var(--color-warm);
     letter-spacing: -0.03em;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    background: var(--gradient-mint-text);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .caseStatLabel {

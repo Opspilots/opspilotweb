@@ -22,25 +22,12 @@ import {
     PencilRuler,
     Check,
     ArrowRight,
-    Clock,
-    GitMerge,
-    TrendingUp,
 } from 'lucide-react';
 import styles from './Home.module.css';
 import sys from '../styles/page-system.module.css';
 import Aurora from '../components/common/Aurora';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const ROTATING_WORDS = [
-    'PYMEs españolas',
-    'tu fiscalidad',
-    'tu sector energético',
-    'tus obras',
-    'tus agencias',
-    'lo que necesites',
-];
-const ROTATOR_SPACER = ROTATING_WORDS.reduce((a, b) => (a.length >= b.length ? a : b));
 
 const CASES = [
     {
@@ -93,29 +80,6 @@ const CASES = [
     },
 ];
 
-const PROBLEMS = [
-    {
-        icon: <Clock size={22} strokeWidth={1.6} />,
-        title: 'Procesos que devoran tiempo',
-        text: 'Tu equipo dedica horas a tareas que podría hacer un sistema. Copiar datos, enviar emails, rellenar formularios — trabajo que no debería depender de una persona.',
-    },
-    {
-        icon: <GitMerge size={22} strokeWidth={1.6} />,
-        title: 'Información fragmentada',
-        text: 'Los datos de tu negocio viven en emails, hojas y apps distintas que no hablan entre sí. Cuando necesitas un número, primero tienes que buscarlo.',
-    },
-    {
-        icon: <Layers size={22} strokeWidth={1.6} />,
-        title: 'Software que no se adapta',
-        text: 'Las herramientas del mercado son demasiado genéricas o demasiado complejas. Acabas adaptando tu forma de trabajar al software, cuando debería ser al revés.',
-    },
-    {
-        icon: <TrendingUp size={22} strokeWidth={1.6} />,
-        title: 'Crecer sin poder escalar',
-        text: 'Quieres atender más clientes o proyectos, pero cada nuevo cliente añade más carga manual. No puedes contratar a alguien nuevo para cada cosa.',
-    },
-];
-
 export const Home: React.FC = () => {
     usePageSEO({
         title: 'OpsPilot — Software a medida y productos verticales para PYMEs en España',
@@ -124,11 +88,8 @@ export const Home: React.FC = () => {
     });
 
     const heroRef = useRef<HTMLDivElement>(null);
-    const rotatorRef = useRef<HTMLSpanElement>(null);
-    const spotlightRef = useRef<HTMLDivElement>(null);
 
     const problemRef = useScrollReveal<HTMLDivElement>({ stagger: true });
-    const problemsAltRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const methodScrollRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const caseRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const ctaRef = useScrollReveal<HTMLDivElement>();
@@ -159,36 +120,7 @@ export const Home: React.FC = () => {
                     .from(`.${styles.trustList} li`, { opacity: 0, y: 10, duration: 0.5, stagger: 0.06 }, '-=0.35');
             }
 
-            if (rotatorRef.current && !reduce) {
-                const el = rotatorRef.current;
-                el.textContent = ROTATING_WORDS[0];
-                gsap.set(el, { yPercent: 0, opacity: 1 });
-                const tl = gsap.timeline({ repeat: -1, defaults: { ease: 'power2.inOut' }, delay: 2.6 });
-                ROTATING_WORDS.forEach((_, i) => {
-                    const next = ROTATING_WORDS[(i + 1) % ROTATING_WORDS.length];
-                    tl.to(el, { yPercent: -100, opacity: 0, duration: 0.5 })
-                        .set(el, { textContent: next, yPercent: 100 })
-                        .to(el, { yPercent: 0, opacity: 1, duration: 0.5 })
-                        .to({}, { duration: 2.6 });
-                });
-            } else if (rotatorRef.current) {
-                rotatorRef.current.textContent = ROTATING_WORDS[0];
-            }
-
-            if (!reduce && !window.matchMedia?.('(hover: none)').matches && heroRef.current && spotlightRef.current) {
-                const xTo = gsap.quickTo(spotlightRef.current, '--mx' as any, { duration: 0.4, ease: 'power3.out' });
-                const yTo = gsap.quickTo(spotlightRef.current, '--my' as any, { duration: 0.4, ease: 'power3.out' });
-                const onMove = (e: MouseEvent) => {
-                    if (!heroRef.current) return;
-                    const r = heroRef.current.getBoundingClientRect();
-                    xTo(((e.clientX - r.left) / r.width) * 100);
-                    yTo(((e.clientY - r.top) / r.height) * 100);
-                };
-                heroRef.current.addEventListener('mousemove', onMove);
-                return () => heroRef.current?.removeEventListener('mousemove', onMove);
-            }
-
-        }, heroRef);
+            }, heroRef);
 
         return () => ctx.revert();
     }, []);
@@ -211,28 +143,21 @@ export const Home: React.FC = () => {
                 </div>
                 <div className={styles.heroVeil} />
                 <div className={styles.heroNoise} aria-hidden="true" />
-                <div className={styles.heroSpotlight} ref={spotlightRef} aria-hidden="true" />
 
                 <div className={styles.heroInner}>
-                    <div className={styles.heroContentCentered}>
+                    <div className={styles.heroContent}>
                         <h1 className={styles.heroTitle}>
-                            <span className={styles.heroLine}>Construimos software</span>
-                            <span className={styles.heroLine}>
-                                a medida para{' '}
-                                <span className={styles.rotator}>
-                                    <span className={styles.rotatorSpacer} aria-hidden="true">{ROTATOR_SPACER}</span>
-                                    <span className={styles.rotatorWord} ref={rotatorRef}>{ROTATING_WORDS[0]}</span>
-                                </span>
-                            </span>
+                            <span className={styles.heroLine}>Software a medida</span>
+                            <span className={styles.heroLine}>para PYMEs que ya no</span>
+                            <span className={styles.heroLine}>caben en el Excel.</span>
                         </h1>
                         <p className={styles.heroSubtitle}>
-                            Empresa de desarrollo de software en España. Diseñamos, construimos y
-                            mantenemos las herramientas digitales que tu negocio necesita —
-                            no las que te quieren vender.
+                            Diseñamos el sistema que tu negocio necesita —no el que te quieren vender.
+                            Presupuesto cerrado, respuesta en menos de 24h.
                         </p>
                         <div className={styles.ctaGroup}>
                             <Link to={ROUTES.contacto}>
-                                <Button variant="primary" size="lg">Reservar diagnóstico</Button>
+                                <Button variant="primary" size="lg">Cuéntanos tu problema</Button>
                             </Link>
                             <Link to={ROUTES.soluciones} className={styles.ctaSecondary}>
                                 Ver soluciones <ArrowRight size={16} strokeWidth={2} />
@@ -312,26 +237,6 @@ export const Home: React.FC = () => {
                                 que se va en cambiar de contexto no lo recuperas.
                             </p>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ═══ TIPOS DE PROBLEMA ═══ */}
-            <section className={styles.problemsAltSection}>
-                <div className={styles.container} ref={problemsAltRef}>
-                    <header className={`${styles.sectionHeader} reveal`}>
-                        <h2 className={styles.sectionTitle}>
-                            Problemas reales que ralentizan empresas reales.
-                        </h2>
-                    </header>
-                    <div className={styles.problemsAltGrid}>
-                        {PROBLEMS.map((p, i) => (
-                            <div key={i} className={`${styles.problemsAltCard} reveal`}>
-                                <div className={styles.problemsAltIcon}>{p.icon}</div>
-                                <h3 className={styles.problemsAltTitle}>{p.title}</h3>
-                                <p className={styles.problemsAltText}>{p.text}</p>
-                            </div>
-                        ))}
                     </div>
                 </div>
             </section>

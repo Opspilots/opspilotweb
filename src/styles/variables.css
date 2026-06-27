@@ -6,8 +6,8 @@
        ═══════════════════════════════════════════ */
 
     /* Surfaces (dark) */
-    --color-bg-deep: #0d141c;        /* Página, fondo profundo */
-    --color-bg: #111a23;             /* Sección estándar / dark navy original */
+    --color-bg-deep: #0a0e14;        /* Página, fondo profundo */
+    --color-bg: #0f1620;             /* Sección estándar / dark navy original */
     --color-bg-elevated: #18222e;    /* Subsección o card densa */
     --color-bg-raised: #1f2a37;      /* Card destacada / panel */
 
@@ -27,7 +27,7 @@
     --color-mint-dark: #2bb874;
     --color-mint-soft: rgba(57, 206, 134, 0.10);
 
-    --color-warm: #d99457;           /* Ámbar templado — acento secundario */
+    --color-warm: #e8a563;           /* Ámbar templado — acento secundario */
     --color-warm-soft: rgba(217, 148, 87, 0.10);
 
     /* Status (subtle) */
@@ -59,12 +59,12 @@
 
     /* ═══════════════════════════════════════════
        TYPOGRAPHY
-       Display: Space Grotesk (geometric, deliberate)
+       Display: Bricolage Grotesque (variable, expressive)
        Body: Inter (functional)
        Numerals: tabular figures across the system
        ═══════════════════════════════════════════ */
     --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-family-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    --font-family-display: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
     --font-family-heading: var(--font-family-display);
     --font-family-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
@@ -90,7 +90,7 @@
 
     /* Tracking */
     --tracking-tight: -0.025em;
-    --tracking-display: -0.035em;
+    --tracking-display: -0.045em;
     --tracking-base: 0;
     --tracking-wide: 0.04em;
     --tracking-wider: 0.12em;
