@@ -455,6 +455,7 @@
     transition: background var(--transition-normal);
     position: relative;
     overflow: hidden;
+    will-change: transform;
 }
 
 @media (min-width: 768px) {

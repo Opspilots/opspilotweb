@@ -117,12 +117,57 @@ export const Home: React.FC = () => {
                 })
                     .from(`.${styles.heroSubtitle}`, { opacity: 0, y: 18, duration: 0.7 }, '-=0.55')
                     .from(`.${styles.ctaGroup} > *`, { opacity: 0, y: 14, duration: 0.55, stagger: 0.08 }, '-=0.45')
-                    .from(`.${styles.trustList} li`, { opacity: 0, y: 10, duration: 0.5, stagger: 0.06 }, '-=0.35');
-            }
+                    .from(`.${styles.heroVisual}`, { opacity: 0, x: 36, duration: 0.9 }, '-=0.6');
 
-            }, heroRef);
+                // Stat reveal en casos
+                ScrollTrigger.create({
+                    trigger: `.${styles.caseCarousel}`,
+                    start: 'top 78%',
+                    once: true,
+                    onEnter: () => {
+                        gsap.from(`.${styles.caseStat}`, {
+                            opacity: 0, y: 14, scale: 0.9,
+                            duration: 0.55, stagger: 0.07, ease: 'power2.out',
+                        });
+                    },
+                });
+            }
+        }, heroRef);
 
         return () => ctx.revert();
+    }, []);
+
+    useEffect(() => {
+        if (window.matchMedia?.('(hover: none)').matches) return;
+
+        const cards = Array.from(document.querySelectorAll<HTMLElement>(`.${styles.problemCard}`));
+        const cleanups: (() => void)[] = [];
+
+        cards.forEach((el) => {
+            gsap.set(el, { transformPerspective: 900 });
+
+            const xTo = gsap.quickTo(el, 'rotationY', { duration: 0.45, ease: 'power3.out' });
+            const yTo = gsap.quickTo(el, 'rotationX', { duration: 0.45, ease: 'power3.out' });
+
+            const onMove = (e: MouseEvent) => {
+                const r = el.getBoundingClientRect();
+                const xPct = ((e.clientX - r.left) / r.width - 0.5) * 2;
+                const yPct = ((e.clientY - r.top) / r.height - 0.5) * 2;
+                xTo(xPct * 7);
+                yTo(-yPct * 5);
+            };
+            const onLeave = () => { xTo(0); yTo(0); };
+
+            el.addEventListener('mousemove', onMove);
+            el.addEventListener('mouseleave', onLeave);
+            cleanups.push(() => {
+                el.removeEventListener('mousemove', onMove);
+                el.removeEventListener('mouseleave', onLeave);
+                gsap.set(el, { rotationX: 0, rotationY: 0 });
+            });
+        });
+
+        return () => cleanups.forEach(fn => fn());
     }, []);
 
     const getCasePosition = (i: number): 'current' | 'prev' | 'next' | 'far' => {
@@ -277,7 +322,6 @@ export const Home: React.FC = () => {
                                     onClick={() => pos !== 'current' && pos !== 'far' && setActiveCase(i)}
                                     aria-hidden={pos !== 'current'}
                                 >
-                                    <span className={styles.caseEyebrow}>{c.eyebrow}</span>
                                     <h3 className={styles.caseCardTitle}>{c.title}</h3>
                                     <p className={styles.caseCardSummary}>{c.summary}</p>
                                     <ul className={styles.caseCardBullets}>
