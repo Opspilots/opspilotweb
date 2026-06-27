@@ -53,8 +53,7 @@ export const Footer: React.FC = () => {
                         <h4 className={styles.heading}>Producto</h4>
                         <Link to={ROUTES.productos} className={styles.link}>Productos verticales</Link>
                         <Link to={ROUTES.soluciones} className={styles.link}>Soluciones por sector</Link>
-                        <Link to={ROUTES.servicios} className={styles.link}>Servicios a medida</Link>
-                        <Link to={ROUTES.precios} className={styles.link}>Precios</Link>
+                        <Link to={ROUTES.casos} className={styles.link}>Casos de Éxito</Link>
                     </div>
 
                     <div className={styles.links}>

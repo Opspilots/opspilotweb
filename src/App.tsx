@@ -6,9 +6,7 @@ import { ROUTES, LEGACY_REDIRECTS } from './lib/routes';
 import './index.css';
 
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
-const Services = lazy(() => import('./pages/Services').then(m => ({ default: m.Services })));
 const Cases = lazy(() => import('./pages/Cases').then(m => ({ default: m.Cases })));
-const Pricing = lazy(() => import('./pages/Pricing').then(m => ({ default: m.Pricing })));
 const Resources = lazy(() => import('./pages/Resources').then(m => ({ default: m.Resources })));
 const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
 const Soluciones = lazy(() => import('./pages/Soluciones').then(m => ({ default: m.Soluciones })));
@@ -26,9 +24,9 @@ function App() {
                         <Route path={ROUTES.home} element={<Home />} />
                         <Route path={ROUTES.soluciones} element={<Soluciones />} />
                         <Route path={ROUTES.productos} element={<Product />} />
-                        <Route path={ROUTES.servicios} element={<Services />} />
+                        <Route path={ROUTES.servicios} element={<Navigate to={ROUTES.contacto} replace />} />
                         <Route path={ROUTES.casos} element={<Cases />} />
-                        <Route path={ROUTES.precios} element={<Pricing />} />
+                        <Route path={ROUTES.precios} element={<Navigate to={ROUTES.contacto} replace />} />
                         <Route path={ROUTES.recursos} element={<Resources />} />
                         <Route path={ROUTES.contacto} element={<Contact />} />
                         <Route path={ROUTES.diagnostico} element={<Navigate to={ROUTES.contacto} replace />} />

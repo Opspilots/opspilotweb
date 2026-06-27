@@ -556,9 +556,8 @@
 .processNumWrap {
     position: relative;
     margin-bottom: var(--spacing-5);
-    height: 72px;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
 }
 
 .processNumBg {

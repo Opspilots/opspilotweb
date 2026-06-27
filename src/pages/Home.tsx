@@ -234,8 +234,8 @@ export const Home: React.FC = () => {
                             <Link to={ROUTES.contacto}>
                                 <Button variant="primary" size="lg">Reservar diagnóstico</Button>
                             </Link>
-                            <Link to={ROUTES.servicios} className={styles.ctaSecondary}>
-                                Cómo trabajamos <ArrowRight size={16} strokeWidth={2} />
+                            <Link to={ROUTES.soluciones} className={styles.ctaSecondary}>
+                                Ver soluciones <ArrowRight size={16} strokeWidth={2} />
                             </Link>
                         </div>
                         <ul className={styles.trustList} aria-label="Garantías">
@@ -277,17 +277,12 @@ export const Home: React.FC = () => {
             <section className={styles.problemSection}>
                 <div className={styles.container} ref={problemRef}>
                     <header className={`${styles.sectionHeader} reveal`}>
-                        <span className={styles.eyebrow}>
-                            <span className={styles.eyebrowDot} />
-                            Por qué nos eligen
-                        </span>
                         <h2 className={styles.sectionTitle}>
                             Las herramientas que usas no fueron pensadas para ti.
                         </h2>
                     </header>
                     <div className={styles.problemGrid}>
                         <div className={`${styles.problemCard} reveal`}>
-                            <div className={styles.problemNum} aria-hidden="true">01</div>
                             <div className={styles.problemIcon}>
                                 <Layers size={22} strokeWidth={1.5} aria-hidden="true" />
                             </div>
@@ -298,7 +293,6 @@ export const Home: React.FC = () => {
                             </p>
                         </div>
                         <div className={`${styles.problemCard} reveal`}>
-                            <div className={styles.problemNum} aria-hidden="true">02</div>
                             <div className={styles.problemIcon}>
                                 <PencilRuler size={22} strokeWidth={1.5} aria-hidden="true" />
                             </div>
@@ -309,7 +303,6 @@ export const Home: React.FC = () => {
                             </p>
                         </div>
                         <div className={`${styles.problemCard} reveal`}>
-                            <div className={styles.problemNum} aria-hidden="true">03</div>
                             <div className={styles.problemIcon}>
                                 <Workflow size={22} strokeWidth={1.5} aria-hidden="true" />
                             </div>
@@ -327,10 +320,6 @@ export const Home: React.FC = () => {
             <section className={styles.problemsAltSection}>
                 <div className={styles.container} ref={problemsAltRef}>
                     <header className={`${styles.sectionHeader} reveal`}>
-                        <span className={styles.eyebrow}>
-                            <span className={styles.eyebrowDot} />
-                            Lo que resolvemos
-                        </span>
                         <h2 className={styles.sectionTitle}>
                             Problemas reales que ralentizan empresas reales.
                         </h2>
@@ -351,10 +340,6 @@ export const Home: React.FC = () => {
             <section className={styles.methodSection}>
                 <div className={styles.container} ref={methodScrollRef}>
                     <header className={`${styles.sectionHeader} reveal`}>
-                        <span className={styles.eyebrow}>
-                            <span className={styles.eyebrowDot} />
-                            Cómo trabajamos
-                        </span>
                         <h2 className={styles.sectionTitle}>
                             Así trabajamos contigo.
                         </h2>
@@ -362,7 +347,6 @@ export const Home: React.FC = () => {
                     <div className={styles.processGrid}>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumBg} aria-hidden="true">01</span>
                                 <span className={styles.processNumLabel}><MessagesSquare size={18} strokeWidth={1.6} /></span>
                             </div>
                             <h3 className={styles.stepTitle}>Te escuchamos</h3>
@@ -373,7 +357,6 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumBg} aria-hidden="true">02</span>
                                 <span className={styles.processNumLabel}><Search size={18} strokeWidth={1.6} /></span>
                             </div>
                             <h3 className={styles.stepTitle}>Localizamos el problema</h3>
@@ -384,7 +367,6 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumBg} aria-hidden="true">03</span>
                                 <span className={styles.processNumLabel}><FileCheck size={18} strokeWidth={1.6} /></span>
                             </div>
                             <h3 className={styles.stepTitle}>Te proponemos algo concreto</h3>
@@ -395,7 +377,6 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumBg} aria-hidden="true">04</span>
                                 <span className={styles.processNumLabel}><Wrench size={18} strokeWidth={1.6} /></span>
                             </div>
                             <h3 className={styles.stepTitle}>Lo hacemos y nos quedamos</h3>
@@ -412,10 +393,6 @@ export const Home: React.FC = () => {
             <section className={styles.caseSection}>
                 <div className={styles.container} ref={caseRef}>
                     <header className={`${styles.sectionHeader} reveal`}>
-                        <span className={styles.eyebrow}>
-                            <span className={styles.eyebrowDot} />
-                            Casos de éxito
-                        </span>
                         <h2 className={styles.sectionTitle}>
                             Lo que construimos ya está trabajando.
                         </h2>
@@ -474,8 +451,8 @@ export const Home: React.FC = () => {
                             <Link to={ROUTES.contacto}>
                                 <Button variant="primary" size="lg">Reservar diagnóstico</Button>
                             </Link>
-                            <Link to={ROUTES.servicios}>
-                                <Button variant="outline" size="lg">Ver cómo trabajamos</Button>
+                            <Link to={ROUTES.soluciones}>
+                                <Button variant="outline" size="lg">Ver soluciones</Button>
                             </Link>
                         </div>
                     </div>

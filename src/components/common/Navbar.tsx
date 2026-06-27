@@ -44,11 +44,8 @@ export const Navbar: React.FC = () => {
                         <NavLink to={ROUTES.home} end className={navLinkClass}>Inicio</NavLink>
                         <NavLink to={ROUTES.productos} className={navLinkClass}>Productos</NavLink>
                         <NavLink to={ROUTES.soluciones} className={navLinkClass}>Soluciones</NavLink>
-                        <NavLink to={ROUTES.servicios} className={navLinkClass}>Servicios</NavLink>
                         <NavLink to={ROUTES.casos} className={navLinkClass}>Casos de Éxito</NavLink>
-                        <NavLink to={ROUTES.precios} className={navLinkClass}>Precios</NavLink>
                         <Link to={ROUTES.contacto}>
-
                             <Button variant="primary" size="sm">Diagnóstico gratuito</Button>
                         </Link>
                     </div>
@@ -67,9 +64,7 @@ export const Navbar: React.FC = () => {
                 <NavLink to={ROUTES.home} end className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Inicio</NavLink>
                 <NavLink to={ROUTES.productos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Productos</NavLink>
                 <NavLink to={ROUTES.soluciones} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Soluciones</NavLink>
-                <NavLink to={ROUTES.servicios} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Servicios</NavLink>
                 <NavLink to={ROUTES.casos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Casos de Éxito</NavLink>
-                <NavLink to={ROUTES.precios} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Precios</NavLink>
                 <NavLink to={ROUTES.recursos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Recursos</NavLink>
                 <NavLink to={ROUTES.contacto} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Contacto</NavLink>
                 <div className={styles.mobileCta}>
