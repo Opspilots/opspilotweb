@@ -157,12 +157,12 @@
 
 .heroTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(2.5rem, 5.5vw, 5rem);
+    font-size: clamp(2rem, 4vw, 3.5rem);
     font-weight: var(--font-weight-extrabold);
     color: var(--color-text-strong);
-    line-height: 1.04;
-    margin-bottom: var(--spacing-8);
-    letter-spacing: -0.045em;
+    line-height: 1.08;
+    margin-bottom: var(--spacing-6);
+    letter-spacing: -0.04em;
     text-wrap: balance;
     display: flex;
     flex-direction: column;
@@ -1060,7 +1060,7 @@
     }
 
     .heroTitle {
-        font-size: clamp(1.75rem, 8vw, 2.5rem);
+        font-size: clamp(1.6rem, 7vw, 2.25rem);
         margin-bottom: var(--spacing-5);
         gap: 0.04em;
     }
