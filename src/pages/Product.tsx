@@ -36,31 +36,11 @@ interface Feature {
     label: string;
 }
 
-interface ProductMetric {
-    value: string;
-    label: string;
-}
-
 const STATUS_LABEL: Record<ProductStatus, string> = {
     production: 'En producción',
     beta: 'Beta privada',
     soon: 'Próximamente',
 };
-
-/* ─── Abstract gradient panel ─── */
-const ProductPanel: React.FC<{ id: string; metrics: ProductMetric[] }> = ({ id, metrics }) => (
-    <div className={`${styles.panel} ${styles['panel_' + id]}`}>
-        <div className={styles.panelGlow} />
-        <div className={styles.panelMetrics}>
-            {metrics.map((m, i) => (
-                <div key={i} className={`${styles.panelMetric} ${styles['metric' + i]}`}>
-                    <span className={styles.panelMetricValue}>{m.value}</span>
-                    <span className={styles.panelMetricLabel}>{m.label}</span>
-                </div>
-            ))}
-        </div>
-    </div>
-);
 
 interface Product {
     id: string;
@@ -69,7 +49,6 @@ interface Product {
     desc: string;
     features: Feature[];
     status: ProductStatus;
-    metrics: ProductMetric[];
     cta: string;
     href: string;
     external?: boolean;
@@ -95,11 +74,6 @@ export const Product: React.FC = () => {
                 'Plataforma fiscal y contable española completa. Facturación, asientos automáticos según el PGC, ' +
                 'modelos AEAT, envío SII y VeriFactu nativos, conciliación bancaria con OCR de tickets, ' +
                 'asistente IA fiscal y app móvil. Pensada para uso directo y para gestorías con múltiples clientes.',
-            metrics: [
-                { value: '12', label: 'modelos AEAT cubiertos' },
-                { value: 'SII + VeriFactu', label: 'Obligatorio 2025' },
-                { value: '< 3 min', label: 'declaración trimestral' },
-            ],
             features: [
                 { icon: <Receipt size={14} />, label: 'Facturación + cobros/pagos + contabilidad PGC' },
                 { icon: <Landmark size={14} />, label: 'Modelos AEAT 303, 111, 115, 130, 190, 202, 347 y 390' },
@@ -120,11 +94,6 @@ export const Product: React.FC = () => {
                 'CRM B2B vertical para agentes comerciales y comercializadoras energéticas. ' +
                 'Comparador multi-proveedor con snapshots inmutables, gestión por CIF con CUPS, ' +
                 'pipeline de carga masiva de tarifas y liquidación de comisiones con trazabilidad completa.',
-            metrics: [
-                { value: 'Snapshot', label: 'Cada comparativa es inmutable' },
-                { value: 'CUPS + CIF', label: 'Por punto de suministro' },
-                { value: 'PDF → dato', label: 'Carga masiva de tarifas' },
-            ],
             features: [
                 { icon: <Banknote size={14} />, label: 'Comparador con snapshots históricos reproducibles' },
                 { icon: <Building2 size={14} />, label: 'CRM B2B por CIF con CUPS y puntos de suministro' },
@@ -145,11 +114,6 @@ export const Product: React.FC = () => {
                 'SaaS para presupuestos y certificaciones de obra. Partidas estructuradas con descomposición ' +
                 'en recursos, packs reutilizables, firma digital del cliente vía enlace público ' +
                 'y control de coste real con OCR de albaranes. BC3/FIEBDC nativo.',
-            metrics: [
-                { value: 'BC3/FIEBDC', label: 'Estándar español nativo' },
-                { value: 'Firma digital', label: 'Sin papel, vía enlace' },
-                { value: 'OCR', label: 'Control de albaranes' },
-            ],
             features: [
                 { icon: <Layers size={14} />, label: 'Importación y exportación BC3/FIEBDC nativa' },
                 { icon: <HardHat size={14} />, label: 'Partidas + packs reutilizables + catálogo de recursos' },
@@ -170,11 +134,6 @@ export const Product: React.FC = () => {
                 'ERP/PSA todo-en-uno. Reemplaza Notion + Trello + HubSpot + Slack + Drive con un solo entorno. ' +
                 'Project Hub, CRM, secuencias de prospección, portal cliente externo y capa MCP nativa ' +
                 'con 31+ herramientas de agente IA.',
-            metrics: [
-                { value: '31+', label: 'herramientas MCP nativas' },
-                { value: 'Multi-tenant', label: 'Por equipo o empresa' },
-                { value: 'Portal', label: 'Acceso externo para clientes' },
-            ],
             features: [
                 { icon: <Bot size={14} />, label: 'Capa MCP de agentes IA con 31+ herramientas nativas' },
                 { icon: <KanbanSquare size={14} />, label: 'Project Hub con tareas jerárquicas y Kanban' },
@@ -212,12 +171,11 @@ export const Product: React.FC = () => {
             <section className={styles.catalog}>
                 <div className={sys.container} ref={productsRef}>
                     {products.map((p, index) => (
-                        <article
-                            key={p.id}
-                            id={p.id}
-                            className={`${styles.productRow} ${index % 2 !== 0 ? styles.rowReverse : ''} reveal`}
-                        >
-                            <div className={styles.productInfo}>
+                        <article key={p.id} id={p.id} className={`${styles.productRow} reveal`}>
+                            <div className={styles.productHeader}>
+                                <span className={styles.productIndex}>
+                                    {String(index + 1).padStart(2, '0')}
+                                </span>
                                 <div className={styles.productMeta}>
                                     <span className={styles.productSector}>{p.sector}</span>
                                     <span className={`${styles.productStatus} ${styles['status_' + p.status]}`}>
@@ -225,8 +183,22 @@ export const Product: React.FC = () => {
                                         {STATUS_LABEL[p.status]}
                                     </span>
                                 </div>
-                                <h2 className={styles.productName}>{p.name}</h2>
-                                <p className={styles.productDesc}>{p.desc}</p>
+                            </div>
+
+                            <div className={styles.productBody}>
+                                <div className={styles.productLeft}>
+                                    <h2 className={styles.productName}>{p.name}</h2>
+                                    <p className={styles.productDesc}>{p.desc}</p>
+                                    {p.external ? (
+                                        <a href={p.href} target="_blank" rel="noopener noreferrer">
+                                            <Button variant="primary" size="lg">{p.cta}</Button>
+                                        </a>
+                                    ) : (
+                                        <Link to={p.href}>
+                                            <Button variant="primary" size="lg">{p.cta}</Button>
+                                        </Link>
+                                    )}
+                                </div>
                                 <ul className={styles.featureList}>
                                     {p.features.map((f, i) => (
                                         <li key={i} className={styles.featureItem}>
@@ -235,18 +207,6 @@ export const Product: React.FC = () => {
                                         </li>
                                     ))}
                                 </ul>
-                                {p.external ? (
-                                    <a href={p.href} target="_blank" rel="noopener noreferrer">
-                                        <Button variant="primary" size="lg">{p.cta}</Button>
-                                    </a>
-                                ) : (
-                                    <Link to={p.href}>
-                                        <Button variant="primary" size="lg">{p.cta}</Button>
-                                    </Link>
-                                )}
-                            </div>
-                            <div className={styles.panelWrap}>
-                                <ProductPanel id={p.id} metrics={p.metrics} />
                             </div>
                         </article>
                     ))}
