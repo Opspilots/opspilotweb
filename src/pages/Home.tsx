@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useCountUp } from '../hooks/useCountUp';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import {
@@ -86,6 +87,9 @@ export const Home: React.FC = () => {
     });
 
     const heroRef = useRef<HTMLDivElement>(null);
+
+    const mockStat1Ref = useCountUp<HTMLSpanElement>({ end: 34, duration: 1.8 });
+    const mockStat2Ref = useCountUp<HTMLSpanElement>({ end: 12, duration: 1.6 });
 
     const problemRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const methodScrollRef = useScrollReveal<HTMLDivElement>({ stagger: true });
@@ -193,7 +197,7 @@ export const Home: React.FC = () => {
                         <h1 className={styles.heroTitle}>
                             <span className={styles.heroLine}>Software a medida</span>
                             <span className={styles.heroLine}>para PYMEs que ya no</span>
-                            <span className={styles.heroLine}>caben en el Excel.</span>
+                            <span className={styles.heroLine}>caben en el <span className={styles.heroAccent}>Excel.</span></span>
                         </h1>
                         <p className={styles.heroSubtitle}>
                             Diseñamos el sistema que tu negocio necesita —no el que te quieren vender.
@@ -239,11 +243,11 @@ export const Home: React.FC = () => {
                             </div>
                             <div className={styles.mockPanelStats}>
                                 <div className={styles.mockStat}>
-                                    <span className={styles.mockStatNum}>34</span>
+                                    <span ref={mockStat1Ref} className={styles.mockStatNum}>34</span>
                                     <span className={styles.mockStatLabel}>Modelos<br />preparados por IA</span>
                                 </div>
                                 <div className={styles.mockStat}>
-                                    <span className={styles.mockStatNum}>12</span>
+                                    <span ref={mockStat2Ref} className={styles.mockStatNum}>12</span>
                                     <span className={styles.mockStatLabel}>Documentos<br />firmados hoy</span>
                                 </div>
                                 <div className={styles.mockStat}>
