@@ -211,12 +211,6 @@ export const Home: React.FC = () => {
                                 Ver soluciones <ArrowRight size={16} strokeWidth={2} />
                             </Link>
                         </div>
-                        <ul className={styles.trustList}>
-                            <li><span className={styles.trustDot} />+10 PYMEs ya automatizadas</li>
-                            <li><span className={styles.trustDot} />Respuesta en menos de 24h</li>
-                            <li><span className={styles.trustDot} />Precio cerrado siempre</li>
-                        </ul>
-
                         {/* Stat card — solo visible en móvil (<1024px) */}
                         <div className={styles.heroMobileStats} aria-hidden="true">
                             <div className={styles.heroMobileStat}>
