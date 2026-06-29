@@ -29,18 +29,11 @@ import {
 import sys from '../styles/page-system.module.css';
 import styles from './Product.module.css';
 
-type ProductStatus = 'production' | 'beta' | 'soon';
-
 interface Feature {
     icon: React.ReactNode;
     label: string;
 }
 
-const STATUS_LABEL: Record<ProductStatus, string> = {
-    production: 'En producción',
-    beta: 'Beta privada',
-    soon: 'Próximamente',
-};
 
 interface Product {
     id: string;
@@ -48,7 +41,6 @@ interface Product {
     sector: string;
     desc: string;
     features: Feature[];
-    status: ProductStatus;
     cta: string;
     href: string;
     external?: boolean;
@@ -81,7 +73,6 @@ export const Product: React.FC = () => {
                 { icon: <Smartphone size={14} />, label: 'App móvil con biometría y captura de tickets OCR' },
                 { icon: <BarChart3 size={14} />, label: 'Asistente IA fiscal y consolidación de grupos' },
             ],
-            status: 'production',
             cta: 'Ver producto',
             href: 'https://fiscalidad.mcpopspilot.org',
             external: true,
@@ -101,7 +92,6 @@ export const Product: React.FC = () => {
                 { icon: <Users size={14} />, label: 'Comisiones con estados pending / validated / paid / reverted' },
                 { icon: <FileText size={14} />, label: 'Exportes fiscales (IVA + pagos) y log de auditoría' },
             ],
-            status: 'production',
             cta: 'Ver producto',
             href: 'https://energydeal.es',
             external: true,
@@ -121,7 +111,6 @@ export const Product: React.FC = () => {
                 { icon: <FileSignature size={14} />, label: 'Certificaciones de obra con asistente y versionado' },
                 { icon: <ScanLine size={14} />, label: 'Control de rentabilidad con OCR de albaranes' },
             ],
-            status: 'beta',
             cta: 'Solicitar acceso',
             href: ROUTES.contacto,
             external: false,
@@ -141,7 +130,6 @@ export const Product: React.FC = () => {
                 { icon: <Workflow size={14} />, label: 'Outreach Engine con secuencias automatizadas' },
                 { icon: <FileText size={14} />, label: 'Auditor con plantillas reutilizables (consultoría/compliance)' },
             ],
-            status: 'production',
             cta: 'Ver producto',
             href: 'https://notionpilot.mcpopspilot.org',
             external: true,
@@ -154,7 +142,6 @@ export const Product: React.FC = () => {
             <section className={sys.pageHero}>
                 <div className={sys.container}>
                     <div className={sys.pageHeroContent}>
-                        <span className={sys.pageHeroEyebrow}>Productos verticales</span>
                         <h1 className={sys.pageHeroTitle}>
                             Cuatro productos para PYMEs <em className={sys.pageHeroAccent}>españolas</em>.
                         </h1>
@@ -171,18 +158,12 @@ export const Product: React.FC = () => {
             <section className={styles.catalog}>
                 <div className={sys.container} ref={productsRef}>
                     {products.map((p, index) => (
-                        <article key={p.id} id={p.id} className={`${styles.productRow} reveal`}>
+                        <article key={p.id} id={p.id} className={`${styles.productRow} ${index % 2 !== 0 ? styles.rowReverse : ''} reveal`}>
                             <div className={styles.productHeader}>
                                 <span className={styles.productIndex}>
                                     {String(index + 1).padStart(2, '0')}
                                 </span>
-                                <div className={styles.productMeta}>
-                                    <span className={styles.productSector}>{p.sector}</span>
-                                    <span className={`${styles.productStatus} ${styles['status_' + p.status]}`}>
-                                        <span className={styles.statusDot} />
-                                        {STATUS_LABEL[p.status]}
-                                    </span>
-                                </div>
+                                <span className={styles.productSector}>{p.sector}</span>
                             </div>
 
                             <div className={styles.productBody}>

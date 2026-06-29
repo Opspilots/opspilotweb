@@ -100,7 +100,6 @@ export const Services: React.FC = () => {
             <section className={sys.pageHero}>
                 <div className={sys.container}>
                     <div className={sys.pageHeroContent}>
-                        <span className={sys.pageHeroEyebrow}>Servicios</span>
                         <h1 className={sys.pageHeroTitle}>
                             Resolvemos problemas operativos{' '}
                             <em className={sys.pageHeroAccent}>con software que funciona.</em>

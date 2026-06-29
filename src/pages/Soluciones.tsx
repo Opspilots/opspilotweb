@@ -78,7 +78,6 @@ export const Soluciones: React.FC = () => {
             <section className={sys.pageHero}>
                 <div className={sys.container}>
                     <div className={sys.pageHeroContent}>
-                        <span className={sys.pageHeroEyebrow}>Soluciones · {sectores.length} sectores</span>
                         <h1 className={sys.pageHeroTitle}>
                             ¿En qué sector{' '}
                             <em className={sys.pageHeroAccent}>opera tu negocio?</em>

@@ -62,10 +62,6 @@ export const Cases: React.FC = () => {
             <section className={sys.pageHero}>
                 <div className={sys.container}>
                     <div className={sys.pageHeroContent}>
-                        <span className={sys.pageHeroEyebrow}>
-                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-mint)', boxShadow: '0 0 8px rgba(57, 206, 134, 0.6)' }} />
-                            Casos de éxito
-                        </span>
                         <h1 className={sys.pageHeroTitle}>
                             Empresas reales,<br />problemas <em className={sys.pageHeroAccent}>resueltos</em>.
                         </h1>

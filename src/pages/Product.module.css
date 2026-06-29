@@ -54,44 +54,6 @@
     text-transform: uppercase;
 }
 
-.productStatus {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    font-family: var(--font-family-mono);
-    font-size: 0.68rem;
-    font-weight: var(--font-weight-medium);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 3px 10px 3px 8px;
-    border-radius: var(--radius-full);
-}
-
-.statusDot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
-}
-
-.status_production {
-    color: var(--color-mint);
-    background: rgba(57, 206, 134, 0.08);
-    border: 1px solid rgba(57, 206, 134, 0.18);
-}
-
-.status_beta {
-    color: var(--color-warm);
-    background: rgba(217, 148, 87, 0.08);
-    border: 1px solid rgba(217, 148, 87, 0.18);
-}
-
-.status_soon {
-    color: var(--color-text-subtle);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
 
 /* ─── Body: name/desc | features ─── */
 .productBody {
@@ -105,6 +67,14 @@
         grid-template-columns: 5fr 7fr;
         gap: var(--spacing-20);
         align-items: start;
+    }
+
+    .rowReverse .productLeft {
+        order: 2;
+    }
+
+    .rowReverse .featureList {
+        order: 1;
     }
 }
 
