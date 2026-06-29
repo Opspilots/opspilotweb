@@ -125,10 +125,9 @@
 /* ─── Hero Visual (panel derecho) ─── */
 .heroVisual {
     display: none;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--spacing-4);
-    animation: mockFloat 7s ease-in-out infinite;
+    align-items: center;
+    justify-content: center;
+    animation: mockFloat 9s ease-in-out infinite;
 }
 
 @media (min-width: 1024px) {
@@ -137,22 +136,48 @@
 
 @keyframes mockFloat {
     0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-10px); }
+    50%       { transform: translateY(-12px); }
 }
 
-.heroProofFloater {
-    align-self: flex-end;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border-mint);
-    border-radius: var(--radius-full);
-    padding: var(--spacing-3) var(--spacing-5);
-    font-family: var(--font-family-base);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-mint);
+/* ─── Hero Mark — pure stroke SVG ─── */
+.heroMark {
+    width: 100%;
+    max-width: 460px;
+    height: auto;
+    filter: drop-shadow(0 0 56px rgba(57, 206, 134, 0.07));
+}
+
+.markRing1 {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: markSpin 40s linear infinite;
+}
+
+.markRing2 {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: markSpinRev 28s linear infinite;
+}
+
+@keyframes markSpin    { to { transform: rotate(360deg);  } }
+@keyframes markSpinRev { to { transform: rotate(-360deg); } }
+
+.markCoreRing {
+    animation: coreRingPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes coreRingPulse {
+    0%, 100% { stroke-opacity: 0.44; }
+    50%       { stroke-opacity: 0.18; }
+}
+
+.markCenterDot {
+    animation: centerDotPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes centerDotPulse {
+    0%, 100% { fill-opacity: 0.88; r: 4; }
+    50%       { fill-opacity: 0.55; r: 3.2; }
 }
 
 .heroTitle {
@@ -291,130 +316,6 @@
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
     line-height: 1.35;
-}
-
-/* ═══════════════════════════════════════════
-   NETWORK VISUALIZATION — heroVisual
-   Hub-and-spoke diagram: OpsPilot at center,
-   5 process nodes connected by animated paths.
-   ═══════════════════════════════════════════ */
-
-.networkCard {
-    position: relative;
-    background: linear-gradient(170deg, rgba(12, 18, 28, 0.96) 0%, rgba(8, 13, 21, 0.99) 100%);
-    border: 1px solid rgba(57, 206, 134, 0.18);
-    border-radius: var(--radius-2xl);
-    overflow: hidden;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.06),
-        0 32px 80px -16px rgba(0, 0, 0, 0.88),
-        0 0 90px -38px rgba(57, 206, 134, 0.16);
-}
-
-.networkSvg {
-    display: block;
-    width: 100%;
-    height: auto;
-    padding: var(--spacing-2);
-}
-
-/* Connecting lines — fade in with staggered delay via inline style */
-.netLine {
-    opacity: 0;
-    animation: netFadeIn 0.7s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-}
-
-@keyframes netFadeIn {
-    to { opacity: 1; }
-}
-
-/* Outer process nodes — fade in */
-.netNode {
-    opacity: 0;
-    animation: netFadeIn 0.55s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-}
-
-/* Clockwise spinning ring */
-.netRingSpin {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: netSpin 20s linear infinite;
-}
-
-/* Counter-clockwise outer ring */
-.netRingSpinRev {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: netSpinRev 28s linear infinite;
-}
-
-@keyframes netSpin    { to { transform: rotate(360deg);  } }
-@keyframes netSpinRev { to { transform: rotate(-360deg); } }
-
-/* Hub border pulse */
-.netHubRing {
-    animation: hubPulse 3s ease-in-out infinite;
-}
-
-@keyframes hubPulse {
-    0%, 100% { stroke-opacity: 0.45; }
-    50%       { stroke-opacity: 0.25; }
-}
-
-/* Card footer */
-.networkCardFooter {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-4) var(--spacing-5);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(255, 255, 255, 0.012);
-}
-
-.networkFooterStat {
-    display: flex;
-    align-items: baseline;
-    gap: 0;
-}
-
-.networkStatNum {
-    font-family: var(--font-family-display);
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-extrabold);
-    color: var(--color-mint);
-    letter-spacing: -0.04em;
-    line-height: 1;
-}
-
-.networkStatLabel {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-}
-
-.networkLive {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    font-family: var(--font-family-mono);
-    font-size: 0.62rem;
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-mint);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.networkLiveDot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-mint);
-    flex-shrink: 0;
-    animation: liveDotPulse 2.2s ease-in-out infinite;
-}
-
-@keyframes liveDotPulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.3; }
 }
 
 /* ═══════════════════════════════════════════
@@ -591,6 +492,10 @@
     border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-xl);
     margin-bottom: var(--spacing-1);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.05em;
     transition: background var(--transition-normal), transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 

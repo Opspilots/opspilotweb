@@ -4,15 +4,10 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import { useCountUp } from '../hooks/useCountUp';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import {
     Workflow,
-    MessagesSquare,
-    Search,
-    FileCheck,
-    Wrench,
     Layers,
     PencilRuler,
     Check,
@@ -25,20 +20,6 @@ import Aurora from '../components/common/Aurora';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ─── Hero network diagram constants ─── */
-const NET_CX = 160, NET_CY = 138;
-const NET_NODES: ReadonlyArray<{
-    code: string; label: string;
-    nx: number; ny: number;
-    lx: number; ly: number;
-    la: 'middle' | 'start' | 'end';
-}> = [
-    { code: 'IA', label: 'Modelos',  nx: 160, ny: 48,  lx: 160, ly: 24,  la: 'middle' },
-    { code: 'CL', label: 'Clientes', nx: 246, ny: 110, lx: 272, ly: 110, la: 'start'  },
-    { code: 'FC', label: 'Facturas', nx: 213, ny: 211, lx: 213, ly: 237, la: 'middle' },
-    { code: 'AG', label: 'Agenda',   nx: 107, ny: 211, lx: 107, ly: 237, la: 'middle' },
-    { code: 'DT', label: 'Datos',    nx: 74,  ny: 110, lx: 48,  ly: 110, la: 'end'    },
-];
 
 const CASES = [
     {
@@ -102,8 +83,6 @@ export const Home: React.FC = () => {
     });
 
     const heroRef = useRef<HTMLDivElement>(null);
-
-    const mockStat1Ref = useCountUp<HTMLSpanElement>({ end: 34, duration: 1.8 });
 
     const problemRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const methodScrollRef = useScrollReveal<HTMLDivElement>({ stagger: true });
@@ -239,151 +218,150 @@ export const Home: React.FC = () => {
                     </div>
 
                     <div className={styles.heroVisual} aria-hidden="true">
-                        <div className={styles.networkCard}>
-                            <svg
-                                className={styles.networkSvg}
-                                viewBox="0 0 320 270"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
+                        <svg
+                            className={styles.heroMark}
+                            viewBox="0 0 400 400"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            {/* Corner brackets */}
+                            <path d="M 28 10 L 10 10 L 10 28" stroke="rgba(57,206,134,0.2)" strokeWidth="1" />
+                            <path d="M 372 10 L 390 10 L 390 28" stroke="rgba(57,206,134,0.2)" strokeWidth="1" />
+                            <path d="M 10 372 L 10 390 L 28 390" stroke="rgba(57,206,134,0.2)" strokeWidth="1" />
+                            <path d="M 390 372 L 390 390 L 372 390" stroke="rgba(57,206,134,0.2)" strokeWidth="1" />
+
+                            {/* Outer sparse ring */}
+                            <circle cx="200" cy="200" r="175"
+                                stroke="rgba(57,206,134,0.09)" strokeWidth="1" strokeDasharray="1 13"
+                                className={styles.markRing1}
+                            />
+
+                            {/* Structural ring */}
+                            <circle cx="200" cy="200" r="140"
+                                stroke="rgba(57,206,134,0.18)" strokeWidth="1" strokeDasharray="26 14 6 14"
+                                className={styles.markRing2}
+                            />
+
+                            {/* Main precision ring */}
+                            <circle cx="200" cy="200" r="102"
+                                stroke="rgba(57,206,134,0.28)" strokeWidth="1.5" strokeDasharray="50 10"
+                            />
+
+                            {/* Inner ring */}
+                            <circle cx="200" cy="200" r="58"
+                                stroke="rgba(57,206,134,0.18)" strokeWidth="1"
+                            />
+
+                            {/* Core ring */}
+                            <circle cx="200" cy="200" r="20"
+                                stroke="rgba(57,206,134,0.44)" strokeWidth="1.5"
+                                className={styles.markCoreRing}
+                            />
+
+                            {/* Sonar pulse */}
+                            <circle cx="200" cy="200" r="20"
+                                stroke="rgba(57,206,134,0.28)" strokeWidth="1" fill="none"
                             >
-                                <defs>
-                                    <radialGradient id="netHubGlow" cx="50%" cy="51%" r="50%">
-                                        <stop offset="0%" stopColor="rgba(57,206,134,0.13)" />
-                                        <stop offset="100%" stopColor="rgba(57,206,134,0)" />
-                                    </radialGradient>
-                                </defs>
+                                <animate attributeName="r" from="20" to="42" dur="3s" repeatCount="indefinite" />
+                                <animate attributeName="stroke-opacity" from="0.28" to="0" dur="3s" repeatCount="indefinite" />
+                            </circle>
 
-                                {/* Soft radial glow behind hub */}
-                                <circle cx={NET_CX} cy={NET_CY} r="72" fill="url(#netHubGlow)" />
+                            {/* N/S/E/W axis lines */}
+                            <line x1="200" y1="180" x2="200" y2="142" stroke="rgba(57,206,134,0.28)" strokeWidth="1" />
+                            <line x1="200" y1="220" x2="200" y2="258" stroke="rgba(57,206,134,0.28)" strokeWidth="1" />
+                            <line x1="180" y1="200" x2="142" y2="200" stroke="rgba(57,206,134,0.28)" strokeWidth="1" />
+                            <line x1="220" y1="200" x2="258" y2="200" stroke="rgba(57,206,134,0.28)" strokeWidth="1" />
 
-                                {/* Slow-spin outer ring */}
-                                <circle
-                                    cx={NET_CX} cy={NET_CY} r="52"
-                                    fill="none"
-                                    stroke="rgba(57,206,134,0.05)"
-                                    strokeWidth="1"
-                                    strokeDasharray="3 7"
-                                    className={styles.netRingSpinRev}
+                            {/* 45° diagonal spokes */}
+                            <line x1="241" y1="159" x2="272" y2="128" stroke="rgba(57,206,134,0.14)" strokeWidth="1" />
+                            <line x1="159" y1="159" x2="128" y2="128" stroke="rgba(57,206,134,0.14)" strokeWidth="1" />
+                            <line x1="241" y1="241" x2="272" y2="272" stroke="rgba(57,206,134,0.14)" strokeWidth="1" />
+                            <line x1="159" y1="241" x2="128" y2="272" stroke="rgba(57,206,134,0.14)" strokeWidth="1" />
+
+                            {/* Cardinal ticks on r=140 ring */}
+                            <line x1="200" y1="62" x2="200" y2="50" stroke="rgba(57,206,134,0.4)" strokeWidth="2" strokeLinecap="round" />
+                            <line x1="200" y1="338" x2="200" y2="350" stroke="rgba(57,206,134,0.4)" strokeWidth="2" strokeLinecap="round" />
+                            <line x1="62" y1="200" x2="50" y2="200" stroke="rgba(57,206,134,0.4)" strokeWidth="2" strokeLinecap="round" />
+                            <line x1="338" y1="200" x2="350" y2="200" stroke="rgba(57,206,134,0.4)" strokeWidth="2" strokeLinecap="round" />
+
+                            {/* 45° ticks on r=140 ring */}
+                            <line x1="293" y1="107" x2="299" y2="101" stroke="rgba(57,206,134,0.22)" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1="107" y1="107" x2="101" y2="101" stroke="rgba(57,206,134,0.22)" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1="293" y1="293" x2="299" y2="299" stroke="rgba(57,206,134,0.22)" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1="107" y1="293" x2="101" y2="299" stroke="rgba(57,206,134,0.22)" strokeWidth="1.5" strokeLinecap="round" />
+
+                            {/* Scanner line — rotates */}
+                            <g>
+                                <animateTransform
+                                    attributeName="transform"
+                                    type="rotate"
+                                    from="0 200 200"
+                                    to="360 200 200"
+                                    dur="8s"
+                                    repeatCount="indefinite"
                                 />
-
-                                {/* Inner spin ring */}
-                                <circle
-                                    cx={NET_CX} cy={NET_CY} r="40"
-                                    fill="none"
-                                    stroke="rgba(57,206,134,0.08)"
-                                    strokeWidth="1"
-                                    strokeDasharray="2 5"
-                                    className={styles.netRingSpin}
+                                <line x1="200" y1="200" x2="200" y2="30"
+                                    stroke="rgba(57,206,134,0.38)" strokeWidth="1.5"
                                 />
-
-                                {/* Connecting lines */}
-                                {NET_NODES.map((n, i) => (
-                                    <line
-                                        key={i}
-                                        x1={NET_CX} y1={NET_CY}
-                                        x2={n.nx} y2={n.ny}
-                                        stroke="rgba(57,206,134,0.18)"
-                                        strokeWidth="1"
-                                        strokeDasharray="4 5"
-                                        className={styles.netLine}
-                                        style={{ animationDelay: `${i * 0.12}s` } as React.CSSProperties}
-                                    />
-                                ))}
-
-                                {/* Animated data dots: center → node */}
-                                {NET_NODES.map((n, i) => (
-                                    <circle key={`dot${i}`} r="2.5" fill="rgba(57,206,134,0.82)">
-                                        <animateMotion
-                                            dur="2.8s"
-                                            repeatCount="indefinite"
-                                            begin={`${i * 0.56}s`}
-                                            path={`M ${NET_CX} ${NET_CY} L ${n.nx} ${n.ny}`}
-                                        />
-                                    </circle>
-                                ))}
-
-                                {/* Outer process nodes */}
-                                {NET_NODES.map((n, i) => (
-                                    <g
-                                        key={`node${i}`}
-                                        className={styles.netNode}
-                                        style={{ animationDelay: `${0.18 + i * 0.11}s` } as React.CSSProperties}
-                                    >
-                                        <circle
-                                            cx={n.nx} cy={n.ny} r="19"
-                                            fill="rgba(12,18,28,0.97)"
-                                            stroke="rgba(57,206,134,0.22)"
-                                            strokeWidth="1"
-                                        />
-                                        <text
-                                            x={n.nx} y={n.ny}
-                                            textAnchor="middle"
-                                            dominantBaseline="central"
-                                            fontSize="8"
-                                            fontWeight="600"
-                                            fontFamily="'JetBrains Mono',ui-monospace,monospace"
-                                            fill="rgba(57,206,134,0.78)"
-                                            letterSpacing="0.08em"
-                                        >
-                                            {n.code}
-                                        </text>
-                                        <text
-                                            x={n.lx} y={n.ly}
-                                            textAnchor={n.la}
-                                            fontSize="7.5"
-                                            fontFamily="'Inter',system-ui,sans-serif"
-                                            fill="rgba(142,155,170,0.78)"
-                                        >
-                                            {n.label}
-                                        </text>
-                                    </g>
-                                ))}
-
-                                {/* Central hub */}
-                                <circle
-                                    cx={NET_CX} cy={NET_CY} r="29"
-                                    fill="rgba(8,13,21,0.99)"
-                                    stroke="rgba(57,206,134,0.45)"
-                                    strokeWidth="1.5"
-                                    className={styles.netHubRing}
+                                <circle cx="200" cy="30" r="3"
+                                    fill="none" stroke="rgba(57,206,134,0.65)" strokeWidth="1.5"
                                 />
-                                <text
-                                    x={NET_CX} y={NET_CY - 6}
-                                    textAnchor="middle"
-                                    fontSize="6.5"
-                                    fontWeight="700"
-                                    fontFamily="'JetBrains Mono',ui-monospace,monospace"
-                                    fill="rgba(57,206,134,0.92)"
-                                    letterSpacing="0.12em"
-                                >
-                                    SISTEMA
-                                </text>
-                                <text
-                                    x={NET_CX} y={NET_CY + 7}
-                                    textAnchor="middle"
-                                    fontSize="6.5"
-                                    fontFamily="'Inter',system-ui,sans-serif"
-                                    fill="rgba(142,155,170,0.58)"
-                                >
-                                    OpsPilot
-                                </text>
-                            </svg>
+                            </g>
 
-                            <div className={styles.networkCardFooter}>
-                                <div className={styles.networkFooterStat}>
-                                    <span ref={mockStat1Ref} className={styles.networkStatNum}>34</span>
-                                    <span className={styles.networkStatLabel}>&nbsp;procesos activos</span>
-                                </div>
-                                <span className={styles.networkLive}>
-                                    <span className={styles.networkLiveDot} />
-                                    en línea
-                                </span>
-                            </div>
-                        </div>
-                        <div className={styles.heroProofFloater}>
-                            <Check size={13} strokeWidth={2.5} />
-                            80% automatizado — activo desde hace 3 meses
-                        </div>
+                            {/* Orbiting element at r=102 — CW */}
+                            <g>
+                                <animateTransform
+                                    attributeName="transform"
+                                    type="rotate"
+                                    from="60 200 200"
+                                    to="420 200 200"
+                                    dur="11s"
+                                    repeatCount="indefinite"
+                                />
+                                <circle cx="302" cy="200" r="5.5"
+                                    fill="none" stroke="rgba(57,206,134,0.6)" strokeWidth="1.5"
+                                />
+                                <circle cx="302" cy="200" r="2"
+                                    fill="rgba(57,206,134,0.5)"
+                                />
+                            </g>
+
+                            {/* Orbiting dot at r=140 — CCW */}
+                            <g>
+                                <animateTransform
+                                    attributeName="transform"
+                                    type="rotate"
+                                    from="200 200 200"
+                                    to="-160 200 200"
+                                    dur="19s"
+                                    repeatCount="indefinite"
+                                />
+                                <circle cx="340" cy="200" r="3.5"
+                                    fill="rgba(57,206,134,0.42)"
+                                />
+                            </g>
+
+                            {/* Orbiting dot at r=175 — slow CW */}
+                            <g>
+                                <animateTransform
+                                    attributeName="transform"
+                                    type="rotate"
+                                    from="290 200 200"
+                                    to="650 200 200"
+                                    dur="32s"
+                                    repeatCount="indefinite"
+                                />
+                                <circle cx="375" cy="200" r="2.5"
+                                    fill="rgba(57,206,134,0.3)"
+                                />
+                            </g>
+
+                            {/* Center dot */}
+                            <circle cx="200" cy="200" r="4"
+                                fill="rgba(57,206,134,0.88)"
+                                className={styles.markCenterDot}
+                            />
+                        </svg>
                     </div>
                 </div>
             </section>
@@ -434,12 +412,6 @@ export const Home: React.FC = () => {
             {/* ═══ CASOS DE ÉXITO — carrusel ═══ */}
             <section className={styles.caseSection}>
                 <div className={styles.container} ref={caseRef}>
-                    <header className={`${styles.sectionHeader} reveal`}>
-                        <h2 className={styles.sectionTitle}>
-                            Lo que construimos ya está trabajando.
-                        </h2>
-                    </header>
-
                     <div
                         className={styles.caseCarousel}
                         onMouseEnter={() => setCarouselPaused(true)}
@@ -547,7 +519,7 @@ export const Home: React.FC = () => {
                     <div className={styles.processGrid}>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumLabel}><MessagesSquare size={18} strokeWidth={1.6} /></span>
+                                <span className={styles.processNumLabel}>01</span>
                             </div>
                             <h3 className={styles.stepTitle}>Te escuchamos</h3>
                             <p className={styles.stepText}>
@@ -557,7 +529,7 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumLabel}><Search size={18} strokeWidth={1.6} /></span>
+                                <span className={styles.processNumLabel}>02</span>
                             </div>
                             <h3 className={styles.stepTitle}>Localizamos el problema</h3>
                             <p className={styles.stepText}>
@@ -567,7 +539,7 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumLabel}><FileCheck size={18} strokeWidth={1.6} /></span>
+                                <span className={styles.processNumLabel}>03</span>
                             </div>
                             <h3 className={styles.stepTitle}>Te proponemos algo concreto</h3>
                             <p className={styles.stepText}>
@@ -577,7 +549,7 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumLabel}><Wrench size={18} strokeWidth={1.6} /></span>
+                                <span className={styles.processNumLabel}>04</span>
                             </div>
                             <h3 className={styles.stepTitle}>Lo hacemos y nos quedamos</h3>
                             <p className={styles.stepText}>
