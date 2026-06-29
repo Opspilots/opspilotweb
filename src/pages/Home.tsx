@@ -7,13 +7,7 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import {
-    Code2,
-    LayoutGrid,
-    Sparkles,
-    Plug,
     Workflow,
-    Database,
-    Rocket,
     MessagesSquare,
     Search,
     FileCheck,
@@ -281,61 +275,6 @@ export const Home: React.FC = () => {
                         <div className={styles.heroProofFloater}>
                             <Check size={13} strokeWidth={2.5} />
                             80% automatizado — activo desde hace 3 meses
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ═══ MARQUESINA ═══ */}
-            <aside className={styles.heroMarquee} aria-hidden="true">
-                <div className={styles.heroMarqueeTrack}>
-                    {[...Array(2)].map((_, i) => (
-                        <div className={styles.heroMarqueeRow} key={i}>
-                            <span className={styles.marqueeItem}><Code2 size={16} strokeWidth={1.5} /> Software a medida</span>
-                            <span className={styles.marqueeItem}><LayoutGrid size={16} strokeWidth={1.5} /> Aplicaciones web y móvil</span>
-                            <span className={styles.marqueeItem}><Sparkles size={16} strokeWidth={1.5} /> Asistentes inteligentes</span>
-                            <span className={styles.marqueeItem}><Plug size={16} strokeWidth={1.5} /> Integraciones</span>
-                            <span className={styles.marqueeItem}><Workflow size={16} strokeWidth={1.5} /> Automatización de procesos</span>
-                            <span className={styles.marqueeItem}><Database size={16} strokeWidth={1.5} /> ERP y CRM a medida</span>
-                            <span className={styles.marqueeItem}><Rocket size={16} strokeWidth={1.5} /> Modernización digital</span>
-                        </div>
-                    ))}
-                </div>
-            </aside>
-
-            {/* ═══ TRUST BAR ═══ */}
-            <section className={styles.clientBar} aria-label="Sectores atendidos">
-                <div className={styles.container}>
-                    <div className={styles.clientBarInner}>
-                        <span className={styles.clientBarLabel}>Ya automatizando en:</span>
-                        <ul className={styles.clientBarSectors}>
-                            <li>Asesorías fiscales</li>
-                            <li>Gestorías laborales</li>
-                            <li>Energía y utilities</li>
-                            <li>Reformas e instalaciones</li>
-                            <li>Agencias de marketing</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            {/* ═══ MÉTRICAS — franja de números grandes ═══ */}
-            <section className={styles.metricsStrip} aria-label="Resultados en cifras">
-                <div className={styles.container}>
-                    <div className={styles.metricsGrid}>
-                        <div className={styles.metricItem}>
-                            <span className={styles.metricNum}>12+</span>
-                            <span className={styles.metricLabel}>proyectos entregados</span>
-                        </div>
-                        <div className={styles.metricDivider} aria-hidden="true" />
-                        <div className={styles.metricItem}>
-                            <span className={styles.metricNum}>200h+</span>
-                            <span className={styles.metricLabel}>ahorradas por cliente</span>
-                        </div>
-                        <div className={styles.metricDivider} aria-hidden="true" />
-                        <div className={styles.metricItem}>
-                            <span className={styles.metricNum}>6 sem.</span>
-                            <span className={styles.metricLabel}>tiempo medio de entrega</span>
                         </div>
                     </div>
                 </div>
