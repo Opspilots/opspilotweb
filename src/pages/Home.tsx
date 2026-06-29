@@ -22,6 +22,7 @@ import {
     PencilRuler,
     Check,
     ArrowRight,
+    X,
 } from 'lucide-react';
 import styles from './Home.module.css';
 import sys from '../styles/page-system.module.css';
@@ -45,6 +46,7 @@ const CASES = [
             { value: '−70%', label: 'Tiempo dedicado a gestión administrativa' },
             { value: '0 €', label: 'Inversión adicional en personal' },
         ],
+        source: { initials: 'MR', name: 'Miguel R.', role: 'Gerente', company: 'Reformas Integral Madrid' },
     },
     {
         eyebrow: 'Asesoría fiscal',
@@ -61,6 +63,7 @@ const CASES = [
             { value: '−5h/día', label: 'En tareas repetitivas del equipo' },
             { value: '+45%', label: 'Más capacidad sin contratar' },
         ],
+        source: { initials: 'CA', name: 'Carmen A.', role: 'Socia directora', company: 'Asesoría Aranda & Asociados' },
     },
     {
         eyebrow: 'Agencia de servicios',
@@ -77,6 +80,7 @@ const CASES = [
             { value: '5 → 1', label: 'Apps reemplazadas por un solo sistema' },
             { value: '100%', label: 'Información centralizada y siempre al día' },
         ],
+        source: { initials: 'PL', name: 'Pablo L.', role: 'CEO', company: 'Agencia Lince' },
     },
 ];
 
@@ -92,6 +96,7 @@ export const Home: React.FC = () => {
     const problemRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const methodScrollRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const caseRef = useScrollReveal<HTMLDivElement>({ stagger: true });
+    const whyRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const ctaRef = useScrollReveal<HTMLDivElement>();
 
     const [activeCase, setActiveCase] = useState(0);
@@ -208,32 +213,74 @@ export const Home: React.FC = () => {
                                 Ver soluciones <ArrowRight size={16} strokeWidth={2} />
                             </Link>
                         </div>
+                        <ul className={styles.trustList}>
+                            <li><span className={styles.trustDot} />+10 PYMEs ya automatizadas</li>
+                            <li><span className={styles.trustDot} />Respuesta en menos de 24h</li>
+                            <li><span className={styles.trustDot} />Precio cerrado siempre</li>
+                        </ul>
+
+                        {/* Stat card — solo visible en móvil (<1024px) */}
+                        <div className={styles.heroMobileStats} aria-hidden="true">
+                            <div className={styles.heroMobileStat}>
+                                <span className={styles.heroMobileStatNum}>80%</span>
+                                <span className={styles.heroMobileStatLabel}>del proceso automatizado</span>
+                            </div>
+                            <div className={styles.heroMobileStat}>
+                                <span className={styles.heroMobileStatNum}>−5h</span>
+                                <span className={styles.heroMobileStatLabel}>ahorradas al día</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div className={styles.heroVisual} aria-hidden="true">
-                        <div className={styles.heroProofCard}>
-                            <div className={styles.heroProofBadge}>
-                                <Check size={12} strokeWidth={2.5} />
-                                Diagnóstico completado
+                        <div className={styles.mockPanel}>
+                            <div className={styles.mockPanelHeader}>
+                                <div className={styles.mockDotRow}>
+                                    <span className={styles.mockDotRed} />
+                                    <span className={styles.mockDotYellow} />
+                                    <span className={styles.mockDotGreen} />
+                                </div>
+                                <span className={styles.mockPanelUrl}>app.opspilot.es · Asesoría Aranda</span>
+                                <span className={styles.mockPanelLive}>● activo</span>
                             </div>
-                            <h4 className={styles.heroProofTitle}>Cuello de botella detectado</h4>
-                            <p className={styles.heroProofDetail}>
-                                Gestión de presupuestos fragmentada entre correo, Excel y llamadas — bloqueando el crecimiento del equipo.
-                            </p>
-                            <div className={styles.heroProofDivider} />
-                            <p className={styles.heroProofLabel}>Solución propuesta</p>
-                            <p className={styles.heroProofValue}>Sistema de presupuestado + firma digital</p>
-                            <div className={styles.heroProofFooter}>
-                                <span className={styles.heroProofFooterLeft}>Entrega en 6–8 semanas</span>
-                                <span className={styles.heroProofStatus}>
-                                    <span className={styles.heroProofDot} />
-                                    En producción
-                                </span>
+                            <div className={styles.mockPanelStats}>
+                                <div className={styles.mockStat}>
+                                    <span className={styles.mockStatNum}>34</span>
+                                    <span className={styles.mockStatLabel}>Modelos<br />preparados por IA</span>
+                                </div>
+                                <div className={styles.mockStat}>
+                                    <span className={styles.mockStatNum}>12</span>
+                                    <span className={styles.mockStatLabel}>Documentos<br />firmados hoy</span>
+                                </div>
+                                <div className={styles.mockStat}>
+                                    <span className={styles.mockStatNum}>0</span>
+                                    <span className={styles.mockStatLabel}>Tareas<br />manuales pendientes</span>
+                                </div>
+                            </div>
+                            <div className={styles.mockPanelList}>
+                                {[
+                                    { name: 'García Pérez, L.', type: 'Modelo 303 · T2 2025', status: 'Listo' },
+                                    { name: 'Torres Instalaciones', type: 'Modelo 130 · T2 2025', status: 'Firmado' },
+                                    { name: 'Clínica Herrero S.L.', type: 'Modelo 111 · T2 2025', status: 'Revisando' },
+                                    { name: 'Medina & Asociados', type: 'Modelo 390 · Anual', status: 'Listo' },
+                                ].map((row) => (
+                                    <div key={row.name} className={styles.mockRow}>
+                                        <div className={styles.mockRowLeft}>
+                                            <span className={styles.mockRowName}>{row.name}</span>
+                                            <span className={styles.mockRowType}>{row.type}</span>
+                                        </div>
+                                        <span className={
+                                            row.status === 'Listo' ? styles.mockStatusListo
+                                            : row.status === 'Firmado' ? styles.mockStatusFirmado
+                                            : styles.mockStatusRevisando
+                                        }>{row.status}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                         <div className={styles.heroProofFloater}>
                             <Check size={13} strokeWidth={2.5} />
-                            Respuesta en menos de 24h
+                            80% automatizado — activo desde hace 3 meses
                         </div>
                     </div>
                 </div>
@@ -255,6 +302,44 @@ export const Home: React.FC = () => {
                     ))}
                 </div>
             </aside>
+
+            {/* ═══ TRUST BAR ═══ */}
+            <section className={styles.clientBar} aria-label="Sectores atendidos">
+                <div className={styles.container}>
+                    <div className={styles.clientBarInner}>
+                        <span className={styles.clientBarLabel}>Ya automatizando en:</span>
+                        <ul className={styles.clientBarSectors}>
+                            <li>Asesorías fiscales</li>
+                            <li>Gestorías laborales</li>
+                            <li>Energía y utilities</li>
+                            <li>Reformas e instalaciones</li>
+                            <li>Agencias de marketing</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══ MÉTRICAS — franja de números grandes ═══ */}
+            <section className={styles.metricsStrip} aria-label="Resultados en cifras">
+                <div className={styles.container}>
+                    <div className={styles.metricsGrid}>
+                        <div className={styles.metricItem}>
+                            <span className={styles.metricNum}>12+</span>
+                            <span className={styles.metricLabel}>proyectos entregados</span>
+                        </div>
+                        <div className={styles.metricDivider} aria-hidden="true" />
+                        <div className={styles.metricItem}>
+                            <span className={styles.metricNum}>200h+</span>
+                            <span className={styles.metricLabel}>ahorradas por cliente</span>
+                        </div>
+                        <div className={styles.metricDivider} aria-hidden="true" />
+                        <div className={styles.metricItem}>
+                            <span className={styles.metricNum}>6 sem.</span>
+                            <span className={styles.metricLabel}>tiempo medio de entrega</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* ═══ PROBLEMA ═══ */}
             <section className={styles.problemSection}>
@@ -322,6 +407,7 @@ export const Home: React.FC = () => {
                                     onClick={() => pos !== 'current' && pos !== 'far' && setActiveCase(i)}
                                     aria-hidden={pos !== 'current'}
                                 >
+                                    <span className={styles.caseEyebrow}>{c.eyebrow}</span>
                                     <h3 className={styles.caseCardTitle}>{c.title}</h3>
                                     <p className={styles.caseCardSummary}>{c.summary}</p>
                                     <ul className={styles.caseCardBullets}>
@@ -340,9 +426,65 @@ export const Home: React.FC = () => {
                                             </div>
                                         ))}
                                     </div>
+                                    <div className={styles.caseSource}>
+                                        <div className={styles.caseSourceAvatar}>{c.source.initials}</div>
+                                        <div className={styles.caseSourceInfo}>
+                                            <p className={styles.caseSourceName}>{c.source.name} · {c.source.role}</p>
+                                            <p className={styles.caseSourceCompany}>{c.source.company}</p>
+                                        </div>
+                                    </div>
                                 </article>
                             );
                         })}
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══ POR QUÉ OPSPILOT ═══ */}
+            <section className={styles.whySection}>
+                <div className={styles.container} ref={whyRef}>
+                    <header className={`${styles.sectionHeader} reveal`}>
+                        <h2 className={styles.sectionTitle}>
+                            Por qué no el software de catálogo.
+                        </h2>
+                    </header>
+                    <div className={styles.whyGrid}>
+                        <div className={`${styles.whyCol} ${styles.whyColGeneric} reveal`}>
+                            <div className={styles.whyColHead}>
+                                <span className={styles.whyColBadge}>Software genérico</span>
+                            </div>
+                            {[
+                                'Te adaptas tú a la herramienta, no al revés',
+                                'Pagas por funciones que nunca vas a usar',
+                                'Soporte por tickets o foros en inglés',
+                                '6–12 meses para ver resultados reales',
+                                'Datos en silos sin conexión entre apps',
+                                'Precio que sube cada año sin avisarte',
+                            ].map((text, i) => (
+                                <div className={styles.whyRow} key={i}>
+                                    <span className={styles.whyIconNeg}><X size={13} strokeWidth={2.5} /></span>
+                                    <span className={styles.whyRowText}>{text}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className={`${styles.whyCol} ${styles.whyColOps} reveal`}>
+                            <div className={styles.whyColHead}>
+                                <span className={`${styles.whyColBadge} ${styles.whyColBadgeOps}`}>OpsPilot a medida</span>
+                            </div>
+                            {[
+                                'El sistema se adapta exactamente a cómo trabajas',
+                                'Solo pagas lo que tu negocio realmente necesita',
+                                'Acceso directo al equipo que construyó tu sistema',
+                                'Primeros resultados visibles en 4–6 semanas',
+                                'Todo integrado en un solo sistema centralizado',
+                                'Precio cerrado desde el día uno, sin sorpresas',
+                            ].map((text, i) => (
+                                <div className={styles.whyRow} key={i}>
+                                    <span className={styles.whyIconPos}><Check size={13} strokeWidth={2.5} /></span>
+                                    <span className={styles.whyRowText}>{text}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>

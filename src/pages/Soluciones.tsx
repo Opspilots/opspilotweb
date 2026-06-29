@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { useScrollReveal } from '../hooks/useScrollReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import sys from '../styles/page-system.module.css';
@@ -73,15 +72,13 @@ export const Soluciones: React.FC = () => {
         canonical: 'https://opspilot.es/soluciones',
     });
 
-    const gridRef = useScrollReveal<HTMLDivElement>({ stagger: true });
-
     return (
         <div className={sys.page}>
             {/* Hero */}
             <section className={sys.pageHero}>
                 <div className={sys.container}>
                     <div className={sys.pageHeroContent}>
-                        <span className={sys.pageHeroEyebrow}>Soluciones</span>
+                        <span className={sys.pageHeroEyebrow}>Soluciones · {sectores.length} sectores</span>
                         <h1 className={sys.pageHeroTitle}>
                             ¿En qué sector{' '}
                             <em className={sys.pageHeroAccent}>opera tu negocio?</em>
@@ -97,9 +94,9 @@ export const Soluciones: React.FC = () => {
             {/* Sectores grid */}
             <section className={sys.section}>
                 <div className={sys.container}>
-                    <div className={styles.grid} ref={gridRef}>
+                    <div className={styles.grid}>
                         {sectores.map((s) => (
-                            <article key={s.title} className={`${styles.card} reveal`}>
+                            <article key={s.title} className={styles.card}>
                                 <div className={styles.cardIcon}>{s.icon}</div>
                                 <h2 className={styles.cardTitle}>{s.title}</h2>
                                 <p className={styles.cardWho}>
