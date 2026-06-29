@@ -25,6 +25,21 @@ import Aurora from '../components/common/Aurora';
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* ─── Hero network diagram constants ─── */
+const NET_CX = 160, NET_CY = 138;
+const NET_NODES: ReadonlyArray<{
+    code: string; label: string;
+    nx: number; ny: number;
+    lx: number; ly: number;
+    la: 'middle' | 'start' | 'end';
+}> = [
+    { code: 'IA', label: 'Modelos',  nx: 160, ny: 48,  lx: 160, ly: 24,  la: 'middle' },
+    { code: 'CL', label: 'Clientes', nx: 246, ny: 110, lx: 272, ly: 110, la: 'start'  },
+    { code: 'FC', label: 'Facturas', nx: 213, ny: 211, lx: 213, ly: 237, la: 'middle' },
+    { code: 'AG', label: 'Agenda',   nx: 107, ny: 211, lx: 107, ly: 237, la: 'middle' },
+    { code: 'DT', label: 'Datos',    nx: 74,  ny: 110, lx: 48,  ly: 110, la: 'end'    },
+];
+
 const CASES = [
     {
         eyebrow: 'Reformas',
@@ -224,61 +239,145 @@ export const Home: React.FC = () => {
                     </div>
 
                     <div className={styles.heroVisual} aria-hidden="true">
-                        <div className={styles.mockPanel}>
-                            {/* Header sin los puntos macOS */}
-                            <div className={styles.mockHeader}>
-                                <div className={styles.mockHeaderLeft}>
-                                    <span className={styles.mockHeaderIndicator} />
-                                    <div>
-                                        <p className={styles.mockHeaderTitle}>Asesoría Aranda · Sistema</p>
-                                        <p className={styles.mockHeaderSub}>panel.opspilot.es · en línea</p>
-                                    </div>
-                                </div>
-                                <span className={styles.mockLiveBadge}>● EN VIVO</span>
-                            </div>
+                        <div className={styles.networkCard}>
+                            <svg
+                                className={styles.networkSvg}
+                                viewBox="0 0 320 270"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <defs>
+                                    <radialGradient id="netHubGlow" cx="50%" cy="51%" r="50%">
+                                        <stop offset="0%" stopColor="rgba(57,206,134,0.13)" />
+                                        <stop offset="100%" stopColor="rgba(57,206,134,0)" />
+                                    </radialGradient>
+                                </defs>
 
-                            {/* Stat principal con count-up */}
-                            <div className={styles.mockStatBig}>
-                                <span ref={mockStat1Ref} className={styles.mockStatBigNum}>34</span>
-                                <div className={styles.mockStatBigRight}>
-                                    <p className={styles.mockStatBigLabel}>modelos fiscales<br />preparados por IA</p>
-                                    <span className={styles.mockStatBigDelta}>↑ +12% vs semana anterior</span>
-                                </div>
-                            </div>
+                                {/* Soft radial glow behind hub */}
+                                <circle cx={NET_CX} cy={NET_CY} r="72" fill="url(#netHubGlow)" />
 
-                            {/* Bar chart semanal */}
-                            <div className={styles.mockChart}>
-                                <p className={styles.mockChartTitle}>Automatizaciones esta semana</p>
-                                <div className={styles.mockChartBars}>
-                                    {[42, 67, 55, 81, 63, 88, 74].map((h, i) => (
-                                        <div key={i} className={styles.mockChartBarTrack}>
-                                            <div
-                                                className={styles.mockChartBar}
-                                                style={{ '--bar-h': `${h}%` } as React.CSSProperties}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className={styles.mockChartDays}>
-                                    {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map(d => (
-                                        <span key={d} className={styles.mockChartDay}>{d}</span>
-                                    ))}
-                                </div>
-                            </div>
+                                {/* Slow-spin outer ring */}
+                                <circle
+                                    cx={NET_CX} cy={NET_CY} r="52"
+                                    fill="none"
+                                    stroke="rgba(57,206,134,0.05)"
+                                    strokeWidth="1"
+                                    strokeDasharray="3 7"
+                                    className={styles.netRingSpinRev}
+                                />
 
-                            {/* Activity feed */}
-                            <div className={styles.mockFeed}>
-                                {[
-                                    { text: 'García Pérez · Modelo 303 firmado', time: '2 min', ok: true },
-                                    { text: 'Torres Instalaciones · 130 listo', time: '8 min', ok: true },
-                                    { text: 'Clínica Herrero · revisando doc.', time: '14 min', ok: false },
-                                ].map((item, i) => (
-                                    <div key={i} className={styles.mockFeedItem}>
-                                        <span className={item.ok ? styles.mockFeedDotOk : styles.mockFeedDotPending} />
-                                        <span className={styles.mockFeedText}>{item.text}</span>
-                                        <span className={styles.mockFeedTime}>{item.time}</span>
-                                    </div>
+                                {/* Inner spin ring */}
+                                <circle
+                                    cx={NET_CX} cy={NET_CY} r="40"
+                                    fill="none"
+                                    stroke="rgba(57,206,134,0.08)"
+                                    strokeWidth="1"
+                                    strokeDasharray="2 5"
+                                    className={styles.netRingSpin}
+                                />
+
+                                {/* Connecting lines */}
+                                {NET_NODES.map((n, i) => (
+                                    <line
+                                        key={i}
+                                        x1={NET_CX} y1={NET_CY}
+                                        x2={n.nx} y2={n.ny}
+                                        stroke="rgba(57,206,134,0.18)"
+                                        strokeWidth="1"
+                                        strokeDasharray="4 5"
+                                        className={styles.netLine}
+                                        style={{ animationDelay: `${i * 0.12}s` } as React.CSSProperties}
+                                    />
                                 ))}
+
+                                {/* Animated data dots: center → node */}
+                                {NET_NODES.map((n, i) => (
+                                    <circle key={`dot${i}`} r="2.5" fill="rgba(57,206,134,0.82)">
+                                        <animateMotion
+                                            dur="2.8s"
+                                            repeatCount="indefinite"
+                                            begin={`${i * 0.56}s`}
+                                            path={`M ${NET_CX} ${NET_CY} L ${n.nx} ${n.ny}`}
+                                        />
+                                    </circle>
+                                ))}
+
+                                {/* Outer process nodes */}
+                                {NET_NODES.map((n, i) => (
+                                    <g
+                                        key={`node${i}`}
+                                        className={styles.netNode}
+                                        style={{ animationDelay: `${0.18 + i * 0.11}s` } as React.CSSProperties}
+                                    >
+                                        <circle
+                                            cx={n.nx} cy={n.ny} r="19"
+                                            fill="rgba(12,18,28,0.97)"
+                                            stroke="rgba(57,206,134,0.22)"
+                                            strokeWidth="1"
+                                        />
+                                        <text
+                                            x={n.nx} y={n.ny}
+                                            textAnchor="middle"
+                                            dominantBaseline="central"
+                                            fontSize="8"
+                                            fontWeight="600"
+                                            fontFamily="'JetBrains Mono',ui-monospace,monospace"
+                                            fill="rgba(57,206,134,0.78)"
+                                            letterSpacing="0.08em"
+                                        >
+                                            {n.code}
+                                        </text>
+                                        <text
+                                            x={n.lx} y={n.ly}
+                                            textAnchor={n.la}
+                                            fontSize="7.5"
+                                            fontFamily="'Inter',system-ui,sans-serif"
+                                            fill="rgba(142,155,170,0.78)"
+                                        >
+                                            {n.label}
+                                        </text>
+                                    </g>
+                                ))}
+
+                                {/* Central hub */}
+                                <circle
+                                    cx={NET_CX} cy={NET_CY} r="29"
+                                    fill="rgba(8,13,21,0.99)"
+                                    stroke="rgba(57,206,134,0.45)"
+                                    strokeWidth="1.5"
+                                    className={styles.netHubRing}
+                                />
+                                <text
+                                    x={NET_CX} y={NET_CY - 6}
+                                    textAnchor="middle"
+                                    fontSize="6.5"
+                                    fontWeight="700"
+                                    fontFamily="'JetBrains Mono',ui-monospace,monospace"
+                                    fill="rgba(57,206,134,0.92)"
+                                    letterSpacing="0.12em"
+                                >
+                                    SISTEMA
+                                </text>
+                                <text
+                                    x={NET_CX} y={NET_CY + 7}
+                                    textAnchor="middle"
+                                    fontSize="6.5"
+                                    fontFamily="'Inter',system-ui,sans-serif"
+                                    fill="rgba(142,155,170,0.58)"
+                                >
+                                    OpsPilot
+                                </text>
+                            </svg>
+
+                            <div className={styles.networkCardFooter}>
+                                <div className={styles.networkFooterStat}>
+                                    <span ref={mockStat1Ref} className={styles.networkStatNum}>34</span>
+                                    <span className={styles.networkStatLabel}>&nbsp;procesos activos</span>
+                                </div>
+                                <span className={styles.networkLive}>
+                                    <span className={styles.networkLiveDot} />
+                                    en línea
+                                </span>
                             </div>
                         </div>
                         <div className={styles.heroProofFloater}>

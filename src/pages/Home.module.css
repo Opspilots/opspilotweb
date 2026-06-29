@@ -294,228 +294,127 @@
 }
 
 /* ═══════════════════════════════════════════
-   PRODUCTO MOCKUP — heroVisual rediseñado
+   NETWORK VISUALIZATION — heroVisual
+   Hub-and-spoke diagram: OpsPilot at center,
+   5 process nodes connected by animated paths.
    ═══════════════════════════════════════════ */
 
-.mockPanel {
-    background: linear-gradient(160deg, rgba(18, 26, 36, 0.96) 0%, rgba(10, 16, 24, 0.99) 100%);
-    border: 1px solid var(--color-border-strong);
+.networkCard {
+    position: relative;
+    background: linear-gradient(170deg, rgba(12, 18, 28, 0.96) 0%, rgba(8, 13, 21, 0.99) 100%);
+    border: 1px solid rgba(57, 206, 134, 0.18);
     border-radius: var(--radius-2xl);
     overflow: hidden;
     box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.06),
-        0 32px 80px -16px rgba(0, 0, 0, 0.9),
-        0 0 120px -24px rgba(57, 206, 134, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 32px 80px -16px rgba(0, 0, 0, 0.88),
+        0 0 90px -38px rgba(57, 206, 134, 0.16);
 }
 
-/* ─── Header ─── */
-.mockHeader {
+.networkSvg {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: var(--spacing-2);
+}
+
+/* Connecting lines — fade in with staggered delay via inline style */
+.netLine {
+    opacity: 0;
+    animation: netFadeIn 0.7s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@keyframes netFadeIn {
+    to { opacity: 1; }
+}
+
+/* Outer process nodes — fade in */
+.netNode {
+    opacity: 0;
+    animation: netFadeIn 0.55s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* Clockwise spinning ring */
+.netRingSpin {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: netSpin 20s linear infinite;
+}
+
+/* Counter-clockwise outer ring */
+.netRingSpinRev {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: netSpinRev 28s linear infinite;
+}
+
+@keyframes netSpin    { to { transform: rotate(360deg);  } }
+@keyframes netSpinRev { to { transform: rotate(-360deg); } }
+
+/* Hub border pulse */
+.netHubRing {
+    animation: hubPulse 3s ease-in-out infinite;
+}
+
+@keyframes hubPulse {
+    0%, 100% { stroke-opacity: 0.45; }
+    50%       { stroke-opacity: 0.25; }
+}
+
+/* Card footer */
+.networkCardFooter {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-4) var(--spacing-5);
-    border-bottom: 1px solid var(--color-border-subtle);
-    background: rgba(255, 255, 255, 0.015);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.012);
 }
 
-.mockHeaderLeft {
+.networkFooterStat {
     display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
+    align-items: baseline;
+    gap: 0;
 }
 
-.mockHeaderIndicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--color-mint);
-    box-shadow: 0 0 8px rgba(57, 206, 134, 0.6);
-    animation: indicatorPulse 2.4s ease-in-out infinite;
-    flex-shrink: 0;
-}
-
-@keyframes indicatorPulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(57, 206, 134, 0.6); }
-    50%       { opacity: 0.55; box-shadow: 0 0 3px rgba(57, 206, 134, 0.3); }
-}
-
-.mockHeaderTitle {
-    font-family: var(--font-family-base);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-strong);
-    margin: 0;
-    line-height: 1.2;
-}
-
-.mockHeaderSub {
-    font-family: var(--font-family-mono);
-    font-size: 0.6rem;
-    color: var(--color-text-subtle);
-    margin: 0;
-    letter-spacing: 0.04em;
-}
-
-.mockLiveBadge {
-    font-family: var(--font-family-mono);
-    font-size: 0.6rem;
-    font-weight: var(--font-weight-bold);
-    color: var(--color-mint);
-    letter-spacing: 0.1em;
-    padding: 3px 8px;
-    background: rgba(57, 206, 134, 0.08);
-    border: 1px solid var(--color-border-mint);
-    border-radius: var(--radius-full);
-}
-
-/* ─── Big stat ─── */
-.mockStatBig {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-4);
-    padding: var(--spacing-5) var(--spacing-5) var(--spacing-4);
-    border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.mockStatBigNum {
+.networkStatNum {
     font-family: var(--font-family-display);
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-extrabold);
     color: var(--color-mint);
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     line-height: 1;
-    flex-shrink: 0;
 }
 
-.mockStatBigRight {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-1);
-}
-
-.mockStatBigLabel {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    line-height: 1.4;
-    margin: 0;
-}
-
-.mockStatBigDelta {
-    font-family: var(--font-family-mono);
-    font-size: 0.65rem;
-    color: var(--color-mint);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.04em;
-}
-
-/* ─── Bar chart ─── */
-.mockChart {
-    padding: var(--spacing-4) var(--spacing-5) var(--spacing-3);
-    border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.mockChartTitle {
-    font-family: var(--font-family-mono);
-    font-size: 0.6rem;
-    color: var(--color-text-subtle);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin: 0 0 var(--spacing-3);
-}
-
-.mockChartBars {
-    display: flex;
-    align-items: flex-end;
-    gap: 4px;
-    height: 52px;
-}
-
-.mockChartBarTrack {
-    flex: 1;
-    height: 100%;
-    display: flex;
-    align-items: flex-end;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 3px 3px 0 0;
-}
-
-.mockChartBar {
-    width: 100%;
-    height: var(--bar-h, 50%);
-    background: linear-gradient(180deg, var(--color-mint) 0%, rgba(57, 206, 134, 0.25) 100%);
-    border-radius: 3px 3px 0 0;
-    transform-origin: bottom;
-    animation: barGrow 0.9s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-
-.mockChartBarTrack:nth-child(1) .mockChartBar { animation-delay: 0.05s; }
-.mockChartBarTrack:nth-child(2) .mockChartBar { animation-delay: 0.10s; }
-.mockChartBarTrack:nth-child(3) .mockChartBar { animation-delay: 0.15s; }
-.mockChartBarTrack:nth-child(4) .mockChartBar { animation-delay: 0.20s; }
-.mockChartBarTrack:nth-child(5) .mockChartBar { animation-delay: 0.25s; }
-.mockChartBarTrack:nth-child(6) .mockChartBar { animation-delay: 0.30s; }
-.mockChartBarTrack:nth-child(7) .mockChartBar { animation-delay: 0.35s; }
-
-@keyframes barGrow {
-    from { transform: scaleY(0); opacity: 0; }
-    to   { transform: scaleY(1); opacity: 1; }
-}
-
-.mockChartDays {
-    display: flex;
-    gap: 4px;
-    margin-top: 4px;
-}
-
-.mockChartDay {
-    flex: 1;
-    font-family: var(--font-family-mono);
-    font-size: 0.55rem;
-    color: var(--color-text-subtle);
-    text-align: center;
-    letter-spacing: 0;
-}
-
-/* ─── Activity feed ─── */
-.mockFeed {
-    padding: var(--spacing-2) 0;
-}
-
-.mockFeedItem {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
-    padding: var(--spacing-3) var(--spacing-5);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-.mockFeedItem:last-child { border-bottom: none; }
-
-.mockFeedDot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.mockFeedDotOk      { background: var(--color-mint); }
-.mockFeedDotPending { background: #FEBC2E; }
-
-.mockFeedText {
+.networkStatLabel {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.mockFeedTime {
+.networkLive {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
     font-family: var(--font-family-mono);
-    font-size: 0.6rem;
-    color: var(--color-text-subtle);
+    font-size: 0.62rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-mint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.networkLiveDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-mint);
     flex-shrink: 0;
-    letter-spacing: 0.02em;
+    animation: liveDotPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes liveDotPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
 }
 
 /* ═══════════════════════════════════════════
