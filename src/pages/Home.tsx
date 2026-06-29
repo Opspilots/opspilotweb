@@ -13,6 +13,10 @@ import {
     Check,
     ArrowRight,
     X,
+    MessagesSquare,
+    Search,
+    FileCheck,
+    Wrench,
 } from 'lucide-react';
 import styles from './Home.module.css';
 import sys from '../styles/page-system.module.css';
@@ -412,6 +416,11 @@ export const Home: React.FC = () => {
             {/* ═══ CASOS DE ÉXITO — carrusel ═══ */}
             <section className={styles.caseSection}>
                 <div className={styles.container} ref={caseRef}>
+                    <header className={`${styles.sectionHeader} reveal`}>
+                        <h2 className={styles.sectionTitle}>
+                            Lo que construimos ya está trabajando.
+                        </h2>
+                    </header>
                     <div
                         className={styles.caseCarousel}
                         onMouseEnter={() => setCarouselPaused(true)}
@@ -444,13 +453,6 @@ export const Home: React.FC = () => {
                                                 <span className={styles.caseStatLabel}>{s.label}</span>
                                             </div>
                                         ))}
-                                    </div>
-                                    <div className={styles.caseSource}>
-                                        <div className={styles.caseSourceAvatar}>{c.source.initials}</div>
-                                        <div className={styles.caseSourceInfo}>
-                                            <p className={styles.caseSourceName}>{c.source.name} · {c.source.role}</p>
-                                            <p className={styles.caseSourceCompany}>{c.source.company}</p>
-                                        </div>
                                     </div>
                                 </article>
                             );
@@ -519,7 +521,8 @@ export const Home: React.FC = () => {
                     <div className={styles.processGrid}>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumLabel}>01</span>
+                                <span className={styles.processStepNum}>01</span>
+                                <span className={styles.processNumLabel}><MessagesSquare size={18} strokeWidth={1.6} /></span>
                             </div>
                             <h3 className={styles.stepTitle}>Te escuchamos</h3>
                             <p className={styles.stepText}>
@@ -529,7 +532,8 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumLabel}>02</span>
+                                <span className={styles.processStepNum}>02</span>
+                                <span className={styles.processNumLabel}><Search size={18} strokeWidth={1.6} /></span>
                             </div>
                             <h3 className={styles.stepTitle}>Localizamos el problema</h3>
                             <p className={styles.stepText}>
@@ -539,7 +543,8 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumLabel}>03</span>
+                                <span className={styles.processStepNum}>03</span>
+                                <span className={styles.processNumLabel}><FileCheck size={18} strokeWidth={1.6} /></span>
                             </div>
                             <h3 className={styles.stepTitle}>Te proponemos algo concreto</h3>
                             <p className={styles.stepText}>
@@ -549,7 +554,8 @@ export const Home: React.FC = () => {
                         </div>
                         <div className={`${styles.processStep} reveal`}>
                             <div className={styles.processNumWrap}>
-                                <span className={styles.processNumLabel}>04</span>
+                                <span className={styles.processStepNum}>04</span>
+                                <span className={styles.processNumLabel}><Wrench size={18} strokeWidth={1.6} /></span>
                             </div>
                             <h3 className={styles.stepTitle}>Lo hacemos y nos quedamos</h3>
                             <p className={styles.stepText}>
