@@ -5,10 +5,6 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import {
-    FileSpreadsheet,
-    Zap,
-    Calculator,
-    Network,
     FileText,
     Receipt,
     Landmark,
@@ -40,192 +36,29 @@ interface Feature {
     label: string;
 }
 
-interface ProductCardProps {
-    id: string;
-    icon: React.ReactNode;
-    differentiator: string;
-    features: Feature[];
-    status: ProductStatus;
+interface ProductMetric {
+    value: string;
+    label: string;
 }
 
-const statusLabel: Record<ProductStatus, string> = {
+const STATUS_LABEL: Record<ProductStatus, string> = {
     production: 'En producción',
-    beta: 'En beta privada',
+    beta: 'Beta privada',
     soon: 'Próximamente',
 };
 
-/* ─── Mockup components ─── */
-
-const FiscalidadMockup: React.FC = () => (
-    <div className={styles.mockupWindow}>
-        <div className={styles.mockupBar}>
-            <span className={styles.mockupDot} style={{ background: '#ff5f57' }} />
-            <span className={styles.mockupDot} style={{ background: '#febc2e' }} />
-            <span className={styles.mockupDot} style={{ background: '#28c840' }} />
-            <span className={styles.mockupTitle}>Fiscalidad · Panel</span>
-        </div>
-        <div className={styles.mockupBody}>
-            <div className={styles.mockupRow}>
-                <div className={styles.mockupCard}>
-                    <span className={styles.mockupLabel}>IVA pendiente</span>
-                    <span className={styles.mockupValue} style={{ color: 'var(--color-mint)' }}>3.420 €</span>
+/* ─── Abstract gradient panel ─── */
+const ProductPanel: React.FC<{ id: string; metrics: ProductMetric[] }> = ({ id, metrics }) => (
+    <div className={`${styles.panel} ${styles['panel_' + id]}`}>
+        <div className={styles.panelGlow} />
+        <div className={styles.panelMetrics}>
+            {metrics.map((m, i) => (
+                <div key={i} className={`${styles.panelMetric} ${styles['metric' + i]}`}>
+                    <span className={styles.panelMetricValue}>{m.value}</span>
+                    <span className={styles.panelMetricLabel}>{m.label}</span>
                 </div>
-                <div className={styles.mockupCard}>
-                    <span className={styles.mockupLabel}>Modelo 303</span>
-                    <span className={styles.mockupBadge} style={{ background: 'rgba(57,206,134,0.15)', color: 'var(--color-mint)' }}>Enviado</span>
-                </div>
-            </div>
-            <div className={styles.mockupRow}>
-                <div className={styles.mockupCard} style={{ flex: 2 }}>
-                    <span className={styles.mockupLabel}>Facturas este mes</span>
-                    <div className={styles.mockupBar2}>
-                        <div style={{ width: '72%', height: 6, background: 'var(--color-mint)', borderRadius: 3 }} />
-                    </div>
-                    <span className={styles.mockupSubval}>18 / 25 conciliadas</span>
-                </div>
-            </div>
-            <div className={styles.mockupRow}>
-                <div className={styles.mockupCard} style={{ flex: 1 }}>
-                    <span className={styles.mockupLabel}>SII</span>
-                    <span className={styles.mockupBadge} style={{ background: 'rgba(57,206,134,0.15)', color: 'var(--color-mint)' }}>Activo</span>
-                </div>
-                <div className={styles.mockupCard} style={{ flex: 1 }}>
-                    <span className={styles.mockupLabel}>VeriFactu</span>
-                    <span className={styles.mockupBadge} style={{ background: 'rgba(57,206,134,0.15)', color: 'var(--color-mint)' }}>OK</span>
-                </div>
-            </div>
-        </div>
-    </div>
-);
-
-const EnergyDealMockup: React.FC = () => (
-    <div className={styles.mockupWindow}>
-        <div className={styles.mockupBar}>
-            <span className={styles.mockupDot} style={{ background: '#ff5f57' }} />
-            <span className={styles.mockupDot} style={{ background: '#febc2e' }} />
-            <span className={styles.mockupDot} style={{ background: '#28c840' }} />
-            <span className={styles.mockupTitle}>EnergyDeal · Pipeline</span>
-        </div>
-        <div className={styles.mockupBody}>
-            <div className={styles.mockupRow}>
-                <div className={styles.mockupCard} style={{ flex: 1 }}>
-                    <span className={styles.mockupLabel}>Clientes activos</span>
-                    <span className={styles.mockupValue} style={{ color: 'var(--color-mint)' }}>142</span>
-                </div>
-                <div className={styles.mockupCard} style={{ flex: 1 }}>
-                    <span className={styles.mockupLabel}>Comisiones mes</span>
-                    <span className={styles.mockupValue} style={{ color: 'var(--color-mint)' }}>8.920 €</span>
-                </div>
-            </div>
-            <div className={styles.mockupPipeline}>
-                {(['Prospecto', 'Comparativa', 'Propuesta', 'Firmado'] as const).map((s, i) => (
-                    <div key={s} className={styles.mockupPipelineStep}>
-                        <div
-                            className={styles.mockupPipelineNum}
-                            style={{
-                                background: i < 3 ? 'var(--color-mint-soft)' : 'var(--color-mint)',
-                                color: i < 3 ? 'var(--color-mint)' : '#0d141c',
-                                border: '1px solid var(--color-border-mint)',
-                            }}
-                        >
-                            {[24, 11, 6, 3][i]}
-                        </div>
-                        <span className={styles.mockupPipelineLabel}>{s}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
-    </div>
-);
-
-const PresupuestadorMockup: React.FC = () => (
-    <div className={styles.mockupWindow}>
-        <div className={styles.mockupBar}>
-            <span className={styles.mockupDot} style={{ background: '#ff5f57' }} />
-            <span className={styles.mockupDot} style={{ background: '#febc2e' }} />
-            <span className={styles.mockupDot} style={{ background: '#28c840' }} />
-            <span className={styles.mockupTitle}>Presupuestador · Obra ejemplo</span>
-        </div>
-        <div className={styles.mockupBody}>
-            <div className={styles.mockupTable}>
-                <div className={styles.mockupTableHead}>
-                    <span>Partida</span><span>Ud.</span><span>Precio</span><span>Total</span>
-                </div>
-                {[
-                    ['Demolición tabiques', 'm²', '18 €', '540 €'],
-                    ['Solado porcelánico', 'm²', '42 €', '2.100 €'],
-                    ['Pintura paredes', 'm²', '8 €', '640 €'],
-                ].map(([p, u, pr, t]) => (
-                    <div key={p} className={styles.mockupTableRow}>
-                        <span>{p}</span><span>{u}</span><span>{pr}</span>
-                        <span style={{ color: 'var(--color-mint)', fontWeight: 600 }}>{t}</span>
-                    </div>
-                ))}
-            </div>
-            <div className={styles.mockupTotal}>
-                <span>Total presupuesto</span>
-                <span style={{ color: 'var(--color-mint)', fontWeight: 700 }}>3.280 €</span>
-            </div>
-        </div>
-    </div>
-);
-
-const ErpMockup: React.FC = () => (
-    <div className={styles.mockupWindow}>
-        <div className={styles.mockupBar}>
-            <span className={styles.mockupDot} style={{ background: '#ff5f57' }} />
-            <span className={styles.mockupDot} style={{ background: '#febc2e' }} />
-            <span className={styles.mockupDot} style={{ background: '#28c840' }} />
-            <span className={styles.mockupTitle}>ERP OpsPilot · Proyectos</span>
-        </div>
-        <div className={styles.mockupBody}>
-            <div className={styles.mockupKanban}>
-                {[
-                    { col: 'En curso', items: ['Diseño web cliente A', 'Auditoría SEO'], color: 'var(--color-mint)' },
-                    { col: 'Revisión', items: ['Informe mensual'], color: 'var(--color-warm, #d99457)' },
-                    { col: 'Entregado', items: ['App móvil v2', 'Landing page'], color: 'var(--color-text-subtle)' },
-                ].map(({ col, items, color }) => (
-                    <div key={col} className={styles.mockupKanbanCol}>
-                        <div className={styles.mockupKanbanTitle} style={{ color }}>{col}</div>
-                        {items.map((item) => (
-                            <div key={item} className={styles.mockupKanbanCard}>{item}</div>
-                        ))}
-                    </div>
-                ))}
-            </div>
-        </div>
-    </div>
-);
-
-/* ─── ProductVisual ─── */
-
-const ProductVisual: React.FC<ProductCardProps> = ({ id, icon, differentiator, features, status }) => (
-    <div className={styles.productVisual}>
-        <div className={styles.productVisualHeader}>
-            <div className={styles.productVisualIcon}>{icon}</div>
-            <span className={`${styles.productStatus} ${styles['status_' + status]}`}>
-                <span className={styles.productStatusDot}></span>
-                {statusLabel[status]}
-            </span>
-        </div>
-
-        {/* Mini dashboard preview por producto */}
-        <div className={`${styles.productMockup} ${styles['mockup_' + id]}`}>
-            {id === 'fiscalidad' && <FiscalidadMockup />}
-            {id === 'energydeal' && <EnergyDealMockup />}
-            {id === 'presupuestador' && <PresupuestadorMockup />}
-            {id === 'erp' && <ErpMockup />}
-        </div>
-
-        <p className={styles.productVisualDifferentiator}>{differentiator}</p>
-        <ul className={styles.productVisualFeatures}>
-            {features.map((f, i) => (
-                <li key={i}>
-                    <span className={styles.productVisualFeatureIcon}>{f.icon}</span>
-                    <span>{f.label}</span>
-                </li>
             ))}
-        </ul>
+        </div>
     </div>
 );
 
@@ -234,10 +67,9 @@ interface Product {
     name: string;
     sector: string;
     desc: string;
-    differentiator: string;
     features: Feature[];
     status: ProductStatus;
-    icon: React.ReactNode;
+    metrics: ProductMetric[];
     cta: string;
     href: string;
     external?: boolean;
@@ -262,19 +94,21 @@ export const Product: React.FC = () => {
             desc:
                 'Plataforma fiscal y contable española completa. Facturación, asientos automáticos según el PGC, ' +
                 'modelos AEAT, envío SII y VeriFactu nativos, conciliación bancaria con OCR de tickets, ' +
-                'asistente IA fiscal y app móvil. Pensada para uso directo y para gestorías que llevan múltiples clientes.',
-            differentiator:
-                'Cobertura completa del stack fiscal español, no solo facturación. Compite con Holded, Quipu y A3 Suite con SII, VeriFactu y consolidación de grupos incluidos.',
+                'asistente IA fiscal y app móvil. Pensada para uso directo y para gestorías con múltiples clientes.',
+            metrics: [
+                { value: '12', label: 'modelos AEAT cubiertos' },
+                { value: 'SII + VeriFactu', label: 'Obligatorio 2025' },
+                { value: '< 3 min', label: 'declaración trimestral' },
+            ],
             features: [
-                { icon: <Receipt size={16} />, label: 'Facturación + cobros/pagos + contabilidad PGC' },
-                { icon: <Landmark size={16} />, label: 'Modelos AEAT 303, 111, 115, 130, 190, 202, 347 y 390' },
-                { icon: <FileSignature size={16} />, label: 'Envío SII y VeriFactu (XML firmado y encadenado)' },
-                { icon: <Smartphone size={16} />, label: 'App móvil con biometría y captura de tickets' },
-                { icon: <BarChart3 size={16} />, label: 'Asistente IA fiscal y consolidación de grupos' },
+                { icon: <Receipt size={14} />, label: 'Facturación + cobros/pagos + contabilidad PGC' },
+                { icon: <Landmark size={14} />, label: 'Modelos AEAT 303, 111, 115, 130, 190, 202, 347 y 390' },
+                { icon: <FileSignature size={14} />, label: 'Envío SII y VeriFactu (XML firmado y encadenado)' },
+                { icon: <Smartphone size={14} />, label: 'App móvil con biometría y captura de tickets OCR' },
+                { icon: <BarChart3 size={14} />, label: 'Asistente IA fiscal y consolidación de grupos' },
             ],
             status: 'production',
-            icon: <FileSpreadsheet size={32} />,
-            cta: 'Ver web del producto',
+            cta: 'Ver producto',
             href: 'https://fiscalidad.mcpopspilot.org',
             external: true,
         },
@@ -283,21 +117,23 @@ export const Product: React.FC = () => {
             name: 'EnergyDeal',
             sector: 'Sector energético — agentes y comercializadoras',
             desc:
-                'CRM B2B vertical para agentes comerciales y comercializadoras energéticas en España. ' +
-                'Comparador multi-proveedor, gestión por CIF con CUPS, pipeline de carga masiva de tarifas, ' +
-                'liquidación de comisiones y centro de mensajería con campañas Email + WhatsApp.',
-            differentiator:
-                'Reproducibilidad y auditoría: cada comparativa es un snapshot inmutable, las tarifas se versionan en lugar de sobrescribirse y los conflictos de interés se marcan explícitamente.',
+                'CRM B2B vertical para agentes comerciales y comercializadoras energéticas. ' +
+                'Comparador multi-proveedor con snapshots inmutables, gestión por CIF con CUPS, ' +
+                'pipeline de carga masiva de tarifas y liquidación de comisiones con trazabilidad completa.',
+            metrics: [
+                { value: 'Snapshot', label: 'Cada comparativa es inmutable' },
+                { value: 'CUPS + CIF', label: 'Por punto de suministro' },
+                { value: 'PDF → dato', label: 'Carga masiva de tarifas' },
+            ],
             features: [
-                { icon: <Banknote size={16} />, label: 'Comparador con snapshots históricos reproducibles' },
-                { icon: <Building2 size={16} />, label: 'CRM B2B por CIF con CUPS y puntos de suministro' },
-                { icon: <Workflow size={16} />, label: 'Pipeline carga masiva de tarifas (PDF → parseo → validación)' },
-                { icon: <Users size={16} />, label: 'Comisiones con estados pending / validated / paid / reverted' },
-                { icon: <FileText size={16} />, label: 'Exportes fiscales (IVA + pagos) y log de auditoría' },
+                { icon: <Banknote size={14} />, label: 'Comparador con snapshots históricos reproducibles' },
+                { icon: <Building2 size={14} />, label: 'CRM B2B por CIF con CUPS y puntos de suministro' },
+                { icon: <Workflow size={14} />, label: 'Pipeline carga masiva de tarifas (PDF → parseo → validación)' },
+                { icon: <Users size={14} />, label: 'Comisiones con estados pending / validated / paid / reverted' },
+                { icon: <FileText size={14} />, label: 'Exportes fiscales (IVA + pagos) y log de auditoría' },
             ],
             status: 'production',
-            icon: <Zap size={32} />,
-            cta: 'Ver web del producto',
+            cta: 'Ver producto',
             href: 'https://energydeal.es',
             external: true,
         },
@@ -307,21 +143,23 @@ export const Product: React.FC = () => {
             sector: 'Construcción, reformas y arquitectura',
             desc:
                 'SaaS para presupuestos y certificaciones de obra. Partidas estructuradas con descomposición ' +
-                'en recursos (materiales, mano de obra, maquinaria) y rendimientos, packs reutilizables, ' +
-                'firma digital del cliente vía enlace público y control de coste real con OCR de albaranes.',
-            differentiator:
-                'BC3/FIEBDC nativo (estándar español del sector) más descomposición real de partidas en recursos. No es un presupuestador genérico: está hecho para cómo se presupuesta obra en España.',
+                'en recursos, packs reutilizables, firma digital del cliente vía enlace público ' +
+                'y control de coste real con OCR de albaranes. BC3/FIEBDC nativo.',
+            metrics: [
+                { value: 'BC3/FIEBDC', label: 'Estándar español nativo' },
+                { value: 'Firma digital', label: 'Sin papel, vía enlace' },
+                { value: 'OCR', label: 'Control de albaranes' },
+            ],
             features: [
-                { icon: <Layers size={16} />, label: 'Importación y exportación BC3/FIEBDC nativa' },
-                { icon: <HardHat size={16} />, label: 'Partidas + packs reutilizables + catálogo de recursos' },
-                { icon: <PenLine size={16} />, label: 'Firma digital del cliente vía enlace público' },
-                { icon: <FileSignature size={16} />, label: 'Certificaciones de obra con asistente y versionado' },
-                { icon: <ScanLine size={16} />, label: 'Control de rentabilidad con OCR de albaranes' },
+                { icon: <Layers size={14} />, label: 'Importación y exportación BC3/FIEBDC nativa' },
+                { icon: <HardHat size={14} />, label: 'Partidas + packs reutilizables + catálogo de recursos' },
+                { icon: <PenLine size={14} />, label: 'Firma digital del cliente vía enlace público' },
+                { icon: <FileSignature size={14} />, label: 'Certificaciones de obra con asistente y versionado' },
+                { icon: <ScanLine size={14} />, label: 'Control de rentabilidad con OCR de albaranes' },
             ],
             status: 'beta',
-            icon: <Calculator size={32} />,
-            cta: 'Solicitar acceso anticipado',
-            href: '/contacto',
+            cta: 'Solicitar acceso',
+            href: ROUTES.contacto,
             external: false,
         },
         {
@@ -329,21 +167,23 @@ export const Product: React.FC = () => {
             name: 'ERP OpsPilot',
             sector: 'Agencias, consultoras y servicios profesionales',
             desc:
-                'ERP/PSA todo-en-uno para reemplazar la combinación Notion + Trello + HubSpot + Slack + Drive. ' +
-                'Project Hub con tareas jerárquicas, CRM con empresas y oportunidades, secuencias de prospección, ' +
-                'auditorías con plantillas reutilizables, portal cliente externo y multi-tenant.',
-            differentiator:
-                'Capa MCP nativa con 31+ herramientas: un agente IA conversacional ejecuta acciones reales del ERP. Un Odoo es excesivo para una agencia, esto es modular y pensado para servicios profesionales.',
+                'ERP/PSA todo-en-uno. Reemplaza Notion + Trello + HubSpot + Slack + Drive con un solo entorno. ' +
+                'Project Hub, CRM, secuencias de prospección, portal cliente externo y capa MCP nativa ' +
+                'con 31+ herramientas de agente IA.',
+            metrics: [
+                { value: '31+', label: 'herramientas MCP nativas' },
+                { value: 'Multi-tenant', label: 'Por equipo o empresa' },
+                { value: 'Portal', label: 'Acceso externo para clientes' },
+            ],
             features: [
-                { icon: <Bot size={16} />, label: 'Capa MCP de agentes IA con 31+ herramientas nativas' },
-                { icon: <KanbanSquare size={16} />, label: 'Project Hub con tareas jerárquicas y Kanban' },
-                { icon: <Target size={16} />, label: 'Intelligence Platform: empresas, contactos, oportunidades' },
-                { icon: <Workflow size={16} />, label: 'Outreach Engine con secuencias automatizadas' },
-                { icon: <FileText size={16} />, label: 'Auditor con plantillas reutilizables (consultoría/compliance)' },
+                { icon: <Bot size={14} />, label: 'Capa MCP de agentes IA con 31+ herramientas nativas' },
+                { icon: <KanbanSquare size={14} />, label: 'Project Hub con tareas jerárquicas y Kanban' },
+                { icon: <Target size={14} />, label: 'Intelligence Platform: empresas, contactos, oportunidades' },
+                { icon: <Workflow size={14} />, label: 'Outreach Engine con secuencias automatizadas' },
+                { icon: <FileText size={14} />, label: 'Auditor con plantillas reutilizables (consultoría/compliance)' },
             ],
             status: 'production',
-            icon: <Network size={32} />,
-            cta: 'Ver web del producto',
+            cta: 'Ver producto',
             href: 'https://notionpilot.mcpopspilot.org',
             external: true,
         },
@@ -355,10 +195,7 @@ export const Product: React.FC = () => {
             <section className={sys.pageHero}>
                 <div className={sys.container}>
                     <div className={sys.pageHeroContent}>
-                        <span className={sys.pageHeroEyebrow}>
-                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-mint)', boxShadow: '0 0 8px rgba(57, 206, 134, 0.6)' }} />
-                            Productos verticales
-                        </span>
+                        <span className={sys.pageHeroEyebrow}>Productos verticales</span>
                         <h1 className={sys.pageHeroTitle}>
                             Cuatro productos para PYMEs <em className={sys.pageHeroAccent}>españolas</em>.
                         </h1>
@@ -372,44 +209,47 @@ export const Product: React.FC = () => {
             </section>
 
             {/* ═══ CATÁLOGO ═══ */}
-            <section className={styles.section}>
+            <section className={styles.catalog}>
                 <div className={sys.container} ref={productsRef}>
-                    <header className={`${sys.sectionHeader} reveal`}>
-                        <h2 className={sys.sectionTitle}>Nuestros productos.</h2>
-                    </header>
-                    <div className={styles.productsList}>
-                        {products.map((p, index) => (
-                            <div
-                                key={p.id}
-                                id={p.id}
-                                className={`${styles.productRow} ${index % 2 !== 0 ? styles.rowReverse : ''} reveal`}
-                            >
-                                <div className={styles.productInfo}>
+                    {products.map((p, index) => (
+                        <article
+                            key={p.id}
+                            id={p.id}
+                            className={`${styles.productRow} ${index % 2 !== 0 ? styles.rowReverse : ''} reveal`}
+                        >
+                            <div className={styles.productInfo}>
+                                <div className={styles.productMeta}>
                                     <span className={styles.productSector}>{p.sector}</span>
-                                    <h3 className={styles.productName}>{p.name}</h3>
-                                    <p className={styles.productDesc}>{p.desc}</p>
-                                    {p.external ? (
-                                        <a href={p.href} target="_blank" rel="noopener noreferrer">
-                                            <Button variant="primary" size="lg">{p.cta}</Button>
-                                        </a>
-                                    ) : (
-                                        <Link to={p.href}>
-                                            <Button variant="primary" size="lg">{p.cta}</Button>
-                                        </Link>
-                                    )}
+                                    <span className={`${styles.productStatus} ${styles['status_' + p.status]}`}>
+                                        <span className={styles.statusDot} />
+                                        {STATUS_LABEL[p.status]}
+                                    </span>
                                 </div>
-                                <div className={styles.productVisualContainer}>
-                                    <ProductVisual
-                                        id={p.id}
-                                        icon={p.icon}
-                                        differentiator={p.differentiator}
-                                        features={p.features}
-                                        status={p.status}
-                                    />
-                                </div>
+                                <h2 className={styles.productName}>{p.name}</h2>
+                                <p className={styles.productDesc}>{p.desc}</p>
+                                <ul className={styles.featureList}>
+                                    {p.features.map((f, i) => (
+                                        <li key={i} className={styles.featureItem}>
+                                            <span className={styles.featureIcon}>{f.icon}</span>
+                                            <span>{f.label}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                {p.external ? (
+                                    <a href={p.href} target="_blank" rel="noopener noreferrer">
+                                        <Button variant="primary" size="lg">{p.cta}</Button>
+                                    </a>
+                                ) : (
+                                    <Link to={p.href}>
+                                        <Button variant="primary" size="lg">{p.cta}</Button>
+                                    </Link>
+                                )}
                             </div>
-                        ))}
-                    </div>
+                            <div className={styles.panelWrap}>
+                                <ProductPanel id={p.id} metrics={p.metrics} />
+                            </div>
+                        </article>
+                    ))}
                 </div>
             </section>
 
@@ -462,8 +302,12 @@ export const Product: React.FC = () => {
                             con presupuesto cerrado.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to={ROUTES.contacto}><Button variant="primary" size="lg">Pedir desarrollo a medida</Button></Link>
-                            <Link to={ROUTES.servicios}><Button variant="outline" size="lg">Ver servicios</Button></Link>
+                            <Link to={ROUTES.contacto}>
+                                <Button variant="primary" size="lg">Pedir desarrollo a medida</Button>
+                            </Link>
+                            <Link to={ROUTES.servicios}>
+                                <Button variant="outline" size="lg">Ver servicios</Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
