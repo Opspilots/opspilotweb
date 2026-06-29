@@ -231,7 +231,7 @@
 /* ─── Product Visual block — Variant B (featured card) ─── */
 .productVisual {
     width: 100%;
-    max-width: 520px;
+    max-width: 580px;
     background: var(--color-bg-raised);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-2xl);
@@ -240,6 +240,7 @@
     flex-direction: column;
     gap: var(--spacing-6);
     transition: border-color var(--transition-normal);
+    overflow: hidden;
 }
 
 .productVisual:hover {
@@ -470,23 +471,23 @@
 
 /* ─── Product Mockups ─── */
 .productMockup {
-    margin: var(--spacing-6) 0;
+    margin: 0 calc(-1 * var(--spacing-8));
 }
 
 .mockupWindow {
-    background: var(--color-bg-deep);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-xl);
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
     overflow: hidden;
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
 }
 
 .mockupBar {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
-    padding: var(--spacing-3) var(--spacing-5);
-    background: var(--color-bg-elevated);
+    padding: var(--spacing-4) var(--spacing-8);
+    background: var(--color-bg-raised);
     border-bottom: 1px solid var(--color-border-subtle);
 }
 
@@ -494,23 +495,23 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    opacity: 0.8;
+    opacity: 0.85;
     display: inline-block;
 }
 
 .mockupTitle {
     margin-left: var(--spacing-3);
     font-family: var(--font-family-mono);
-    font-size: 0.7rem;
-    color: var(--color-text-subtle);
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
     letter-spacing: 0.04em;
 }
 
 .mockupBody {
-    padding: var(--spacing-4) var(--spacing-5);
+    padding: var(--spacing-6) var(--spacing-8);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-3);
+    gap: var(--spacing-4);
 }
 
 .mockupRow {
@@ -520,7 +521,7 @@
 
 .mockupCard {
     flex: 1;
-    padding: var(--spacing-3) var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-5);
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-lg);
@@ -530,31 +531,31 @@
 }
 
 .mockupLabel {
-    font-size: 0.65rem;
-    color: var(--color-text-subtle);
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
 
 .mockupValue {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
     line-height: 1;
     letter-spacing: -0.02em;
 }
 
 .mockupSubval {
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     color: var(--color-text-subtle);
 }
 
 .mockupBadge {
     display: inline-flex;
     align-items: center;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: var(--radius-full);
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     font-weight: var(--font-weight-semibold);
     width: fit-content;
 }
@@ -562,7 +563,7 @@
 .mockupBar2 {
     background: var(--color-bg-raised);
     border-radius: 3px;
-    height: 6px;
+    height: 7px;
     margin: var(--spacing-1) 0;
 }
 
@@ -571,7 +572,7 @@
     display: flex;
     gap: var(--spacing-2);
     align-items: center;
-    padding: var(--spacing-3) 0;
+    padding: var(--spacing-4) 0;
 }
 
 .mockupPipelineStep {
@@ -583,20 +584,20 @@
 }
 
 .mockupPipelineNum {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-family-display);
-    font-size: 0.7rem;
+    font-size: 0.82rem;
     font-weight: var(--font-weight-bold);
 }
 
 .mockupPipelineLabel {
-    font-size: 0.6rem;
-    color: var(--color-text-subtle);
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
     text-align: center;
 }
 
@@ -611,10 +612,10 @@
     display: grid;
     grid-template-columns: 2fr 0.5fr 0.8fr 0.8fr;
     gap: var(--spacing-2);
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
     background: var(--color-bg-elevated);
     border-radius: var(--radius-md);
-    font-size: 0.6rem;
+    font-size: 0.68rem;
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-subtle);
     text-transform: uppercase;
@@ -625,8 +626,8 @@
     display: grid;
     grid-template-columns: 2fr 0.5fr 0.8fr 0.8fr;
     gap: var(--spacing-2);
-    padding: var(--spacing-2) var(--spacing-3);
-    font-size: 0.65rem;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: 0.72rem;
     color: var(--color-text-muted);
     border-bottom: 1px solid var(--color-border-subtle);
 }
@@ -634,7 +635,7 @@
 .mockupTotal {
     display: flex;
     justify-content: space-between;
-    padding: var(--spacing-3) var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-4);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-strong);
@@ -648,7 +649,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-3);
-    min-height: 100px;
+    min-height: 120px;
 }
 
 .mockupKanbanCol {
@@ -658,7 +659,7 @@
 }
 
 .mockupKanbanTitle {
-    font-size: 0.6rem;
+    font-size: 0.68rem;
     font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -666,11 +667,11 @@
 }
 
 .mockupKanbanCard {
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     color: var(--color-text-muted);
     line-height: 1.4;
 }
