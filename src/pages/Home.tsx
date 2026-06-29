@@ -89,7 +89,6 @@ export const Home: React.FC = () => {
     const heroRef = useRef<HTMLDivElement>(null);
 
     const mockStat1Ref = useCountUp<HTMLSpanElement>({ end: 34, duration: 1.8 });
-    const mockStat2Ref = useCountUp<HTMLSpanElement>({ end: 12, duration: 1.6 });
 
     const problemRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const methodScrollRef = useScrollReveal<HTMLDivElement>({ stagger: true });
@@ -226,46 +225,58 @@ export const Home: React.FC = () => {
 
                     <div className={styles.heroVisual} aria-hidden="true">
                         <div className={styles.mockPanel}>
-                            <div className={styles.mockPanelHeader}>
-                                <div className={styles.mockDotRow}>
-                                    <span className={styles.mockDotRed} />
-                                    <span className={styles.mockDotYellow} />
-                                    <span className={styles.mockDotGreen} />
+                            {/* Header sin los puntos macOS */}
+                            <div className={styles.mockHeader}>
+                                <div className={styles.mockHeaderLeft}>
+                                    <span className={styles.mockHeaderIndicator} />
+                                    <div>
+                                        <p className={styles.mockHeaderTitle}>Asesoría Aranda · Sistema</p>
+                                        <p className={styles.mockHeaderSub}>panel.opspilot.es · en línea</p>
+                                    </div>
                                 </div>
-                                <span className={styles.mockPanelUrl}>app.opspilot.es · Asesoría Aranda</span>
-                                <span className={styles.mockPanelLive}>● activo</span>
+                                <span className={styles.mockLiveBadge}>● EN VIVO</span>
                             </div>
-                            <div className={styles.mockPanelStats}>
-                                <div className={styles.mockStat}>
-                                    <span ref={mockStat1Ref} className={styles.mockStatNum}>34</span>
-                                    <span className={styles.mockStatLabel}>Modelos<br />preparados por IA</span>
-                                </div>
-                                <div className={styles.mockStat}>
-                                    <span ref={mockStat2Ref} className={styles.mockStatNum}>12</span>
-                                    <span className={styles.mockStatLabel}>Documentos<br />firmados hoy</span>
-                                </div>
-                                <div className={styles.mockStat}>
-                                    <span className={styles.mockStatNum}>0</span>
-                                    <span className={styles.mockStatLabel}>Tareas<br />manuales pendientes</span>
+
+                            {/* Stat principal con count-up */}
+                            <div className={styles.mockStatBig}>
+                                <span ref={mockStat1Ref} className={styles.mockStatBigNum}>34</span>
+                                <div className={styles.mockStatBigRight}>
+                                    <p className={styles.mockStatBigLabel}>modelos fiscales<br />preparados por IA</p>
+                                    <span className={styles.mockStatBigDelta}>↑ +12% vs semana anterior</span>
                                 </div>
                             </div>
-                            <div className={styles.mockPanelList}>
-                                {[
-                                    { name: 'García Pérez, L.', type: 'Modelo 303 · T2 2025', status: 'Listo' },
-                                    { name: 'Torres Instalaciones', type: 'Modelo 130 · T2 2025', status: 'Firmado' },
-                                    { name: 'Clínica Herrero S.L.', type: 'Modelo 111 · T2 2025', status: 'Revisando' },
-                                    { name: 'Medina & Asociados', type: 'Modelo 390 · Anual', status: 'Listo' },
-                                ].map((row) => (
-                                    <div key={row.name} className={styles.mockRow}>
-                                        <div className={styles.mockRowLeft}>
-                                            <span className={styles.mockRowName}>{row.name}</span>
-                                            <span className={styles.mockRowType}>{row.type}</span>
+
+                            {/* Bar chart semanal */}
+                            <div className={styles.mockChart}>
+                                <p className={styles.mockChartTitle}>Automatizaciones esta semana</p>
+                                <div className={styles.mockChartBars}>
+                                    {[42, 67, 55, 81, 63, 88, 74].map((h, i) => (
+                                        <div key={i} className={styles.mockChartBarTrack}>
+                                            <div
+                                                className={styles.mockChartBar}
+                                                style={{ '--bar-h': `${h}%` } as React.CSSProperties}
+                                            />
                                         </div>
-                                        <span className={
-                                            row.status === 'Listo' ? styles.mockStatusListo
-                                            : row.status === 'Firmado' ? styles.mockStatusFirmado
-                                            : styles.mockStatusRevisando
-                                        }>{row.status}</span>
+                                    ))}
+                                </div>
+                                <div className={styles.mockChartDays}>
+                                    {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map(d => (
+                                        <span key={d} className={styles.mockChartDay}>{d}</span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Activity feed */}
+                            <div className={styles.mockFeed}>
+                                {[
+                                    { text: 'García Pérez · Modelo 303 firmado', time: '2 min', ok: true },
+                                    { text: 'Torres Instalaciones · 130 listo', time: '8 min', ok: true },
+                                    { text: 'Clínica Herrero · revisando doc.', time: '14 min', ok: false },
+                                ].map((item, i) => (
+                                    <div key={i} className={styles.mockFeedItem}>
+                                        <span className={item.ok ? styles.mockFeedDotOk : styles.mockFeedDotPending} />
+                                        <span className={styles.mockFeedText}>{item.text}</span>
+                                        <span className={styles.mockFeedTime}>{item.time}</span>
                                     </div>
                                 ))}
                             </div>

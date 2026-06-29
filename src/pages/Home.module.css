@@ -157,12 +157,12 @@
 
 .heroTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
     font-weight: var(--font-weight-extrabold);
     color: var(--color-text-strong);
-    line-height: 1.08;
+    line-height: 1.06;
     margin-bottom: var(--spacing-6);
-    letter-spacing: -0.04em;
+    letter-spacing: -0.042em;
     text-wrap: balance;
     display: flex;
     flex-direction: column;
@@ -294,7 +294,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   PRODUCTO MOCKUP — heroVisual
+   PRODUCTO MOCKUP — heroVisual rediseñado
    ═══════════════════════════════════════════ */
 
 .mockPanel {
@@ -309,134 +309,214 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.mockPanelHeader {
+/* ─── Header ─── */
+.mockHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-4) var(--spacing-5);
+    border-bottom: 1px solid var(--color-border-subtle);
+    background: rgba(255, 255, 255, 0.015);
+}
+
+.mockHeaderLeft {
     display: flex;
     align-items: center;
     gap: var(--spacing-3);
-    padding: var(--spacing-3) var(--spacing-5);
-    border-bottom: 1px solid var(--color-border-subtle);
-    background: rgba(255, 255, 255, 0.02);
 }
 
-.mockDotRow {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.mockDotRed, .mockDotYellow, .mockDotGreen {
-    width: 10px;
-    height: 10px;
+.mockHeaderIndicator {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-}
-.mockDotRed    { background: #FF5F57; }
-.mockDotYellow { background: #FEBC2E; }
-.mockDotGreen  { background: #28C840; }
-
-.mockPanelUrl {
-    font-family: var(--font-family-mono);
-    font-size: 0.65rem;
-    color: var(--color-text-subtle);
-    flex: 1;
-    text-align: center;
-    letter-spacing: 0.04em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    background: var(--color-mint);
+    box-shadow: 0 0 8px rgba(57, 206, 134, 0.6);
+    animation: indicatorPulse 2.4s ease-in-out infinite;
+    flex-shrink: 0;
 }
 
-.mockPanelLive {
+@keyframes indicatorPulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(57, 206, 134, 0.6); }
+    50%       { opacity: 0.55; box-shadow: 0 0 3px rgba(57, 206, 134, 0.3); }
+}
+
+.mockHeaderTitle {
     font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-strong);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.mockHeaderSub {
+    font-family: var(--font-family-mono);
+    font-size: 0.6rem;
+    color: var(--color-text-subtle);
+    margin: 0;
+    letter-spacing: 0.04em;
+}
+
+.mockLiveBadge {
+    font-family: var(--font-family-mono);
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-mint);
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    background: rgba(57, 206, 134, 0.08);
+    border: 1px solid var(--color-border-mint);
+    border-radius: var(--radius-full);
+}
+
+/* ─── Big stat ─── */
+.mockStatBig {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-5) var(--spacing-5) var(--spacing-4);
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.mockStatBigNum {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: var(--font-weight-extrabold);
+    color: var(--color-mint);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.mockStatBigRight {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.mockStatBigLabel {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    margin: 0;
+}
+
+.mockStatBigDelta {
+    font-family: var(--font-family-mono);
     font-size: 0.65rem;
     color: var(--color-mint);
     font-weight: var(--font-weight-semibold);
     letter-spacing: 0.04em;
-    white-space: nowrap;
 }
 
-.mockPanelStats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+/* ─── Bar chart ─── */
+.mockChart {
+    padding: var(--spacing-4) var(--spacing-5) var(--spacing-3);
     border-bottom: 1px solid var(--color-border-subtle);
 }
 
-.mockStat {
-    padding: var(--spacing-5) var(--spacing-4);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-1);
-    border-right: 1px solid var(--color-border-subtle);
-}
-.mockStat:last-child { border-right: none; }
-
-.mockStatNum {
-    font-family: var(--font-family-display);
-    font-size: clamp(1.5rem, 2.5vw, 2rem);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-strong);
-    letter-spacing: -0.04em;
-    line-height: 1;
-}
-
-.mockStatLabel {
+.mockChartTitle {
+    font-family: var(--font-family-mono);
     font-size: 0.6rem;
-    color: var(--color-text-muted);
-    line-height: 1.35;
+    color: var(--color-text-subtle);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    margin: 0 0 var(--spacing-3);
 }
 
-.mockPanelList {
+.mockChartBars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 52px;
+}
+
+.mockChartBarTrack {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 3px 3px 0 0;
+}
+
+.mockChartBar {
+    width: 100%;
+    height: var(--bar-h, 50%);
+    background: linear-gradient(180deg, var(--color-mint) 0%, rgba(57, 206, 134, 0.25) 100%);
+    border-radius: 3px 3px 0 0;
+    transform-origin: bottom;
+    animation: barGrow 0.9s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.mockChartBarTrack:nth-child(1) .mockChartBar { animation-delay: 0.05s; }
+.mockChartBarTrack:nth-child(2) .mockChartBar { animation-delay: 0.10s; }
+.mockChartBarTrack:nth-child(3) .mockChartBar { animation-delay: 0.15s; }
+.mockChartBarTrack:nth-child(4) .mockChartBar { animation-delay: 0.20s; }
+.mockChartBarTrack:nth-child(5) .mockChartBar { animation-delay: 0.25s; }
+.mockChartBarTrack:nth-child(6) .mockChartBar { animation-delay: 0.30s; }
+.mockChartBarTrack:nth-child(7) .mockChartBar { animation-delay: 0.35s; }
+
+@keyframes barGrow {
+    from { transform: scaleY(0); opacity: 0; }
+    to   { transform: scaleY(1); opacity: 1; }
+}
+
+.mockChartDays {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.mockChartDay {
+    flex: 1;
+    font-family: var(--font-family-mono);
+    font-size: 0.55rem;
+    color: var(--color-text-subtle);
+    text-align: center;
+    letter-spacing: 0;
+}
+
+/* ─── Activity feed ─── */
+.mockFeed {
     padding: var(--spacing-2) 0;
 }
 
-.mockRow {
+.mockFeedItem {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: var(--spacing-3);
     padding: var(--spacing-3) var(--spacing-5);
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    gap: var(--spacing-3);
 }
-.mockRow:last-child { border-bottom: none; }
+.mockFeedItem:last-child { border-bottom: none; }
 
-.mockRowLeft {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
+.mockFeedDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
 }
 
-.mockRowName {
-    font-family: var(--font-family-base);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-strong);
-    font-weight: var(--font-weight-medium);
+.mockFeedDotOk      { background: var(--color-mint); }
+.mockFeedDotPending { background: #FEBC2E; }
+
+.mockFeedText {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.mockRowType {
+.mockFeedTime {
     font-family: var(--font-family-mono);
     font-size: 0.6rem;
     color: var(--color-text-subtle);
-    letter-spacing: 0.06em;
-    white-space: nowrap;
-}
-
-.mockStatusListo, .mockStatusFirmado, .mockStatusRevisando {
-    font-size: 0.65rem;
-    font-weight: var(--font-weight-semibold);
-    padding: 3px 9px;
-    border-radius: var(--radius-full);
-    letter-spacing: 0.06em;
-    white-space: nowrap;
     flex-shrink: 0;
+    letter-spacing: 0.02em;
 }
-.mockStatusListo    { background: rgba(57, 206, 134, 0.14); color: var(--color-mint); }
-.mockStatusFirmado  { background: rgba(57, 206, 134, 0.07); color: rgba(57, 206, 134, 0.65); }
-.mockStatusRevisando { background: rgba(254, 188, 46, 0.12); color: #FEBC2E; }
 
 /* ═══════════════════════════════════════════
    PROBLEMA — editorial
