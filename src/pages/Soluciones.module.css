@@ -1,92 +1,171 @@
 /* ═══════════════════════════════════════════
-   Soluciones — grid de sectores
+   Soluciones — editorial list
    ═══════════════════════════════════════════ */
 
-.grid {
+/* ─── Hero title override ─── */
+/* letter-spacing inherits from sys.pageHeroTitle's --tracking-display (-0.045em) */
+.heroTitle {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.0;
+}
+
+/* ─── Hero scene — local stacking only ─── */
+.heroScene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.heroContentLayer {
+    position: relative;
+    z-index: 1;
+}
+
+.sceneFallback {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse 50% 50% at 50% 40%, rgba(57, 206, 134, 0.04) 0%, transparent 70%);
+}
+
+.list {
+    border-top: 1px solid var(--color-border-subtle);
+    padding-left: 28px; /* compensate for the ::before indicator */
+}
+
+/* ─── Row base ─── */
+.row {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--spacing-7);
-}
-
-@media (min-width: 700px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1100px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-.card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-5);
-    padding: var(--spacing-9) var(--spacing-8);
-    background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-2xl);
-    transition:
-        border-color var(--transition-normal),
-        background var(--transition-normal),
-        transform var(--transition-normal);
+    gap: var(--spacing-6);
+    padding: var(--spacing-10) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+    transition: border-color var(--transition-normal);
     position: relative;
-    overflow: hidden;
 }
 
-.card::before {
+.row::before {
     content: '';
     position: absolute;
+    left: -28px;
     top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--color-mint), transparent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--transition-normal);
+    bottom: 0;
+    width: 2px;
+    background: var(--color-mint);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.4s var(--ease-custom);
+    border-radius: 1px;
 }
 
-.card:hover {
-    border-color: var(--color-border-mint);
-    background: var(--color-bg-raised);
-    transform: translateY(-3px);
+.row:hover {
+    border-color: var(--color-border-strong);
 }
 
-.card:hover::before {
-    transform: scaleX(1);
+.row:hover::before {
+    transform: scaleY(1);
 }
 
-.cardIcon {
-    width: 48px;
-    height: 48px;
-    display: inline-flex;
+/* Medium: 2-col — left:[main+solution] right:[actions] */
+@media (min-width: 768px) {
+    .row {
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: var(--spacing-9);
+        padding: var(--spacing-11) 0;
+    }
+
+    .rowMain {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .rowSolutionWrap {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .rowActions {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        border-left: 1px solid var(--color-border-subtle);
+        padding-left: var(--spacing-9);
+    }
+}
+
+/* Large: 3-col — [main] [solution] [actions] */
+@media (min-width: 1024px) {
+    .row {
+        grid-template-columns: 1fr 1.2fr 0.8fr;
+        align-items: start;
+        gap: var(--spacing-9);
+        padding: var(--spacing-12) 0;
+    }
+
+    .rowMain {
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .rowSolutionWrap {
+        grid-column: auto;
+        grid-row: auto;
+        border-left: 1px solid var(--color-border-subtle);
+        padding-left: var(--spacing-9);
+    }
+
+    .rowActions {
+        grid-column: auto;
+        grid-row: auto;
+        border-left: 1px solid var(--color-border-subtle);
+        padding-left: var(--spacing-9);
+    }
+}
+
+/* ─── Column: icon + title + who ─── */
+.rowMain {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.rowIcon {
+    width: 40px;
+    height: 52px;
+    display: flex;
     align-items: center;
     justify-content: center;
     color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--spacing-2);
+    background: rgba(57, 206, 134, 0.12);
+    border-radius: var(--radius-md) var(--radius-sm);
+    margin-bottom: var(--spacing-4);
+    transition: background var(--transition-normal), box-shadow var(--transition-normal);
+    flex-shrink: 0;
 }
 
-.cardTitle {
+.row:hover .rowIcon {
+    background: rgba(57, 206, 134, 0.18);
+    box-shadow: 0 0 12px rgba(57, 206, 134, 0.15);
+}
+
+.rowTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-weight: 700;
     color: var(--color-text-strong);
     line-height: 1.2;
-    letter-spacing: var(--tracking-tight);
+    letter-spacing: -0.025em;
+    margin: 0 0 var(--spacing-3);
+    transition: color var(--transition-normal);
     text-wrap: balance;
-    margin: 0;
 }
 
-.cardWho {
+.row:hover .rowTitle {
+    color: #FFFFFF;
+}
+
+.rowWho {
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
-    line-height: 1.55;
+    line-height: 1.5;
     margin: 0;
 }
 
@@ -99,80 +178,71 @@
     margin-right: var(--spacing-2);
 }
 
-.cardSolution {
-    padding: var(--spacing-4) var(--spacing-5);
-    background: var(--color-bg);
-    border-left: 2px solid var(--color-mint);
-    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+/* ─── Column: solution ─── */
+.rowSolutionWrap {
+    padding-top: 2px;
+}
+
+.rowSolution {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
-    color: var(--color-text-strong);
-    line-height: 1.5;
+    color: var(--color-text);
+    line-height: 1.65;
     letter-spacing: var(--tracking-tight);
     margin: 0;
+}
+
+/* ─── Column: benefits + CTA ─── */
+.rowActions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
 }
 
 .benefitsList {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 var(--spacing-5);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-3);
+    gap: var(--spacing-2);
 }
 
 .benefitsList li {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--spacing-3);
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
-    line-height: 1.5;
 }
 
 .check {
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    background: var(--color-mint-soft);
-    color: var(--color-mint);
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
     border-radius: 50%;
+    background: rgba(57, 206, 134, 0.08);
+    color: var(--color-mint);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    margin-top: 2px;
 }
 
-.cardLink {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    margin-top: auto;
-    padding-top: var(--spacing-4);
-    font-family: var(--font-family-base);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-mint);
-    transition: gap var(--transition-fast), color var(--transition-fast);
-}
+/* .rowLink was extracted into the shared TextLink component
+   (components/common/TextLink.tsx, tone="muted" size="sm") — see
+   Soluciones.tsx. */
 
-.cardLink:hover {
-    gap: var(--spacing-3);
-    color: var(--color-text-strong);
-}
-
-@media (max-width: 639px) {
-    .card {
-        padding: var(--spacing-7) var(--spacing-6);
+/* ─── Mobile ─── */
+@media (max-width: 767px) {
+    .row {
+        padding: var(--spacing-7) 0;
+        gap: var(--spacing-4);
     }
 
-    .cardWho {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+    .rowSolution {
+        font-size: var(--font-size-sm);
     }
 
     .benefitsList li:nth-child(n+4) {

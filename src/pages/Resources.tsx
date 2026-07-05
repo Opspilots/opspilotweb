@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useHeroReveal } from '../hooks/useHeroReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
+import { SceneCanvas } from '../components/three/SceneCanvas';
 import sys from '../styles/page-system.module.css';
 import styles from './Resources.module.css';
+import { TextLink } from '../components/common/TextLink';
+import { ArrowRight, Clock } from 'lucide-react';
 
 const FORM_NEWSLETTER_URL = 'https://formsubmit.co/ajax/opspilot.contact@gmail.com';
 
@@ -16,39 +20,48 @@ const RESOURCES = [
         cat: 'Guía',
         title: 'Cómo automatizar tu negocio sin saber de tecnología',
         desc: 'Paso a paso para identificar qué procesos te roban tiempo y convertirlos en flujos automáticos. Sin código, sin complicaciones.',
-        time: '8 min lectura',
+        time: '8 min',
+        featured: true,
     },
     {
         cat: 'Artículo',
         title: '5 señales de que tu PYME necesita un sistema de gestión',
         desc: 'Si pierdes clientes por falta de seguimiento o tus datos viven en hojas sueltas, sigue leyendo.',
-        time: '5 min lectura',
+        time: '5 min',
+        featured: false,
     },
     {
         cat: 'Caso práctico',
         title: 'De Excel a sistema: cómo una empresa de reformas triplicó su capacidad',
         desc: 'El caso real de una empresa familiar que pasó de libretas a un sistema que trabaja solo.',
-        time: '6 min lectura',
+        time: '6 min',
+        featured: false,
     },
     {
         cat: 'Checklist',
         title: '¿Tu web trabaja para ti o contra ti? 10 puntos para saberlo',
         desc: 'Una auditoría rápida y gratuita para saber si tu web está generando clientes o espantándolos.',
-        time: '3 min lectura',
+        time: '3 min',
+        featured: false,
     },
     {
         cat: 'Artículo',
         title: 'Asistentes IA productivos: lo que nadie te cuenta antes de implementar uno',
         desc: 'Ventajas reales, limitaciones y cuándo tiene sentido invertir en agentes inteligentes.',
-        time: '7 min lectura',
+        time: '7 min',
+        featured: false,
     },
     {
         cat: 'Guía',
         title: 'Cómo pedir un presupuesto de software sin que te timen',
         desc: 'Todo lo que debes preguntar antes de contratar el desarrollo de tu app, sistema o web.',
-        time: '10 min lectura',
+        time: '10 min',
+        featured: false,
     },
 ];
+
+const featured = RESOURCES[0];
+const rest = RESOURCES.slice(1);
 
 export const Resources: React.FC = () => {
     usePageSEO({
@@ -58,6 +71,9 @@ export const Resources: React.FC = () => {
         canonical: 'https://opspilot.es/recursos',
     });
 
+    const heroRef = useHeroReveal<HTMLDivElement>();
+
+    const featuredRef = useScrollReveal<HTMLElement>();
     const gridRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const nlRef = useScrollReveal<HTMLDivElement>();
     const [nlStatus, setNlStatus] = useState<NLStatus>('idle');
@@ -87,12 +103,40 @@ export const Resources: React.FC = () => {
         <div className={sys.page}>
             {/* ═══ HERO ═══ */}
             <section className={sys.pageHero}>
-                <div className={sys.container}>
-                    <div className={sys.pageHeroContent}>
-                        <h1 className={sys.pageHeroTitle}>
+                <SceneCanvas
+                    loader={() => import('../components/three/scenes/PrimitiveHeroScene')}
+                    sceneProps={{
+                        color: '#2bb874',
+                        shapes: [
+                            {
+                                kind: 'dodecahedron',
+                                position: [1.55, 0.35, -0.5],
+                                radius: 0.58,
+                                spinSpeed: [0.045, 0.035],
+                                driftAmp: 0.1,
+                                driftSpeed: 0.12,
+                                phase: 0.6,
+                            },
+                            {
+                                kind: 'octahedron',
+                                position: [-1.6, -0.55, -1],
+                                radius: 0.3,
+                                spinSpeed: [-0.04, 0.05],
+                                driftAmp: 0.13,
+                                driftSpeed: 0.1,
+                                phase: 1.4,
+                            },
+                        ],
+                    }}
+                    fallback={<div className={styles.sceneFallback} />}
+                    className={styles.heroScene}
+                />
+                <div className={`${sys.container} ${styles.heroContentLayer}`}>
+                    <div className={sys.pageHeroContent} ref={heroRef}>
+                        <h1 className={`${sys.pageHeroTitle} reveal`}>
                             Aprende a hacer más con <em className={sys.pageHeroAccent}>menos</em>.
                         </h1>
-                        <p className={sys.pageHeroSubtitle}>
+                        <p className={`${sys.pageHeroSubtitle} reveal`}>
                             Guías prácticas, artículos y herramientas gratuitas sobre automatización
                             y digitalización. Escritas para personas de negocio, no para técnicos.
                         </p>
@@ -100,16 +144,48 @@ export const Resources: React.FC = () => {
                 </div>
             </section>
 
+            {/* ═══ FEATURED ═══ */}
+            <section className={styles.featuredSection}>
+                <div className={sys.container}>
+                    <article className={styles.featuredCard} ref={featuredRef}>
+                        <div className={styles.featuredMeta}>
+                            <span className={styles.cardCat}>{featured.cat}</span>
+                            <span className={styles.cardTime}>
+                                <Clock size={12} strokeWidth={2} />
+                                {featured.time} lectura
+                            </span>
+                        </div>
+                        <h2 className={styles.featuredTitle}>{featured.title}</h2>
+                        <p className={styles.featuredDesc}>{featured.desc}</p>
+                        <TextLink
+                            interactive={false}
+                            tone="subtle"
+                            size="sm"
+                            className={styles.featuredCta}
+                            icon={<ArrowRight size={15} strokeWidth={2} />}
+                        >
+                            Próximamente
+                        </TextLink>
+                    </article>
+                </div>
+            </section>
+
             {/* ═══ GRID ═══ */}
             <section className={styles.gridSection}>
                 <div className={sys.container} ref={gridRef}>
                     <div className={styles.grid}>
-                        {RESOURCES.map((r) => (
+                        {rest.map((r) => (
                             <article key={r.title} className={`${styles.card} reveal`}>
-                                <span className={styles.cardCat}>{r.cat}</span>
+                                <div className={styles.cardMeta}>
+                                    <span className={styles.cardCat}>{r.cat}</span>
+                                    <span className={styles.cardTime}>
+                                        <Clock size={11} strokeWidth={2} />
+                                        {r.time}
+                                    </span>
+                                </div>
                                 <h2 className={styles.cardTitle}>{r.title}</h2>
                                 <p className={styles.cardDesc}>{r.desc}</p>
-                                <span className={styles.cardTime}>{r.time}</span>
+                                <span className={styles.cardFooter}>Próximamente</span>
                             </article>
                         ))}
                     </div>
@@ -120,37 +196,41 @@ export const Resources: React.FC = () => {
             <section className={`${sys.sectionLoose} ${sys.sectionAlt}`}>
                 <div className={sys.container}>
                     <div className={`${styles.newsletter} reveal`} ref={nlRef}>
-                        <div className={styles.nlContent}>
+                        <div className={styles.nlLeft}>
+                            <p className={styles.nlLabel}>Newsletter semanal</p>
                             <h2 className={styles.nlTitle}>Una idea útil cada semana.</h2>
                             <p className={styles.nlText}>
-                                Un email semanal con automatizaciones prácticas, herramientas y casos
-                                reales. Sin relleno, sin spam. Solo cosas que puedes aplicar.
+                                Automatizaciones prácticas, herramientas y casos reales.
+                                Sin relleno, sin spam. Solo cosas que puedes aplicar.
                             </p>
                         </div>
-                        {nlStatus === 'success' ? (
-                            <p className={styles.nlSuccess}>
-                                ¡Suscrito! Te llegará el próximo email esta semana.
-                            </p>
-                        ) : (
-                            <form className={styles.nlForm} onSubmit={handleNewsletter}>
-                                <input
-                                    type="email"
-                                    placeholder="tu@email.com"
-                                    className={styles.nlInput}
-                                    required
-                                    value={nlEmail}
-                                    onChange={(e) => setNlEmail(e.target.value)}
-                                />
-                                <Button variant="primary" type="submit" disabled={nlStatus === 'submitting'}>
-                                    {nlStatus === 'submitting' ? 'Enviando...' : 'Suscribirme gratis'}
-                                </Button>
-                                {nlStatus === 'error' && (
-                                    <p className={styles.nlError}>
-                                        Error al suscribirse. Inténtalo de nuevo.
-                                    </p>
-                                )}
-                            </form>
-                        )}
+                        <div className={styles.nlRight}>
+                            {nlStatus === 'success' ? (
+                                <p className={styles.nlSuccess}>
+                                    ¡Suscrito! Te llegará el próximo email esta semana.
+                                </p>
+                            ) : (
+                                <form className={styles.nlForm} onSubmit={handleNewsletter}>
+                                    <input
+                                        type="email"
+                                        placeholder="tu@email.com"
+                                        className={styles.nlInput}
+                                        required
+                                        value={nlEmail}
+                                        onChange={(e) => setNlEmail(e.target.value)}
+                                    />
+                                    <Button variant="primary" type="submit" disabled={nlStatus === 'submitting'}>
+                                        {nlStatus === 'submitting' ? 'Enviando...' : 'Suscribirme gratis'}
+                                    </Button>
+                                    {nlStatus === 'error' && (
+                                        <p className={styles.nlError}>
+                                            Error al suscribirse. Inténtalo de nuevo.
+                                        </p>
+                                    )}
+                                </form>
+                            )}
+                            <p className={styles.nlNote}>Sin spam. Baja cuando quieras.</p>
+                        </div>
                     </div>
                 </div>
             </section>

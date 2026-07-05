@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useHeroReveal } from '../hooks/useHeroReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
+import { SceneCanvas } from '../components/three/SceneCanvas';
 import {
     FileText,
     Receipt,
@@ -56,6 +58,8 @@ export const Product: React.FC = () => {
 
     const productsRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const advantagesRef = useScrollReveal<HTMLDivElement>({ stagger: true });
+
+    const heroRef = useHeroReveal<HTMLDivElement>();
 
     const products: Product[] = [
         {
@@ -140,12 +144,42 @@ export const Product: React.FC = () => {
         <div className={sys.page}>
             {/* ═══ HERO ═══ */}
             <section className={sys.pageHero}>
-                <div className={sys.container}>
-                    <div className={sys.pageHeroContent}>
-                        <h1 className={sys.pageHeroTitle}>
+                <SceneCanvas
+                    loader={() => import('../components/three/scenes/PrimitiveHeroScene')}
+                    sceneProps={{
+                        color: '#39ce86',
+                        shapes: [
+                            {
+                                kind: 'capsule',
+                                position: [1.55, 0.35, -0.4],
+                                radius: 0.34,
+                                length: 0.55,
+                                spinSpeed: [0.08, 0.06],
+                                driftAmp: 0.13,
+                                driftSpeed: 0.2,
+                                phase: 0,
+                            },
+                            {
+                                kind: 'icosahedron',
+                                position: [-1.55, -0.5, -0.9],
+                                radius: 0.46,
+                                color: '#e8a563',
+                                spinSpeed: [-0.06, 0.09],
+                                driftAmp: 0.15,
+                                driftSpeed: 0.16,
+                                phase: 1.8,
+                            },
+                        ],
+                    }}
+                    fallback={<div className={styles.sceneFallback} />}
+                    className={styles.heroScene}
+                />
+                <div className={`${sys.container} ${styles.heroContentLayer}`}>
+                    <div className={sys.pageHeroContent} ref={heroRef}>
+                        <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>
                             Cuatro productos para PYMEs <em className={sys.pageHeroAccent}>españolas</em>.
                         </h1>
-                        <p className={sys.pageHeroSubtitle}>
+                        <p className={`${sys.pageHeroSubtitle} reveal`}>
                             Fiscalidad, energía, construcción y agencias. Cada producto resuelve un
                             dominio concreto con sus estándares (PGC, AEAT, SII, VeriFactu, BC3/FIEBDC)
                             en lugar de ofrecer un genérico que no conoce el contexto español.
@@ -156,7 +190,7 @@ export const Product: React.FC = () => {
 
             {/* ═══ CATÁLOGO ═══ */}
             <section className={styles.catalog}>
-                <div className={sys.container} ref={productsRef}>
+                <div className={`${sys.container} ${styles.catalogContent}`} ref={productsRef}>
                     {products.map((p, index) => (
                         <article key={p.id} id={p.id} className={`${styles.productRow} ${index % 2 !== 0 ? styles.rowReverse : ''} reveal`}>
                             <div className={styles.productHeader}>

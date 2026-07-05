@@ -20,3 +20,12 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Tool artifacts
+.claude/
+.playwright-mcp/
+
+# Screenshots de revisión
+*.png
+*.jpg
+*.jpeg

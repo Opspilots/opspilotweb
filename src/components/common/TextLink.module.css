@@ -1,0 +1,45 @@
+/* ═══════════════════════════════════════════
+   TextLink — shared "text + trailing arrow" pattern
+   ═══════════════════════════════════════════ */
+.textLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-family-base);
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: color var(--transition-fast), gap var(--transition-fast);
+}
+
+/* ─── Size ─── */
+.size-md {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    padding: 0.6rem 0;
+}
+
+.size-sm {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    padding: var(--spacing-3) 0;
+}
+
+/* ─── Tone (default color) ─── */
+.tone-strong { color: var(--color-text-strong); }
+.tone-muted { color: var(--color-text-muted); }
+.tone-subtle { color: var(--color-text-subtle); }
+
+/* ─── Interactive hover: slide gap + mint color ─── */
+.textLink:not(.static):hover {
+    color: var(--color-mint);
+    gap: var(--spacing-3);
+}
+
+/* ─── Static (non-interactive) variant — no hover affordance, since
+   there's nowhere for it to navigate to (e.g. "coming soon" labels). ─── */
+.static {
+    cursor: default;
+}

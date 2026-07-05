@@ -10,8 +10,6 @@ export const Navbar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { pathname } = useLocation();
 
-    const isHomePage = pathname === ROUTES.home;
-
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 12);
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -23,8 +21,6 @@ export const Navbar: React.FC = () => {
         setIsMenuOpen(false);
     }, [pathname]);
 
-    const isOpaque = !isHomePage || scrolled;
-
     const navLinkClass = ({ isActive }: { isActive: boolean }) =>
         `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`;
 
@@ -33,7 +29,7 @@ export const Navbar: React.FC = () => {
 
     return (
         <>
-            <nav className={`${styles.navbar} ${isOpaque ? styles.scrolled : ''}`}>
+            <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
                 <div className={styles.container}>
                     <Link to={ROUTES.home} className={styles.logo}>
                         <Logo size={50} />

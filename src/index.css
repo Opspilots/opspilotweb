@@ -15,7 +15,7 @@ html {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    scroll-behavior: smooth;
+    scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
     text-rendering: optimizeLegibility;
     font-feature-settings: "ss01", "cv11";
 }
@@ -244,36 +244,22 @@ video {
 }
 
 /* ═══════════════════════════════════════════
-   LEGACY UTILITIES — kept null/no-op for backwards compat
-   These were used by Home/Cases/Contact for decorative
-   pulses, glows, floats. We disable them but keep the
-   classnames so JSX doesn't break.
+   GRAIN TEXTURE — premium feel on dark backgrounds
    ═══════════════════════════════════════════ */
-.text-gradient {
-    color: var(--color-text-strong);
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.028;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    mix-blend-mode: overlay;
 }
 
-.glass-panel,
-.glass-panel-dark {
-    background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border-subtle);
-}
-
-.glow-text {
-    text-shadow: none;
-}
-
-.anim-float,
-.anim-float-slow,
-.anim-pulse-glow,
-.anim-gradient,
-.anim-border-glow {
-    animation: none;
-}
-
-/* Icon helpers (used inline in some pages) */
-.icon-md {
-    width: 24px;
-    height: 24px;
-    stroke-width: 1.5;
+@media (prefers-reduced-motion: reduce) {
+    body::after {
+        display: none;
+    }
 }

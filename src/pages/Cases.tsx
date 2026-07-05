@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useHeroReveal } from '../hooks/useHeroReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
+import { SceneCanvas } from '../components/three/SceneCanvas';
+import {
+    ChevronLeft,
+    ChevronRight,
+    Code2,
+    Clock,
+    BadgeCheck,
+    MessageCircle,
+    Cpu,
+} from 'lucide-react';
 import sys from '../styles/page-system.module.css';
 import styles from './Cases.module.css';
 
-const CASES = [
+interface StatData {
+    v: string;
+    l: string;
+}
+
+interface CaseData {
+    sector: string;
+    title: string;
+    text: string;
+    stats: StatData[];
+    quote: string;
+    author: string;
+}
+
+const CASES: CaseData[] = [
     {
         sector: 'Reformas',
         title: 'De la libreta al sistema que trabaja solo',
@@ -18,7 +43,7 @@ const CASES = [
             { v: '0 €', l: 'Personal extra' },
         ],
         quote: 'Pasamos de perder presupuestos por falta de seguimiento a tener un sistema que trabaja solo.',
-        author: 'J.R. Rodríguez · CEO',
+        author: 'CEO',
     },
     {
         sector: 'Asesoría fiscal',
@@ -38,13 +63,216 @@ const CASES = [
         text: 'Agencia de marketing con cinco herramientas distintas que no se hablaban entre sí. Construimos un sistema único que sustituyó CRM, gestión, facturación y comunicación interna, con reporting en tiempo real para dirección y un asistente IA para dudas internas.',
         stats: [
             { v: '20h', l: 'Ahorradas a la semana' },
-            { v: '5 → 1', l: 'Apps en un solo sistema' },
+            { v: '5→1', l: 'Apps en un solo sistema' },
             { v: '100%', l: 'Información centralizada' },
         ],
         quote: 'Dejamos de pagar cinco herramientas y ganamos visibilidad real de cada cliente.',
         author: 'Directora de operaciones',
     },
 ];
+
+interface DiffItem {
+    Icon: React.FC<{ size?: number; strokeWidth?: number }>;
+    title: string;
+    text: string;
+}
+
+const DIFFERENTIATORS: DiffItem[] = [
+    {
+        Icon: Code2,
+        title: 'Software hecho para ti, no plantillas',
+        text: 'Cada sistema se diseña desde cero para tu operativa concreta. No adaptamos plantillas de terceros ni te vendemos suscripciones que no controlas. Lo que construimos es tuyo.',
+    },
+    {
+        Icon: Clock,
+        title: 'Entrega en semanas, no en meses',
+        text: 'Sin proyectos eternos ni fases de consultoría facturadas por horas. Defines el problema, construimos la solución y la entregamos lista para usar en 4 a 8 semanas.',
+    },
+    {
+        Icon: BadgeCheck,
+        title: 'Pagas una vez, es tuyo para siempre',
+        text: 'Sin cuotas mensuales por el software. Pagas el desarrollo una sola vez y el sistema es completamente tuyo. Solo vuelves si quieres añadir más funcionalidades.',
+    },
+    {
+        Icon: MessageCircle,
+        title: 'Soporte directo con quien lo construyó',
+        text: 'Hablas con quien diseñó y programó tu sistema. Sin tickets, sin agentes de soporte que no conocen tu caso, sin tiempos de espera que no tiene ningún sentido.',
+    },
+    {
+        Icon: Cpu,
+        title: 'IA donde reduce trabajo real',
+        text: 'No añadimos inteligencia artificial como reclamo de marketing. La integramos en tareas concretas donde ahorra horas reales: documentos, respuestas, clasificación, presupuestos.',
+    },
+];
+
+// Pure card — no hooks
+const CaseCard: React.FC<{ c: CaseData; index: number }> = ({ c, index }) => (
+    <article className={styles.caseCard}>
+        <div className={styles.cardHead}>
+            <span className={styles.cardSector}>
+                <span className={styles.sectorDot} aria-hidden="true" />
+                {c.sector}
+            </span>
+            <span className={styles.cardIndex}>{String(index + 1).padStart(2, '0')}</span>
+        </div>
+
+        <div className={styles.cardStats}>
+            {c.stats.map((s, j) => (
+                <div key={j} className={styles.cardStat}>
+                    <span className={`${styles.cardStatVal} ${sys.statAccent}`}>{s.v}</span>
+                    <span className={styles.cardStatLabel}>{s.l}</span>
+                </div>
+            ))}
+        </div>
+
+        <div className={styles.cardContent}>
+            <div className={styles.cardNarrative}>
+                <h2 className={styles.cardTitle}>{c.title}</h2>
+                <p className={styles.cardText}>{c.text}</p>
+            </div>
+            <blockquote className={styles.cardQuote}>
+                <p>{c.quote}</p>
+                <cite>{c.author}</cite>
+            </blockquote>
+        </div>
+    </article>
+);
+
+const CarouselSection: React.FC = () => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const trackRef = useRef<HTMLDivElement>(null);
+    const rafRef = useRef<number>(0);
+
+    // Mirrors `currentIndex` into a ref for the decorative 3D background
+    // (`CaseDeckScene`), read every frame via `useFrame` — never via React
+    // state/props, so changing slides never re-renders the Canvas. Purely
+    // additive: does not touch the carousel's scroll/index logic above.
+    const activeIndexRef = useRef(currentIndex);
+    useEffect(() => {
+        activeIndexRef.current = currentIndex;
+    }, [currentIndex]);
+
+    const getScrollUnit = useCallback((): number => {
+        if (!trackRef.current) return 0;
+        const card = trackRef.current.children[0] as HTMLElement | null;
+        if (!card) return 0;
+        const gapStr = window.getComputedStyle(trackRef.current).gap;
+        const gap = parseFloat(gapStr) || 20;
+        return card.offsetWidth + gap;
+    }, []);
+
+    const handleScroll = useCallback(() => {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = requestAnimationFrame(() => {
+            if (!trackRef.current) return;
+            const unit = getScrollUnit();
+            if (!unit) return;
+            const idx = Math.round(trackRef.current.scrollLeft / unit);
+            setCurrentIndex(Math.max(0, Math.min(idx, CASES.length - 1)));
+        });
+    }, [getScrollUnit]);
+
+    useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+
+    const scrollToIndex = useCallback(
+        (index: number) => {
+            if (!trackRef.current) return;
+            const unit = getScrollUnit();
+            trackRef.current.scrollTo({ left: index * unit, behavior: 'smooth' });
+            setCurrentIndex(Math.max(0, Math.min(index, CASES.length - 1)));
+        },
+        [getScrollUnit],
+    );
+
+    return (
+        <section className={styles.carouselSection}>
+            <SceneCanvas
+                loader={() => import('../components/three/scenes/CaseDeckScene')}
+                sceneProps={{ activeIndexRef }}
+                fallback={<div className={styles.sceneFallback} />}
+                className={styles.carouselScene}
+            />
+            <div className={`${sys.container} ${styles.carouselContentLayer}`}>
+                <div className={styles.carouselWrapper}>
+                    <div
+                        ref={trackRef}
+                        className={styles.carouselTrack}
+                        onScroll={handleScroll}
+                        aria-label="Casos de éxito"
+                    >
+                        {CASES.map((c, i) => (
+                            <CaseCard key={i} c={c} index={i} />
+                        ))}
+                    </div>
+
+                    <div className={styles.carouselFooter}>
+                        <div className={styles.dots} role="tablist" aria-label="Navegar entre casos">
+                            {CASES.map((_, i) => (
+                                <button
+                                    key={i}
+                                    role="tab"
+                                    aria-selected={i === currentIndex}
+                                    className={`${styles.dot} ${i === currentIndex ? styles.dotActive : ''}`}
+                                    onClick={() => scrollToIndex(i)}
+                                    aria-label={`Caso ${i + 1}`}
+                                />
+                            ))}
+                        </div>
+                        <div className={styles.navButtons}>
+                            <button
+                                className={styles.navBtn}
+                                onClick={() => scrollToIndex(currentIndex - 1)}
+                                disabled={currentIndex === 0}
+                                aria-label="Caso anterior"
+                            >
+                                <ChevronLeft size={18} strokeWidth={2} />
+                            </button>
+                            <button
+                                className={styles.navBtn}
+                                onClick={() => scrollToIndex(currentIndex + 1)}
+                                disabled={currentIndex === CASES.length - 1}
+                                aria-label="Caso siguiente"
+                            >
+                                <ChevronRight size={18} strokeWidth={2} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+};
+
+const WhySection: React.FC = () => {
+    const whyRef = useScrollReveal<HTMLDivElement>({ stagger: true });
+
+    return (
+        <section className={styles.whySection}>
+            <div className={sys.container} ref={whyRef}>
+                <div className={`${styles.whyHeader} reveal`}>
+                    <h2 className={styles.whyTitle}>Hacemos las cosas de otra manera</h2>
+                    <p className={styles.whySub}>
+                        No somos una agencia digital ni una consultora. Somos un equipo pequeño
+                        que construye software a medida para empresas que quieren trabajar mejor,
+                        sin depender de herramientas genéricas ni de procesos que no se adaptan a ellas.
+                    </p>
+                </div>
+
+                <div className={styles.whyGrid}>
+                    {DIFFERENTIATORS.map((d, i) => (
+                        <div key={i} className={`${styles.whyItem} reveal`}>
+                            <div className={styles.whyIconWrap} aria-hidden="true">
+                                <d.Icon size={18} strokeWidth={1.75} />
+                            </div>
+                            <h3 className={styles.whyItemTitle}>{d.title}</h3>
+                            <p className={styles.whyItemText}>{d.text}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
 
 export const Cases: React.FC = () => {
     usePageSEO({
@@ -54,18 +282,51 @@ export const Cases: React.FC = () => {
         canonical: 'https://opspilot.es/casos',
     });
 
-    const listRef = useScrollReveal<HTMLDivElement>({ stagger: true });
+    const heroRef = useHeroReveal<HTMLDivElement>();
+
+    const ctaRef = useScrollReveal<HTMLDivElement>();
 
     return (
         <div className={sys.page}>
             {/* ═══ HERO ═══ */}
             <section className={sys.pageHero}>
-                <div className={sys.container}>
-                    <div className={sys.pageHeroContent}>
-                        <h1 className={sys.pageHeroTitle}>
-                            Empresas reales,<br />problemas <em className={sys.pageHeroAccent}>resueltos</em>.
+                <SceneCanvas
+                    loader={() => import('../components/three/scenes/PrimitiveHeroScene')}
+                    sceneProps={{
+                        color: '#2bb874',
+                        shapes: [
+                            {
+                                kind: 'sphere',
+                                position: [1.5, 0.3, -0.5],
+                                radius: 0.5,
+                                spinSpeed: [0.05, 0.04],
+                                driftAmp: 0.11,
+                                driftSpeed: 0.15,
+                                phase: 0.3,
+                            },
+                            {
+                                kind: 'torus',
+                                position: [-1.5, -0.5, -1],
+                                radius: 0.45,
+                                tube: 0.06,
+                                material: 'wireframe',
+                                spinSpeed: [-0.04, 0.06],
+                                driftAmp: 0.14,
+                                driftSpeed: 0.12,
+                                phase: 1.6,
+                            },
+                        ],
+                    }}
+                    fallback={<div className={styles.sceneFallback} />}
+                    className={styles.heroScene}
+                />
+                <div className={`${sys.container} ${styles.heroContentLayer}`}>
+                    <div className={sys.pageHeroContent} ref={heroRef}>
+                        <h1 className={`${sys.pageHeroTitle} reveal`}>
+                            Empresas reales,<br />
+                            problemas <em className={sys.pageHeroAccent}>resueltos</em>.
                         </h1>
-                        <p className={sys.pageHeroSubtitle}>
+                        <p className={`${sys.pageHeroSubtitle} reveal`}>
                             No hace falta ser una gran empresa para necesitar buenos procesos.
                             Esto es lo que hemos construido para empresas como la tuya.
                         </p>
@@ -73,50 +334,28 @@ export const Cases: React.FC = () => {
                 </div>
             </section>
 
-            {/* ═══ CASOS ═══ */}
-            <section className={styles.casesSection}>
-                <div className={sys.container} ref={listRef}>
-                    <div className={styles.casesList}>
-                        {CASES.map((c, i) => (
-                            <article key={i} className={`${styles.caseCard} reveal`}>
-                                <div className={styles.caseHead}>
-                                    <span className={styles.caseSector}>{c.sector}</span>
-                                    <span className={styles.caseIndex}>
-                                        {String(i + 1).padStart(2, '0')} / {String(CASES.length).padStart(2, '0')}
-                                    </span>
-                                </div>
-                                <h2 className={styles.caseTitle}>{c.title}</h2>
-                                <p className={styles.caseText}>{c.text}</p>
-                                <div className={styles.statsRow}>
-                                    {c.stats.map((s, j) => (
-                                        <div key={j} className={styles.stat}>
-                                            <span className={styles.statNum}>{s.v}</span>
-                                            <span className={styles.statLabel}>{s.l}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                                <blockquote className={styles.quote}>
-                                    <p>{c.quote}</p>
-                                    <span>{c.author}</span>
-                                </blockquote>
-                            </article>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            {/* ═══ CAROUSEL ═══ */}
+            <CarouselSection />
+
+            {/* ═══ DIFERENCIADORES ═══ */}
+            <WhySection />
 
             {/* ═══ CTA ═══ */}
             <section className={sys.endCta}>
                 <div className={sys.container}>
-                    <div className={sys.endCtaBlock}>
+                    <div className={sys.endCtaBlock} ref={ctaRef}>
                         <h2 className={sys.endCtaTitle}>¿Tu empresa podría ser la siguiente?</h2>
                         <p className={sys.endCtaSub}>
-                            Analizamos tu situación en 30 minutos y te decimos qué podríamos hacer
-                            por ti. Sin compromiso.
+                            Analizamos tu situación en 30 minutos y te decimos qué podríamos
+                            hacer por ti. Sin compromiso.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to={ROUTES.contacto}><Button variant="primary" size="lg">Reservar diagnóstico</Button></Link>
-                            <Link to={ROUTES.servicios}><Button variant="outline" size="lg">Ver servicios</Button></Link>
+                            <Link to={ROUTES.contacto}>
+                                <Button variant="primary" size="lg">Reservar diagnóstico</Button>
+                            </Link>
+                            <Link to={ROUTES.servicios}>
+                                <Button variant="outline" size="lg">Ver servicios</Button>
+                            </Link>
                         </div>
                     </div>
                 </div>

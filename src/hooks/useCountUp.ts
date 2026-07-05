@@ -16,14 +16,22 @@ export function useCountUp<T extends HTMLElement>({
     format = (n) => Math.round(n).toString(),
 }: CountUpOptions) {
     const ref = useRef<T>(null);
+    const played = useRef(false);
 
     useEffect(() => {
         const el = ref.current;
         if (!el) return;
 
+        // Already animated — set final value and bail
+        if (played.current) {
+            el.textContent = format(end);
+            return;
+        }
+
         const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
         if (reduce) {
             el.textContent = format(end);
+            played.current = true;
             return;
         }
 
@@ -42,14 +50,20 @@ export function useCountUp<T extends HTMLElement>({
             trigger: el,
             start: 'top 90%',
             once: true,
-            onEnter: () => tween.play(),
+            onEnter: () => {
+                played.current = true;
+                tween.play();
+            },
         });
 
         return () => {
             st.kill();
             tween.kill();
         };
-    }, [end, duration, format]);
+    // format is intentionally omitted — it's a new function reference on every call
+    // (default destructuring), so including it would restart the effect every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [end, duration]);
 
     return ref;
 }

@@ -2,8 +2,41 @@
    PRODUCT — editorial, sin gráficos
    ═══════════════════════════════════════════ */
 
+/* ─── Hero title override ─── */
+/* letter-spacing inherits from sys.pageHeroTitle's --tracking-display (-0.045em) */
+.heroTitle {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.0;
+}
+
 .catalog {
     padding: var(--space-section-loose) 0;
+    position: relative;
+}
+
+/* ─── Hero scene — local stacking only, scoped to `.pageHero` (`position:
+   relative` from page-system.module.css). Matches the Soluciones/Resources/
+   Contact/Cases hero-scoped mount pattern — no more page-wide fixed layer. */
+.heroScene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.heroContentLayer {
+    position: relative;
+    z-index: 1;
+}
+
+.sceneFallback {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(57, 206, 134, 0.05) 0%, transparent 65%);
+}
+
+.catalogContent {
+    position: relative;
+    z-index: 1;
 }
 
 /* ─── Product rows ─── */
@@ -31,18 +64,10 @@
 
 .productIndex {
     font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-subtle);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(57, 206, 134, 0.45);
     letter-spacing: 0.12em;
-    flex-shrink: 0;
-}
-
-.productMeta {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-4);
-    flex-wrap: wrap;
 }
 
 .productSector {
@@ -85,12 +110,12 @@
 
 .productName {
     font-family: var(--font-family-display);
-    font-size: clamp(2.25rem, 4.5vw, 3.5rem);
-    font-weight: var(--font-weight-bold);
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 800;
     color: var(--color-text-strong);
-    line-height: 0.95;
-    letter-spacing: var(--tracking-display);
-    margin-bottom: var(--spacing-6);
+    line-height: 1.0;
+    letter-spacing: -0.04em;
+    margin: 0 0 var(--spacing-6);
 }
 
 .productDesc {
@@ -105,109 +130,148 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    border-top: 1px solid var(--color-border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--color-bg-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    align-self: start;
 }
 
 .featureItem {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--spacing-4);
+    padding: var(--spacing-5) var(--spacing-7);
     font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    line-height: 1.5;
-    padding: var(--spacing-4) 0;
+    color: var(--color-text);
     border-bottom: 1px solid var(--color-border-subtle);
+    transition: background var(--transition-normal), color var(--transition-normal);
+}
+
+.featureItem:last-child {
+    border-bottom: none;
+}
+
+.featureItem:hover {
+    background: rgba(57, 206, 134, 0.04);
+    color: var(--color-text-strong);
 }
 
 .featureIcon {
-    flex-shrink: 0;
-    width: 22px;
-    height: 22px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--color-mint);
-    margin-top: 1px;
+    background: rgba(57, 206, 134, 0.08);
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
 }
 
 /* ═══════════════════════════════════════════
-   WHY GRID
+   WHY GRID — 2×2 panel layout
    ═══════════════════════════════════════════ */
 .whyGrid {
     display: grid;
     grid-template-columns: 1fr;
-    border-top: 1px solid var(--color-border-subtle);
+    gap: 1px;
+    background: var(--color-border-subtle);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+}
+
+/* Below 768px: swipeable horizontal row instead of a vertical stack.
+   Mirrors the carousel convention in Cases.module.css (.carouselTrack /
+   .caseCard) — scroll-snap flex row with a right-edge peek. The 1px
+   gap-background hairline-border trick from the desktop 2x2 grid doesn't
+   render in a flex row, so each card gets its own border instead. */
+@media (max-width: 767px) {
+    .whyGrid {
+        display: flex;
+        gap: var(--spacing-5);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        cursor: grab;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        /* Extend slightly past the right edge so the peeking card feels open */
+        padding-right: var(--spacing-7);
+        margin-right: calc(-1 * var(--spacing-7));
+    }
+
+    .whyGrid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .whyGrid:active {
+        cursor: grabbing;
+    }
 }
 
 @media (min-width: 768px) {
     .whyGrid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media (min-width: 1024px) {
-    .whyGrid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 .whyCard {
-    padding: var(--spacing-10) var(--spacing-6) var(--spacing-10) 0;
-    border-bottom: 1px solid var(--color-border-subtle);
+    padding: var(--spacing-10) var(--spacing-9);
+    background: var(--color-bg-elevated);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+    transition: background var(--transition-normal);
 }
 
-@media (min-width: 768px) {
+@media (max-width: 767px) {
     .whyCard {
-        padding: var(--spacing-10);
-        border-right: 1px solid var(--color-border-subtle);
-    }
-
-    .whyCard:nth-child(even) {
-        border-right: none;
+        flex: 0 0 82%;
+        scroll-snap-align: start;
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-2xl);
     }
 }
 
-@media (min-width: 1024px) {
-    .whyCard {
-        border-right: 1px solid var(--color-border-subtle);
-        border-bottom: none;
-    }
-
-    .whyCard:nth-child(even) {
-        border-right: 1px solid var(--color-border-subtle);
-    }
-
-    .whyCard:last-child {
-        border-right: none;
-    }
+.whyCard:hover {
+    background: var(--color-bg-raised);
 }
 
 .whyIcon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: fit-content;
     color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--spacing-5);
+    flex-shrink: 0;
+}
+
+.whyIcon svg {
+    width: 34px;
+    height: 34px;
 }
 
 .whyTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
+    font-size: clamp(1.1rem, 1.8vw, 1.375rem);
+    font-weight: 700;
     color: var(--color-text-strong);
-    margin-bottom: var(--spacing-3);
-    letter-spacing: var(--tracking-tight);
+    letter-spacing: -0.02em;
     line-height: 1.2;
+    margin: 0;
 }
 
 .whyText {
-    font-size: var(--font-size-sm);
+    font-size: 0.9375rem;
     color: var(--color-text-muted);
     line-height: 1.65;
-    max-width: 34ch;
+    margin: 0;
 }

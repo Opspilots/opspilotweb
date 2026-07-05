@@ -1,157 +1,233 @@
 /* ═══════════════════════════════════════════
-   Cases — específicos
+   Cases — Carousel + Diferenciadores
    ═══════════════════════════════════════════ */
 
-.casesSection {
+/* ─── Hero scene — local stacking only, scoped to `.pageHero` (`position:
+   relative` from page-system.module.css). Same hero-scoped mount pattern as
+   Product/Soluciones/Resources/Contact. Reuses `.sceneFallback` below, shared
+   with the carousel scene further down this page — both are absolute-inset
+   containers using the same radial-gradient placeholder treatment. */
+.heroScene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.heroContentLayer {
+    position: relative;
+    z-index: 1;
+}
+
+/* ─── Carousel section ─── */
+.carouselSection {
+    position: relative;
     padding: var(--space-section-loose) 0;
 }
 
-.casesList {
+.carouselScene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.sceneFallback {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(57, 206, 134, 0.05) 0%, transparent 70%);
+}
+
+.carouselContentLayer {
+    position: relative;
+    z-index: 1;
+}
+
+.carouselWrapper {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-10);
+    gap: var(--spacing-7);
 }
 
+.carouselTrack {
+    display: flex;
+    gap: var(--spacing-5);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    cursor: grab;
+    /* Extend slightly past the right edge so the peeking card feels open */
+    padding-right: var(--spacing-7);
+    margin-right: calc(-1 * var(--spacing-7));
+}
+
+.carouselTrack::-webkit-scrollbar {
+    display: none;
+}
+
+.carouselTrack:active {
+    cursor: grabbing;
+}
+
+/* ─── Case card ─── */
 .caseCard {
-    padding: var(--spacing-10) var(--spacing-9);
-    background: linear-gradient(180deg,
-        rgba(31, 42, 55, 0.4) 0%,
-        rgba(24, 34, 46, 0.4) 100%);
+    flex: 0 0 min(940px, calc(100% - 60px));
+    scroll-snap-align: start;
+    background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-3xl);
-    transition: border-color var(--transition-normal), transform var(--transition-normal);
+    padding: var(--spacing-10);
+    position: relative;
+    overflow: hidden;
+    transition: border-color var(--transition-normal);
 }
 
-.caseCard:hover {
-    border-color: var(--color-border-mint);
-    transform: translateY(-2px);
+/* Mint top accent line */
+.caseCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 10%, var(--color-mint) 50%, transparent 90%);
+    opacity: 0.35;
 }
 
-@media (min-width: 1024px) {
-    .caseCard {
-        padding: var(--spacing-12);
-    }
-}
-
-.caseHead {
+/* ─── Card header ─── */
+.cardHead {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-6);
+    margin-bottom: var(--spacing-8);
 }
 
-.caseSector {
+.cardSector {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-3);
-    font-family: var(--font-family-base);
+    gap: var(--spacing-2);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
     color: var(--color-mint);
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 6px 12px 6px 10px;
+    padding: 5px 12px 5px 10px;
     background: var(--color-mint-soft);
     border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-full);
 }
 
-.caseSector::before {
-    content: '';
-    width: 6px;
-    height: 6px;
+.sectorDot {
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: var(--color-mint);
-    box-shadow: 0 0 8px rgba(57, 206, 134, 0.6);
+    box-shadow: 0 0 6px rgba(57, 206, 134, 0.55);
+    flex-shrink: 0;
 }
 
-.caseIndex {
+.cardIndex {
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     color: var(--color-text-subtle);
     letter-spacing: var(--tracking-wide);
 }
 
-.caseTitle {
-    font-family: var(--font-family-display);
-    font-size: clamp(1.5rem, 2.6vw, 2.125rem);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-strong);
-    line-height: 1.1;
-    letter-spacing: var(--tracking-display);
-    margin-bottom: var(--spacing-5);
-    text-wrap: balance;
-}
-
-.caseText {
-    font-size: var(--font-size-base);
-    color: var(--color-text-muted);
-    line-height: 1.65;
-    margin-bottom: var(--spacing-8);
-    max-width: 70ch;
-}
-
-.statsRow {
+/* ─── Card stats ─── */
+.cardStats {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-5);
-    padding: var(--spacing-7) 0;
+    padding: var(--spacing-8) 0;
     border-top: 1px solid var(--color-border-subtle);
     border-bottom: 1px solid var(--color-border-subtle);
-    margin-bottom: var(--spacing-7);
+    margin-bottom: var(--spacing-8);
 }
 
-@media (min-width: 600px) {
-    .statsRow {
-        grid-template-columns: repeat(3, 1fr);
-        gap: var(--spacing-6);
-    }
-}
-
-.stat {
+.cardStat {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-2);
 }
 
-.statNum {
+.cardStatVal {
+    /* Color comes from the shared `sys.statAccent` class
+       (page-system.module.css) — see Cases.tsx, which applies it
+       alongside this class. Canonical amber "data accent" treatment,
+       matching Home's case-carousel stat numbers. */
     font-family: var(--font-family-display);
-    font-size: clamp(2rem, 3vw, 2.625rem);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-strong);
+    font-size: clamp(1.875rem, 4vw, 3.5rem);
+    font-weight: var(--font-weight-extrabold);
     line-height: 1;
-    letter-spacing: -0.03em;
-    background: linear-gradient(135deg, #6fe2a8 0%, #39ce86 60%, #2bb874 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.045em;
 }
 
-.statLabel {
+.cardStatLabel {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
-    line-height: 1.5;
+    line-height: 1.45;
+    max-width: 20ch;
 }
 
-.quote {
-    margin: 0;
-    padding: var(--spacing-6) var(--spacing-7);
-    background: var(--color-bg);
-    border-left: 2px solid var(--color-mint);
-    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+/* ─── Card content: narrative + quote ─── */
+.cardContent {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-7);
 }
 
-.quote p {
+@media (min-width: 640px) {
+    .cardContent {
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: var(--spacing-10);
+        align-items: start;
+    }
+}
+
+.cardNarrative {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+.cardTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
+    font-size: clamp(1.375rem, 2vw, 1.875rem);
+    font-weight: var(--font-weight-bold);
     color: var(--color-text-strong);
-    line-height: 1.5;
-    margin-bottom: var(--spacing-3);
-    letter-spacing: var(--tracking-tight);
+    line-height: 1.1;
+    letter-spacing: var(--tracking-display);
+    margin: 0;
+    text-wrap: balance;
 }
 
-.quote span {
+.cardText {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.75;
+    margin: 0;
+}
+
+.cardQuote {
+    margin: 0;
+    padding: var(--spacing-6) 0 0;
+    border-top: 1px solid var(--color-border-mint);
+}
+
+.cardQuote p {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    font-style: italic;
+    color: var(--color-text-strong);
+    line-height: 1.55;
+    letter-spacing: var(--tracking-tight);
+    margin: 0 0 var(--spacing-4);
+}
+
+.cardQuote cite {
+    display: block;
+    font-style: normal;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     color: var(--color-text-subtle);
@@ -159,28 +235,274 @@
     text-transform: uppercase;
 }
 
+/* ─── Carousel footer: dots + nav ─── */
+.carouselFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dots {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.dot {
+    position: relative;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all var(--transition-normal);
+}
+
+/* Expand the clickable hit area toward a comfortable touch target without
+   growing the visible dot — centered on the dot regardless of its
+   (active/inactive) width. Clamped to 34px (rather than the full 44px
+   touch-target minimum) and paired with a wider row gap above so that
+   adjacent dots' hit areas never overlap and steal each other's clicks. */
+.dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 34px;
+    height: 34px;
+    transform: translate(-50%, -50%);
+}
+
+.dotActive {
+    width: 24px;
+    background: var(--color-mint);
+}
+
+.navButtons {
+    display: flex;
+    gap: var(--spacing-3);
+}
+
+.navBtn {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border-subtle);
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.navBtn:hover:not(:disabled) {
+    border-color: var(--color-border-strong);
+    color: var(--color-text-strong);
+    background: var(--color-bg-raised);
+}
+
+.navBtn:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.navBtn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════
+   Why section — Diferenciadores
+   ═══════════════════════════════════════════ */
+
+.whySection {
+    padding: var(--space-section-loose) 0;
+    background: var(--color-bg);
+    position: relative;
+}
+
+.whySection::before,
+.whySection::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+}
+
+.whySection::before { top: 0; }
+.whySection::after { bottom: 0; }
+
+/* ─── Why header ─── */
+.whyHeader {
+    max-width: 720px;
+    margin-bottom: var(--spacing-14);
+}
+
+.whyTitle {
+    font-family: var(--font-family-display);
+    font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-strong);
+    line-height: 1.05;
+    letter-spacing: var(--tracking-display);
+    margin: 0 0 var(--spacing-5);
+    text-wrap: balance;
+}
+
+.whySub {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-muted);
+    line-height: 1.65;
+    max-width: 62ch;
+    margin: 0;
+}
+
+/* ─── Grid: 2-col table structure, no card boxes ─── */
+.whyGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--color-border-subtle);
+    border-left: 1px solid var(--color-border-subtle);
+}
+
+.whyItem {
+    padding: var(--spacing-9) var(--spacing-8);
+    border-right: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+    transition: background var(--transition-fast);
+}
+
+.whyItem:hover {
+    background: rgba(255, 255, 255, 0.014);
+}
+
+/* Last item spans full width */
+.whyItem:last-child {
+    grid-column: 1 / -1;
+}
+
+/* ─── Why item inner ─── */
+.whyIconWrap {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mint);
+    background: var(--color-mint-soft);
+    border: 1px solid var(--color-border-mint);
+    border-radius: 50%;
+    margin-bottom: var(--spacing-5);
+    flex-shrink: 0;
+}
+
+.whyItemTitle {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-strong);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-tight);
+    margin: 0 0 var(--spacing-3);
+}
+
+.whyItemText {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    line-height: 1.65;
+    margin: 0;
+    max-width: 52ch;
+}
+
+/* ═══════════════════════════════════════════
+   Mobile — < 640px
+   ═══════════════════════════════════════════ */
 @media (max-width: 639px) {
+    .carouselSection {
+        padding: var(--space-section-default) 0;
+    }
+
     .caseCard {
+        flex: 0 0 calc(100% - 40px);
         padding: var(--spacing-7) var(--spacing-6);
         border-radius: var(--radius-2xl);
     }
 
-    .caseHead {
-        flex-direction: column;
+    .cardStats {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-4);
+    }
+
+    /* Third stat full width */
+    .cardStat:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+
+    .cardStatVal {
+        font-size: clamp(1.75rem, 12vw, 2.5rem);
+    }
+
+    .carouselFooter {
+        flex-direction: column-reverse;
         align-items: flex-start;
-        gap: var(--spacing-2);
-        margin-bottom: var(--spacing-4);
+        gap: var(--spacing-4);
     }
 
-    .caseText {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        margin-bottom: var(--spacing-6);
+    /* Why section */
+    .whySection {
+        padding: var(--space-section-default) 0;
     }
 
-    .quote p {
+    .whyHeader {
+        margin-bottom: var(--spacing-8);
+    }
+
+    .whySub {
         font-size: var(--font-size-base);
+    }
+
+    .whyGrid {
+        display: flex;
+        gap: var(--spacing-5);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        cursor: grab;
+        border-top: none;
+        border-left: none;
+        /* Extend slightly past the right edge so the peeking card feels open */
+        padding-right: var(--spacing-7);
+        margin-right: calc(-1 * var(--spacing-7));
+    }
+
+    .whyGrid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .whyGrid:active {
+        cursor: grabbing;
+    }
+
+    .whyItem {
+        flex: 0 0 82%;
+        scroll-snap-align: start;
+        padding: var(--spacing-7) var(--spacing-6);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-2xl);
+        background: var(--color-bg-elevated);
+    }
+
+    /* Horizontal row — no single item spans full width */
+    .whyItem:last-child {
+        grid-column: unset;
     }
 }
