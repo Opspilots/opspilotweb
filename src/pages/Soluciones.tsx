@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { ROUTES } from '../lib/routes';
-import { SceneCanvas } from '../components/three/SceneCanvas';
 import sys from '../styles/page-system.module.css';
 import styles from './Soluciones.module.css';
 import { TextLink } from '../components/common/TextLink';
@@ -81,38 +82,44 @@ export const Soluciones: React.FC = () => {
     const listRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const ctaRef = useScrollReveal<HTMLDivElement>();
 
+    const prefersReducedMotion = usePrefersReducedMotion();
+    const [selected, setSelected] = useState(0);
+    const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+    const active = sectores[selected];
+
+    const handleTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+        const count = sectores.length;
+        let nextIndex: number | null = null;
+
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') nextIndex = (index + 1) % count;
+        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') nextIndex = (index - 1 + count) % count;
+        else if (e.key === 'Home') nextIndex = 0;
+        else if (e.key === 'End') nextIndex = count - 1;
+
+        if (nextIndex !== null) {
+            e.preventDefault();
+            setSelected(nextIndex);
+            tabRefs.current[nextIndex]?.focus();
+        }
+    };
+
+    // Keep the active pill fully visible inside the horizontally-scrolling
+    // tab row on sub-1024px layouts (mobile/tablet). `inline: 'center'`
+    // scrolls the tabList's own scroll container; `block: 'nearest'` keeps
+    // vertical page scroll untouched since the tab is already in the
+    // vertical viewport.
+    useEffect(() => {
+        tabRefs.current[selected]?.scrollIntoView({
+            behavior: prefersReducedMotion ? 'auto' : 'smooth',
+            inline: 'center',
+            block: 'nearest',
+        });
+    }, [selected, prefersReducedMotion]);
+
     return (
         <div className={sys.page}>
             {/* Hero */}
             <section className={sys.pageHero}>
-                <SceneCanvas
-                    loader={() => import('../components/three/scenes/PrimitiveHeroScene')}
-                    sceneProps={{
-                        color: '#39ce86',
-                        shapes: [
-                            {
-                                kind: 'icosahedron',
-                                position: [1.6, 0.4, -0.4],
-                                radius: 0.62,
-                                spinSpeed: [0.07, 0.05],
-                                driftAmp: 0.12,
-                                driftSpeed: 0.18,
-                                phase: 0,
-                            },
-                            {
-                                kind: 'octahedron',
-                                position: [-1.5, -0.5, -1],
-                                radius: 0.4,
-                                spinSpeed: [-0.05, 0.08],
-                                driftAmp: 0.16,
-                                driftSpeed: 0.14,
-                                phase: 2.1,
-                            },
-                        ],
-                    }}
-                    fallback={<div className={styles.sceneFallback} />}
-                    className={styles.heroScene}
-                />
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
                     <div className={sys.pageHeroContent} ref={heroRef}>
                         <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>
@@ -127,27 +134,66 @@ export const Soluciones: React.FC = () => {
                 </div>
             </section>
 
-            {/* Sectores — editorial list */}
+            {/* Sectores — pill selector + detail panel */}
             <section className={sys.section}>
                 <div className={sys.container}>
-                    <div className={styles.list} ref={listRef}>
-                        {sectores.map((s) => (
-                            <article key={s.title} className={`${styles.row} reveal`}>
-                                <div className={styles.rowMain}>
-                                    <div className={styles.rowIcon}>{s.icon}</div>
-                                    <h2 className={styles.rowTitle}>{s.title}</h2>
-                                    <p className={styles.rowWho}>
-                                        <span className={styles.whoLabel}>Para</span> {s.who}
+                    <div className={styles.switcher} ref={listRef}>
+                        <div
+                            className={styles.tabList}
+                            role="tablist"
+                            aria-label="Sectores"
+                            aria-orientation="vertical"
+                        >
+                            {sectores.map((s, i) => (
+                                <button
+                                    key={s.title}
+                                    ref={(el) => { tabRefs.current[i] = el; }}
+                                    type="button"
+                                    role="tab"
+                                    id={`sector-tab-${i}`}
+                                    aria-selected={i === selected}
+                                    aria-controls={`sector-panel-${i}`}
+                                    tabIndex={i === selected ? 0 : -1}
+                                    className={`${styles.tab} ${i === selected ? styles.tabActive : ''} reveal`}
+                                    onClick={() => setSelected(i)}
+                                    onKeyDown={(e) => handleTabKeyDown(e, i)}
+                                >
+                                    <span className={styles.tabIndex}>{String(i + 1).padStart(2, '0')}</span>
+                                    <span className={styles.tabTitle}>{s.title}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className={styles.panelWrap}>
+                            <AnimatePresence mode="wait" initial={false}>
+                                <motion.div
+                                    key={selected}
+                                    id={`sector-panel-${selected}`}
+                                    role="tabpanel"
+                                    aria-labelledby={`sector-tab-${selected}`}
+                                    tabIndex={0}
+                                    className={styles.panel}
+                                    initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
+                                    transition={{ duration: prefersReducedMotion ? 0 : 0.2, ease: [0.32, 0.72, 0, 1] }}
+                                >
+                                    <div className={styles.panelHead}>
+                                        <div className={styles.panelIcon}>{active.icon}</div>
+                                        <div>
+                                            <span className={styles.panelIndex}>{String(selected + 1).padStart(2, '0')}</span>
+                                            <h2 className={styles.panelTitle}>{active.title}</h2>
+                                        </div>
+                                    </div>
+
+                                    <p className={styles.panelWho}>
+                                        <span className={styles.whoLabel}>Para</span> {active.who}
                                     </p>
-                                </div>
 
-                                <div className={styles.rowSolutionWrap}>
-                                    <p className={styles.rowSolution}>{s.solution}</p>
-                                </div>
+                                    <p className={styles.panelSolution}>{active.solution}</p>
 
-                                <div className={styles.rowActions}>
                                     <ul className={styles.benefitsList}>
-                                        {s.benefits.map(b => (
+                                        {active.benefits.map(b => (
                                             <li key={b}>
                                                 <span className={styles.check}>
                                                     <Check size={11} strokeWidth={2.5} />
@@ -156,12 +202,13 @@ export const Soluciones: React.FC = () => {
                                             </li>
                                         ))}
                                     </ul>
-                                    <TextLink to={s.href} tone="muted" size="sm">
-                                        {s.cta}
+
+                                    <TextLink to={active.href} tone="muted" size="sm">
+                                        {active.cta}
                                     </TextLink>
-                                </div>
-                            </article>
-                        ))}
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
                     </div>
                 </div>
             </section>

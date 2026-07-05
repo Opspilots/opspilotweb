@@ -5,7 +5,6 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
-import { SceneCanvas } from '../components/three/SceneCanvas';
 import {
     FileText,
     Receipt,
@@ -144,36 +143,6 @@ export const Product: React.FC = () => {
         <div className={sys.page}>
             {/* ═══ HERO ═══ */}
             <section className={sys.pageHero}>
-                <SceneCanvas
-                    loader={() => import('../components/three/scenes/PrimitiveHeroScene')}
-                    sceneProps={{
-                        color: '#39ce86',
-                        shapes: [
-                            {
-                                kind: 'capsule',
-                                position: [1.55, 0.35, -0.4],
-                                radius: 0.34,
-                                length: 0.55,
-                                spinSpeed: [0.08, 0.06],
-                                driftAmp: 0.13,
-                                driftSpeed: 0.2,
-                                phase: 0,
-                            },
-                            {
-                                kind: 'icosahedron',
-                                position: [-1.55, -0.5, -0.9],
-                                radius: 0.46,
-                                color: '#e8a563',
-                                spinSpeed: [-0.06, 0.09],
-                                driftAmp: 0.15,
-                                driftSpeed: 0.16,
-                                phase: 1.8,
-                            },
-                        ],
-                    }}
-                    fallback={<div className={styles.sceneFallback} />}
-                    className={styles.heroScene}
-                />
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
                     <div className={sys.pageHeroContent} ref={heroRef}>
                         <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>

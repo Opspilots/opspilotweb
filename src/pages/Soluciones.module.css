@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   Soluciones — editorial list
+   Soluciones — sector pill switcher
    ═══════════════════════════════════════════ */
 
 /* ─── Hero title override ─── */
@@ -9,164 +9,187 @@
   line-height: 1.0;
 }
 
-/* ─── Hero scene — local stacking only ─── */
-.heroScene {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-}
-
 .heroContentLayer {
     position: relative;
     z-index: 1;
 }
 
-.sceneFallback {
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse 50% 50% at 50% 40%, rgba(57, 206, 134, 0.04) 0%, transparent 70%);
-}
-
-.list {
-    border-top: 1px solid var(--color-border-subtle);
-    padding-left: 28px; /* compensate for the ::before indicator */
-}
-
-/* ─── Row base ─── */
-.row {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacing-6);
-    padding: var(--spacing-10) 0;
-    border-bottom: 1px solid var(--color-border-subtle);
-    transition: border-color var(--transition-normal);
-    position: relative;
-}
-
-.row::before {
-    content: '';
-    position: absolute;
-    left: -28px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--color-mint);
-    transform: scaleY(0);
-    transform-origin: top;
-    transition: transform 0.4s var(--ease-custom);
-    border-radius: 1px;
-}
-
-.row:hover {
-    border-color: var(--color-border-strong);
-}
-
-.row:hover::before {
-    transform: scaleY(1);
-}
-
-/* Medium: 2-col — left:[main+solution] right:[actions] */
-@media (min-width: 768px) {
-    .row {
-        grid-template-columns: 1.3fr 0.7fr;
-        gap: var(--spacing-9);
-        padding: var(--spacing-11) 0;
-    }
-
-    .rowMain {
-        grid-column: 1;
-        grid-row: 1;
-    }
-
-    .rowSolutionWrap {
-        grid-column: 1;
-        grid-row: 2;
-    }
-
-    .rowActions {
-        grid-column: 2;
-        grid-row: 1 / span 2;
-        border-left: 1px solid var(--color-border-subtle);
-        padding-left: var(--spacing-9);
-    }
-}
-
-/* Large: 3-col — [main] [solution] [actions] */
-@media (min-width: 1024px) {
-    .row {
-        grid-template-columns: 1fr 1.2fr 0.8fr;
-        align-items: start;
-        gap: var(--spacing-9);
-        padding: var(--spacing-12) 0;
-    }
-
-    .rowMain {
-        grid-column: auto;
-        grid-row: auto;
-    }
-
-    .rowSolutionWrap {
-        grid-column: auto;
-        grid-row: auto;
-        border-left: 1px solid var(--color-border-subtle);
-        padding-left: var(--spacing-9);
-    }
-
-    .rowActions {
-        grid-column: auto;
-        grid-row: auto;
-        border-left: 1px solid var(--color-border-subtle);
-        padding-left: var(--spacing-9);
-    }
-}
-
-/* ─── Column: icon + title + who ─── */
-.rowMain {
+/* ═══════════════════════════════════════════
+   Sector switcher — vertical pill tabs (left) +
+   detail panel (right). Stacks on narrow viewports,
+   pills becoming a horizontally scrollable row above
+   the panel. Breakpoints match the rest of the file:
+   768px (tablet) / 1024px (side-by-side kicks in).
+   ═══════════════════════════════════════════ */
+.switcher {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    gap: var(--spacing-5);
 }
 
-.rowIcon {
-    width: 40px;
-    height: 52px;
+@media (min-width: 1024px) {
+    .switcher {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: var(--spacing-10);
+    }
+}
+
+/* ─── Tab list ─── */
+.tabList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+@media (max-width: 1023px) {
+    .tabList {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: var(--spacing-3);
+        padding-bottom: var(--spacing-2);
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .tabList::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@media (min-width: 1024px) {
+    .tabList {
+        flex: 0 0 340px;
+        position: sticky;
+        top: var(--spacing-10);
+    }
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    width: 100%;
+    text-align: left;
+    padding: var(--spacing-4) var(--spacing-5);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-elevated);
+    color: var(--color-text-muted);
+    font-family: var(--font-family-base);
+    cursor: pointer;
+    transition: background var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+@media (max-width: 1023px) {
+    .tab {
+        width: auto;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+}
+
+.tab:hover {
+    border-color: var(--color-border-mint);
+    color: var(--color-text);
+}
+
+.tab:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+.tabActive {
+    background: var(--color-mint-soft);
+    border-color: var(--color-mint);
+    color: var(--color-text-strong);
+    box-shadow: var(--glow-mint-sm);
+}
+
+.tabIndex {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: var(--tracking-wide);
+    flex-shrink: 0;
+    transition: color var(--transition-normal);
+}
+
+.tabActive .tabIndex {
+    color: var(--color-mint);
+}
+
+.tabTitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.3;
+}
+
+/* ─── Detail panel ─── */
+.panelWrap {
+    min-width: 0;
+    flex: 1;
+}
+
+.panel {
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    background: var(--color-bg-elevated);
+    box-shadow: var(--shadow-card);
+    padding: var(--spacing-8) var(--spacing-7);
+}
+
+@media (min-width: 768px) {
+    .panel {
+        padding: var(--spacing-10) var(--spacing-9);
+    }
+}
+
+.panelHead {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+}
+
+.panelIcon {
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--color-mint);
-    background: rgba(57, 206, 134, 0.12);
-    border-radius: var(--radius-md) var(--radius-sm);
-    margin-bottom: var(--spacing-4);
-    transition: background var(--transition-normal), box-shadow var(--transition-normal);
+    background: var(--color-mint-soft);
+    border: 1px solid var(--color-border-mint);
+    border-radius: var(--radius-lg);
     flex-shrink: 0;
 }
 
-.row:hover .rowIcon {
-    background: rgba(57, 206, 134, 0.18);
-    box-shadow: 0 0 12px rgba(57, 206, 134, 0.15);
+.panelIndex {
+    display: block;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: var(--tracking-wide);
+    margin-bottom: var(--spacing-1);
 }
 
-.rowTitle {
+.panelTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
     font-weight: 700;
     color: var(--color-text-strong);
     line-height: 1.2;
     letter-spacing: -0.025em;
-    margin: 0 0 var(--spacing-3);
-    transition: color var(--transition-normal);
+    margin: 0;
     text-wrap: balance;
 }
 
-.row:hover .rowTitle {
-    color: #FFFFFF;
-}
-
-.rowWho {
+.panelWho {
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
     line-height: 1.5;
-    margin: 0;
+    margin: 0 0 var(--spacing-6);
 }
 
 .whoLabel {
@@ -178,26 +201,14 @@
     margin-right: var(--spacing-2);
 }
 
-/* ─── Column: solution ─── */
-.rowSolutionWrap {
-    padding-top: 2px;
-}
-
-.rowSolution {
+.panelSolution {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     color: var(--color-text);
     line-height: 1.65;
     letter-spacing: var(--tracking-tight);
-    margin: 0;
-}
-
-/* ─── Column: benefits + CTA ─── */
-.rowActions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-5);
+    margin: 0 0 var(--spacing-7);
 }
 
 .benefitsList {
@@ -230,22 +241,17 @@
     flex-shrink: 0;
 }
 
-/* .rowLink was extracted into the shared TextLink component
+/* The CTA link uses the shared TextLink component
    (components/common/TextLink.tsx, tone="muted" size="sm") — see
    Soluciones.tsx. */
 
 /* ─── Mobile ─── */
 @media (max-width: 767px) {
-    .row {
-        padding: var(--spacing-7) 0;
-        gap: var(--spacing-4);
+    .panel {
+        padding: var(--spacing-7) var(--spacing-5);
     }
 
-    .rowSolution {
-        font-size: var(--font-size-sm);
-    }
-
-    .benefitsList li:nth-child(n+4) {
-        display: none;
+    .panelSolution {
+        font-size: var(--font-size-base);
     }
 }

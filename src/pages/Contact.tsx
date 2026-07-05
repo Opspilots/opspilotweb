@@ -3,7 +3,6 @@ import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
-import { SceneCanvas } from '../components/three/SceneCanvas';
 import sys from '../styles/page-system.module.css';
 import styles from './Contact.module.css';
 import { Mail, MessageSquare, MapPin } from 'lucide-react';
@@ -57,36 +56,6 @@ export const Contact: React.FC = () => {
         <div className={sys.page}>
             {/* ═══ HERO ═══ */}
             <section className={sys.pageHero}>
-                <SceneCanvas
-                    loader={() => import('../components/three/scenes/PrimitiveHeroScene')}
-                    sceneProps={{
-                        color: '#39ce86',
-                        ambientIntensity: 0.3,
-                        pointLight: false,
-                        shapes: [
-                            {
-                                kind: 'torus',
-                                position: [0, 0, 0],
-                                radius: 1.15,
-                                tube: 0.012,
-                                material: 'solid',
-                                opacity: 0.22,
-                                spinSpeed: [-0.02, 0.05],
-                            },
-                            {
-                                kind: 'sphere',
-                                position: [0, 0, 0],
-                                radius: 0.05,
-                                material: 'emissive',
-                                opacity: 0.85,
-                                spinSpeed: [0, 0],
-                                pulse: { base: 0.6, amplitude: 0.4, frequency: 1.1 },
-                            },
-                        ],
-                    }}
-                    fallback={<div className={styles.sceneFallback} />}
-                    className={styles.heroScene}
-                />
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
                     <div className={sys.pageHeroContent} ref={heroRef}>
                         <h1 className={`${sys.pageHeroTitle} reveal`}>

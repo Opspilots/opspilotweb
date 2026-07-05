@@ -196,7 +196,7 @@ const CarouselSection: React.FC = () => {
                 <div className={styles.carouselWrapper}>
                     <div
                         ref={trackRef}
-                        className={styles.carouselTrack}
+                        className={`${styles.carouselTrack} ${currentIndex > 0 ? styles.carouselTrackFaded : ''}`}
                         onScroll={handleScroll}
                         aria-label="Casos de éxito"
                     >
@@ -290,36 +290,6 @@ export const Cases: React.FC = () => {
         <div className={sys.page}>
             {/* ═══ HERO ═══ */}
             <section className={sys.pageHero}>
-                <SceneCanvas
-                    loader={() => import('../components/three/scenes/PrimitiveHeroScene')}
-                    sceneProps={{
-                        color: '#2bb874',
-                        shapes: [
-                            {
-                                kind: 'sphere',
-                                position: [1.5, 0.3, -0.5],
-                                radius: 0.5,
-                                spinSpeed: [0.05, 0.04],
-                                driftAmp: 0.11,
-                                driftSpeed: 0.15,
-                                phase: 0.3,
-                            },
-                            {
-                                kind: 'torus',
-                                position: [-1.5, -0.5, -1],
-                                radius: 0.45,
-                                tube: 0.06,
-                                material: 'wireframe',
-                                spinSpeed: [-0.04, 0.06],
-                                driftAmp: 0.14,
-                                driftSpeed: 0.12,
-                                phase: 1.6,
-                            },
-                        ],
-                    }}
-                    fallback={<div className={styles.sceneFallback} />}
-                    className={styles.heroScene}
-                />
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
                     <div className={sys.pageHeroContent} ref={heroRef}>
                         <h1 className={`${sys.pageHeroTitle} reveal`}>

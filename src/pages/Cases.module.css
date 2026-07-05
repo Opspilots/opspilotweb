@@ -2,17 +2,6 @@
    Cases — Carousel + Diferenciadores
    ═══════════════════════════════════════════ */
 
-/* ─── Hero scene — local stacking only, scoped to `.pageHero` (`position:
-   relative` from page-system.module.css). Same hero-scoped mount pattern as
-   Product/Soluciones/Resources/Contact. Reuses `.sceneFallback` below, shared
-   with the carousel scene further down this page — both are absolute-inset
-   containers using the same radial-gradient placeholder treatment. */
-.heroScene {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-}
-
 .heroContentLayer {
     position: relative;
     z-index: 1;
@@ -30,6 +19,8 @@
     z-index: 0;
 }
 
+/* Loading placeholder for the carousel's decorative 3D background
+   (`CaseDeckScene`) while the chunk loads. */
 .sceneFallback {
     width: 100%;
     height: 100%;
@@ -59,6 +50,38 @@
     /* Extend slightly past the right edge so the peeking card feels open */
     padding-right: var(--spacing-7);
     margin-right: calc(-1 * var(--spacing-7));
+    /* The peeking next card is intentionally clipped by the viewport edge
+       (see padding/margin trick above) — without a fade, its stat grid and
+       quote text get hard-cut and read as broken rather than a preview.
+       Mask the right edge so content softly dissolves instead. Kept narrow
+       (56px) so it doesn't eat into the visible card underneath. `.caseCard`
+       has no box-shadow, so masking the track never clips a shadow/hover
+       effect — only the ::before top accent line and background, which are
+       already contained by `.caseCard`'s own `overflow: hidden`. */
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 56px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 56px), transparent 100%);
+}
+
+/* Once scrolled past the first card, add a matching fade on the left edge
+   too, so the previous (now off-screen-left) card reads as a symmetric
+   preview rather than an inconsistent one-sided treatment. Toggled via
+   `currentIndex > 0` in Cases.tsx (re-renders only on index change, not on
+   every scroll frame). */
+.carouselTrackFaded {
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 56px,
+        #000 calc(100% - 56px),
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 56px,
+        #000 calc(100% - 56px),
+        transparent 100%
+    );
 }
 
 .carouselTrack::-webkit-scrollbar {
