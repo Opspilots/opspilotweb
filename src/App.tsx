@@ -9,6 +9,7 @@ import './index.css';
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
 const Cases = lazy(() => import('./pages/Cases').then(m => ({ default: m.Cases })));
 const Resources = lazy(() => import('./pages/Resources').then(m => ({ default: m.Resources })));
+const ResourceDetail = lazy(() => import('./pages/ResourceDetail').then(m => ({ default: m.ResourceDetail })));
 const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
 const Soluciones = lazy(() => import('./pages/Soluciones').then(m => ({ default: m.Soluciones })));
 const Product = lazy(() => import('./pages/Product').then(m => ({ default: m.Product })));
@@ -36,6 +37,7 @@ function AnimatedRoutes() {
                     <Route path={ROUTES.casos} element={<Cases />} />
                     <Route path={ROUTES.precios} element={<Navigate to={ROUTES.contacto} replace />} />
                     <Route path={ROUTES.recursos} element={<Resources />} />
+                    <Route path={`${ROUTES.recursos}/:slug`} element={<ResourceDetail />} />
                     <Route path={ROUTES.contacto} element={<Contact />} />
                     <Route path={ROUTES.diagnostico} element={<Navigate to={ROUTES.contacto} replace />} />
 

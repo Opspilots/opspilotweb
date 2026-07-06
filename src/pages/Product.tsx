@@ -18,9 +18,10 @@ import {
     Layers,
     PenLine,
     ScanLine,
-    Bot,
-    KanbanSquare,
-    Target,
+    UtensilsCrossed,
+    CalendarClock,
+    PackageSearch,
+    ClipboardList,
     Workflow,
     Rocket,
     RefreshCw,
@@ -51,7 +52,7 @@ export const Product: React.FC = () => {
     usePageSEO({
         title: 'Productos verticales · Software para sectores concretos — OpsPilot',
         description:
-            'Cuatro productos verticales para PYMEs españolas: fiscalidad (AEAT, SII, VeriFactu), CRM energético, presupuestos de obra (BC3/FIEBDC) y ERP con agentes IA.',
+            'Cuatro productos verticales para PYMEs españolas: fiscalidad (AEAT, SII, VeriFactu), CRM energético, presupuestos de obra (BC3/FIEBDC) y ERP para hostelería.',
         canonical: 'https://opspilot.es/productos',
     });
 
@@ -114,27 +115,27 @@ export const Product: React.FC = () => {
                 { icon: <FileSignature size={14} />, label: 'Certificaciones de obra con asistente y versionado' },
                 { icon: <ScanLine size={14} />, label: 'Control de rentabilidad con OCR de albaranes' },
             ],
-            cta: 'Solicitar acceso',
-            href: ROUTES.contacto,
-            external: false,
+            cta: 'Ver producto',
+            href: 'https://presupuestador.mcpopspilot.org',
+            external: true,
         },
         {
             id: 'erp',
-            name: 'ERP OpsPilot',
-            sector: 'Agencias, consultoras y servicios profesionales',
+            name: 'ERP Hostelería',
+            sector: 'Restaurantes, bares y negocios de hostelería',
             desc:
-                'ERP/PSA todo-en-uno. Reemplaza Notion + Trello + HubSpot + Slack + Drive con un solo entorno. ' +
-                'Project Hub, CRM, secuencias de prospección, portal cliente externo y capa MCP nativa ' +
-                'con 31+ herramientas de agente IA.',
+                'ERP todo-en-uno para gestionar un restaurante o bar del día a día. TPV con gestión de mesas y comandas, ' +
+                'control de inventario y proveedores, turnos de personal, calendario de reservas y cierre de caja, ' +
+                'con analítica en tiempo real de ventas y consumo.',
             features: [
-                { icon: <Bot size={14} />, label: 'Capa MCP de agentes IA con 31+ herramientas nativas' },
-                { icon: <KanbanSquare size={14} />, label: 'Project Hub con tareas jerárquicas y Kanban' },
-                { icon: <Target size={14} />, label: 'Intelligence Platform: empresas, contactos, oportunidades' },
-                { icon: <Workflow size={14} />, label: 'Outreach Engine con secuencias automatizadas' },
-                { icon: <FileText size={14} />, label: 'Auditor con plantillas reutilizables (consultoría/compliance)' },
+                { icon: <UtensilsCrossed size={14} />, label: 'TPV con gestión de mesas y comandas en tiempo real' },
+                { icon: <PackageSearch size={14} />, label: 'Inventario, catálogo y pedidos a proveedores' },
+                { icon: <CalendarClock size={14} />, label: 'Calendario de reservas y citas (FullCalendar)' },
+                { icon: <Users size={14} />, label: 'Gestión de personal, turnos y permisos por rol' },
+                { icon: <ClipboardList size={14} />, label: 'Cierre de caja, analítica de ventas y alertas de stock' },
             ],
             cta: 'Ver producto',
-            href: 'https://notionpilot.mcpopspilot.org',
+            href: 'https://erp.mcpopspilot.org',
             external: true,
         },
     ];
@@ -149,7 +150,7 @@ export const Product: React.FC = () => {
                             Cuatro productos para PYMEs <em className={sys.pageHeroAccent}>españolas</em>.
                         </h1>
                         <p className={`${sys.pageHeroSubtitle} reveal`}>
-                            Fiscalidad, energía, construcción y agencias. Cada producto resuelve un
+                            Fiscalidad, energía, construcción y hostelería. Cada producto resuelve un
                             dominio concreto con sus estándares (PGC, AEAT, SII, VeriFactu, BC3/FIEBDC)
                             en lugar de ofrecer un genérico que no conoce el contexto español.
                         </p>

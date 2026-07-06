@@ -36,11 +36,172 @@
 }
 
 /* ═══════════════════════════════════════════
+   Toolbar — search + category filter pills
+   ═══════════════════════════════════════════ */
+
+.toolbarSection {
+    padding: var(--spacing-8) 0 0;
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+}
+
+@media (min-width: 860px) {
+    .toolbar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-6);
+    }
+}
+
+.searchBox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 360px;
+    max-width: 460px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: var(--spacing-4);
+    color: var(--color-text-subtle);
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.75rem var(--spacing-10) 0.75rem var(--spacing-10);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+    color: var(--color-text-strong);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--transition-fast);
+    outline: none;
+}
+
+.searchInput:focus {
+    border-color: var(--color-mint);
+}
+
+.searchInput::placeholder {
+    color: var(--color-text-subtle);
+}
+
+.searchClear {
+    position: absolute;
+    right: var(--spacing-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.searchClear:hover {
+    color: var(--color-text-strong);
+    background: var(--color-bg-raised);
+}
+
+.catPills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+}
+
+.catPill {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+    white-space: nowrap;
+}
+
+.catPill:hover {
+    border-color: var(--color-border-strong);
+    color: var(--color-text-strong);
+}
+
+.catPillActive,
+.catPillActive:hover {
+    background: var(--color-mint-soft);
+    border-color: var(--color-border-mint);
+    color: var(--color-mint);
+}
+
+/* ═══════════════════════════════════════════
+   Empty state
+   ═══════════════════════════════════════════ */
+
+.emptyState {
+    text-align: center;
+    padding: var(--spacing-14) var(--spacing-7);
+    border: 1px dashed var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+}
+
+.emptyTitle {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-strong);
+    margin: 0 0 var(--spacing-2);
+}
+
+.emptyText {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    margin: 0 0 var(--spacing-6);
+}
+
+.emptyReset {
+    padding: 0.65rem 1.25rem;
+    background: transparent;
+    border: 1px solid var(--color-border-mint);
+    border-radius: var(--radius-full);
+    color: var(--color-mint);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.emptyReset:hover {
+    background: var(--color-mint-soft);
+}
+
+/* ═══════════════════════════════════════════
    Featured card
    ═══════════════════════════════════════════ */
 
+.featuredLink {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
 .featuredSection {
-    padding: var(--space-section-default) 0 0;
+    padding: var(--spacing-10) 0 0;
 }
 
 .featuredCard {
@@ -130,11 +291,19 @@
 
 @media (min-width: 1100px) {
     .grid {
-        grid-template-columns: 1.2fr 0.8fr 1fr;
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
+.cardLink {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+}
+
 .card {
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-3);
@@ -353,8 +522,12 @@
         cursor: grabbing;
     }
 
-    .card {
+    .cardLink {
         flex: 0 0 85%;
         scroll-snap-align: start;
+    }
+
+    .emptyState {
+        padding: var(--spacing-10) var(--spacing-6);
     }
 }

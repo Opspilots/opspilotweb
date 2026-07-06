@@ -1,66 +1,37 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
+import { RESOURCES, RESOURCE_CATEGORIES, type ResourceCategory } from '../lib/resources';
 import sys from '../styles/page-system.module.css';
 import styles from './Resources.module.css';
 import { TextLink } from '../components/common/TextLink';
-import { ArrowRight, Clock } from 'lucide-react';
+import { ArrowRight, Clock, Search, X } from 'lucide-react';
 
 const FORM_NEWSLETTER_URL = 'https://formsubmit.co/ajax/opspilot.contact@gmail.com';
 
 type NLStatus = 'idle' | 'submitting' | 'success' | 'error';
+type CategoryFilter = 'Todos' | ResourceCategory;
 
-const RESOURCES = [
-    {
-        cat: 'Guía',
-        title: 'Cómo automatizar tu negocio sin saber de tecnología',
-        desc: 'Paso a paso para identificar qué procesos te roban tiempo y convertirlos en flujos automáticos. Sin código, sin complicaciones.',
-        time: '8 min',
-        featured: true,
-    },
-    {
-        cat: 'Artículo',
-        title: '5 señales de que tu PYME necesita un sistema de gestión',
-        desc: 'Si pierdes clientes por falta de seguimiento o tus datos viven en hojas sueltas, sigue leyendo.',
-        time: '5 min',
-        featured: false,
-    },
-    {
-        cat: 'Caso práctico',
-        title: 'De Excel a sistema: cómo una empresa de reformas triplicó su capacidad',
-        desc: 'El caso real de una empresa familiar que pasó de libretas a un sistema que trabaja solo.',
-        time: '6 min',
-        featured: false,
-    },
-    {
-        cat: 'Checklist',
-        title: '¿Tu web trabaja para ti o contra ti? 10 puntos para saberlo',
-        desc: 'Una auditoría rápida y gratuita para saber si tu web está generando clientes o espantándolos.',
-        time: '3 min',
-        featured: false,
-    },
-    {
-        cat: 'Artículo',
-        title: 'Asistentes IA productivos: lo que nadie te cuenta antes de implementar uno',
-        desc: 'Ventajas reales, limitaciones y cuándo tiene sentido invertir en agentes inteligentes.',
-        time: '7 min',
-        featured: false,
-    },
-    {
-        cat: 'Guía',
-        title: 'Cómo pedir un presupuesto de software sin que te timen',
-        desc: 'Todo lo que debes preguntar antes de contratar el desarrollo de tu app, sistema o web.',
-        time: '10 min',
-        featured: false,
-    },
-];
+const CTA_BY_CAT: Record<ResourceCategory, string> = {
+    Guía: 'Leer guía',
+    Artículo: 'Leer artículo',
+    'Caso práctico': 'Leer caso',
+    Checklist: 'Ver checklist',
+};
 
-const featured = RESOURCES[0];
-const rest = RESOURCES.slice(1);
+function normalize(value: string): string {
+    return value
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase();
+}
+
+const featured = RESOURCES.find((r) => r.featured)!;
+const rest = RESOURCES.filter((r) => !r.featured);
 
 export const Resources: React.FC = () => {
     usePageSEO({
@@ -77,6 +48,23 @@ export const Resources: React.FC = () => {
     const nlRef = useScrollReveal<HTMLDivElement>();
     const [nlStatus, setNlStatus] = useState<NLStatus>('idle');
     const [nlEmail, setNlEmail] = useState('');
+
+    const [query, setQuery] = useState('');
+    const [activeCat, setActiveCat] = useState<CategoryFilter>('Todos');
+
+    const isFiltering = query.trim() !== '' || activeCat !== 'Todos';
+
+    const filtered = useMemo(() => {
+        const q = normalize(query.trim());
+        return RESOURCES.filter((r) => {
+            const matchesCat = activeCat === 'Todos' || r.cat === activeCat;
+            const matchesQuery = q === '' || normalize(`${r.title} ${r.desc}`).includes(q);
+            return matchesCat && matchesQuery;
+        });
+    }, [query, activeCat]);
+
+    const visible = isFiltering ? filtered : rest;
+    const showFeatured = !isFiltering;
 
     const handleNewsletter = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -115,51 +103,119 @@ export const Resources: React.FC = () => {
                 </div>
             </section>
 
-            {/* ═══ FEATURED ═══ */}
-            <section className={styles.featuredSection}>
+            {/* ═══ BUSCADOR + FILTROS ═══ */}
+            <section className={styles.toolbarSection}>
                 <div className={sys.container}>
-                    <article className={styles.featuredCard} ref={featuredRef}>
-                        <div className={styles.featuredMeta}>
-                            <span className={styles.cardCat}>{featured.cat}</span>
-                            <span className={styles.cardTime}>
-                                <Clock size={12} strokeWidth={2} />
-                                {featured.time} lectura
-                            </span>
+                    <div className={styles.toolbar}>
+                        <div className={styles.searchBox}>
+                            <Search size={17} strokeWidth={2} className={styles.searchIcon} />
+                            <input
+                                type="text"
+                                className={styles.searchInput}
+                                placeholder="Busca por tema: web, IA, presupuesto, sistema..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                aria-label="Buscar recursos"
+                            />
+                            {query !== '' && (
+                                <button
+                                    type="button"
+                                    className={styles.searchClear}
+                                    onClick={() => setQuery('')}
+                                    aria-label="Borrar búsqueda"
+                                >
+                                    <X size={15} strokeWidth={2} />
+                                </button>
+                            )}
                         </div>
-                        <h2 className={styles.featuredTitle}>{featured.title}</h2>
-                        <p className={styles.featuredDesc}>{featured.desc}</p>
-                        <TextLink
-                            interactive={false}
-                            tone="subtle"
-                            size="sm"
-                            className={styles.featuredCta}
-                            icon={<ArrowRight size={15} strokeWidth={2} />}
-                        >
-                            Próximamente
-                        </TextLink>
-                    </article>
+                        <div className={styles.catPills} role="tablist" aria-label="Filtrar por categoría">
+                            {(['Todos', ...RESOURCE_CATEGORIES] as CategoryFilter[]).map((cat) => (
+                                <button
+                                    key={cat}
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={activeCat === cat}
+                                    className={`${styles.catPill} ${activeCat === cat ? styles.catPillActive : ''}`}
+                                    onClick={() => setActiveCat(cat)}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </section>
+
+            {/* ═══ FEATURED ═══ */}
+            {showFeatured && (
+                <section className={styles.featuredSection}>
+                    <div className={sys.container}>
+                        <Link to={`/recursos/${featured.slug}`} className={styles.featuredLink}>
+                            <article className={styles.featuredCard} ref={featuredRef}>
+                                <div className={styles.featuredMeta}>
+                                    <span className={styles.cardCat}>{featured.cat}</span>
+                                    <span className={styles.cardTime}>
+                                        <Clock size={12} strokeWidth={2} />
+                                        {featured.time} lectura
+                                    </span>
+                                </div>
+                                <h2 className={styles.featuredTitle}>{featured.title}</h2>
+                                <p className={styles.featuredDesc}>{featured.desc}</p>
+                                <TextLink
+                                    interactive={false}
+                                    tone="subtle"
+                                    size="sm"
+                                    className={styles.featuredCta}
+                                    icon={<ArrowRight size={15} strokeWidth={2} />}
+                                >
+                                    {CTA_BY_CAT[featured.cat]}
+                                </TextLink>
+                            </article>
+                        </Link>
+                    </div>
+                </section>
+            )}
 
             {/* ═══ GRID ═══ */}
             <section className={styles.gridSection}>
                 <div className={sys.container} ref={gridRef}>
-                    <div className={styles.grid}>
-                        {rest.map((r) => (
-                            <article key={r.title} className={`${styles.card} reveal`}>
-                                <div className={styles.cardMeta}>
-                                    <span className={styles.cardCat}>{r.cat}</span>
-                                    <span className={styles.cardTime}>
-                                        <Clock size={11} strokeWidth={2} />
-                                        {r.time}
-                                    </span>
-                                </div>
-                                <h2 className={styles.cardTitle}>{r.title}</h2>
-                                <p className={styles.cardDesc}>{r.desc}</p>
-                                <span className={styles.cardFooter}>Próximamente</span>
-                            </article>
-                        ))}
-                    </div>
+                    {visible.length > 0 ? (
+                        <div className={styles.grid}>
+                            {visible.map((r) => (
+                                <Link key={r.slug} to={`/recursos/${r.slug}`} className={`${styles.cardLink} reveal`}>
+                                    <article className={styles.card}>
+                                        <div className={styles.cardMeta}>
+                                            <span className={styles.cardCat}>{r.cat}</span>
+                                            <span className={styles.cardTime}>
+                                                <Clock size={11} strokeWidth={2} />
+                                                {r.time}
+                                            </span>
+                                        </div>
+                                        <h2 className={styles.cardTitle}>{r.title}</h2>
+                                        <p className={styles.cardDesc}>{r.desc}</p>
+                                        <span className={styles.cardFooter}>{CTA_BY_CAT[r.cat]}</span>
+                                    </article>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className={styles.emptyState}>
+                            <p className={styles.emptyTitle}>No hay recursos que coincidan con tu búsqueda.</p>
+                            <p className={styles.emptyText}>
+                                Prueba con otro término o quita el filtro de categoría.
+                            </p>
+                            <button
+                                type="button"
+                                className={styles.emptyReset}
+                                onClick={() => {
+                                    setQuery('');
+                                    setActiveCat('Todos');
+                                }}
+                            >
+                                Ver todos los recursos
+                            </button>
+                        </div>
+                    )}
                 </div>
             </section>
 
