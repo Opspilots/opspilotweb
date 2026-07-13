@@ -10,7 +10,7 @@
 }
 
 .container {
-    max-width: 1280px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 var(--spacing-7);
 }
@@ -25,9 +25,7 @@
 .pageHero {
     position: relative;
     padding: var(--spacing-20) 0 var(--spacing-16);
-    background:
-        radial-gradient(ellipse 60% 80% at 50% 0%, rgba(57, 206, 134, 0.08) 0%, transparent 70%),
-        var(--color-bg-deep);
+    background: var(--color-bg-deep);
 }
 
 .pageHero::after {
@@ -37,8 +35,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, var(--color-mint) 35%, var(--color-mint) 65%, transparent 100%);
-    opacity: 0.45;
+    background: rgba(255, 255, 255, 0.07);
 }
 
 @media (min-width: 1024px) {
@@ -65,10 +62,6 @@
 .pageHeroAccent {
     color: var(--color-mint);
     font-style: normal;
-    background: linear-gradient(135deg, #6fe2a8 0%, #39ce86 55%, #2bb874 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .pageHeroSubtitle {
@@ -125,7 +118,7 @@
 }
 
 .sectionAlt {
-    background: var(--color-bg);
+    background: transparent;
     position: relative;
 }
 
@@ -147,87 +140,38 @@
     padding: var(--space-section-loose) 0;
 }
 
+/* Light card signature — única figura clara sobre el canvas navy */
 .endCtaBlock {
     text-align: center;
     padding: var(--spacing-20) var(--spacing-10);
-    background:
-        radial-gradient(circle at 22% 24%, rgba(57, 206, 134, 0.14) 0%, transparent 58%),
-        radial-gradient(circle at 78% 80%, rgba(232, 165, 99, 0.08) 0%, transparent 58%),
-        var(--color-bg-elevated);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-3xl);
+    background: var(--color-card-light);
+    border: 1px solid var(--color-card-light-border);
+    border-radius: var(--radius-panel);
     max-width: 920px;
     margin: 0 auto;
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    animation: endCtaPulse 9s ease-in-out infinite;
 }
 
-/* Layered glow orbs — independent drift/breathe per orb (different duration
-   + easing each so they never read as a single synced pulse). Pure CSS,
-   no extra DOM nodes: ::before/::after on the existing card. */
-.endCtaBlock::before,
+/* Grano sutil — el grano solo sobrevive dentro de las light cards */
 .endCtaBlock::after {
     content: '';
     position: absolute;
+    inset: 0;
     z-index: 0;
-    border-radius: 50%;
     pointer-events: none;
-    filter: blur(70px);
-    mix-blend-mode: screen;
-    will-change: transform;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    mix-blend-mode: multiply;
 }
-
-.endCtaBlock::before {
-    width: 30rem;
-    height: 30rem;
-    top: -12%;
-    left: -10%;
-    background: radial-gradient(circle, rgba(57, 206, 134, 0.32) 0%, rgba(57, 206, 134, 0) 70%);
-    animation: endCtaOrbDriftA 17s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
-.endCtaBlock::after {
-    width: 24rem;
-    height: 24rem;
-    bottom: -16%;
-    right: -8%;
-    background: radial-gradient(circle, rgba(232, 165, 99, 0.22) 0%, rgba(232, 165, 99, 0) 70%);
-    animation: endCtaOrbDriftB 22s ease-in-out infinite;
-}
-
-@keyframes endCtaOrbDriftA {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(6%, 8%) scale(1.18); }
-}
-
-@keyframes endCtaOrbDriftB {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-7%, -5%) scale(1.12); }
-}
-
-/* Border/edge glow — the card itself breathes, marking it as the page's
-   closing focal moment rather than another content card. */
-@keyframes endCtaPulse {
-    0%, 100% { box-shadow: var(--glow-mint-sm); }
-    50% { box-shadow: var(--glow-mint-lg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .endCtaBlock,
-    .endCtaBlock::before,
-    .endCtaBlock::after {
-        animation: none;
-    }
-}
-
 
 .endCtaTitle {
     font-family: var(--font-family-display);
     font-size: clamp(2.5rem, 5.5vw, 4.25rem);
-    font-weight: var(--font-weight-extrabold);
-    color: var(--color-text-strong);
+    font-weight: 400;
+    color: var(--color-card-light-text);
     line-height: 1.02;
     margin-bottom: var(--spacing-6);
     letter-spacing: var(--tracking-display);
@@ -237,7 +181,7 @@
 }
 
 .endCtaSub {
-    color: var(--color-text-muted);
+    color: var(--color-card-light-muted);
     font-size: var(--font-size-lg);
     line-height: 1.65;
     max-width: 58ch;
@@ -253,6 +197,29 @@
     flex-wrap: wrap;
     position: relative;
     z-index: 1;
+}
+
+/* ─── Light card reutilizable (mismo tratamiento que endCtaBlock) ─── */
+.lightCard {
+    background: var(--color-card-light);
+    border: 1px solid var(--color-card-light-border);
+    border-radius: var(--radius-panel);
+    color: var(--color-card-light-text);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.lightCard::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    mix-blend-mode: multiply;
 }
 
 /* ═══════════════════════════════════════════
@@ -281,24 +248,7 @@
 
     .endCtaBlock {
         padding: var(--spacing-10) var(--spacing-6);
-        border-radius: var(--radius-2xl);
-        animation-duration: 7s;
-    }
-
-    /* Smaller, cheaper orbs on mobile: reduced size + blur radius for perf headroom. */
-    .endCtaBlock::before,
-    .endCtaBlock::after {
-        filter: blur(40px);
-    }
-
-    .endCtaBlock::before {
-        width: 16rem;
-        height: 16rem;
-    }
-
-    .endCtaBlock::after {
-        width: 13rem;
-        height: 13rem;
+        border-radius: var(--radius-panel);
     }
 
     .endCtaTitle {

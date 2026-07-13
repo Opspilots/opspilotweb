@@ -323,7 +323,7 @@ export const Cases: React.FC = () => {
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>
-                                <Button variant="primary" size="lg">Reservar diagnóstico</Button>
+                                <Button variant="secondary" size="lg">Reservar diagnóstico</Button>
                             </Link>
                             <Link to={ROUTES.servicios}>
                                 <Button variant="outline" size="lg">Ver servicios</Button>

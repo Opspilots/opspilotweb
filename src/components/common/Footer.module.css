@@ -1,5 +1,5 @@
 .footer {
-    background-color: #0c1219;
+    background-color: var(--color-bg-deep);
     color: var(--color-dark-text-main);
     padding: var(--spacing-16) 0 var(--spacing-8);
     border-top: 1px solid rgba(255, 255, 255, 0.04);
@@ -33,7 +33,7 @@
 }
 
 .logoIcon {
-    color: var(--color-primary);
+    color: var(--color-mint);
     font-size: var(--font-size-lg);
 }
 
@@ -53,19 +53,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--color-dark-text-muted);
-    transition: all var(--transition-fast);
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast);
 }
 
 .socialLink:hover {
-    background: rgba(57, 206, 134, 0.08);
-    border-color: var(--color-border-mint);
-    color: var(--color-mint);
+    color: var(--color-text-strong);
 }
 
 .heading {
@@ -91,11 +84,10 @@
 }
 
 .link:hover {
-    color: var(--color-primary);
+    color: var(--color-mint);
 }
 
 .bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
     padding-top: var(--spacing-8);
     display: flex;
     align-items: center;

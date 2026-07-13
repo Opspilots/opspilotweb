@@ -30,6 +30,18 @@
     --color-warm: #e8a563;           /* Ámbar templado — acento secundario */
     --color-warm-soft: rgba(217, 148, 87, 0.10);
 
+    /* Light card (signature Factory) — única figura clara sobre canvas navy */
+    --color-card-light: #edece8;
+    --color-card-light-text: #16130f;
+    --color-card-light-muted: #5c5852;
+    --color-card-light-border: rgba(0, 0, 0, 0.08);
+
+    /* Button fills */
+    --color-btn-light: #f2f0eb;
+    --color-btn-light-hover: #e4e1da;
+    --color-btn-dark: #1c2733;
+    --color-btn-dark-hover: #25313f;
+
     /* Status (subtle) */
     --color-success: #39ce86;
     --color-warning: #e0a64a;
@@ -40,15 +52,9 @@
        BACKWARDS-COMPAT TOKENS
        (mantener nombres viejos apuntando a los nuevos)
        ═══════════════════════════════════════════ */
-    --color-primary: var(--color-mint);
     --color-primary-dark: var(--color-mint-dark);
-    --color-primary-light: #4fd99a;
-    --color-secondary: #0F172A;
     --color-accent: var(--color-mint);
     --color-background: var(--color-bg);
-    --color-surface: #FFFFFF;
-    --color-text-main: #1E293B;
-    --color-border: #E2E8F0;
 
     --color-dark-bg: var(--color-bg);
     --color-dark-bg-alt: var(--color-bg-elevated);
@@ -58,14 +64,15 @@
     --color-dark-text-muted: var(--color-text-muted);
 
     /* ═══════════════════════════════════════════
-       TYPOGRAPHY
-       Display: Bricolage Grotesque (variable, expressive)
-       Body: Inter (functional)
-       Numerals: tabular figures across the system
+       TYPOGRAPHY — Factory
+       Display + body: Inter (400/500, tracking negativo)
+       Wordmark: Bricolage Grotesque (solo Navbar/Footer)
+       Instrumento: JetBrains Mono
        ═══════════════════════════════════════════ */
     --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-family-display: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
+    --font-family-display: var(--font-family-base);
     --font-family-heading: var(--font-family-display);
+    --font-family-wordmark: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
     --font-family-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
     /* Type scale (display gets its own bigger steps) */
@@ -81,16 +88,16 @@
     --font-size-6xl: 4.75rem;    /* 76 */
     --font-size-7xl: 5.5rem;     /* 88 */
 
-    /* Font weights */
+    /* Font weights — Factory: 500 es el peso máximo */
     --font-weight-regular: 400;
     --font-weight-medium: 500;
-    --font-weight-semibold: 600;
-    --font-weight-bold: 700;
-    --font-weight-extrabold: 800;
+    --font-weight-semibold: 500;
+    --font-weight-bold: 500;
+    --font-weight-extrabold: 500;
 
     /* Tracking */
-    --tracking-tight: -0.025em;
-    --tracking-display: -0.045em;
+    --tracking-tight: -0.02em;
+    --tracking-display: -0.04em;
     --tracking-base: 0;
     --tracking-wide: 0.04em;
     --tracking-wider: 0.12em;
@@ -128,47 +135,52 @@
     --space-hero-bottom: 5rem;
 
     /* ═══════════════════════════════════════════
-       SHADOWS (purposeful only)
+       SHADOWS — SHIM (Factory: sin sombras; borrar en Fase 5)
        ═══════════════════════════════════════════ */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.16);
-    --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.25);
-    --shadow-lg: 0 16px 40px -12px rgba(0, 0, 0, 0.4);
-    --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 40px -16px rgba(0, 0, 0, 0.5);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-card: none;
+    --shadow-xl: none;
 
     /* ═══════════════════════════════════════════
-       RADII
+       RADII — Factory (control 3px, card 10px, panel 20px)
        ═══════════════════════════════════════════ */
-    --radius-sm: 0.25rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
-    --radius-2xl: 1.25rem;
-    --radius-3xl: 1.5rem;
+    --radius-sm: 3px;
+    --radius-md: 3px;
+    --radius-lg: 10px;
+    --radius-xl: 10px;
+    --radius-2xl: 20px;
+    --radius-3xl: 20px;
     --radius-full: 9999px;
 
-    /* ═══════════════════════════════════════════
-       TRANSITIONS
-       ═══════════════════════════════════════════ */
-    --ease-custom: cubic-bezier(0.32, 0.72, 0, 1);
-    --transition-fast: 160ms var(--ease-custom);
-    --transition-normal: 280ms var(--ease-custom);
-    --transition-slow: 380ms var(--ease-custom);
+    /* Alias semánticos */
+    --radius-control: 3px;
+    --radius-card: 10px;
+    --radius-panel: 20px;
 
     /* ═══════════════════════════════════════════
-       GLOW & GLASS
+       TRANSITIONS — motion mecánico
        ═══════════════════════════════════════════ */
-    --glow-mint:         0 0 32px rgba(57, 206, 134, 0.25);
-    --glow-mint-sm:      0 0 12px rgba(57, 206, 134, 0.18);
-    --glow-mint-lg:      0 0 60px rgba(57, 206, 134, 0.22);
+    --ease-custom: cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: 150ms var(--ease-custom);
+    --transition-normal: 200ms var(--ease-custom);
+    --transition-slow: 200ms var(--ease-custom);
+
+    /* ═══════════════════════════════════════════
+       GLOW & GLASS — SHIM (Factory: sin glows; borrar en Fase 5)
+       ═══════════════════════════════════════════ */
+    --glow-mint:         none;
+    --glow-mint-sm:      none;
+    --glow-mint-lg:      none;
     --glass-bg:          rgba(255, 255, 255, 0.03);
     --glass-border:      rgba(255, 255, 255, 0.08);
 
     /* ═══════════════════════════════════════════
-       GRADIENTS
+       GRADIENTS — SHIM (flat; borrar en Fase 5)
        ═══════════════════════════════════════════ */
-    --gradient-mint-text: linear-gradient(135deg, #6fe2a8 0%, #39ce86 55%, #2bb874 100%);
-    --gradient-hero:      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(57, 206, 134, 0.18) 0%, transparent 70%);
+    --gradient-mint-text: linear-gradient(var(--color-mint), var(--color-mint));
+    --gradient-hero:      none;
 
     /* ═══════════════════════════════════════════
        Z-INDEX
@@ -178,11 +190,11 @@
     --z-index-toast: 3000;
 
     /* ═══════════════════════════════════════════
-       LEGACY — kept for compat, dont use in new code
+       LEGACY — SHIM (flat/none; borrar en Fase 5)
        ═══════════════════════════════════════════ */
-    --gradient-primary: linear-gradient(135deg, #39ce86 0%, #2bb874 50%, #20a863 100%);
-    --gradient-glow: radial-gradient(circle at center, rgba(57, 206, 134, 0.4) 0%, rgba(0, 0, 0, 0) 70%);
-    --shadow-glow-green: 0 0 30px rgba(57, 206, 134, 0.4);
+    --gradient-primary: linear-gradient(var(--color-mint), var(--color-mint));
+    --gradient-glow: none;
+    --shadow-glow-green: none;
 }
 
 /* ═══════════════════════════════════════════

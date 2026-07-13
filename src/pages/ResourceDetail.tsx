@@ -135,7 +135,7 @@ export const ResourceDetail: React.FC = () => {
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>
-                                <Button variant="primary" size="lg">Reservar diagnóstico</Button>
+                                <Button variant="secondary" size="lg">Reservar diagnóstico</Button>
                             </Link>
                         </div>
                     </div>

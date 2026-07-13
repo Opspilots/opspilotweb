@@ -32,8 +32,7 @@ export const Footer: React.FC = () => {
                                     variant="outline"
                                     size="sm"
                                     style={{
-                                        borderColor: '#25D366',
-                                        color: '#25D366',
+                                        color: 'var(--color-text-muted)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '8px'
