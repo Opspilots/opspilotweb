@@ -21,6 +21,7 @@ const CTA_BY_CAT: Record<ResourceCategory, string> = {
     Artículo: 'Leer artículo',
     'Caso práctico': 'Leer caso',
     Checklist: 'Ver checklist',
+    Producto: 'Conocer producto',
 };
 
 function normalize(value: string): string {

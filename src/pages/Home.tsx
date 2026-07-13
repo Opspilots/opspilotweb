@@ -2,8 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
+import { SplitText } from "gsap/SplitText";
 import { Button } from "../components/ui/Button";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import { useDragScroll } from "../hooks/useDragScroll";
 import { usePageSEO } from "../hooks/usePageSEO";
 import { useCountUp } from "../hooks/useCountUp";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
@@ -23,7 +27,7 @@ import sys from "../styles/page-system.module.css";
 import Aurora from "../components/common/Aurora";
 import { TextLink } from "../components/common/TextLink";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, ScrambleTextPlugin, SplitText);
 
 const CASES = [
   {
@@ -122,6 +126,13 @@ export const Home: React.FC = () => {
   const caseTrackRef = useRef<HTMLDivElement>(null);
   const caseScrollRaf = useRef(0);
 
+  // Mouse drag-to-scroll on every horizontal track that shows cursor:grab
+  const whyTrackRef = useRef<HTMLDivElement>(null);
+  const processTrackRef = useRef<HTMLDivElement>(null);
+  useDragScroll(caseTrackRef);
+  useDragScroll(whyTrackRef);
+  useDragScroll(processTrackRef);
+
   const getCaseScrollUnit = useCallback((): number => {
     const track = caseTrackRef.current;
     if (!track) return 0;
@@ -178,27 +189,74 @@ export const Home: React.FC = () => {
     const ctx = gsap.context(() => {
       if (!reduce) {
         const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-        tl.from(`.${styles.heroTitle} .${styles.heroLine}`, {
-          opacity: 0,
-          y: 32,
-          duration: 0.95,
-          stagger: 0.1,
+
+        // Masked line reveal — each heroLine clips its inner span, which
+        // rises from below the mask (premium alternative to a plain fade).
+        tl.from(`.${styles.heroTitle} .${styles.heroLineInner}`, {
+          yPercent: 112,
+          duration: 1.05,
+          stagger: 0.11,
+          ease: "power4.out",
         })
           .from(
             `.${styles.heroSubtitle}`,
             { opacity: 0, y: 18, duration: 0.7 },
-            "-=0.55",
+            "-=0.65",
           )
           .from(
             `.${styles.ctaGroup} > *`,
             { opacity: 0, y: 14, duration: 0.55, stagger: 0.08 },
             "-=0.45",
           )
+          // Radar mark: solid strokes (brackets, axes, ticks, plain rings)
+          // draw themselves in via DrawSVG…
           .from(
-            `.${styles.heroVisual}`,
-            { opacity: 0, x: 36, duration: 0.9 },
-            "-=0.6",
+            `.${styles.heroMark} line, .${styles.heroMark} path, .${styles.heroMark} [data-draw], .${styles.markCoreRing}`,
+            {
+              drawSVG: "0%",
+              duration: 1.1,
+              stagger: 0.035,
+              ease: "power2.inOut",
+            },
+            "-=0.9",
+          )
+          // …while dashed rings fade in (DrawSVG would overwrite their
+          // decorative dasharray) and the SMIL-animated groups fade only
+          // (an inline GSAP transform would freeze <animateTransform>).
+          .from(
+            `.${styles.markRing1}, .${styles.markRing2}, .${styles.heroMark} [data-ring]`,
+            {
+              opacity: 0,
+              duration: 1.2,
+              stagger: 0.12,
+              ease: "power2.out",
+            },
+            "<",
+          )
+          .from(
+            `.${styles.heroMark} g, .${styles.heroMark} [data-fade]`,
+            { opacity: 0, duration: 1.0, stagger: 0.1, ease: "power2.out" },
+            "<+0.3",
+          )
+          .from(
+            `.${styles.markCenterDot}`,
+            { scale: 0, transformOrigin: "50% 50%", duration: 0.5 },
+            "-=0.7",
           );
+
+        // Scroll-out: hero content sinks and dims as the section leaves,
+        // giving the page a depth "curtain" feel on the way to Problema.
+        gsap.to(`.${styles.heroContent}`, {
+          yPercent: 14,
+          opacity: 0.35,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "42% top",
+            end: "bottom top",
+            scrub: 0.6,
+          },
+        });
       }
     }, heroRef);
 
@@ -254,6 +312,175 @@ export const Home: React.FC = () => {
     return () => el.removeEventListener("mousemove", onMove);
   }, []);
 
+  // Section-level scroll choreography (Problema / Por qué / Método / CTA).
+  // All motion-gated via gsap.matchMedia; desktop-only pieces additionally
+  // gated on min-width so they never fight the mobile scroll-snap tracks.
+  useEffect(() => {
+    const mm = gsap.matchMedia();
+
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const ctxs: gsap.Context[] = [];
+
+      // ── PROBLEMA: vertical progress line draws with scroll, markers
+      //    light up as their row crosses the viewport.
+      ctxs.push(
+        gsap.context(() => {
+          gsap.fromTo(
+            `.${styles.problemProgress}`,
+            { scaleY: 0 },
+            {
+              scaleY: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: `.${styles.problemList}`,
+                start: "top 72%",
+                end: "bottom 58%",
+                scrub: 0.5,
+              },
+            },
+          );
+          gsap.utils
+            .toArray<HTMLElement>(`.${styles.problemRow}`)
+            .forEach((row) => {
+              ScrollTrigger.create({
+                trigger: row,
+                start: "top 66%",
+                onEnter: () => row.classList.add(styles.problemRowActive),
+                onLeaveBack: () =>
+                  row.classList.remove(styles.problemRowActive),
+              });
+            });
+        }, problemRef),
+      );
+
+      // ── MÉTODO: step numbers scramble into place (terminal feel,
+      //    same family as the hero radar aesthetic).
+      ctxs.push(
+        gsap.context(() => {
+          ScrollTrigger.create({
+            trigger: `.${styles.processGrid}`,
+            start: "top 78%",
+            once: true,
+            onEnter: () => {
+              gsap.utils
+                .toArray<HTMLElement>(`.${styles.processStepNum}`)
+                .forEach((num, i) => {
+                  gsap.to(num, {
+                    duration: 0.9,
+                    delay: i * 0.12,
+                    scrambleText: {
+                      text: num.textContent ?? "",
+                      chars: "0123456789",
+                      speed: 0.4,
+                    },
+                  });
+                });
+            },
+          });
+        }, methodScrollRef),
+      );
+
+      // ── CTA: "¿Hablamos?" rises char by char from a built-in
+      //    SplitText mask (v3.13+).
+      const title = ctaRef.current?.querySelector<HTMLElement>(
+        `.${sys.endCtaTitle}`,
+      );
+      let split: SplitText | null = null;
+      let charsTween: gsap.core.Tween | null = null;
+      if (title) {
+        split = SplitText.create(title, { type: "chars", mask: "chars" });
+        charsTween = gsap.from(split.chars, {
+          yPercent: 120,
+          duration: 0.8,
+          stagger: 0.04,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: ctaRef.current,
+            start: "top 78%",
+            once: true,
+          },
+        });
+      }
+
+      return () => {
+        ctxs.forEach((c) => c.revert());
+        charsTween?.scrollTrigger?.kill();
+        charsTween?.kill();
+        split?.revert();
+      };
+    });
+
+    mm.add(
+      "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+      () => {
+        const ctxs: gsap.Context[] = [];
+
+        // ── POR QUÉ: scrub narrative — as you scroll through, the
+        //    generic column recedes while the OpsPilot column's glow
+        //    intensifies. Starts well after the reveal animation is done.
+        ctxs.push(
+          gsap.context(() => {
+            const scrubBase = {
+              trigger: `.${styles.whyGrid}`,
+              start: "top 42%",
+              end: "bottom 72%",
+              scrub: 0.6,
+            };
+            gsap.to(`.${styles.whyColGeneric}`, {
+              opacity: 0.55,
+              scale: 0.985,
+              transformOrigin: "50% 0%",
+              ease: "none",
+              scrollTrigger: { ...scrubBase },
+            });
+            gsap.to(`.${styles.whyColOps}`, {
+              boxShadow: "0 0 84px -12px rgba(57, 206, 134, 0.3)",
+              borderColor: "rgba(57, 206, 134, 0.55)",
+              ease: "none",
+              scrollTrigger: { ...scrubBase },
+            });
+          }, whyRef),
+        );
+
+        // ── MÉTODO: sequential scrub activation — steps 01→04 light up
+        //    one after another as the section crosses the viewport.
+        ctxs.push(
+          gsap.context(() => {
+            const steps = gsap.utils.toArray<HTMLElement>(
+              `.${styles.processStep}`,
+            );
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: `.${styles.processGrid}`,
+                start: "top 70%",
+                end: "bottom 40%",
+                scrub: 0.6,
+              },
+            });
+            steps.forEach((step) => {
+              const num = step.querySelector(`.${styles.processStepNum}`);
+              const badge = step.querySelector(`.${styles.processNumLabel}`);
+              if (!num || !badge) return;
+              tl.to(num, { color: "rgba(57, 206, 134, 0.95)", duration: 1 }).to(
+                badge,
+                {
+                  backgroundColor: "rgba(57, 206, 134, 0.3)",
+                  boxShadow: "0 8px 28px -8px rgba(57, 206, 134, 0.35)",
+                  duration: 1,
+                },
+                "<",
+              );
+            });
+          }, methodScrollRef),
+        );
+
+        return () => ctxs.forEach((c) => c.revert());
+      },
+    );
+
+    return () => mm.revert();
+  }, []);
+
   return (
     <div className={styles.page}>
       {/* ═══ HERO ═══ */}
@@ -272,10 +499,18 @@ export const Home: React.FC = () => {
         <div className={styles.heroInner}>
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>
-              <span className={styles.heroLine}>Software a medida</span>
-              <span className={styles.heroLine}>para PYMEs que ya no</span>
               <span className={styles.heroLine}>
-                caben en el <span className={styles.heroAccent}>Excel.</span>
+                <span className={styles.heroLineInner}>Software a medida</span>
+              </span>
+              <span className={styles.heroLine}>
+                <span className={styles.heroLineInner}>
+                  para PYMEs que ya no
+                </span>
+              </span>
+              <span className={styles.heroLine}>
+                <span className={styles.heroLineInner}>
+                  caben en el <span className={styles.heroAccent}>Excel.</span>
+                </span>
               </span>
             </h1>
             <p className={styles.heroSubtitle}>
@@ -361,6 +596,7 @@ export const Home: React.FC = () => {
 
               {/* Main precision ring */}
               <circle
+                data-ring
                 cx="200"
                 cy="200"
                 r="102"
@@ -371,6 +607,7 @@ export const Home: React.FC = () => {
 
               {/* Inner ring */}
               <circle
+                data-draw
                 cx="200"
                 cy="200"
                 r="58"
@@ -390,6 +627,7 @@ export const Home: React.FC = () => {
 
               {/* Sonar pulse */}
               <circle
+                data-fade
                 cx="200"
                 cy="200"
                 r="20"
@@ -693,6 +931,7 @@ export const Home: React.FC = () => {
               </p>
             </div>
             <div className={styles.problemList}>
+              <span className={styles.problemProgress} aria-hidden="true" />
               <div className={`${styles.problemRow} reveal`}>
                 <span className={styles.problemMarker} aria-hidden="true">
                   1
@@ -839,7 +1078,7 @@ export const Home: React.FC = () => {
               Por qué no el software de catálogo.
             </h2>
           </header>
-          <div className={styles.whyGrid}>
+          <div className={styles.whyGrid} ref={whyTrackRef}>
             <div className={`${styles.whyCol} ${styles.whyColGeneric} reveal`}>
               <div className={styles.whyColHead}>
                 <span className={styles.whyColBadge}>Software genérico</span>
@@ -897,7 +1136,7 @@ export const Home: React.FC = () => {
           <header className={`${sys.sectionHeader} reveal`}>
             <h2 className={sys.sectionTitle}>Así trabajamos contigo.</h2>
           </header>
-          <div className={styles.processGrid}>
+          <div className={styles.processGrid} ref={processTrackRef}>
             <div className={`${styles.processStep} reveal`}>
               <div className={styles.processNumWrap}>
                 <span className={styles.processNumLabel}>

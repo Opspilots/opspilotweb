@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
+import { useDragScroll } from '../hooks/useDragScroll';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import { SceneCanvas } from '../components/three/SceneCanvas';
@@ -142,6 +143,7 @@ const CarouselSection: React.FC = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const trackRef = useRef<HTMLDivElement>(null);
     const rafRef = useRef<number>(0);
+    useDragScroll(trackRef);
 
     // Mirrors `currentIndex` into a ref for the decorative 3D background
     // (`CaseDeckScene`), read every frame via `useFrame` — never via React
@@ -196,7 +198,7 @@ const CarouselSection: React.FC = () => {
                 <div className={styles.carouselWrapper}>
                     <div
                         ref={trackRef}
-                        className={`${styles.carouselTrack} ${currentIndex > 0 ? styles.carouselTrackFaded : ''}`}
+                        className={styles.carouselTrack}
                         onScroll={handleScroll}
                         aria-label="Casos de éxito"
                     >

@@ -1,7 +1,6 @@
 export const ROUTES = {
     home: '/',
     soluciones: '/soluciones',
-    productos: '/productos',
     servicios: '/servicios',
     casos: '/casos',
     precios: '/precios',
@@ -19,5 +18,7 @@ export const LEGACY_REDIRECTS: ReadonlyArray<readonly [from: string, to: string]
     ['/resources', ROUTES.recursos],
     ['/contact', ROUTES.contacto],
     ['/demo', ROUTES.contacto],
-    ['/product', ROUTES.productos],
+    // Los productos ahora viven como artículos dentro de Recursos.
+    ['/product', ROUTES.recursos],
+    ['/productos', ROUTES.recursos],
 ];

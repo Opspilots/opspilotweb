@@ -38,7 +38,6 @@ export const Navbar: React.FC = () => {
 
                     <div className={styles.desktopMenu}>
                         <NavLink to={ROUTES.home} end className={navLinkClass}>Inicio</NavLink>
-                        <NavLink to={ROUTES.productos} className={navLinkClass}>Productos</NavLink>
                         <NavLink to={ROUTES.soluciones} className={navLinkClass}>Soluciones</NavLink>
                         <NavLink to={ROUTES.casos} className={navLinkClass}>Casos de Éxito</NavLink>
                         <NavLink to={ROUTES.recursos} className={navLinkClass}>Recursos</NavLink>
@@ -59,7 +58,6 @@ export const Navbar: React.FC = () => {
 
             <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
                 <NavLink to={ROUTES.home} end className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Inicio</NavLink>
-                <NavLink to={ROUTES.productos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Productos</NavLink>
                 <NavLink to={ROUTES.soluciones} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Soluciones</NavLink>
                 <NavLink to={ROUTES.casos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Casos de Éxito</NavLink>
                 <NavLink to={ROUTES.recursos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Recursos</NavLink>

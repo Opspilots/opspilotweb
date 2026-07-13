@@ -1,11 +1,12 @@
-export type ResourceCategory = 'Guía' | 'Artículo' | 'Caso práctico' | 'Checklist';
+export type ResourceCategory = 'Guía' | 'Artículo' | 'Caso práctico' | 'Checklist' | 'Producto';
 
 export type ResourceBlock =
     | { type: 'p'; text: string }
     | { type: 'h2'; text: string }
     | { type: 'ul'; items: string[] }
     | { type: 'ol'; items: string[] }
-    | { type: 'note'; text: string };
+    | { type: 'note'; text: string }
+    | { type: 'link'; text: string; href: string };
 
 export interface Resource {
     slug: string;
@@ -288,9 +289,189 @@ export const RESOURCES: Resource[] = [
             },
         ],
     },
+    {
+        slug: 'fiscalidad-plataforma-fiscal-contable',
+        cat: 'Producto',
+        title: 'Fiscalidad: facturación, contabilidad PGC y modelos AEAT en una sola plataforma',
+        desc: 'Plataforma fiscal y contable española completa, con SII y VeriFactu nativos, OCR de tickets y asistente IA. Para autónomos, PYMEs y asesorías.',
+        time: '6 min',
+        blocks: [
+            {
+                type: 'p',
+                text: 'Fiscalidad es nuestra plataforma fiscal y contable pensada desde cero para el contexto español. No es un software genérico traducido: la contabilidad sigue el Plan General Contable, los modelos son los de la AEAT, y el envío al SII y VeriFactu están integrados de forma nativa — no como un módulo de pago aparte.',
+            },
+            { type: 'h2', text: 'Para quién es' },
+            {
+                type: 'ul',
+                items: [
+                    'Autónomos que quieren facturar, llevar sus gastos y presentar sus modelos sin depender de una hoja de cálculo.',
+                    'PYMEs que necesitan contabilidad completa (asientos, PGC, cierre) sin la complejidad de un ERP tradicional.',
+                    'Asesorías y gestorías que gestionan múltiples clientes desde una misma cuenta, con consolidación de grupos.',
+                ],
+            },
+            { type: 'h2', text: 'Qué problemas resuelve' },
+            {
+                type: 'p',
+                text: 'El día a día fiscal de un negocio español está lleno de tareas mecánicas con riesgo real si se hacen mal: contabilizar cada factura, cuadrar el banco, calcular el 303 trimestral, no olvidar el 347 anual. Fiscalidad automatiza la parte mecánica — los asientos se generan solos a partir de las facturas, la conciliación bancaria sugiere los cruces, los modelos se calculan a partir de los datos ya contabilizados — y deja a la persona la parte de criterio.',
+            },
+            {
+                type: 'p',
+                text: 'Con la llegada de VeriFactu, además, la facturación deja de ser un documento que se imprime y pasa a ser un registro firmado y encadenado que se comunica a la AEAT. Fiscalidad genera ese XML firmado y gestiona el encadenamiento sin que el usuario tenga que saber qué hay debajo.',
+            },
+            { type: 'h2', text: 'Funcionalidades clave' },
+            {
+                type: 'ul',
+                items: [
+                    'Facturación, cobros y pagos, y contabilidad completa según el PGC con asientos automáticos.',
+                    'Modelos AEAT 303, 111, 115, 130, 190, 202, 347 y 390 calculados desde la contabilidad.',
+                    'Envío SII y VeriFactu nativos, con XML firmado y encadenado.',
+                    'App móvil con acceso por biometría y captura de tickets con OCR — el gasto queda contabilizado desde el móvil.',
+                    'Asistente IA fiscal para resolver dudas sobre tus propios datos, y consolidación de grupos de empresas.',
+                ],
+            },
+            {
+                type: 'note',
+                text: 'Las normas fiscales cambian (VeriFactu, nuevos modelos, cambios de tipos). Las actualizaciones normativas están incluidas en la suscripción mensual fija — sin coste por documento ni sorpresas a fin de mes.',
+            },
+            { type: 'link', text: 'Ver Fiscalidad en acción', href: 'https://fiscalidad.mcpopspilot.org' },
+        ],
+    },
+    {
+        slug: 'energydeal-crm-energetico',
+        cat: 'Producto',
+        title: 'EnergyDeal: CRM vertical para agentes y comercializadoras energéticas',
+        desc: 'Comparador multi-proveedor con snapshots inmutables, gestión por CIF con CUPS y liquidación de comisiones con trazabilidad completa.',
+        time: '5 min',
+        blocks: [
+            {
+                type: 'p',
+                text: 'EnergyDeal es un CRM B2B construido específicamente para el sector energético español: agentes comerciales que comparan y venden tarifas de luz y gas, y comercializadoras que gestionan carteras de puntos de suministro. Un CRM genérico no sabe qué es un CUPS ni cómo se liquida una comisión energética — EnergyDeal está construido alrededor de exactamente eso.',
+            },
+            { type: 'h2', text: 'Para quién es' },
+            {
+                type: 'ul',
+                items: [
+                    'Agentes y agencias comerciales del sector energético que trabajan con varias comercializadoras a la vez.',
+                    'Comercializadoras que necesitan gestionar su canal de agentes con comisiones trazables.',
+                    'Consultoras energéticas que hacen comparativas para clientes empresa con múltiples puntos de suministro.',
+                ],
+            },
+            { type: 'h2', text: 'Qué problemas resuelve' },
+            {
+                type: 'p',
+                text: 'El problema clásico del sector: se hace una comparativa para un cliente, pasan tres semanas, las tarifas cambian, y nadie puede demostrar qué condiciones se ofrecieron en su momento. EnergyDeal resuelve esto con snapshots inmutables — cada comparativa queda congelada tal y como se generó, reproducible meses después ante el cliente o ante una reclamación.',
+            },
+            {
+                type: 'p',
+                text: 'El segundo dolor es la liquidación de comisiones: quién vendió qué, cuándo se activó el contrato, cuánto se debe y si ya se pagó. EnergyDeal modela ese ciclo completo con estados explícitos y log de auditoría, para que la conversación de fin de mes sea sobre datos y no sobre memoria.',
+            },
+            { type: 'h2', text: 'Funcionalidades clave' },
+            {
+                type: 'ul',
+                items: [
+                    'Comparador multi-proveedor con snapshots históricos inmutables y reproducibles.',
+                    'CRM B2B organizado por CIF, con sus CUPS y puntos de suministro asociados.',
+                    'Pipeline de carga masiva de tarifas: PDF de la comercializadora → parseo → validación.',
+                    'Comisiones con estados pending / validated / paid / reverted y trazabilidad completa.',
+                    'Exportes fiscales (IVA y pagos) y log de auditoría de toda la actividad.',
+                ],
+            },
+            { type: 'link', text: 'Conocer EnergyDeal', href: 'https://energydeal.es' },
+        ],
+    },
+    {
+        slug: 'presupuestador-obra-bc3',
+        cat: 'Producto',
+        title: 'Presupuestador: presupuestos y certificaciones de obra con BC3 nativo',
+        desc: 'SaaS para construcción y reformas: partidas con descomposición, firma digital del cliente, certificaciones versionadas y control de coste real con OCR.',
+        time: '6 min',
+        blocks: [
+            {
+                type: 'p',
+                text: 'Presupuestador es un SaaS para empresas de construcción, reformas y estudios de arquitectura que siguen haciendo presupuestos en Excel y certificaciones a mano. Habla el idioma del sector — partidas, descompuestos, mediciones, certificaciones — y el formato estándar español BC3/FIEBDC de forma nativa, tanto para importar como para exportar.',
+            },
+            { type: 'h2', text: 'Para quién es' },
+            {
+                type: 'ul',
+                items: [
+                    'Empresas de reformas y constructoras pequeñas y medianas que presupuestan cada obra desde cero.',
+                    'Estudios de arquitectura y aparejadores que intercambian presupuestos en BC3 con otros agentes.',
+                    'Cualquier negocio de obra que factura por certificaciones y necesita saber si cada obra va en margen.',
+                ],
+            },
+            { type: 'h2', text: 'Qué problemas resuelve' },
+            {
+                type: 'p',
+                text: 'Hacer un presupuesto de obra en Excel lleva horas y cada uno es un documento distinto, sin catálogo común ni control de versiones. Presupuestador convierte ese trabajo en seleccionar partidas de un catálogo propio — con packs reutilizables ya descompuestos en mano de obra y materiales — y ajustar cantidades. De horas a minutos, con mucho menos error.',
+            },
+            {
+                type: 'p',
+                text: 'Y el problema que más dinero cuesta: no saber si una obra está siendo rentable hasta que termina. Con el control de coste real por OCR de albaranes, cada compra de material queda imputada a su obra en el momento, y la comparación presupuestado-vs-real está disponible mientras la obra sigue abierta — cuando todavía se puede corregir.',
+            },
+            { type: 'h2', text: 'Funcionalidades clave' },
+            {
+                type: 'ul',
+                items: [
+                    'Importación y exportación BC3/FIEBDC nativa.',
+                    'Partidas estructuradas con descomposición en recursos, packs reutilizables y catálogo propio.',
+                    'Firma digital del cliente vía enlace público — sin imprimir, con trazabilidad.',
+                    'Certificaciones de obra con asistente y versionado (qué cambió entre la certificación 3 y la 4).',
+                    'Control de rentabilidad por obra con OCR de albaranes.',
+                ],
+            },
+            {
+                type: 'note',
+                text: '¿Quieres ver este flujo aplicado a un caso concreto? Lee el caso práctico "De Excel a sistema: cómo una empresa de reformas triplicó su capacidad" en esta misma sección de recursos.',
+            },
+            { type: 'link', text: 'Probar Presupuestador', href: 'https://presupuestador.mcpopspilot.org' },
+        ],
+    },
+    {
+        slug: 'erp-hosteleria-tpv-restaurantes',
+        cat: 'Producto',
+        title: 'ERP Hostelería: TPV, inventario, reservas y personal para restaurantes y bares',
+        desc: 'ERP todo-en-uno para el día a día de un negocio de hostelería: mesas y comandas, stock y proveedores, turnos, reservas y cierre de caja con analítica.',
+        time: '5 min',
+        blocks: [
+            {
+                type: 'p',
+                text: 'ERP Hostelería reúne en un solo sistema todo lo que un restaurante o bar gestiona hoy con varias herramientas sueltas (o con libreta y pizarra): el TPV de sala, el inventario y los pedidos a proveedores, los turnos del personal, las reservas y el cierre de caja. Todo conectado: lo que se vende en sala descuenta stock, y la analítica se alimenta sola.',
+            },
+            { type: 'h2', text: 'Para quién es' },
+            {
+                type: 'ul',
+                items: [
+                    'Restaurantes y bares que quieren un único sistema en lugar de un TPV por un lado, un Excel de compras por otro y un grupo de WhatsApp para los turnos.',
+                    'Negocios de hostelería con reservas (comidas de grupo, eventos) que necesitan un calendario fiable.',
+                    'Grupos pequeños con más de un local que quieren ver ventas y consumo por local en tiempo real.',
+                ],
+            },
+            { type: 'h2', text: 'Qué problemas resuelve' },
+            {
+                type: 'p',
+                text: 'En hostelería el margen se pierde en los huecos entre herramientas: el stock que nadie descontó, el pedido al proveedor que se hizo a ojo, el cierre de caja que no cuadra y nadie sabe por qué. Al unificar venta, inventario y caja en el mismo sistema, esos huecos desaparecen — cada comanda descuenta ingredientes, cada cierre queda registrado, y las alertas de stock avisan antes de quedarse sin producto un sábado noche.',
+            },
+            { type: 'h2', text: 'Funcionalidades clave' },
+            {
+                type: 'ul',
+                items: [
+                    'TPV con gestión de mesas y comandas en tiempo real.',
+                    'Inventario, catálogo de productos y pedidos a proveedores.',
+                    'Calendario de reservas y citas.',
+                    'Gestión de personal, turnos y permisos por rol.',
+                    'Cierre de caja, analítica de ventas y consumo, y alertas de stock.',
+                ],
+            },
+            {
+                type: 'note',
+                text: 'Como todos nuestros productos, ERP Hostelería funciona con suscripción mensual fija, sin permanencia y con soporte humano en español incluido.',
+            },
+            { type: 'link', text: 'Ver ERP Hostelería', href: 'https://erp.mcpopspilot.org' },
+        ],
+    },
 ];
 
-export const RESOURCE_CATEGORIES: ResourceCategory[] = ['Guía', 'Artículo', 'Caso práctico', 'Checklist'];
+export const RESOURCE_CATEGORIES: ResourceCategory[] = ['Guía', 'Artículo', 'Caso práctico', 'Checklist', 'Producto'];
 
 export function getResourceBySlug(slug: string): Resource | undefined {
     return RESOURCES.find((r) => r.slug === slug);

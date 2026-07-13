@@ -7,7 +7,7 @@ import { ROUTES } from '../lib/routes';
 import { RESOURCES, getResourceBySlug, type ResourceBlock } from '../lib/resources';
 import sys from '../styles/page-system.module.css';
 import styles from './ResourceDetail.module.css';
-import { ArrowLeft, Clock } from 'lucide-react';
+import { ArrowLeft, Clock, ExternalLink } from 'lucide-react';
 
 function Block({ block }: { block: ResourceBlock }) {
     switch (block.type) {
@@ -33,6 +33,20 @@ function Block({ block }: { block: ResourceBlock }) {
             );
         case 'note':
             return <p className={styles.blockNote}>{block.text}</p>;
+        case 'link':
+            return (
+                <p className={styles.blockLinkWrap}>
+                    <a
+                        href={block.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.blockLink}
+                    >
+                        {block.text}
+                        <ExternalLink size={15} strokeWidth={2} />
+                    </a>
+                </p>
+            );
         default:
             return null;
     }

@@ -198,7 +198,20 @@
     gap: 0.04em;
 }
 
-.heroLine { display: block; }
+/* Masked line reveal: .heroLine clips, .heroLineInner rises from below.
+   The padding/negative-margin pair extends the clip box past the baseline
+   so descenders (p, y, q) never get cut by overflow:hidden at line-height 1. */
+.heroLine {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+}
+
+.heroLineInner {
+    display: block;
+    will-change: transform;
+}
 
 /* Gradiente mint para la palabra de acento */
 .heroAccent {
@@ -314,8 +327,28 @@
 }
 
 .problemList {
+    position: relative;
     display: flex;
     flex-direction: column;
+}
+
+/* Vertical progress line drawn by scroll (GSAP scrub) — runs through the
+   center of the 36px markers, which sit above it with their opaque bg so
+   the line reads as connecting "nodes". Hidden at rest (scaleY 0): it is
+   purely decorative, so reduced-motion users simply never see it. */
+.problemProgress {
+    position: absolute;
+    left: 17px;
+    top: var(--spacing-7);
+    bottom: var(--spacing-7);
+    width: 2px;
+    border-radius: 1px;
+    background: linear-gradient(180deg,
+        var(--color-mint) 0%,
+        rgba(57, 206, 134, 0.12) 100%);
+    transform: scaleY(0);
+    transform-origin: top;
+    pointer-events: none;
 }
 
 .problemRow {
@@ -333,6 +366,8 @@
 }
 
 .problemMarker {
+    position: relative;
+    z-index: 1;
     flex-shrink: 0;
     width: 36px;
     height: 36px;
@@ -348,11 +383,24 @@
     transition: background var(--transition-normal), color var(--transition-normal), transform var(--transition-normal);
 }
 
+/* The mint tint is layered over the opaque section bg so the marker stays
+   solid and the progress line can never bleed through the number. */
 .problemRow:hover .problemMarker,
 .problemRow:focus-within .problemMarker {
     color: var(--color-mint);
-    background: rgba(57, 206, 134, 0.18);
+    background:
+        linear-gradient(0deg, rgba(57, 206, 134, 0.18), rgba(57, 206, 134, 0.18)),
+        var(--color-bg);
     transform: translateY(-2px);
+}
+
+/* Scroll activation (class toggled by ScrollTrigger as the row crosses
+   the viewport) — same visual as hover, so touch users get it for free. */
+.problemRowActive .problemMarker {
+    color: var(--color-mint);
+    background:
+        linear-gradient(0deg, rgba(57, 206, 134, 0.18), rgba(57, 206, 134, 0.18)),
+        var(--color-bg);
 }
 
 .problemTitle {
@@ -571,7 +619,9 @@
 }
 
 .caseCard {
-    flex: 0 0 min(760px, calc(100% - 40px));
+    /* Same sizing as the Cases page carousel: exactly one full-width
+       card in view at a time — no peek of the next card. */
+    flex: 0 0 100%;
     scroll-snap-align: start;
     padding: var(--spacing-10) var(--spacing-8);
     background: linear-gradient(180deg,
@@ -1020,7 +1070,7 @@
     }
 
     .caseCard {
-        flex-basis: calc(100% - 32px);
+        /* Inherits flex: 0 0 100% — exactly one slide visible on mobile too. */
         padding: var(--spacing-7) var(--spacing-6);
     }
 
@@ -1046,5 +1096,54 @@
 
     .caseStatNumber {
         font-size: clamp(1.4rem, 5vw, 1.875rem);
+    }
+}
+
+/* ═══════════════════════════════════════════
+   CSS SCROLL-DRIVEN ANIMATIONS — zero-JS progressive enhancement
+   (Chrome/Edge 115+, Safari 26+; others simply skip the @supports block)
+
+   Cards in the horizontal snap tracks fade/scale in as they enter the
+   track's inline viewport and recede as they leave — the "peek" card is
+   visibly dimmed, inviting the swipe. Driven natively by the scroller,
+   no scroll listeners involved.
+   ═══════════════════════════════════════════ */
+
+@keyframes trackCardIn {
+    from {
+        opacity: 0.45;
+        transform: scale(0.97);
+    }
+}
+
+@keyframes trackCardOut {
+    to {
+        opacity: 0.45;
+        transform: scale(0.97);
+    }
+}
+
+@supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+        /* Case carousel: horizontal scroller at every width */
+        .caseCard {
+            animation: trackCardIn linear both, trackCardOut linear both;
+            animation-timeline: view(inline), view(inline);
+            animation-range: entry 0% entry 85%, exit 15% exit 100%;
+        }
+    }
+
+    /* Comparison + método tracks are only scrollers below 768px —
+       on desktop they become static grids, so scope to mobile. Note:
+       inside the supporting range these CSS animations own opacity and
+       transform on the cards (they win over the GSAP inline reveal),
+       which is the intended replacement on mobile. */
+    @media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+        .whyCol,
+        .processStep {
+            animation: trackCardIn linear both, trackCardOut linear both;
+            animation-timeline: view(inline), view(inline);
+            animation-range: entry 0% entry 85%, exit 15% exit 100%;
+        }
     }
 }

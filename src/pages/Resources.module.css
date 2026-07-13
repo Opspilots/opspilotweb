@@ -58,12 +58,23 @@
     }
 }
 
+/* Below 860px .toolbar stacks as a column — a flex-basis there becomes
+   HEIGHT (360px of dead space between search and pills), so the basis
+   only applies once the toolbar is a row. */
 .searchBox {
     position: relative;
     display: flex;
     align-items: center;
-    flex: 1 1 360px;
+    flex: none;
+    width: 100%;
     max-width: 460px;
+}
+
+@media (min-width: 860px) {
+    .searchBox {
+        flex: 1 1 360px;
+        width: auto;
+    }
 }
 
 .searchIcon {

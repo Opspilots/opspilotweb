@@ -163,6 +163,29 @@
     border-radius: var(--radius-md);
 }
 
+.blockLinkWrap {
+    margin: var(--spacing-2) 0 var(--spacing-6);
+}
+
+.blockLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-bg-deep);
+    background: var(--color-mint);
+    padding: var(--spacing-3) var(--spacing-6);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.blockLink:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+
 /* ═══════════════════════════════════════════
    Related resources
    ═══════════════════════════════════════════ */

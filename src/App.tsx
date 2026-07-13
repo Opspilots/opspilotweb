@@ -12,7 +12,6 @@ const Resources = lazy(() => import('./pages/Resources').then(m => ({ default: m
 const ResourceDetail = lazy(() => import('./pages/ResourceDetail').then(m => ({ default: m.ResourceDetail })));
 const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
 const Soluciones = lazy(() => import('./pages/Soluciones').then(m => ({ default: m.Soluciones })));
-const Product = lazy(() => import('./pages/Product').then(m => ({ default: m.Product })));
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 function AnimatedRoutes() {
@@ -32,7 +31,6 @@ function AnimatedRoutes() {
                     {/* Rutas canónicas en español */}
                     <Route path={ROUTES.home} element={<Home />} />
                     <Route path={ROUTES.soluciones} element={<Soluciones />} />
-                    <Route path={ROUTES.productos} element={<Product />} />
                     <Route path={ROUTES.servicios} element={<Navigate to={ROUTES.contacto} replace />} />
                     <Route path={ROUTES.casos} element={<Cases />} />
                     <Route path={ROUTES.precios} element={<Navigate to={ROUTES.contacto} replace />} />
