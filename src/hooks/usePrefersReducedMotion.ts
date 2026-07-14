@@ -6,8 +6,10 @@ import { useEffect, useState } from 'react';
  * SSR-safe (defaults to `false` when `window`/`matchMedia` aren't available).
  */
 export function usePrefersReducedMotion(): boolean {
-    const [reduce, setReduce] = useState<boolean>(
-        () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const [reduce, setReduce] = useState<boolean>(() =>
+        typeof window !== 'undefined'
+            ? window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+            : false
     );
 
     useEffect(() => {

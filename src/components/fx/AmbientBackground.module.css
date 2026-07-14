@@ -1,0 +1,113 @@
+/* Capa ambiental global — fija, decorativa, detrás de todo. */
+
+.root {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    /* Base ligeramente más profunda que el bg para que los halos "floten" */
+    background:
+        radial-gradient(120% 80% at 50% -10%, rgba(57, 206, 134, 0.05), transparent 60%),
+        var(--color-bg-deep);
+}
+
+/* Rejilla hairline casi imperceptible — da estructura sin ruido visual */
+.grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+    background-size: 64px 64px;
+    /* Se desvanece hacia los bordes verticales */
+    mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 85%);
+    -webkit-mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 85%);
+}
+
+/* ─── Variante sutil (páginas internas) ───
+   Halo cenital más contenido que en Home, para dar profundidad sin robar
+   protagonismo al contenido ni comprometer el contraste. */
+.rootSubtle {
+    background:
+        radial-gradient(110% 65% at 50% -8%, rgba(57, 206, 134, 0.035), transparent 55%),
+        var(--color-bg-deep);
+}
+
+/* Único halo de la variante sutil: mint muy tenue, centrado arriba y estático. */
+.blobSubtle {
+    width: 64vw;
+    height: 64vw;
+    top: -22vw;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.55;
+    background: radial-gradient(circle, rgba(57, 206, 134, 0.10), transparent 66%);
+}
+
+/* ─── Halos de luz (mesh gradient) ─── */
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    /* 80px (antes 100px): a esta opacidad (0.5) y con gradientes radiales que
+       ya se desvanecen a transparente ~68%, la diferencia de halo es
+       imperceptible, pero el coste de composición del blur (que escala con el
+       radio) baja ~20%. Conservador: sigue siendo un glow suave y difuso. */
+    filter: blur(80px);
+    opacity: 0.5;
+    /* screen: los halos se suman como luz → sensación de "mesh" luminoso */
+    mix-blend-mode: screen;
+    /* will-change NO es permanente: lo activa el JS solo mientras corre la
+       deriva (desktop, sin reduced-motion) y lo limpia al desmontar. Dejarlo
+       fijo mantiene una capa compuesta cara viva aunque no se anime. */
+}
+
+.blobMint {
+    width: 52vw;
+    height: 52vw;
+    top: -14vw;
+    left: -8vw;
+    background: radial-gradient(circle, rgba(57, 206, 134, 0.22), transparent 68%);
+}
+
+.blobWarm {
+    width: 44vw;
+    height: 44vw;
+    top: 28vh;
+    right: -12vw;
+    background: radial-gradient(circle, rgba(232, 165, 99, 0.14), transparent 68%);
+}
+
+.blobBlue {
+    width: 46vw;
+    height: 46vw;
+    bottom: -18vw;
+    left: 24vw;
+    background: radial-gradient(circle, rgba(97, 137, 196, 0.12), transparent 68%);
+}
+
+/* ─── Grano ─── */
+.grain {
+    position: absolute;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+}
+
+/* ─── Viñeta ─── */
+.vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+/* ─── Móvil: halos estáticos + blur menor (perf en GPU móvil) ─── */
+@media (max-width: 767px) {
+    .blob {
+        filter: blur(70px);
+        opacity: 0.4;
+    }
+}

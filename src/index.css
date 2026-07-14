@@ -18,10 +18,16 @@ html {
     scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
     text-rendering: optimizeLegibility;
     font-feature-settings: "ss01", "cv11";
+    /* Red de seguridad global anti-scroll horizontal: clip recorta el eje X
+       sin crear contenedor de scroll (a diferencia de hidden) — no interfiere
+       con Lenis ni con el scroll vertical. Neutraliza cualquier desbordamiento
+       por vw / paneles off-canvas en móvil. */
+    overflow-x: clip;
 }
 
 body {
-    min-height: 100vh;
+    min-height: 100vh;      /* fallback navegadores sin dvh */
+    min-height: 100dvh;     /* mata el salto de la barra de Safari iOS */
     background-color: var(--color-bg-deep);
     font-variant-numeric: tabular-nums;
 }
@@ -65,6 +71,29 @@ button {
     cursor: pointer;
     border: none;
     background: none;
+}
+
+/* Cursor custom activo (CustomCursor.tsx, solo puntero fino): oculta el
+   nativo para que el dot/ring lo reemplace en vez de duplicarlo. */
+html[data-custom-cursor="on"],
+html[data-custom-cursor="on"] * {
+    cursor: none !important;
+}
+
+/* ...pero en campos de texto y controles restauramos el cursor nativo: el
+   caret de escritura y el "no permitido" son affordances funcionales que el
+   dot/ring no comunican. */
+html[data-custom-cursor="on"] input,
+html[data-custom-cursor="on"] textarea,
+html[data-custom-cursor="on"] select,
+html[data-custom-cursor="on"] [contenteditable],
+html[data-custom-cursor="on"] [contenteditable] * {
+    cursor: auto !important;
+}
+
+html[data-custom-cursor="on"] :disabled,
+html[data-custom-cursor="on"] [disabled] {
+    cursor: not-allowed !important;
 }
 
 button:focus-visible {
@@ -186,11 +215,18 @@ video {
    SCROLL REVEAL (kept — used widely)
    ═══════════════════════════════════════════ */
 
+/* Reveals: curva expo + distancia 18px, un único conjunto de valores para
+   TODAS las variantes (duración 0.6s, ease var(--ease-out-expo)). Este CSS es
+   el único sistema de animación: tanto useScrollReveal (scroll) como
+   useHeroReveal (mount) se limitan a añadir la clase `.revealed` como
+   disparador — no aplican estilos inline que compitan con estas transiciones.
+   La cascada `.reveal-stagger` escalona vía transition-delay por --i. */
 .reveal {
     opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(18px);
+    transition: opacity 0.6s var(--ease-out-expo),
+        transform 0.6s var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 70ms);
 }
 
 .reveal.revealed {
@@ -200,9 +236,10 @@ video {
 
 .reveal-left {
     opacity: 0;
-    transform: translateX(-16px);
-    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-18px);
+    transition: opacity 0.6s var(--ease-out-expo),
+        transform 0.6s var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 70ms);
 }
 
 .reveal-left.revealed {
@@ -212,9 +249,10 @@ video {
 
 .reveal-right {
     opacity: 0;
-    transform: translateX(16px);
-    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(18px);
+    transition: opacity 0.6s var(--ease-out-expo),
+        transform 0.6s var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 70ms);
 }
 
 .reveal-right.revealed {
@@ -224,15 +262,32 @@ video {
 
 .reveal-scale {
     opacity: 0;
-    transform: scale(0.99);
-    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.98);
+    transition: opacity 0.6s var(--ease-out-expo),
+        transform 0.6s var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 70ms);
 }
 
 .reveal-scale.revealed {
     opacity: 1;
     transform: scale(1);
 }
+
+/* Cascada escalonada — envuelve hijos .reveal* en un .reveal-stagger para que
+   cada uno herede un delay incremental. Autoindexa hasta 12 hijos directos;
+   por encima de eso, pasa style={{'--i': n}} manualmente. */
+.reveal-stagger > *:nth-child(1)  { --i: 0; }
+.reveal-stagger > *:nth-child(2)  { --i: 1; }
+.reveal-stagger > *:nth-child(3)  { --i: 2; }
+.reveal-stagger > *:nth-child(4)  { --i: 3; }
+.reveal-stagger > *:nth-child(5)  { --i: 4; }
+.reveal-stagger > *:nth-child(6)  { --i: 5; }
+.reveal-stagger > *:nth-child(7)  { --i: 6; }
+.reveal-stagger > *:nth-child(8)  { --i: 7; }
+.reveal-stagger > *:nth-child(9)  { --i: 8; }
+.reveal-stagger > *:nth-child(10) { --i: 9; }
+.reveal-stagger > *:nth-child(11) { --i: 10; }
+.reveal-stagger > *:nth-child(12) { --i: 11; }
 
 @keyframes fadeInUp {
     from {
@@ -256,5 +311,161 @@ video {
         opacity: 1;
         transform: none;
         transition: none;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   UTILIDADES VISUALES GLOBALES (aditivo)
+   Grano, glass, spotlight, shimmer, float, hover-lift.
+   Animan solo transform/opacity. Grain/blur en capas fixed
+   pointer-events:none. Todo respeta prefers-reduced-motion.
+   ═══════════════════════════════════════════ */
+
+/* .grain — overlay de ruido fijo sobre TODO. Nunca sobre contenedores con
+   scroll: es position:fixed, pointer-events:none. Colócalo una vez en la raíz
+   de una página (no dentro de listas/carruseles). */
+.grain {
+    position: fixed;
+    /* Sobredimensionada: el drift (±4%) nunca descubre bordes transparentes. */
+    inset: -20%;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    animation: grainShift 8s steps(6) infinite;
+}
+
+@keyframes grainShift {
+    0%   { transform: translate3d(0, 0, 0); }
+    16%  { transform: translate3d(-4%, 2%, 0); }
+    33%  { transform: translate3d(3%, -3%, 0); }
+    50%  { transform: translate3d(-2%, 4%, 0); }
+    66%  { transform: translate3d(4%, -1%, 0); }
+    83%  { transform: translate3d(-3%, -2%, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+}
+
+/* .glass — superficie translúcida con blur. Fallback sólido elevated si el
+   navegador no soporta backdrop-filter. */
+.glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-inset), var(--shadow-md);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass {
+        background: var(--color-bg-elevated);
+    }
+}
+
+/* .spotlight — halo radial que sigue al puntero. Emparéjalo con useSpotlight
+   (setea --mx/--my y data-spotlight-active). Reutilizable en cualquier card:
+   pon la clase y envuelve en <SpotlightCard>. */
+.spotlight {
+    position: relative;
+    isolation: isolate;
+}
+
+.spotlight::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%),
+            rgba(57, 206, 134, 0.14), transparent 60%);
+}
+
+.spotlight[data-spotlight-active]::before {
+    opacity: 1;
+}
+
+/* .shimmer — barrido de luz para skeletons/estados de carga. */
+.shimmer {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-bg-elevated);
+}
+
+.shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.06),
+            transparent);
+    animation: shimmerSweep 1.6s var(--ease-custom) infinite;
+}
+
+@keyframes shimmerSweep {
+    100% { transform: translateX(100%); }
+}
+
+/* .float — flotación infinita muy sutil (para acentos, badges, iconos). */
+.float {
+    animation: floatY 6s ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes floatY {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+}
+
+/* .hover-lift — eleva y proyecta sombra tintada al pasar el puntero.
+   Solo transform + box-shadow (barato en GPU). */
+.hover-lift {
+    transition: transform var(--transition-expressive),
+        box-shadow var(--transition-expressive);
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .grain,
+    .shimmer::after,
+    .float {
+        animation: none;
+    }
+
+    .spotlight::before {
+        display: none;
+    }
+
+    .hover-lift {
+        transition: none;
+    }
+
+    .hover-lift:hover {
+        transform: none;
+    }
+}
+
+/* En punteros gruesos (táctil) no hay spotlight ni hover-lift útiles. */
+@media (hover: none) {
+    .spotlight::before {
+        display: none;
+    }
+}
+
+/* En móvil aparcamos las animaciones perpetuas globales (deriva del grano,
+   flotación). El coste de repintado/GPU no compensa en pantalla pequeña; el
+   grano queda estático y sigue aportando textura. */
+@media (max-width: 767px) {
+    .grain,
+    .float {
+        animation: none;
     }
 }
