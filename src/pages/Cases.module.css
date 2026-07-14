@@ -24,62 +24,6 @@
     gap: var(--spacing-7);
 }
 
-/* ─── Case ledger — instrument strip ─── */
-.caseLedger {
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-card);
-    overflow: hidden;
-}
-
-.ledgerRow {
-    display: grid;
-    grid-template-columns: 1fr 1.4fr auto;
-    gap: var(--spacing-4);
-    align-items: center;
-    width: 100%;
-    padding: var(--spacing-3) var(--spacing-5);
-    background: transparent;
-    border: none;
-    border-top: 1px solid var(--color-border-subtle);
-    font-family: var(--font-family-mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-align: left;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    transition: color var(--transition-fast);
-}
-
-.ledgerRow:hover {
-    color: var(--color-text-strong);
-}
-
-.ledgerHead {
-    border-top: none;
-    color: var(--color-text-subtle);
-    cursor: default;
-}
-
-.ledgerRowActive {
-    color: var(--color-text-strong);
-}
-
-/* Firma técnica por caso — metadato secundario alineado a la derecha.
-   Baseline atenuado (jerarquía bajo Sector/Resultado); se ilumina con
-   la fila activa o en hover para acompañar el estado del carrusel. */
-.ledgerStack {
-    justify-self: end;
-    color: var(--color-text-subtle);
-    font-variant-numeric: tabular-nums;
-    transition: color var(--transition-fast);
-}
-
-.ledgerRow:hover .ledgerStack,
-.ledgerRowActive .ledgerStack {
-    color: var(--color-text-muted);
-}
-
 /* Exactly ONE slide in view at a time: each `.caseCard` is `flex: 0 0 100%`
    of this track, so the next card never peeks. The `gap` only shows
    mid-transition; snap points stay at i × (cardWidth + gap), matching the
@@ -423,29 +367,100 @@
     margin: 0;
 }
 
-/* ─── Grid: 2-col table structure, no card boxes ─── */
+/* ─── Grid: tarjetas interactivas elevadas (3 col desktop) ─── */
 .whyGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    border-top: 1px solid var(--color-border-subtle);
-    border-left: 1px solid var(--color-border-subtle);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-5);
+}
+
+@media (min-width: 1024px) {
+    .whyGrid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-6);
+    }
 }
 
 .whyItem {
-    padding: var(--spacing-9) var(--spacing-8);
-    border-right: 1px solid var(--color-border-subtle);
-    border-bottom: 1px solid var(--color-border-subtle);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-8) var(--spacing-7);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-panel);
+    background:
+        var(--gradient-surface),
+        var(--color-bg-elevated);
+    box-shadow: var(--glass-inset), var(--shadow-sm);
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+        transform var(--transition-expressive),
+        border-color var(--transition-normal),
+        box-shadow var(--transition-expressive);
 }
 
-/* Last item spans full width */
-.whyItem:last-child {
-    grid-column: 1 / -1;
+/* Halo de spotlight (SpotlightCard escribe --mx/--my + data-spotlight-active) */
+.whyItem::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    background: radial-gradient(
+        240px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(57, 206, 134, 0.10),
+        transparent 62%
+    );
+}
+
+.whyItem[data-spotlight-active]::before {
+    opacity: 1;
+}
+
+.whyItem > * {
+    position: relative;
+    z-index: 1;
+}
+
+@media (hover: hover) {
+    .whyItem:hover {
+        transform: translateY(-4px);
+        border-color: var(--color-border-mint);
+        box-shadow: var(--shadow-lg), var(--shadow-mint);
+    }
+}
+
+/* Barra de acento superior — crece en hover (misma firma que Soluciones) */
+.whyItemBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    z-index: 2;
+    background: var(--gradient-mint);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--transition-expressive);
+}
+
+@media (hover: hover) {
+    .whyItem:hover .whyItemBar {
+        transform: scaleX(1);
+    }
 }
 
 /* Keystone de cierre: el 5º diferenciador ocupa todo el ancho y en pantallas
    anchas se dispone horizontal (icono + título + texto) para que el span
-   completo se lea como cierre intencional, no como una celda huérfana.
-   Scoped a >=640px; en móvil el whyGrid pasa a scroll y no aplica. */
+   completo se lea como cierre intencional, no como una celda huérfana. */
+.whyItem:last-child {
+    grid-column: 1 / -1;
+}
+
 @media (min-width: 640px) {
     .whyItemClosing {
         display: grid;
@@ -456,6 +471,11 @@
         column-gap: var(--spacing-8);
         row-gap: var(--spacing-3);
         align-items: start;
+        padding: var(--spacing-9) var(--spacing-9);
+    }
+
+    .whyItemClosing .whyItemBar {
+        grid-column: 1 / -1;
     }
 
     .whyItemClosing .whyIconWrap {
@@ -477,21 +497,29 @@
 }
 
 /* ─── Why item inner ─── */
-/* Contenedor hairline: mismo tratamiento que el panelIcon de Soluciones
-   (borde mint + radius-card + shadow-mint) para coherencia entre páginas. */
+/* Contenedor: mismo tratamiento que el cardIcon de Soluciones
+   (borde mint + fondo tenue + glow) para coherencia entre páginas.
+   Escala levemente en hover. */
 .whyIconWrap {
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--color-mint);
-    background: transparent;
+    background: var(--color-mint-soft);
     border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-mint);
     margin-bottom: var(--spacing-5);
     flex-shrink: 0;
+    transition: transform var(--transition-expressive);
+}
+
+@media (hover: hover) {
+    .whyItem:hover .whyIconWrap {
+        transform: scale(1.06) translateY(-1px);
+    }
 }
 
 .whyItemTitle {
@@ -502,6 +530,7 @@
     line-height: 1.2;
     letter-spacing: var(--tracking-tight);
     margin: 0 0 var(--spacing-3);
+    text-wrap: balance;
 }
 
 .whyItemText {
@@ -510,6 +539,27 @@
     line-height: 1.65;
     margin: 0;
     max-width: 52ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .whyItem,
+    .whyItemBar,
+    .whyIconWrap {
+        transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .whyItem:hover {
+        transform: none;
+    }
+
+    .whyItem:hover .whyIconWrap {
+        transform: none;
+    }
+
+    .whyItem:hover .whyItemBar {
+        transform: scaleX(1);
+        transition: none;
+    }
 }
 
 /* ═══════════════════════════════════════════
@@ -524,17 +574,6 @@
         /* Inherits flex: 0 0 100% — exactly one slide visible on mobile too. */
         padding: var(--spacing-7) var(--spacing-6);
         border-radius: var(--radius-card);
-    }
-
-    /* Ledger: drop the RESULTADO column — sector + estado only */
-    .ledgerRow {
-        grid-template-columns: 1fr auto;
-        padding: var(--spacing-3) var(--spacing-4);
-        min-height: 44px;
-    }
-
-    .ledgerResult {
-        display: none;
     }
 
     .cardStats {
@@ -579,8 +618,6 @@
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         cursor: grab;
-        border-top: none;
-        border-left: none;
         /* Extend slightly past the right edge so the peeking card feels open */
         padding-right: var(--spacing-7);
         margin-right: calc(-1 * var(--spacing-7));
@@ -598,9 +635,6 @@
         flex: 0 0 82%;
         scroll-snap-align: start;
         padding: var(--spacing-7) var(--spacing-6);
-        border: 1px solid var(--color-border-subtle);
-        border-radius: var(--radius-card);
-        background: transparent;
     }
 
     /* Horizontal row — no single item spans full width */

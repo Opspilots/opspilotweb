@@ -122,12 +122,16 @@
 
 /* Área táctil ≥44px sin desplazar el subrayado: el texto mono es muy bajo,
    así que extendemos la zona clicable con un pseudo invisible en vez de
-   añadir padding (que alejaría el ::after de la línea base). */
+   añadir padding (que alejaría el ::after de la línea base).
+   Los -0.75rem laterales cubren la mitad del gap (spacing-6 = 1.5rem) entre
+   enlaces: así las zonas de hover casi se tocan y el cursor custom no entra
+   y sale del estado "hovering" al pasar por los huecos (el ring dejaba de
+   pulsar de forma errática al barrer el menú). */
 .navLink::before {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
+    left: -0.75rem;
+    right: -0.75rem;
     top: -16px;
     bottom: -16px;
 }

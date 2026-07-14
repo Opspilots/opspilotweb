@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
+import { SpotlightCard } from '../components/fx/SpotlightCard';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { useDragScroll } from '../hooks/useDragScroll';
@@ -14,7 +15,6 @@ import {
     Code2,
     Clock,
     BadgeCheck,
-    MessageCircle,
     Cpu,
 } from 'lucide-react';
 import sys from '../styles/page-system.module.css';
@@ -32,8 +32,6 @@ interface CaseData {
     stats: StatData[];
     quote: string;
     author: string;
-    // Firma técnica de la solución — dato diferencial por caso en el ledger
-    stack: string;
 }
 
 const CASES: CaseData[] = [
@@ -48,7 +46,6 @@ const CASES: CaseData[] = [
         ],
         quote: 'Pasamos de perder presupuestos por falta de seguimiento a tener un sistema que trabaja solo.',
         author: 'CEO',
-        stack: 'IA · WhatsApp',
     },
     {
         sector: 'Asesoría fiscal',
@@ -61,7 +58,6 @@ const CASES: CaseData[] = [
         ],
         quote: 'Antes era imposible escalar sin contratar; ahora podemos crecer sin que el equipo reviente.',
         author: 'Socio director',
-        stack: 'OCR · IA',
     },
     {
         sector: 'Agencia de servicios',
@@ -74,7 +70,6 @@ const CASES: CaseData[] = [
         ],
         quote: 'Dejamos de pagar cinco herramientas y ganamos visibilidad real de cada cliente.',
         author: 'Directora de operaciones',
-        stack: 'CRM · Reporting',
     },
 ];
 
@@ -99,11 +94,6 @@ const DIFFERENTIATORS: DiffItem[] = [
         Icon: BadgeCheck,
         title: 'Pagas una vez, es tuyo para siempre',
         text: 'Sin cuotas mensuales por el software. Pagas el desarrollo una sola vez y el sistema es completamente tuyo. Solo vuelves si quieres añadir más funcionalidades.',
-    },
-    {
-        Icon: MessageCircle,
-        title: 'Soporte directo con quien lo construyó',
-        text: 'Hablas con quien diseñó y programó tu sistema. Sin tickets, sin agentes de soporte que no conocen tu caso, sin colas de espera que no llevan a ninguna parte.',
     },
     {
         Icon: Cpu,
@@ -187,31 +177,6 @@ const CarouselSection: React.FC = () => {
         <section className={styles.carouselSection}>
             <div className={`${sys.container} ${styles.carouselContentLayer}`}>
                 <div className={styles.carouselWrapper}>
-                    {/* Case ledger — instrument strip mirroring the carousel state */}
-                    <div className={styles.caseLedger}>
-                        <div className={`${styles.ledgerRow} ${styles.ledgerHead}`} aria-hidden="true">
-                            <span>Sector</span>
-                            <span className={styles.ledgerResult}>Resultado</span>
-                            <span className={styles.ledgerStack}>Stack</span>
-                        </div>
-                        {CASES.map((c, i) => (
-                            <button
-                                key={i}
-                                type="button"
-                                className={`${styles.ledgerRow} ${i === currentIndex ? styles.ledgerRowActive : ''}`}
-                                onClick={() => scrollToIndex(i)}
-                                aria-label={`Ver caso ${i + 1}: ${c.sector}`}
-                                aria-current={i === currentIndex}
-                            >
-                                <span>{c.sector}</span>
-                                <span className={styles.ledgerResult}>
-                                    {c.stats[0].v} {c.stats[0].l}
-                                </span>
-                                <span className={styles.ledgerStack}>{c.stack}</span>
-                            </button>
-                        ))}
-                    </div>
-
                     <div
                         ref={trackRef}
                         className={styles.carouselTrack}
@@ -296,16 +261,18 @@ const WhySection: React.FC = () => {
 
                 <div className={styles.whyGrid}>
                     {DIFFERENTIATORS.map((d, i) => (
-                        <div
+                        <SpotlightCard
+                            as="article"
                             key={i}
                             className={`${styles.whyItem} ${i === DIFFERENTIATORS.length - 1 ? styles.whyItemClosing : ''} reveal`}
                         >
+                            <span className={styles.whyItemBar} aria-hidden="true" />
                             <div className={styles.whyIconWrap} aria-hidden="true">
-                                <d.Icon size={18} strokeWidth={1.75} />
+                                <d.Icon size={20} strokeWidth={1.75} />
                             </div>
                             <h3 className={styles.whyItemTitle}>{d.title}</h3>
                             <p className={styles.whyItemText}>{d.text}</p>
-                        </div>
+                        </SpotlightCard>
                     ))}
                 </div>
             </div>

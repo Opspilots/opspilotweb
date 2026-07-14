@@ -27,8 +27,35 @@
     position: relative;
     padding: var(--spacing-20) 0 var(--spacing-16);
     background: var(--color-bg-deep);
+    /* Crea contexto de apilamiento propio para que el decor (::before, z-index
+       -1) quede por encima del fondo de la sección pero por debajo del
+       contenido en flujo. */
+    isolation: isolate;
 }
 
+/* Decor de cabecera — común a todas las páginas internas (el home NO usa
+   .pageHero, así que su hero queda intacto). Blueprint técnico + doble glow
+   (mint arriba-derecha, ámbar abajo-izquierda) que evoca el "taller de
+   software". Todo pintado en un pseudo-elemento sin coste de layout ni JS;
+   enmascarado hacia la esquina superior derecha para no restar legibilidad
+   al titular, que vive a la izquierda. */
+.pageHero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(38% 62% at 88% 8%, rgba(57, 206, 134, 0.16), transparent 70%),
+        radial-gradient(34% 55% at 4% 98%, rgba(232, 165, 99, 0.07), transparent 72%),
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 34px 34px, 34px 34px;
+    -webkit-mask-image: radial-gradient(135% 115% at 100% 0%, #000 26%, transparent 74%);
+    mask-image: radial-gradient(135% 115% at 100% 0%, #000 26%, transparent 74%);
+}
+
+/* Hairline inferior que cierra la cabecera contra la primera sección. */
 .pageHero::after {
     content: '';
     position: absolute;
@@ -141,38 +168,56 @@
     padding: var(--space-section-loose) 0;
 }
 
-/* Light card signature — única figura clara sobre el canvas navy */
+/* Panel de cierre — rediseñado como superficie oscura on-brand (glass + glow
+   mint + hairline superior), coherente con el lenguaje del resto de la web en
+   lugar de la antigua tarjeta clara que rompía la estética. Al vivir en
+   sys.endCta*, el rediseño se propaga a todas las páginas (Home "¿Hablamos?",
+   Casos, Soluciones, Recursos). */
 .endCtaBlock {
     text-align: center;
-    padding: var(--spacing-20) var(--spacing-10);
-    background: var(--color-card-light);
-    border: 1px solid var(--color-card-light-border);
+    padding: clamp(var(--spacing-14), 8vw, var(--spacing-20)) var(--spacing-10);
+    background:
+        radial-gradient(130% 120% at 50% 0%, rgba(57, 206, 134, 0.14), transparent 62%),
+        var(--gradient-surface),
+        var(--color-bg-elevated);
+    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-panel);
-    max-width: 920px;
+    box-shadow: var(--glass-inset), var(--shadow-lg);
+    max-width: 960px;
     margin: 0 auto;
     position: relative;
     overflow: hidden;
     isolation: isolate;
 }
 
-/* Grano sutil — el grano solo sobrevive dentro de las light cards */
+/* Hairline mint superior — misma firma de acento que las tarjetas de la web. */
+.endCtaBlock::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-mint);
+    opacity: 0.9;
+    z-index: 2;
+}
+
+/* Halo mint difuso inferior — profundidad sin ruido. */
 .endCtaBlock::after {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    opacity: 0.05;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-size: 180px 180px;
-    mix-blend-mode: multiply;
+    background: radial-gradient(80% 60% at 50% 122%, rgba(57, 206, 134, 0.12), transparent 70%);
 }
 
 .endCtaTitle {
     font-family: var(--font-family-display);
     font-size: clamp(2.5rem, 5.5vw, 4.25rem);
     font-weight: 400;
-    color: var(--color-card-light-text);
+    color: var(--color-text-strong);
     line-height: 1.02;
     margin-bottom: var(--spacing-6);
     letter-spacing: var(--tracking-display);
@@ -182,7 +227,7 @@
 }
 
 .endCtaSub {
-    color: var(--color-card-light-muted);
+    color: var(--color-text-muted);
     font-size: var(--font-size-lg);
     line-height: 1.65;
     max-width: 58ch;
@@ -198,15 +243,6 @@
     flex-wrap: wrap;
     position: relative;
     z-index: 1;
-}
-
-/* Outline buttons inside the light card would otherwise render white
-   text + white hairline on bone — re-tint them via the scoped custom
-   props that Button.module.css's .outline variant consumes. */
-.endCtaBlock {
-    --btn-outline-text: var(--color-card-light-text);
-    --btn-outline-border: rgba(0, 0, 0, 0.25);
-    --btn-outline-border-hover: rgba(0, 0, 0, 0.45);
 }
 
 /* ─── Light card reutilizable (mismo tratamiento que endCtaBlock) ─── */
@@ -238,6 +274,13 @@
 @media (max-width: 639px) {
     .pageHero {
         padding: var(--spacing-14) 0 var(--spacing-10);
+    }
+
+    /* En móvil el titular ocupa casi todo el ancho: rebajamos la rejilla y el
+       glow para que el decor no compita con el texto. */
+    .pageHero::before {
+        background-size: 100% 100%, 100% 100%, 26px 26px, 26px 26px;
+        opacity: 0.6;
     }
 
     .pageHeroTitle {

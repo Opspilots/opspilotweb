@@ -21,7 +21,11 @@ import {
   Search,
   FileCheck,
   Wrench,
+  Building2,
+  Calculator,
+  Target,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import styles from "./Home.module.css";
 import sys from "../styles/page-system.module.css";
 import { HeroDashboard } from "../components/home/HeroDashboard";
@@ -31,9 +35,17 @@ import { TextLink } from "../components/common/TextLink";
 
 gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin, SplitText);
 
-const CASES = [
+const CASES: {
+  eyebrow: string;
+  Icon: LucideIcon;
+  title: string;
+  summary: string;
+  bullets: string[];
+  stats: { value: string; label: string }[];
+}[] = [
   {
     eyebrow: "Reformas",
+    Icon: Building2,
     title: "De la libreta al sistema que trabaja solo",
     summary:
       "Empresa familiar de reformas que triplicó su capacidad sin contratar a nadie más.",
@@ -50,6 +62,7 @@ const CASES = [
   },
   {
     eyebrow: "Asesoría fiscal",
+    Icon: Calculator,
     title: "Una asesoría que cierra cuentas mientras duerme",
     summary:
       "Despacho con cientos de clientes que automatizó el cierre mensual sin perder calidad.",
@@ -66,6 +79,7 @@ const CASES = [
   },
   {
     eyebrow: "Agencia de servicios",
+    Icon: Target,
     title: "Una agencia que recupera 20 horas a la semana",
     summary:
       "Agencia que reemplazó cinco herramientas distintas por un solo sistema hecho a medida.",
@@ -328,132 +342,67 @@ export const Home: React.FC = () => {
           );
       });
 
-    // ─── DESKTOP + motion: Problema se FIJA y releva tarjeta a tarjeta. ───
-    mm.add(
-      "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
-      () => {
-        const triggers: ScrollTrigger[] = [];
-        const pin = problemRef.current;
-        const cards = pin
-          ? gsap.utils.toArray<HTMLElement>(`.${styles.problemCard}`, pin)
-          : [];
+    // ─── PROBLEMA (cualquier anchura con movimiento): layout en dos columnas
+    //     (título sticky a la izquierda, tarjetas a la derecha). Cada tarjeta
+    //     entra UNA vez al scrollear y se queda fija. Antes esto era un relevo
+    //     scroll-jacked (scrub) que mapeaba el scroll a la transición: al parar
+    //     a mitad de scroll las tarjetas se quedaban "a la mitad". Con reveal
+    //     `once` no hay estados intermedios ni scroll-jacking. ───
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const track = problemRef.current;
+      const cards = track
+        ? gsap.utils.toArray<HTMLElement>(`.${styles.problemCard}`, track)
+        : [];
+      if (!cards.length) return;
 
-        if (pin && cards.length) {
-          // Modo apilado: las tarjetas pasan a position:absolute (CSS) para
-          // ocupar el mismo hueco y relevarse una sobre otra.
-          pin.classList.add(styles.problemDeckOn);
-          gsap.set(cards, {
-            yPercent: (i: number) => (i === 0 ? 0 : 100),
-            opacity: (i: number) => (i === 0 ? 1 : 0),
-            scale: 1,
-          });
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: pin,
-              start: "top top",
-              end: () => "+=" + Math.round(window.innerHeight * cards.length),
-              pin: true,
-              scrub: 0.6,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            },
-          });
-          for (let i = 1; i < cards.length; i++) {
-            tl.to(
-              cards[i - 1],
-              {
-                yPercent: -22,
-                opacity: 0,
-                scale: 0.94,
-                ease: "power2.in",
-                duration: 0.5,
-              },
-              i - 1,
-            ).fromTo(
-              cards[i],
-              { yPercent: 100, opacity: 0, scale: 1 },
-              { yPercent: 0, opacity: 1, ease: "power3.out", duration: 0.6 },
-              i - 1 + 0.08,
-            );
-          }
-          tl.to({}, { duration: 0.4 }); // respiro antes de soltar el pin
-          if (tl.scrollTrigger) triggers.push(tl.scrollTrigger);
-        }
-
-        // MÉTODO — reveal con contraste (números + barras) al entrar.
-        const grid = methodScrollRef.current?.querySelector<HTMLElement>(
-          `.${styles.methodGrid}`,
-        );
-        const steps = grid
-          ? gsap.utils.toArray<HTMLElement>(`.${styles.methodStep}`, grid)
-          : [];
-        if (grid && steps.length) {
-          triggers.push(
-            ScrollTrigger.create({
-              trigger: grid,
-              start: "top 72%",
-              once: true,
-              onEnter: () => {
-                scrambleSteps(steps);
-                lightSteps(steps);
-              },
-            }),
-          );
-        }
-
-        return () => {
-          pin?.classList.remove(styles.problemDeckOn);
-          triggers.forEach((t) => t.kill());
-          if (cards.length) gsap.set(cards, { clearProps: "all" });
-        };
-      },
-    );
-
-    // ─── MÓVIL + motion: sin pin; tarjetas apiladas que entran al scrollear. ─
-    mm.add(
-      "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
-      () => {
-        const triggers: ScrollTrigger[] = [];
-        const cards = problemRef.current
-          ? gsap.utils.toArray<HTMLElement>(
-              `.${styles.problemCard}`,
-              problemRef.current,
-            )
-          : [];
-        cards.forEach((card) => {
-          const tween = gsap.from(card, {
-            opacity: 0,
-            y: 24,
-            duration: 0.5,
-            ease: "power2.out",
-            scrollTrigger: { trigger: card, start: "top 84%", once: true },
-          });
-          if (tween.scrollTrigger) triggers.push(tween.scrollTrigger);
+      const triggers: ScrollTrigger[] = [];
+      cards.forEach((card) => {
+        const tween = gsap.from(card, {
+          opacity: 0,
+          y: 28,
+          duration: 0.55,
+          ease: "power2.out",
+          scrollTrigger: { trigger: card, start: "top 85%", once: true },
         });
+        if (tween.scrollTrigger) triggers.push(tween.scrollTrigger);
+      });
+      return () => triggers.forEach((t) => t.kill());
+    });
 
-        const grid = methodScrollRef.current?.querySelector<HTMLElement>(
-          `.${styles.methodGrid}`,
-        );
-        const steps = grid
-          ? gsap.utils.toArray<HTMLElement>(`.${styles.methodStep}`, grid)
-          : [];
-        if (grid && steps.length) {
-          triggers.push(
-            ScrollTrigger.create({
-              trigger: grid,
-              start: "top 82%",
-              once: true,
-              onEnter: () => {
-                scrambleSteps(steps);
-                lightSteps(steps);
-              },
-            }),
-          );
-        }
+    // ─── MÉTODO — entrada propia (cualquier anchura con movimiento): las
+    //     tarjetas suben en cascada, los números se escriben (scramble) y se
+    //     iluminan a mint, y la barra inferior de cada una se dibuja. ───
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const grid = methodScrollRef.current?.querySelector<HTMLElement>(
+        `.${styles.methodGrid}`,
+      );
+      const steps = grid
+        ? gsap.utils.toArray<HTMLElement>(`.${styles.methodStep}`, grid)
+        : [];
+      if (!grid || !steps.length) return;
 
-        return () => triggers.forEach((t) => t.kill());
-      },
-    );
+      gsap.set(steps, { opacity: 0, y: 30 });
+      const st = ScrollTrigger.create({
+        trigger: grid,
+        start: "top 78%",
+        once: true,
+        onEnter: () => {
+          gsap.to(steps, {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            stagger: 0.12,
+            ease: "power3.out",
+          });
+          scrambleSteps(steps);
+          lightSteps(steps);
+        },
+      });
+      return () => {
+        st.kill();
+        gsap.set(steps, { clearProps: "all" });
+      };
+    });
 
     // ─── CTA "¿Hablamos?" — char por char desde una máscara SplitText ───
     mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -555,18 +504,18 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ═══ PROBLEMA — pin + relevo a pantalla completa ═══ */}
+      {/* ═══ PROBLEMA — sticky + relevo a pantalla completa ═══ */}
       <section className={styles.problemSection}>
-        <div className={styles.problemPin} ref={problemRef}>
-          <div className={sys.container}>
-            <div className={`${styles.problemHead} reveal`}>
-              <p className={styles.sectionKicker}>El problema</p>
-              <h2 className={sys.sectionTitle}>
-                Las herramientas que usas no fueron pensadas para ti.
-              </h2>
-            </div>
-            <div className={styles.problemDeck}>
-              {PROBLEMS.map((p, i) => (
+        <div className={styles.problemTrack} ref={problemRef}>
+          <div className={styles.problemViewport}>
+            <div className={`${sys.container} ${styles.problemLayout}`}>
+              <div className={`${styles.problemHead} reveal`}>
+                <h2 className={sys.sectionTitle}>
+                  Las herramientas que usas no fueron pensadas para ti.
+                </h2>
+              </div>
+              <div className={styles.problemDeck}>
+                {PROBLEMS.map((p, i) => (
                 <article className={styles.problemCard} key={i}>
                   <span className={styles.problemNum} aria-hidden="true">
                     {String(i + 1).padStart(2, "0")}
@@ -583,7 +532,8 @@ export const Home: React.FC = () => {
                     </span>
                   </span>
                 </article>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -609,6 +559,15 @@ export const Home: React.FC = () => {
               {CASES.map((c, i) => (
                 <SpotlightCard as="article" className={styles.caseCard} key={i}>
                   <div className={styles.caseCardMain}>
+                    <div className={styles.caseCardHead}>
+                      <span className={styles.caseIconTile} aria-hidden="true">
+                        <c.Icon size={20} strokeWidth={1.6} />
+                      </span>
+                      <span className={styles.caseSector}>
+                        <span className={styles.caseSectorDot} aria-hidden="true" />
+                        {c.eyebrow}
+                      </span>
+                    </div>
                     <h3 className={styles.caseCardTitle}>{c.title}</h3>
                     <p className={styles.caseCardSummary}>{c.summary}</p>
                     <ul className={styles.caseCardBullets}>
@@ -624,10 +583,7 @@ export const Home: React.FC = () => {
                   </div>
 
                   <aside className={styles.caseCardPanel}>
-                    <div className={styles.casePanelBar}>
-                      <span className={styles.casePanelDot} aria-hidden="true" />
-                      Resultados
-                    </div>
+                    <div className={styles.casePanelBar}>Resultados</div>
                     <div className={styles.caseCardStats}>
                       {c.stats.map((s, j) => (
                         <div className={styles.caseStat} key={j}>
@@ -755,14 +711,13 @@ export const Home: React.FC = () => {
       <section className={styles.methodSection}>
         <div className={sys.container} ref={methodScrollRef}>
           <header className={`${sys.sectionHeader} reveal`}>
-            <p className={styles.sectionKicker}>Cómo trabajamos</p>
             <h2 className={sys.sectionTitle}>Así trabajamos contigo.</h2>
           </header>
           <div className={styles.methodGrid} ref={processTrackRef}>
             {STEPS.map((step, i) => {
               const Icon = step.icon;
               return (
-                <article className={`${styles.methodStep} reveal`} key={i}>
+                <article className={styles.methodStep} key={i}>
                   <div className={styles.methodStepTop}>
                     <span className={styles.methodStepIcon}>
                       <Icon size={22} strokeWidth={1.6} />

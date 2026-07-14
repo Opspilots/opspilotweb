@@ -2,55 +2,65 @@
    CustomCursor — dot + trailing ring overlay
    ═══════════════════════════════════════════════ */
 
+/* Contenedor posicional: el JS escribe SOLO `transform: translate3d(x,y,0)`
+   aquí en cada mousemove. Es un punto de tamaño 0; el núcleo visual vive en un
+   hijo. NO transicionamos `transform` (el dot se clava al puntero; el trailing
+   suave lo aporta el lerp del ring en JS). */
 .dot,
 .ring {
     position: fixed;
     top: 0;
     left: 0;
+    width: 0;
+    height: 0;
     pointer-events: none;
     z-index: 9999;
     opacity: 0;
     will-change: transform;
+    transition: opacity 0.25s ease;
 }
 
+/* El dot va por encima del ring y del contenido de la página. */
 .dot {
+    z-index: 10000;
+}
+
+/* Núcleo visual en un hijo: CLAVE del fix. El `scale` del hover se aplica aquí,
+   así se compone únicamente con el centrado local (una traslación de pocos px)
+   y NUNCA con el translate3d de viewport del padre. Cuando `scale` y ese
+   translate3d convivían en el MISMO elemento, el scale multiplicaba la
+   traslación: el dot (scale 0.5) saltaba hacia el origen (izquierda/arriba) y el
+   ring (scale 1.6) hacia el lado opuesto (derecha/abajo). Separarlos lo resuelve
+   de raíz. El centro del núcleo cae en (0,0) del padre gracias al margin
+   negativo, y `scale` (transform-origin 50% 50%) crece/encoge en su sitio. */
+.dotCore,
+.ringCore {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+}
+
+.dotCore {
     width: 6px;
     height: 6px;
     margin: -3px 0 0 -3px;
-    border-radius: 50%;
     background: var(--color-mint);
-    /* El dot va por encima del ring y mantiene el color de marca. Debe ir por
-       ENCIMA del contenido de la página (que llega hasta z-index altos), así
-       que necesita un valor mayor que el ring (9999), no menor. */
-    z-index: 10000;
     /* Halo sutil para que el punto (6px) no se pierda sobre fondos claros. */
     box-shadow: 0 0 0 1px rgba(10, 15, 13, 0.25), 0 0 8px rgba(57, 206, 134, 0.6);
-    /* La posición la escribe el JS en `transform` (translate3d); el hover-shrink
-       usa la propiedad independiente `scale`, que compone con ese transform sin
-       pisarlo. Transicionamos ambas: transform para el follow suave, scale para
-       el encogido en hover. */
-    transition:
-        opacity 0.25s ease,
-        transform 0.2s var(--ease-out-expo),
-        scale 0.2s var(--ease-out-expo);
+    transition: scale 0.2s var(--ease-out-expo);
 }
 
-.ring {
+.ringCore {
     width: 34px;
     height: 34px;
     margin: -17px 0 0 -17px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(255, 255, 255, 0.85);
-    /* difference: el ring se recorta sobre cualquier fondo (navy o light card)
-       sin perder contraste. */
-    mix-blend-mode: difference;
-    opacity: 0;
-    /* El crecimiento en hover se hace con `scale` (compuesto GPU) en vez de
-       animar width/height/margin (recalculan layout). La posición la controla
-       el JS vía `transform`; `scale` es una propiedad independiente que compone
-       con él. */
+    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    /* Sin mix-blend-mode: combinado con el backdrop-filter de la navbar glass
+       provoca parpadeo/repintado errático del cursor. Usamos un borde claro con
+       un halo oscuro sutil que mantiene contraste sobre fondos navy y claros. */
+    box-shadow: 0 0 0 1px rgba(10, 15, 13, 0.18);
     transition:
-        opacity 0.25s ease,
         scale 0.3s var(--ease-out-expo),
         background-color 0.25s ease;
 }
@@ -63,17 +73,20 @@
     opacity: 0.6;
 }
 
-/* Sobre elementos interactivos: el ring crece (34px → ~54px vía scale 1.6) y se
-   rellena tenue (lock), señal clara de "esto es clicable". */
+/* Sobre elementos interactivos el ring sube de opacidad… */
 .hovering.ring {
-    scale: 1.6;
     opacity: 0.85;
+}
+
+/* …y crece (34px → ~54px vía scale 1.6) rellenándose tenue, señal clara de
+   "esto es clicable". El scale va en el núcleo, no en el contenedor posicional. */
+.hovering .ringCore {
+    scale: 1.6;
     background-color: rgba(255, 255, 255, 0.12);
 }
 
-/* Al hacer hover, el dot se encoge para ceder protagonismo al ring. Usamos la
-   propiedad `scale` (no `transform`) para no pisar el translate3d del JS. */
-.hovering.dot {
+/* Al hacer hover, el dot se encoge para ceder protagonismo al ring. */
+.hovering .dotCore {
     scale: 0.5;
 }
 

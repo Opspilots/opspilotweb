@@ -15,21 +15,6 @@ export const Footer: React.FC = () => {
     return (
         <footer className={styles.footer}>
             <div className={styles.container}>
-                {/* ── Banda CTA ── */}
-                <div className={styles.cta}>
-                    <div className={styles.ctaText}>
-                        <h2 className={styles.ctaTitle}>
-                            ¿Hay un proceso que te está frenando?
-                        </h2>
-                        <p className={styles.ctaSub}>
-                            Cuéntanoslo. En 24 horas te decimos si tiene solución y qué costaría.
-                        </p>
-                    </div>
-                    <Link to={ROUTES.contacto} className={styles.ctaBtn}>
-                        <Button variant="primary" size="lg">Reservar diagnóstico</Button>
-                    </Link>
-                </div>
-
                 <div className={styles.grid}>
                     {/* Marca */}
                     <div className={styles.brand}>
@@ -74,6 +59,21 @@ export const Footer: React.FC = () => {
                         </a>
                         <span className={styles.metaLocation}>Córdoba, España</span>
                     </div>
+                </div>
+
+                {/* ── Banda CTA — bajo los menús del pie ── */}
+                <div className={styles.cta}>
+                    <div className={styles.ctaText}>
+                        <h2 className={styles.ctaTitle}>
+                            ¿Hay un proceso que te está frenando?
+                        </h2>
+                        <p className={styles.ctaSub}>
+                            Cuéntanoslo. En 24 horas te decimos si tiene solución y qué costaría.
+                        </p>
+                    </div>
+                    <Link to={ROUTES.contacto} className={styles.ctaBtn}>
+                        <Button variant="primary" size="lg">Reservar diagnóstico</Button>
+                    </Link>
                 </div>
 
                 <div className={styles.bottom}>

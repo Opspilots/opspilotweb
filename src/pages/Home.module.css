@@ -10,7 +10,10 @@
     min-height: 100vh;      /* fallback navegadores sin dvh */
     min-height: 100dvh;
     color: var(--color-text);
-    overflow-x: hidden;
+    /* `clip` (no `hidden`): evita el scroll horizontal SIN crear un contenedor
+       de scroll. `overflow-x: hidden` fuerza `overflow-y: auto` por spec, y ese
+       scroll-container fantasma rompe el position:sticky / pin de las secciones. */
+    overflow-x: clip;
     position: relative;
     z-index: 0;
 }
@@ -37,7 +40,12 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    padding: var(--spacing-12) 0;
+    /* `.main` ya aporta el offset de 4.75rem de la navbar fija, así que el hero
+       llena exactamente el resto del viewport. El padding vertical se comprime
+       con la altura de pantalla vía clamp: en portátiles de viewport corto
+       (1280×720, escalado Windows) baja hasta spacing-6 para que titular +
+       dashboard quepan sin cortarse; en pantallas altas sube a spacing-12. */
+    padding: clamp(var(--spacing-6), 4vh, var(--spacing-12)) 0;
     overflow: hidden;
     /* Transparente para dejar ver los halos ambientales; un glow mint local
        refuerza el foco justo detrás del titular. */
@@ -178,9 +186,30 @@
 
 @media (min-width: 1024px) {
     .heroInner {
+        /* Titular a la izquierda (1.1fr), dashboard a la derecha (0.9fr). */
         grid-template-columns: 1.1fr 0.9fr;
         padding: 0 var(--spacing-10);
         gap: var(--spacing-16);
+    }
+}
+
+/* Desktop ancho pero de poca altura (1280×720, escalado Windows 125-150%):
+   a pantalla completa no cabe el titular grande + el dashboard. Comprimimos el
+   titular y los márgenes internos para que la cabecera se vea entera sin
+   scroll — la columna izquierda es la más alta, así que reducirla es lo que
+   recupera el pliegue. */
+@media (min-width: 1024px) and (max-height: 800px) {
+    .heroTitle {
+        font-size: clamp(2.25rem, 3.6vw, 3.4rem);
+        margin-bottom: var(--spacing-5);
+    }
+
+    .heroSubtitle {
+        margin-bottom: var(--spacing-7);
+    }
+
+    .heroInner {
+        gap: var(--spacing-12);
     }
 }
 
@@ -194,7 +223,7 @@
     align-items: flex-start;
 }
 
-/* Right column: the instrument-window dashboard (HeroDashboard.tsx) */
+/* Dashboard (HeroDashboard.tsx) — columna derecha en desktop. */
 .heroPanel {
     width: 100%;
     max-width: 560px;
@@ -287,12 +316,21 @@
 .problemSection::before { top: 0; }
 .problemSection::after { bottom: 0; }
 
-/* Contenedor que se FIJA (pin) en desktop+motion. En reposo, móvil o
-   reduced-motion fluye como una columna normal. */
-.problemPin {
+/* Track (alto) + viewport (sticky). En desktop+motion el viewport se queda
+   pegado mientras el track provee la distancia de scroll para relevar las
+   tarjetas. En reposo / móvil / reduced-motion todo fluye en columna normal. */
+.problemTrack {
+    position: relative;
+}
+
+.problemViewport {
+    position: relative;
+}
+
+/* Layout base (móvil): columna única — título arriba, tarjetas debajo. */
+.problemLayout {
     display: flex;
     flex-direction: column;
-    justify-content: center;
 }
 
 .problemHead {
@@ -410,24 +448,29 @@
 
 .problemCountTotal { color: var(--color-text-subtle); }
 
-/* ── Modo pin activo (desktop + motion): tarjetas superpuestas. ── */
-.problemDeckOn {
-    min-height: 100vh;
-    justify-content: center;
-}
+/* ── Desktop: dos columnas — título (hero) a la izquierda, tarjetas (bullets)
+   a la derecha. El título queda sticky mientras las tarjetas pasan al lado.
+   Sin scroll-jacking: cada tarjeta entra una vez (GSAP `once`) y se queda
+   fija, así ninguna se queda "a la mitad" al parar el scroll. ── */
+@media (min-width: 768px) {
+    .problemLayout {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: var(--spacing-10);
+    }
 
-.problemDeckOn .problemHead { margin-bottom: var(--spacing-8); }
+    .problemHead {
+        flex: 0 0 38%;
+        max-width: none;
+        margin-bottom: 0;
+        position: sticky;
+        top: calc(4.75rem + var(--spacing-8));
+    }
 
-.problemDeckOn .problemDeck {
-    position: relative;
-    min-height: 46vh;
-}
-
-.problemDeckOn .problemCard {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    min-height: 46vh;
-    will-change: transform, opacity;
+    .problemDeck {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
 }
 
 @media (max-width: 767px) {
@@ -658,71 +701,152 @@
     min-width: 0;
 }
 
-/* Panel de resultados — mismo lenguaje que el HeroDashboard */
+/* Cabecera de tarjeta — icono de sector + nombre de sector: le da identidad
+   a cada caso (antes las tarjetas no comunicaban de qué sector eran). */
+.caseCardHead {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+}
+
+.caseIconTile {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mint);
+    background: var(--color-mint-soft);
+    border: 1px solid var(--color-border-mint);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-mint);
+    flex-shrink: 0;
+}
+
+.caseSector {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-mint);
+}
+
+.caseSectorDot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    box-shadow: 0 0 8px rgba(57, 206, 134, 0.8);
+    flex-shrink: 0;
+}
+
+/* Panel de resultados — mismo lenguaje que el HeroDashboard. Estirado a la
+   altura de la narrativa y con los stats centrados verticalmente para que el
+   bento quede equilibrado (antes flotaba arriba con hueco). */
 .caseCardPanel {
     display: flex;
     flex-direction: column;
     background: rgba(10, 14, 20, 0.55);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-card);
-    padding: var(--spacing-6);
-    align-self: start;
+    padding: var(--spacing-6) var(--spacing-7);
+    align-self: stretch;
 }
 
 .casePanelBar {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2);
+    justify-content: center;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     color: var(--color-text-muted);
     padding-bottom: var(--spacing-4);
-    margin-bottom: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
     border-bottom: 1px solid var(--color-border-subtle);
 }
 
-.casePanelDot {
-    width: 6px;
-    height: 6px;
-    border-radius: var(--radius-full);
-    background: var(--color-mint);
-    box-shadow: 0 0 8px rgba(57, 206, 134, 0.8);
-}
-
-/* Stats dentro del panel: pila vertical con hairlines, no grid de 3 */
+/* Stats dentro del panel: tres "tarjetas de resultado" apiladas, centradas
+   vertical y horizontalmente. Cada una es una mini-tile con acento mint
+   superior — antes eran filas planas number/label muy simples. */
 .caseCardPanel .caseCardStats {
     display: flex;
+    flex: 1;
     flex-direction: column;
+    justify-content: center;
     grid-template-columns: none;
-    gap: 0;
+    gap: var(--spacing-3);
     padding-top: 0;
     border-top: none;
 }
 
 .caseCardPanel .caseStat {
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--spacing-4);
-    padding: var(--spacing-4) 0;
-    border-bottom: 1px solid var(--color-border-subtle);
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-5) var(--spacing-4);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+    transition:
+        transform var(--transition-normal),
+        border-color var(--transition-normal),
+        background-color var(--transition-normal);
+}
+
+/* Acento mint superior — firma de "métrica" */
+.caseCardPanel .caseStat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 2px;
+    border-radius: var(--radius-full);
+    background: var(--gradient-mint);
+    opacity: 0.75;
 }
 
 .caseCardPanel .caseStat:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+    padding-bottom: var(--spacing-5);
+}
+
+@media (hover: hover) {
+    .caseCardPanel .caseStat:hover {
+        transform: translateY(-2px);
+        border-color: var(--color-border-mint);
+        background: var(--color-mint-soft);
+    }
 }
 
 .caseCardPanel .caseStatNumber {
-    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-size: clamp(1.875rem, 3vw, 2.5rem);
     flex-shrink: 0;
 }
 
 .caseCardPanel .caseStatLabel {
-    text-align: right;
-    max-width: 18ch;
+    text-align: center;
+    max-width: 24ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .caseCardPanel .caseStat {
+        transition: border-color var(--transition-normal), background-color var(--transition-normal);
+    }
+    .caseCardPanel .caseStat:hover {
+        transform: none;
+    }
 }
 
 /* Spotlight que sigue al puntero (::before pinta bajo el contenido) */

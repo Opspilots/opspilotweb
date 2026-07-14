@@ -122,8 +122,12 @@ export function CustomCursor() {
 
     return (
         <>
-            <div ref={dotRef} className={styles.dot} aria-hidden="true" />
-            <div ref={ringRef} className={styles.ring} aria-hidden="true" />
+            <div ref={dotRef} className={styles.dot} aria-hidden="true">
+                <div className={styles.dotCore} />
+            </div>
+            <div ref={ringRef} className={styles.ring} aria-hidden="true">
+                <div className={styles.ringCore} />
+            </div>
         </>
     );
 }

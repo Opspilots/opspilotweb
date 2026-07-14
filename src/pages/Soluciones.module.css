@@ -1,37 +1,11 @@
 /* ═══════════════════════════════════════════
-   Soluciones — sector pill switcher
+   Soluciones — explorador de sectores (tabla + panel)
    ═══════════════════════════════════════════ */
 
-/* ─── Hero eyebrow ─── */
-/* Mono uppercase + dot mint — reutiliza el lenguaje de eyebrow del sistema
-   (ver .eyebrow en index.css) para dar ritmo tipográfico sobre el título. */
-.heroEyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-regular);
-  color: var(--color-text-muted);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: var(--spacing-4);
-}
-
-.heroEyebrow::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-  background: var(--color-mint);
-  flex-shrink: 0;
-}
-
 /* ─── Hero title override ─── */
-/* letter-spacing inherits from sys.pageHeroTitle's --tracking-display (-0.045em) */
 .heroTitle {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  line-height: 1.0;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1.0;
 }
 
 .heroContentLayer {
@@ -40,232 +14,233 @@
 }
 
 /* ═══════════════════════════════════════════
-   Sector switcher — vertical pill tabs (left) +
-   detail panel (right). Stacks on narrow viewports,
-   pills becoming a horizontally scrollable row above
-   the panel. Breakpoints match the rest of the file:
-   768px (tablet) / 1024px (side-by-side kicks in).
+   Track + viewport — en desktop el explorador se queda sticky mientras el
+   track aporta la distancia de scroll que hace avanzar la selección.
    ═══════════════════════════════════════════ */
-.switcher {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-5);
-}
-
-@media (min-width: 1024px) {
-    .switcher {
-        flex-direction: row;
-        align-items: flex-start;
-        gap: var(--spacing-10);
-    }
-}
-
-/* ─── Tab list ─── */
-.tabList {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
-}
-
-@media (max-width: 1023px) {
-    .tabList {
-        flex-direction: row;
-        overflow-x: auto;
-        scroll-snap-type: x proximity;
-        gap: var(--spacing-3);
-        padding-bottom: var(--spacing-2);
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-    }
-
-    .tabList::-webkit-scrollbar {
-        display: none;
-    }
-}
-
-@media (min-width: 1024px) {
-    .tabList {
-        flex: 0 0 340px;
-        position: sticky;
-        top: var(--spacing-10);
-    }
-}
-
-.tab {
+.solTrack {
     position: relative;
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    .solTrack {
+        /* ~una "parada" de scroll por sector (6) + margen de lectura. */
+        height: 320vh;
+    }
+
+    .solViewport {
+        position: sticky;
+        top: 4.75rem;
+        min-height: calc(100vh - 4.75rem);
+        display: flex;
+        align-items: center;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   Explorador — 2 columnas (desktop) / apilado (≤1023px)
+   ═══════════════════════════════════════════ */
+.explorer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+    align-items: stretch;
+    width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .explorer {
+        grid-template-columns: minmax(300px, 360px) 1fr;
+        gap: var(--spacing-8);
+    }
+}
+
+/* ─── Columna izquierda: tabla de sectores ─── */
+.ledger {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-panel);
+    background:
+        var(--gradient-surface),
+        var(--color-bg-elevated);
+    box-shadow: var(--glass-inset), var(--shadow-sm);
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.ledgerHead {
     display: flex;
     align-items: center;
-    gap: var(--spacing-4);
-    width: 100%;
-    min-height: 44px;
-    text-align: left;
     padding: var(--spacing-4) var(--spacing-5);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-card);
-    background: transparent;
-    /* Idle legible: --color-text en vez de --color-text-muted, que quedaba
-       casi invisible sobre el fondo transparente. La jerarquía se mantiene:
-       idle (text) < activo (text-strong). */
-    color: var(--color-text);
-    font-family: var(--font-family-base);
-    cursor: pointer;
-    /* transform/opacity + box-shadow only — cheap on the GPU */
-    transition: transform 200ms var(--ease-out-expo),
-        border-color var(--transition-fast),
-        color var(--transition-fast),
-        box-shadow var(--transition-normal);
-}
-
-/* Status dot — hollow when idle, mint when active (signal, never fill) */
-.tab::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: var(--radius-full);
-    background: transparent;
-    border: 1px solid var(--color-border-strong);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
     flex-shrink: 0;
-    transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
-/* Sized so the next tab always peeks past the right edge — a full-width
-   pill used to hide the remaining sectors entirely, making the switcher
-   look like a single lone item on phones. Titles wrap to two lines
-   instead of forcing the pill wide with nowrap. */
-@media (max-width: 1023px) {
-    .tab {
-        flex: 0 0 74%;
-        max-width: 74%;
-        width: auto;
-        white-space: normal;
-        scroll-snap-align: center;
+/* Fila de sector — botón/tab. Grid: icono · etiqueta · flecha. Las filas
+   reparten la altura disponible (flex: 1) para que la tabla llene el alto del
+   panel y se vea completa. */
+.row {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--spacing-3);
+    width: 100%;
+    flex: 1 1 0;
+    min-height: 64px;
+    padding: var(--spacing-3) var(--spacing-5);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color-border-subtle);
+    text-align: left;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast);
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+/* Barra de acento mint a la izquierda — señal de fila activa. */
+.row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--gradient-mint);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform var(--transition-expressive);
+}
+
+@media (hover: hover) {
+    .row:hover {
+        background-color: var(--color-mint-soft);
+        color: var(--color-text-strong);
     }
 }
 
-.tab:hover {
-    border-color: var(--color-border-strong);
-    color: var(--color-text);
-    transform: translateX(3px);
-}
-
-.tab:focus-visible {
-    outline: 2px solid var(--color-mint);
-    outline-offset: 2px;
-}
-
-.tabActive {
-    background: var(--gradient-surface);
-    border-color: var(--color-border-mint);
+.rowActive {
+    background-color: var(--color-mint-soft);
     color: var(--color-text-strong);
-    box-shadow: var(--shadow-mint);
 }
 
-/* Active pill shouldn't drift on hover — it's already the anchored state. */
-.tabActive:hover {
-    transform: none;
-    border-color: var(--color-border-mint);
+.rowActive::before {
+    transform: scaleY(1);
 }
 
-/* Al activar, el punto mint entra con un pop (scale 0→1) — refuerza la señal
-   de "sector seleccionado" sin ruido. */
-.tabActive::before {
-    background: var(--color-mint);
-    border-color: var(--color-mint);
-    animation: dotPop 260ms var(--ease-out-expo);
+.rowIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+    opacity: 0.85;
 }
 
-@keyframes dotPop {
-    from { transform: scale(0); }
-    to { transform: scale(1); }
-}
-
-.tabIndex {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-subtle);
-    letter-spacing: 0.08em;
-    flex-shrink: 0;
-    transition: color var(--transition-fast);
-}
-
-.tabActive .tabIndex {
+.rowActive .rowIcon,
+.row:hover .rowIcon {
     color: var(--color-mint);
+    opacity: 1;
 }
 
-.tabTitle {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-regular);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    line-height: 1.5;
-}
-
-/* ─── Detail panel ─── */
-.panelWrap {
+.rowLabel {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.3;
     min-width: 0;
-    flex: 1;
+}
+
+.rowArrow {
+    color: var(--color-mint);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.rowActive .rowArrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.row:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: -2px;
+}
+
+/* ─── Columna derecha: panel de detalle ─── */
+.panelWrap {
+    position: relative;
+    border-radius: var(--radius-panel);
+}
+
+/* Hairline mint superior del panel — firma de acento de la web. */
+.panelBar {
+    position: absolute;
+    top: 0;
+    left: var(--spacing-8);
+    right: var(--spacing-8);
+    height: 2px;
+    z-index: 3;
+    background: var(--gradient-mint);
+    border-radius: 1px;
+    opacity: 0.9;
 }
 
 .panel {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+    padding: var(--spacing-10) var(--spacing-9);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-panel);
-    background: var(--gradient-surface);
+    background:
+        radial-gradient(120% 90% at 100% 0%, rgba(57, 206, 134, 0.10), transparent 55%),
+        var(--gradient-surface),
+        var(--color-bg-elevated);
     box-shadow: var(--glass-inset), var(--shadow-md);
-    padding: var(--spacing-8) var(--spacing-7);
-}
-
-@media (min-width: 768px) {
-    .panel {
-        padding: var(--spacing-10) var(--spacing-9);
-    }
-}
-
-.panelHead {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-4);
-    margin-bottom: var(--spacing-6);
+    overflow: hidden;
+    isolation: isolate;
 }
 
 .panelIcon {
-    width: 48px;
-    height: 48px;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--color-mint);
-    background: transparent;
+    background: var(--color-mint-soft);
     border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-mint);
     flex-shrink: 0;
-}
-
-.panelIndex {
-    display: block;
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-subtle);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: var(--spacing-1);
+    margin-bottom: var(--spacing-7);
 }
 
 .panelTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
-    font-weight: var(--font-weight-regular);
+    font-size: clamp(var(--font-size-2xl, 1.8rem), 3.4vw, 2.6rem);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-strong);
-    line-height: 1.2;
+    line-height: 1.12;
     letter-spacing: var(--tracking-tight);
-    margin: 0;
+    margin: 0 0 var(--spacing-4);
     text-wrap: balance;
 }
 
 .panelWho {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     color: var(--color-text-muted);
     line-height: 1.5;
     margin: 0 0 var(--spacing-6);
@@ -285,18 +260,27 @@
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     color: var(--color-text);
-    line-height: 1.65;
+    line-height: 1.55;
     letter-spacing: var(--tracking-tight);
     margin: 0 0 var(--spacing-7);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--color-border-subtle);
+    text-wrap: pretty;
 }
 
 .benefitsList {
     list-style: none;
     padding: 0;
-    margin: 0 0 var(--spacing-5);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
+    margin: 0 0 var(--spacing-9);
+    display: grid;
+    gap: var(--spacing-3);
+}
+
+@media (min-width: 560px) {
+    .benefitsList {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-4);
+    }
 }
 
 .benefitsList li {
@@ -305,48 +289,93 @@
     gap: var(--spacing-3);
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
+    line-height: 1.4;
 }
 
 .check {
-    width: 18px;
-    height: 18px;
-    min-width: 18px;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
     color: var(--color-mint);
+    background: var(--color-mint-soft);
+    border-radius: var(--radius-full);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
 
-/* CTA principal del panel — Button secundario envuelto en <Link>. El wrapper
-   solo controla el layout/espaciado; el estilo visual lo pone el Button. */
 .panelCta {
-    display: inline-block;
-    margin-top: var(--spacing-1);
+    margin-top: auto;
 }
 
-/* ─── Reduced motion — no pill drift ni pop del dot ─── */
+/* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
-    .tab {
-        transition: border-color var(--transition-fast), color var(--transition-fast);
+    .row,
+    .row::before,
+    .rowArrow {
+        transition: none;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   ≤1023px — la tabla pasa a carril horizontal de pills
+   ═══════════════════════════════════════════ */
+@media (max-width: 1023px) {
+    .ledger {
+        flex-direction: row;
+        overflow-x: auto;
+        scrollbar-width: none;
+        border-radius: var(--radius-control);
     }
 
-    .tab:hover {
-        transform: none;
+    .ledger::-webkit-scrollbar {
+        display: none;
     }
 
-    .tabActive::before {
-        animation: none;
+    .ledgerHead {
+        display: none;
+    }
+
+    .row {
+        grid-template-columns: auto auto;
+        gap: var(--spacing-2);
+        flex: 0 0 auto;
+        min-height: 0;
+        padding: var(--spacing-3) var(--spacing-5);
+        border-bottom: none;
+        border-right: 1px solid var(--color-border-subtle);
+        white-space: nowrap;
+    }
+
+    .row::before {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        height: 3px;
+        transform: scaleX(0);
+    }
+
+    .rowActive::before {
+        transform: scaleX(1);
+    }
+
+    .rowArrow {
+        display: none;
     }
 }
 
 /* ─── Mobile ─── */
-@media (max-width: 767px) {
+@media (max-width: 639px) {
     .panel {
-        padding: var(--spacing-7) var(--spacing-5);
+        min-height: 0;
+        padding: var(--spacing-8) var(--spacing-6);
     }
 
-    .panelSolution {
-        font-size: var(--font-size-base);
+    .panelIcon {
+        width: 52px;
+        height: 52px;
     }
 }

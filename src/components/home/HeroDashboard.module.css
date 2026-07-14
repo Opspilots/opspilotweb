@@ -1,7 +1,8 @@
 /* ═══════════════════════════════════════════
-   HERO DASHBOARD — instrument-window panel, alive
-   Depth via tinted shadow + surface gradient; the
-   "war room" boots up, counts, and breathes.
+   HERO DASHBOARD — "sitio en construcción", vivo
+   Un navegador donde una web se ensambla sola:
+   nav → titular → botón → captura con mini-gráfica,
+   y una barra "Publicado" con toggle escritorio/móvil.
    ═══════════════════════════════════════════ */
 
 .panel {
@@ -17,8 +18,6 @@
     isolation: isolate;
 }
 
-/* "Dashboard rise" entry — the panel lifts in, tiles cascade behind it.
-   Gated on reduced motion. */
 @media (prefers-reduced-motion: no-preference) {
     .panel {
         animation: dashboardRise 0.5s var(--ease-out-expo) 0.1s both;
@@ -26,24 +25,16 @@
 }
 
 @keyframes dashboardRise {
-    from {
-        opacity: 0;
-        transform: translateY(18px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Boot scan — a single mint light sweep across the whole panel on mount.
-   The "shimmer de carga": the instrument coming online. Transform only,
-   fires once, sits above content but never intercepts the pointer. */
+/* Boot scan — un barrido mint al montar */
 .panel::after {
     content: '';
     position: absolute;
     inset: 0;
-    z-index: 3;
+    z-index: 4;
     pointer-events: none;
     background: linear-gradient(
         105deg,
@@ -61,16 +52,13 @@
 }
 
 @keyframes bootScan {
-    to {
-        transform: translateX(130%);
-    }
+    to { transform: translateX(130%); }
 }
 
-/* ─── Title bar ─── */
-.titleBar {
+/* ─── Barra del navegador ─── */
+.browserBar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: var(--spacing-4);
     padding: var(--spacing-4) var(--spacing-5);
     border-bottom: 1px solid var(--color-border-subtle);
@@ -79,6 +67,7 @@
 .windowDots {
     display: inline-flex;
     gap: var(--spacing-2);
+    flex-shrink: 0;
 }
 
 .windowDots span {
@@ -89,216 +78,349 @@
     opacity: 0.35;
 }
 
-.titleText {
+.addressBar {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-3);
+    gap: var(--spacing-2);
+    flex: 1;
+    min-width: 0;
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--color-bg-deep);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-regular);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
     color: var(--color-text-muted);
     white-space: nowrap;
+    overflow: hidden;
 }
 
-.liveDot {
+.addressIcon {
+    color: var(--color-mint);
+    flex-shrink: 0;
+}
+
+.addressLive {
+    margin-left: auto;
     width: 6px;
     height: 6px;
     border-radius: var(--radius-full);
     background: var(--color-mint);
     flex-shrink: 0;
-}
-
-/* ─── Metric tiles — 2×2, internal hairlines ─── */
-.metricGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-}
-
-.tile {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-3);
-    padding: var(--spacing-6) var(--spacing-5);
-    border-bottom: 1px solid var(--color-border-subtle);
-    transition: background-color var(--transition-normal);
-}
-
-.tile:nth-child(odd) {
-    border-right: 1px solid var(--color-border-subtle);
-}
-
-/* Cursor lingers on a reading → the tile warms just enough to feel touchable */
-@media (hover: hover) and (pointer: fine) {
-    .tile:hover {
-        background-color: rgba(57, 206, 134, 0.035);
-    }
-}
-
-/* Tiles cascade in after the panel has risen. */
-@media (prefers-reduced-motion: no-preference) {
-    .tile {
-        animation: tileIn 0.44s var(--ease-out-expo) both;
-    }
-    .tile:nth-child(1) { animation-delay: 0.30s; }
-    .tile:nth-child(2) { animation-delay: 0.38s; }
-    .tile:nth-child(3) { animation-delay: 0.46s; }
-    .tile:nth-child(4) { animation-delay: 0.54s; }
-}
-
-@keyframes tileIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.tileLabel {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-regular);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--color-text-muted);
-    line-height: 1.3;
-}
-
-.tileValue {
-    font-family: var(--font-family-base);
-    font-size: clamp(1.875rem, 2.4vw, 2.5rem);
-    font-weight: var(--font-weight-regular);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: var(--tracking-tight);
-    line-height: 1;
-    color: var(--color-text-strong);
-}
-
-.spark {
-    width: 100%;
-    height: 40px;
-    display: block;
-    margin-top: auto;
-}
-
-.sparkMint,
-.sparkWarm {
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
-}
-
-.sparkMint {
-    stroke: var(--color-mint);
-}
-
-.sparkWarm {
-    stroke: var(--color-warm);
-}
-
-/* Live feed flicker — the sparklines pulse very gently, out of phase, so the
-   panel reads as receiving data. Opacity only, desktop only (kept off touch
-   /small screens to reduce motion there per the mobile brief). */
-@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
-    .spark {
-        animation: sparkLive 3.4s ease-in-out infinite;
-        will-change: opacity;
-    }
-    .tile:nth-child(2) .spark { animation-delay: 0.6s; }
-    .tile:nth-child(3) .spark { animation-delay: 1.2s; }
-    .tile:nth-child(4) .spark { animation-delay: 1.8s; }
-}
-
-@keyframes sparkLive {
-    0%, 100% { opacity: 0.9; }
-    50%      { opacity: 0.55; }
-}
-
-/* ─── Bottom status row — breathing service dots ─── */
-.statusRow {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-3) var(--spacing-6);
-    padding: var(--spacing-4) var(--spacing-5);
-    border-top: 1px solid var(--color-border-subtle);
-}
-
-.statusItem {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-regular);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--color-text-muted);
-    white-space: nowrap;
-}
-
-.statusDot,
-.liveDot {
     box-shadow: 0 0 0 0 rgba(57, 206, 134, 0);
 }
 
-/* The live "heartbeat": a soft scale + halo pulse. Each service dot breathes
-   on a staggered cadence so the row feels like independent live signals, not
-   a synchronised blink. Transform + opacity + a tiny box-shadow (as the hero
-   eyebrow already does). */
+/* ─── Viewport (la web) ─── */
+.viewport {
+    padding: var(--spacing-6) var(--spacing-6) var(--spacing-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+}
+
+/* Nav de la web montada */
+.siteNav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
+.brandMark {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    background: var(--gradient-mint);
+    flex-shrink: 0;
+    box-shadow: var(--shadow-mint);
+}
+
+.navLinks {
+    display: inline-flex;
+    gap: var(--spacing-3);
+}
+
+.navLinks span {
+    display: block;
+    width: 34px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+}
+
+.navCta {
+    margin-left: auto;
+    width: 52px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border-mint);
+    background: var(--color-mint-soft);
+    flex-shrink: 0;
+}
+
+/* Titular skeleton */
+.siteHeadline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-2);
+}
+
+.hlBar {
+    height: 15px;
+    width: 88%;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(90deg,
+        rgba(230, 235, 242, 0.92),
+        rgba(230, 235, 242, 0.42));
+}
+
+.hlBarShort { width: 56%; }
+
+.siteSub {
+    display: block;
+    height: 8px;
+    width: 70%;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+}
+
+/* CTA de la web */
+.ctaRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-1);
+}
+
+.ctaPrimary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2) var(--spacing-5);
+    border-radius: var(--radius-full);
+    background: var(--gradient-mint);
+    color: #0a0e14;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.01em;
+    box-shadow: var(--shadow-mint);
+}
+
+.ctaGhost {
+    width: 84px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border-strong);
+}
+
+/* Captura — mini panel de la web trabajando */
+.mediaTile {
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-4) var(--spacing-5) var(--spacing-5);
+    background: var(--color-bg-deep);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
+}
+
+.mediaHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-4);
+}
+
+.mediaTitle {
+    display: block;
+    width: 64px;
+    height: 7px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+}
+
+.mediaBadge {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-mint);
+}
+
+.chart {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-2);
+    height: 62px;
+}
+
+.bar {
+    flex: 1;
+    height: var(--h, 50%);
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(180deg,
+        var(--color-mint),
+        rgba(57, 206, 134, 0.35));
+    transform-origin: bottom center;
+}
+
+.barWarm {
+    background: linear-gradient(180deg,
+        var(--color-warm),
+        rgba(232, 165, 99, 0.35));
+}
+
+/* ─── Barra de estado ─── */
+.statusBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-5);
+    border-top: 1px solid var(--color-border-subtle);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+}
+
+.publishState {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.shipCheck {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint-soft);
+    border: 1px solid var(--color-border-mint);
+    color: var(--color-mint);
+    flex-shrink: 0;
+}
+
+.devices {
+    display: inline-flex;
+    gap: var(--spacing-2);
+}
+
+.device {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-subtle);
+}
+
+.deviceActive {
+    color: var(--color-mint);
+    border-color: var(--color-border-mint);
+    background: var(--color-mint-soft);
+}
+
+/* ═══════════════════════════════════════════
+   ENSAMBLADO — la web se monta por partes
+   ═══════════════════════════════════════════ */
 @media (prefers-reduced-motion: no-preference) {
-    .liveDot {
-        animation: liveBreathe 2.4s var(--ease-in-out, ease-in-out) infinite;
+    .siteNav {
+        animation: blockDown 0.42s var(--ease-out-expo) 0.5s both;
+    }
+
+    .hlBar {
+        animation: wipeIn 0.5s var(--ease-out-expo) both;
+        clip-path: inset(0 100% 0 0);
+    }
+    .siteHeadline .hlBar:nth-child(1) { animation-delay: 0.72s; }
+    .siteHeadline .hlBar:nth-child(2) { animation-delay: 0.82s; }
+
+    .siteSub {
+        animation: fadeUp 0.4s var(--ease-out-expo) 0.98s both;
+    }
+
+    .ctaPrimary {
+        animation: popIn 0.44s var(--ease-out-expo) 1.16s both;
+    }
+    .ctaGhost {
+        animation: fadeUp 0.4s var(--ease-out-expo) 1.28s both;
+    }
+
+    .mediaTile {
+        animation: fadeUp 0.5s var(--ease-out-expo) 1.42s both;
+    }
+
+    .bar {
+        animation: barGrow 0.5s var(--ease-out-expo) both;
+        animation-delay: calc(1.72s + var(--b) * 0.08s);
+    }
+
+    .statusBar {
+        animation: fadeUp 0.5s var(--ease-out-expo) 2.42s both;
+    }
+
+    /* El punto "en vivo" respira una vez publicada la web */
+    .addressLive {
+        animation: liveBreathe 2.4s ease-in-out 2.8s infinite;
         will-change: transform;
     }
-    .statusDot {
-        animation: liveBreathe 2.8s ease-in-out infinite;
-        will-change: transform;
-    }
-    .statusItem:nth-child(2) .statusDot { animation-delay: 0.5s; }
-    .statusItem:nth-child(3) .statusDot { animation-delay: 1.0s; }
-    .statusItem:nth-child(4) .statusDot { animation-delay: 1.5s; }
+}
+
+@keyframes blockDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes wipeIn {
+    from { opacity: 0; clip-path: inset(0 100% 0 0); }
+    to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    60% { transform: scale(1.06); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes barGrow {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
 }
 
 @keyframes liveBreathe {
     0%, 100% {
         transform: scale(1);
-        opacity: 1;
         box-shadow: 0 0 0 0 rgba(57, 206, 134, 0.5);
     }
     50% {
-        transform: scale(1.35);
-        opacity: 0.82;
+        transform: scale(1.3);
         box-shadow: 0 0 7px 1px rgba(57, 206, 134, 0.45);
     }
 }
 
-/* ─── Mobile — tighter tiles, calmer motion ─── */
+/* ─── Mobile — más compacto ─── */
 @media (max-width: 639px) {
-    .tile {
+    .viewport {
         padding: var(--spacing-5) var(--spacing-4);
+        gap: var(--spacing-4);
     }
 
-    .tileValue {
-        font-size: 1.625rem;
-    }
+    .chart { height: 52px; }
 
-    .spark {
-        height: 32px;
-    }
-
-    .statusRow {
-        gap: var(--spacing-2) var(--spacing-5);
-    }
+    .hlBar { height: 13px; }
 }
 
-/* No one-shot boot sweep on small screens (motion reducido en móvil). */
+/* Sin boot sweep en pantallas pequeñas */
 @media (max-width: 767px) {
     .panel::after {
         animation: none;
@@ -306,22 +428,24 @@
     }
 }
 
-/* ─── Reduced motion: everything settles to its final, still state ─── */
+/* ─── Reduced motion: todo a su estado final, quieto ─── */
 @media (prefers-reduced-motion: reduce) {
     .panel,
     .panel::after,
-    .tile,
-    .spark,
-    .liveDot,
-    .statusDot {
+    .siteNav,
+    .hlBar,
+    .siteSub,
+    .ctaPrimary,
+    .ctaGhost,
+    .mediaTile,
+    .bar,
+    .statusBar,
+    .addressLive {
         animation: none;
     }
 
-    .panel::after {
-        opacity: 0;
-    }
-
-    .spark {
-        opacity: 0.9;
-    }
+    .panel::after { opacity: 0; }
+    .hlBar { clip-path: none; opacity: 1; }
+    .bar { transform: scaleY(1); }
+    .statusBar { opacity: 1; }
 }

@@ -1,4 +1,11 @@
 .footer {
+    /* position + z-index: el footer es hermano de <main> (z-index 1), que
+       contiene la capa AmbientBackground (position: fixed, fondo opaco). Sin un
+       contexto propio por encima, esa capa fija se pintaba sobre el footer y lo
+       ocultaba ("el footer no aparece"). z-index 2 lo eleva sobre <main> sin
+       tapar la navbar (z-index 1000). */
+    position: relative;
+    z-index: 2;
     background-color: var(--color-bg-deep);
     color: var(--color-text-strong);
     padding: var(--spacing-14) 0 var(--spacing-8);
