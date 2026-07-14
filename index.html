@@ -8,26 +8,17 @@
   <meta name="color-scheme" content="dark" />
 
   <!-- Primary SEO -->
-  <title>OpsPilot — Software a medida y productos verticales para PYMEs en España</title>
-  <meta name="description"
-    content="Diseñamos y construimos contigo el software que tu empresa necesita. Trato cercano, presupuesto cerrado, respuesta en menos de 24h. Productos verticales (fiscalidad, energía, obra, ERP) y desarrollo a medida." />
+  <!-- title, description y robots los gestiona <PageSEO> por ruta (SSG) -->
   <meta name="keywords"
     content="desarrollo software a medida españa, software para pymes, equipo cercano de desarrollo, diagnóstico gratuito software, software fiscal aeat sii verifactu, crm sector energético, presupuestos obra bc3 fiebdc, erp agencias servicios, agentes ia mcp, modelos aeat 303 130 347 390" />
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <meta name="author" content="OpsPilot" />
   <meta name="language" content="es" />
   <meta name="geo.region" content="ES" />
   <meta name="geo.placename" content="Madrid" />
-  <link rel="canonical" href="https://opspilot.es/" />
-  <link rel="alternate" hreflang="es-ES" href="https://opspilot.es/" />
-  <link rel="alternate" hreflang="x-default" href="https://opspilot.es/" />
+  <!-- canonical + alternates los gestiona <PageSEO> por ruta (SSG) para evitar duplicados -->
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://opspilot.es/" />
-  <meta property="og:title" content="OpsPilot — Software a medida y productos verticales para PYMEs en España" />
-  <meta property="og:description"
-    content="Diseñamos y construimos contigo el software que tu empresa necesita. Trato cercano, presupuesto cerrado y respuesta en menos de 24h. Productos verticales y desarrollo a medida." />
+
+  <!-- Open Graph (og:type/url/title/description los gestiona <PageSEO> por ruta) -->
   <meta property="og:image" content="https://opspilot.es/images/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -35,11 +26,7 @@
   <meta property="og:locale" content="es_ES" />
   <meta property="og:site_name" content="OpsPilot" />
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="OpsPilot — Software a medida y productos verticales para PYMEs" />
-  <meta name="twitter:description"
-    content="Diseñamos y construimos contigo el software que tu empresa necesita. Trato cercano y respuesta en menos de 24h." />
+  <!-- Twitter Card (twitter:card/title/description los gestiona <PageSEO> por ruta) -->
   <meta name="twitter:image" content="https://opspilot.es/images/og-image.png" />
 
   <!-- Schema.org structured data -->
@@ -101,7 +88,7 @@
             "name": "Fiscalidad",
             "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web",
-            "url": "https://opspilot.es/productos#fiscalidad",
+            "url": "https://opspilot.es/recursos/fiscalidad-plataforma-fiscal-contable",
             "description": "Software fiscal y contable español: facturación, PGC, modelos AEAT (303, 130, 347, 390), SII y VeriFactu nativos, conciliación bancaria con OCR."
           },
           {
@@ -110,7 +97,7 @@
             "name": "EnergyDeal",
             "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web",
-            "url": "https://opspilot.es/productos#energydeal",
+            "url": "https://opspilot.es/recursos/energydeal-crm-energetico",
             "description": "CRM B2B para agentes y comercializadoras energéticas. Comparador multi-proveedor, gestión por CIF/CUPS, liquidación de comisiones."
           },
           {
@@ -119,7 +106,7 @@
             "name": "Presupuestador",
             "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web",
-            "url": "https://opspilot.es/productos#presupuestador",
+            "url": "https://opspilot.es/recursos/presupuestador-obra-bc3",
             "description": "Presupuestos y certificaciones de obra con importación BC3/FIEBDC, packs reutilizables, firma digital y OCR de albaranes."
           },
           {
@@ -128,7 +115,7 @@
             "name": "ERP OpsPilot",
             "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web",
-            "url": "https://opspilot.es/productos#erp",
+            "url": "https://opspilot.es/recursos/erp-hosteleria-tpv-restaurantes",
             "description": "ERP/PSA para agencias y servicios profesionales con CRM, prospección, auditorías y capa MCP nativa con 31+ herramientas para agentes IA."
           }
         ]
@@ -141,7 +128,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <!-- Carga no bloqueante: se aplica como print y se promueve a all en onload -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" />
+  </noscript>
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

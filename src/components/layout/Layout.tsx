@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navbar } from '../common/Navbar';
 import { Footer } from '../common/Footer';
+import { CustomCursor } from '../fx/CustomCursor';
 import { useLenis } from '../../hooks/useLenis';
 import styles from './Layout.module.css';
 
@@ -13,6 +14,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     return (
         <div className={styles.layout}>
+            <CustomCursor />
             <Navbar />
             <main className={styles.main}>
                 {children}

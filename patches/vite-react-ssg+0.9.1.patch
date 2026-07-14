@@ -1,0 +1,13 @@
+diff --git a/node_modules/vite-react-ssg/dist/shared/vite-react-ssg.Dj8AUNXT.mjs b/node_modules/vite-react-ssg/dist/shared/vite-react-ssg.Dj8AUNXT.mjs
+index a11b5e6..61f019e 100644
+--- a/node_modules/vite-react-ssg/dist/shared/vite-react-ssg.Dj8AUNXT.mjs
++++ b/node_modules/vite-react-ssg/dist/shared/vite-react-ssg.Dj8AUNXT.mjs
+@@ -457,7 +457,7 @@ class RemixAdapter {
+     const styleCollector = getStyleCollector ? await getStyleCollector() : null;
+     const helmetContext = {};
+     let routerContext = null;
+-    const { StaticRouterProvider, createStaticHandler, createStaticRouter } = await import('react-router-dom/server.js');
++    const { StaticRouterProvider, createStaticHandler, createStaticRouter } = await import('react-router-dom');
+     const { dataRoutes, query } = createStaticHandler([...routes], { basename: base });
+     const _context = await query(request);
+     if (_context instanceof Response)

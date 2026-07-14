@@ -1,9 +1,143 @@
+# =============================================================
+# OpsPilot — https://opspilot.es (sin www)
+# Web SSG (vite-react-ssg): HTML estatico por ruta en carpetas.
+# Reglas: HTTPS + host canonico + redirects 301 finales +
+# fallback SPA + seguridad + cache + compresion.
+# Todo con guards <IfModule> para no romper si falta un modulo.
+# =============================================================
+
+# -------------------------------------------------------------
+# 1) Reescrituras: HTTPS, host canonico, redirects y fallback SPA
+# -------------------------------------------------------------
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # No reescribir index.html a si mismo (evita bucle en el fallback)
   RewriteRule ^index\.html$ - [L]
+
+  # Marca los assets con hash (/assets/*) para aplicarles cache immutable.
+  # El env HASHED lo lee el bloque de mod_headers mas abajo.
+  RewriteRule ^assets/ - [E=HASHED:1]
+
+  # 1. Forzar HTTPS (http -> https, 301). HTTP_HOST conserva el host actual.
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # 2. Host canonico sin www: www.opspilot.es -> opspilot.es (301).
+  #    Los canonicals y el sitemap usan https://opspilot.es (sin www).
+  RewriteCond %{HTTP_HOST} ^www\.opspilot\.es$ [NC]
+  RewriteRule ^ https://opspilot.es%{REQUEST_URI} [R=301,L]
+
+  # 3. Redirects 301 reales server-side hacia el destino FINAL (sin cadenas).
+  #    Van ANTES del fallback SPA. Contemplan con y sin barra final.
+
+  #    3a. Rutas comerciales/legacy -> /contacto
+  RewriteRule ^services/?$        /contacto [R=301,L]
+  RewriteRule ^servicios/?$       /contacto [R=301,L]
+  RewriteRule ^precios/?$         /contacto [R=301,L]
+  RewriteRule ^pricing/?$         /contacto [R=301,L]
+  RewriteRule ^diagnostico/?$     /contacto [R=301,L]
+  RewriteRule ^demo/?$            /contacto [R=301,L]
+  RewriteRule ^contact/?$         /contacto [R=301,L]
+
+  #    3b. Casos (EN) -> /casos
+  RewriteRule ^cases/?$           /casos [R=301,L]
+
+  #    3c. Recursos (EN) -> /recursos
+  RewriteRule ^resources/?$       /recursos [R=301,L]
+
+  #    3d. Producto/productos -> /recursos
+  RewriteRule ^product/?$         /recursos [R=301,L]
+  RewriteRule ^productos/?$       /recursos [R=301,L]
+
+  # 4. Fallback SPA (DESPUES de los redirects). Si el path solicitado NO es
+  #    un archivo, directorio ni symlink existente, servir /index.html por
+  #    reescritura INTERNA (sin R, sin cambio de URL). Las rutas reales
+  #    resuelven a su propio index.html via DirectoryIndex; el fallback solo
+  #    cubre paths desconocidos (React renderiza la 404 con noindex).
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-l
   RewriteRule . /index.html [L]
+</IfModule>
+
+# -------------------------------------------------------------
+# 5) Cabeceras de seguridad
+# -------------------------------------------------------------
+<IfModule mod_headers.c>
+  # Evita el MIME-sniffing del navegador
+  Header always set X-Content-Type-Options "nosniff"
+  # Evita embeber la web en iframes de otros origenes (clickjacking)
+  Header always set X-Frame-Options "SAMEORIGIN"
+  # Referrer: envia origen completo same-origin, solo origen cross-origin
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  # Desactiva APIs sensibles que no usamos
+  Header always set Permissions-Policy "geolocation=(), camera=(), microphone=()"
+
+  # HSTS: fuerza HTTPS durante 1 año en este dominio y subdominios.
+  # NOTA: activar "; preload" SOLO cuando estes seguro (es irreversible a
+  # corto plazo y requiere enviar el dominio a hstspreload.org).
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+  # CSP en modo Report-Only: NO bloquea, solo reporta violaciones.
+  # Se usa Report-Only porque no podemos testear Apache localmente y una CSP
+  # mal ajustada rompe produccion sin margen de prueba. Se puede PROMOVER a
+  # enforce (cabecera Content-Security-Policy) tras validar que no hay
+  # violaciones legitimas en los reportes del navegador.
+  Header always set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://plausible.io https://formsubmit.co"
+</IfModule>
+
+# -------------------------------------------------------------
+# 6) Cache: assets con hash immutable, HTML sin cache, imagenes sin hash 7d
+# -------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # JS/CSS/fuentes (siempre con hash en /assets/) -> 1 año
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript        "access plus 1 year"
+  ExpiresByType text/css               "access plus 1 year"
+  ExpiresByType font/woff2             "access plus 1 year"
+  ExpiresByType font/woff              "access plus 1 year"
+  ExpiresByType font/ttf               "access plus 1 year"
+
+  # Imagenes/SVG -> 7 dias por defecto (las de /assets/ con hash suben a
+  # immutable via Cache-Control en el bloque mod_headers, que es autoritativo)
+  ExpiresByType image/png              "access plus 7 days"
+  ExpiresByType image/jpeg             "access plus 7 days"
+  ExpiresByType image/gif              "access plus 7 days"
+  ExpiresByType image/webp             "access plus 7 days"
+  ExpiresByType image/avif             "access plus 7 days"
+  ExpiresByType image/svg+xml          "access plus 7 days"
+  ExpiresByType image/x-icon           "access plus 7 days"
+
+  # HTML -> sin cache, revalidar siempre (el prerender se actualiza en cada deploy)
+  ExpiresByType text/html              "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Assets con hash (/assets/*, marcados con env HASHED) -> immutable 1 año.
+  # El hash en el nombre invalida la cache al cambiar el contenido.
+  Header set Cache-Control "public, immutable, max-age=31536000" env=HASHED
+
+  # HTML -> siempre revalidar contra el servidor (deploy visible al instante).
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+
+  # Imagenes/SVG SIN hash (fuera de /assets/) -> 7 dias.
+  # Se aplica solo si NO es un asset con hash (env HASHED no definido).
+  <FilesMatch "\.(png|jpe?g|gif|webp|avif|svg|ico)$">
+    Header set Cache-Control "public, max-age=604800" env=!HASHED
+  </FilesMatch>
+</IfModule>
+
+# -------------------------------------------------------------
+# 7) Compresion de texto
+# -------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml application/xml text/xml
 </IfModule>
