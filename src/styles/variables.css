@@ -135,15 +135,6 @@
     --space-hero-bottom: 5rem;
 
     /* ═══════════════════════════════════════════
-       SHADOWS — SHIM (Factory: sin sombras; borrar en Fase 5)
-       ═══════════════════════════════════════════ */
-    --shadow-sm: none;
-    --shadow-md: none;
-    --shadow-lg: none;
-    --shadow-card: none;
-    --shadow-xl: none;
-
-    /* ═══════════════════════════════════════════
        RADII — Factory (control 3px, card 10px, panel 20px)
        ═══════════════════════════════════════════ */
     --radius-sm: 3px;
@@ -168,33 +159,11 @@
     --transition-slow: 200ms var(--ease-custom);
 
     /* ═══════════════════════════════════════════
-       GLOW & GLASS — SHIM (Factory: sin glows; borrar en Fase 5)
-       ═══════════════════════════════════════════ */
-    --glow-mint:         none;
-    --glow-mint-sm:      none;
-    --glow-mint-lg:      none;
-    --glass-bg:          rgba(255, 255, 255, 0.03);
-    --glass-border:      rgba(255, 255, 255, 0.08);
-
-    /* ═══════════════════════════════════════════
-       GRADIENTS — SHIM (flat; borrar en Fase 5)
-       ═══════════════════════════════════════════ */
-    --gradient-mint-text: linear-gradient(var(--color-mint), var(--color-mint));
-    --gradient-hero:      none;
-
-    /* ═══════════════════════════════════════════
        Z-INDEX
        ═══════════════════════════════════════════ */
     --z-index-navbar: 1000;
     --z-index-modal: 2000;
     --z-index-toast: 3000;
-
-    /* ═══════════════════════════════════════════
-       LEGACY — SHIM (flat/none; borrar en Fase 5)
-       ═══════════════════════════════════════════ */
-    --gradient-primary: linear-gradient(var(--color-mint), var(--color-mint));
-    --gradient-glow: none;
-    --shadow-glow-green: none;
 }
 
 /* ═══════════════════════════════════════════

@@ -56,7 +56,7 @@ export const ResourceDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const resource = slug ? getResourceBySlug(slug) : undefined;
 
-    const bodyRef = useScrollReveal<HTMLDivElement>();
+    const bodyRef = useScrollReveal<HTMLDivElement>({ stagger: true });
 
     usePageSEO({
         title: resource ? `${resource.title} — Recursos OpsPilot` : 'Recurso no encontrado — OpsPilot',

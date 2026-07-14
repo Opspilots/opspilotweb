@@ -29,3 +29,7 @@ npm-debug.log*
 *.png
 *.jpg
 *.jpeg
+
+# ...pero los assets publicos si se versionan
+!public/**/*.png
+!public/**/*.jpg
