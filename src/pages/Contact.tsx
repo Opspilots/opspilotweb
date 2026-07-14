@@ -139,7 +139,7 @@ export const Contact: React.FC = () => {
                         </div>
 
                         <div className={styles.infoCol}>
-                            <div className={`${styles.infoCard} reveal`}>
+                            <div className={`${sys.lightCard} ${styles.infoCard} reveal`}>
                                 <h3 className={styles.infoTitle}>Contacto directo</h3>
                                 <div className={styles.methods}>
                                     <div className={styles.method}>

@@ -15,6 +15,8 @@ export interface Resource {
     desc: string;
     time: string;
     featured?: boolean;
+    /** Ruta pública de la imagen de portada 16:9 (webp). Opcional: sin ella se usa el placeholder CSS. */
+    cover?: string;
     blocks: ResourceBlock[];
 }
 
@@ -26,6 +28,7 @@ export const RESOURCES: Resource[] = [
         desc: 'Paso a paso para identificar qué procesos te roban tiempo y convertirlos en flujos automáticos. Sin código, sin complicaciones.',
         time: '8 min',
         featured: true,
+        cover: '/images/resources/automatiza-tu-negocio-sin-saber-de-tecnologia.webp',
         blocks: [
             {
                 type: 'p',
@@ -295,6 +298,7 @@ export const RESOURCES: Resource[] = [
         title: 'Fiscalidad: facturación, contabilidad PGC y modelos AEAT en una sola plataforma',
         desc: 'Plataforma fiscal y contable española completa, con SII y VeriFactu nativos, OCR de tickets y asistente IA. Para autónomos, PYMEs y asesorías.',
         time: '6 min',
+        cover: '/images/resources/fiscalidad-plataforma-fiscal-contable.webp',
         blocks: [
             {
                 type: 'p',
@@ -342,6 +346,7 @@ export const RESOURCES: Resource[] = [
         title: 'EnergyDeal: CRM vertical para agentes y comercializadoras energéticas',
         desc: 'Comparador multi-proveedor con snapshots inmutables, gestión por CIF con CUPS y liquidación de comisiones con trazabilidad completa.',
         time: '5 min',
+        cover: '/images/resources/energydeal-crm-energetico.webp',
         blocks: [
             {
                 type: 'p',
@@ -385,6 +390,7 @@ export const RESOURCES: Resource[] = [
         title: 'Presupuestador: presupuestos y certificaciones de obra con BC3 nativo',
         desc: 'SaaS para construcción y reformas: partidas con descomposición, firma digital del cliente, certificaciones versionadas y control de coste real con OCR.',
         time: '6 min',
+        cover: '/images/resources/presupuestador-obra-bc3.webp',
         blocks: [
             {
                 type: 'p',
@@ -432,6 +438,7 @@ export const RESOURCES: Resource[] = [
         title: 'ERP Hostelería: TPV, inventario, reservas y personal para restaurantes y bares',
         desc: 'ERP todo-en-uno para el día a día de un negocio de hostelería: mesas y comandas, stock y proveedores, turnos, reservas y cierre de caja con analítica.',
         time: '5 min',
+        cover: '/images/resources/erp-hosteleria-tpv-restaurantes.webp',
         blocks: [
             {
                 type: 'p',

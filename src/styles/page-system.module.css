@@ -21,7 +21,7 @@
     }
 }
 
-/* ─── Page hero (más compacto que el home, sin Aurora) ─── */
+/* ─── Page hero (más compacto que el home) ─── */
 .pageHero {
     position: relative;
     padding: var(--spacing-20) 0 var(--spacing-16);
@@ -197,6 +197,15 @@
     flex-wrap: wrap;
     position: relative;
     z-index: 1;
+}
+
+/* Outline buttons inside the light card would otherwise render white
+   text + white hairline on bone — re-tint them via the scoped custom
+   props that Button.module.css's .outline variant consumes. */
+.endCtaBlock {
+    --btn-outline-text: var(--color-card-light-text);
+    --btn-outline-border: rgba(0, 0, 0, 0.25);
+    --btn-outline-border-hover: rgba(0, 0, 0, 0.45);
 }
 
 /* ─── Light card reutilizable (mismo tratamiento que endCtaBlock) ─── */

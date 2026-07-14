@@ -62,15 +62,18 @@
     transform: translateY(1px);
 }
 
-/* Outline — ghost hairline. Sin bg en hover. */
+/* Outline — ghost hairline. Sin bg en hover.
+   Consumes scoped custom props so containers with light surfaces
+   (e.g. page-system's .endCtaBlock) can re-tint text/border without
+   reaching into this module's hashed class names. */
 .outline {
     background-color: transparent;
-    border-color: var(--color-border-subtle);
-    color: var(--color-text-strong);
+    border-color: var(--btn-outline-border, var(--color-border-subtle));
+    color: var(--btn-outline-text, var(--color-text-strong));
 }
 
 .outline:hover:not(:disabled) {
-    border-color: var(--color-border-strong);
+    border-color: var(--btn-outline-border-hover, var(--color-border-strong));
 }
 
 .outline:active:not(:disabled) {

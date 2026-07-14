@@ -1,0 +1,184 @@
+/* ═══════════════════════════════════════════
+   HERO DASHBOARD — instrument window panel
+   Flat: hairlines only, no fills, no shadows.
+   ═══════════════════════════════════════════ */
+
+.panel {
+    width: 100%;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-panel);
+    overflow: hidden;
+}
+
+/* "Dashboard rise" entry — mechanical, gated on reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+    .panel {
+        animation: dashboardRise 0.2s var(--ease-custom) 0.15s both;
+    }
+}
+
+@keyframes dashboardRise {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Title bar ─── */
+.titleBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-5);
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.windowDots {
+    display: inline-flex;
+    gap: var(--spacing-2);
+}
+
+.windowDots span {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: var(--color-text-muted);
+    opacity: 0.35;
+}
+
+.titleText {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.liveDot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    flex-shrink: 0;
+}
+
+/* ─── Metric tiles — 2×2, internal hairlines, no fill ─── */
+.metricGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-6) var(--spacing-5);
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.tile:nth-child(odd) {
+    border-right: 1px solid var(--color-border-subtle);
+}
+
+.tileLabel {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-text-muted);
+    line-height: 1.3;
+}
+
+.tileValue {
+    font-family: var(--font-family-base);
+    font-size: clamp(1.875rem, 2.4vw, 2.5rem);
+    font-weight: var(--font-weight-regular);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-tight);
+    line-height: 1;
+    color: var(--color-text-strong);
+}
+
+.spark {
+    width: 100%;
+    height: 40px;
+    display: block;
+    margin-top: auto;
+}
+
+.sparkMint,
+.sparkWarm {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.sparkMint {
+    stroke: var(--color-mint);
+}
+
+.sparkWarm {
+    stroke: var(--color-warm);
+}
+
+/* ─── Bottom status row ─── */
+.statusRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-3) var(--spacing-6);
+    padding: var(--spacing-4) var(--spacing-5);
+}
+
+.statusItem {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.statusDot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    flex-shrink: 0;
+}
+
+/* ─── Mobile — tighter tiles ─── */
+@media (max-width: 639px) {
+    .tile {
+        padding: var(--spacing-5) var(--spacing-4);
+    }
+
+    .tileValue {
+        font-size: 1.625rem;
+    }
+
+    .spark {
+        height: 32px;
+    }
+
+    .statusRow {
+        gap: var(--spacing-2) var(--spacing-5);
+    }
+}

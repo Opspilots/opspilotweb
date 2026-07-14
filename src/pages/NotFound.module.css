@@ -1,0 +1,66 @@
+/* ═══════════════════════════════════════════
+   NotFound — flat deep canvas, giant mono 404
+   ═══════════════════════════════════════════ */
+
+.wrap {
+    min-height: 100dvh;
+    background: var(--color-bg-deep);
+    color: var(--color-text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-8);
+}
+
+.inner {
+    max-width: 560px;
+}
+
+.label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    margin: 0 0 var(--spacing-5);
+}
+
+.labelDot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    flex-shrink: 0;
+}
+
+.code {
+    font-family: var(--font-family-mono);
+    font-size: clamp(6rem, 20vw, 12rem);
+    font-weight: var(--font-weight-regular);
+    line-height: 1;
+    letter-spacing: -0.06em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-strong);
+    margin: 0 0 var(--spacing-6);
+}
+
+.copy {
+    font-size: var(--font-size-base);
+    line-height: 1.65;
+    color: var(--color-text-muted);
+    max-width: 420px;
+    margin: 0 auto var(--spacing-10);
+}
+
+.actions {
+    display: flex;
+    gap: var(--spacing-4);
+    justify-content: center;
+    flex-wrap: wrap;
+}

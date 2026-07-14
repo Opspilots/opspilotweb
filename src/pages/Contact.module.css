@@ -29,7 +29,7 @@
     padding: var(--spacing-10);
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-panel);
 }
 
 .formTitle {
@@ -74,11 +74,12 @@
 }
 
 .field label {
-    font-family: var(--font-family-base);
-    font-size: var(--font-size-sm);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
-    color: var(--color-text);
-    letter-spacing: -0.005em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
 }
 
 .field input,
@@ -86,13 +87,13 @@
 .field textarea {
     width: 100%;
     padding: 0.75rem 0.95rem;
-    background: var(--color-bg);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-md);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--radius-control);
     color: var(--color-text-strong);
     font-family: var(--font-family-base);
     font-size: var(--font-size-sm);
-    transition: border-color var(--transition-fast), background var(--transition-fast);
+    transition: border-color var(--transition-fast) var(--ease-custom);
     outline: none;
 }
 
@@ -100,7 +101,6 @@
 .field select:focus,
 .field textarea:focus {
     border-color: var(--color-mint);
-    background: var(--color-bg-deep);
 }
 
 .field input::placeholder,
@@ -130,7 +130,8 @@
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     color: var(--color-text-subtle);
-    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-top: var(--spacing-2);
 }
 
@@ -138,26 +139,38 @@
     color: var(--color-error);
     font-size: var(--font-size-sm);
     padding: var(--spacing-3) var(--spacing-4);
-    background: rgba(225, 90, 90, 0.08);
     border: 1px solid rgba(225, 90, 90, 0.25);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-control);
 }
 
 .formSuccess {
     text-align: center;
     padding: var(--spacing-12) var(--spacing-6);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
-    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
 }
 
 .formSuccessTitle {
-    font-family: var(--font-family-display);
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     color: var(--color-mint);
     margin-bottom: var(--spacing-3);
-    letter-spacing: var(--tracking-tight);
+}
+
+.formSuccessTitle::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    flex-shrink: 0;
 }
 
 .formSuccessText {
@@ -173,28 +186,49 @@
     gap: var(--spacing-7);
 }
 
-.infoCard,
+/* Segundo uso de la light card signature — el markup añade sys.lightCard;
+   aquí solo padding + contenido por encima del grano (::after z-index 0). */
+.infoCard {
+    padding: var(--spacing-9);
+}
+
+.infoCard > * {
+    position: relative;
+    z-index: 1;
+}
+
 .waCard {
     padding: var(--spacing-9);
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-card);
 }
 
-.waCard {
-    background:
-        radial-gradient(circle at 80% 0%, rgba(57, 206, 134, 0.08) 0%, transparent 60%),
-        var(--color-bg-elevated);
-    border-color: var(--color-border-mint);
-}
-
+/* Eyebrow de instrumento — mono uppercase + dot mint (única señal mint) */
 .infoTitle {
-    font-family: var(--font-family-display);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-strong);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
     margin-bottom: var(--spacing-6);
-    letter-spacing: var(--tracking-tight);
+}
+
+.infoTitle::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    flex-shrink: 0;
+}
+
+.infoCard .infoTitle {
+    color: var(--color-card-light-muted);
 }
 
 .methods {
@@ -210,32 +244,33 @@
     align-items: start;
 }
 
+/* Iconos en tono oscuro sobre la light card — sin fill mint */
 .methodIcon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 36px;
     height: 36px;
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
-    border-radius: var(--radius-md);
+    color: var(--color-card-light-text);
+    border: 1px solid var(--color-card-light-border);
+    border-radius: var(--radius-control);
 }
 
 .method strong {
     display: block;
     font-family: var(--font-family-base);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-strong);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-card-light-text);
     margin-bottom: 2px;
 }
 
 .method p {
     font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
+    color: var(--color-card-light-muted);
     line-height: 1.5;
     margin: 0;
+    overflow-wrap: anywhere;
 }
 
 .waCard p {
@@ -248,7 +283,7 @@
 @media (max-width: 639px) {
     .formCard {
         padding: var(--spacing-7) var(--spacing-5);
-        border-radius: var(--radius-xl);
+        border-radius: var(--radius-card);
     }
 
     .formSub {

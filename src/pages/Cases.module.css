@@ -13,20 +13,6 @@
     padding: var(--space-section-loose) 0;
 }
 
-.carouselScene {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-}
-
-/* Loading placeholder for the carousel's decorative 3D background
-   (`CaseDeckScene`) while the chunk loads. */
-.sceneFallback {
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(57, 206, 134, 0.05) 0%, transparent 70%);
-}
-
 .carouselContentLayer {
     position: relative;
     z-index: 1;
@@ -36,6 +22,62 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-7);
+}
+
+/* ─── Case ledger — instrument strip ─── */
+.caseLedger {
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+}
+
+.ledgerRow {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr auto;
+    gap: var(--spacing-4);
+    align-items: center;
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-5);
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--color-border-subtle);
+    font-family: var(--font-family-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.ledgerRow:hover {
+    color: var(--color-text-strong);
+}
+
+.ledgerHead {
+    border-top: none;
+    color: var(--color-text-subtle);
+    cursor: default;
+}
+
+.ledgerRowActive {
+    color: var(--color-text-strong);
+}
+
+.ledgerStatus {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    justify-self: end;
+}
+
+.ledgerDot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    flex-shrink: 0;
 }
 
 /* Exactly ONE slide in view at a time: each `.caseCard` is `flex: 0 0 100%`
@@ -66,25 +108,13 @@
     /* Full-width slide — only one case visible at a time, no peek. */
     flex: 0 0 100%;
     scroll-snap-align: start;
-    background: var(--color-bg-elevated);
+    background: transparent;
     border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-3xl);
+    border-radius: var(--radius-card);
     padding: var(--spacing-10);
     position: relative;
     overflow: hidden;
     transition: border-color var(--transition-normal);
-}
-
-/* Mint top accent line */
-.caseCard::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 10%, var(--color-mint) 50%, transparent 90%);
-    opacity: 0.35;
 }
 
 /* ─── Card header ─── */
@@ -99,23 +129,19 @@
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-2);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-mint);
-    letter-spacing: 0.12em;
+    font-family: var(--font-family-mono);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 5px 12px 5px 10px;
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
-    border-radius: var(--radius-full);
 }
 
 .sectorDot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
     background: var(--color-mint);
-    box-shadow: 0 0 6px rgba(57, 206, 134, 0.55);
     flex-shrink: 0;
 }
 
@@ -156,7 +182,10 @@
 }
 
 .cardStatLabel {
-    font-size: var(--font-size-xs);
+    font-family: var(--font-family-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--color-text-muted);
     line-height: 1.45;
     max-width: 20ch;
@@ -282,7 +311,7 @@
 .navBtn {
     width: 2.75rem;
     height: 2.75rem;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-control);
     border: 1px solid var(--color-border-subtle);
     background: transparent;
     color: var(--color-text-muted);
@@ -290,18 +319,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all var(--transition-fast);
+    transition: border-color var(--transition-fast), color var(--transition-fast);
     flex-shrink: 0;
 }
 
 .navBtn:hover:not(:disabled) {
     border-color: var(--color-border-strong);
     color: var(--color-text-strong);
-    background: var(--color-bg-raised);
 }
 
 .navBtn:active:not(:disabled) {
-    transform: scale(0.96);
+    transform: translateY(1px);
 }
 
 .navBtn:disabled {
@@ -326,7 +354,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+    background: var(--color-border-subtle);
 }
 
 .whySection::before { top: 0; }
@@ -369,11 +397,6 @@
     padding: var(--spacing-9) var(--spacing-8);
     border-right: 1px solid var(--color-border-subtle);
     border-bottom: 1px solid var(--color-border-subtle);
-    transition: background var(--transition-fast);
-}
-
-.whyItem:hover {
-    background: rgba(255, 255, 255, 0.014);
 }
 
 /* Last item spans full width */
@@ -389,9 +412,6 @@
     align-items: center;
     justify-content: center;
     color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
-    border-radius: 50%;
     margin-bottom: var(--spacing-5);
     flex-shrink: 0;
 }
@@ -425,7 +445,17 @@
     .caseCard {
         /* Inherits flex: 0 0 100% — exactly one slide visible on mobile too. */
         padding: var(--spacing-7) var(--spacing-6);
-        border-radius: var(--radius-2xl);
+        border-radius: var(--radius-card);
+    }
+
+    /* Ledger: drop the RESULTADO column — sector + estado only */
+    .ledgerRow {
+        grid-template-columns: 1fr auto;
+        padding: var(--spacing-3) var(--spacing-4);
+    }
+
+    .ledgerResult {
+        display: none;
     }
 
     .cardStats {
@@ -490,8 +520,8 @@
         scroll-snap-align: start;
         padding: var(--spacing-7) var(--spacing-6);
         border: 1px solid var(--color-border-subtle);
-        border-radius: var(--radius-2xl);
-        background: var(--color-bg-elevated);
+        border-radius: var(--radius-card);
+        background: transparent;
     }
 
     /* Horizontal row — no single item spans full width */

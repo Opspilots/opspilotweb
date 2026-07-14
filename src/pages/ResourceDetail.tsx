@@ -68,6 +68,8 @@ export const ResourceDetail: React.FC = () => {
         return <Navigate to={ROUTES.recursos} replace />;
     }
 
+    const { cover } = resource;
+
     const related = RESOURCES.filter((r) => r.slug !== resource.slug && r.cat === resource.cat).slice(0, 2);
     const fallbackRelated = related.length > 0
         ? related
@@ -93,6 +95,17 @@ export const ResourceDetail: React.FC = () => {
                     <p className={styles.lead}>{resource.desc}</p>
                 </div>
             </section>
+
+            {/* ═══ COVER (16:9, solo si el recurso tiene `cover`) ═══ */}
+            {cover && (
+                <section className={styles.coverSection}>
+                    <div className={sys.container}>
+                        <div className={styles.coverFrame}>
+                            <img className={styles.coverImg} src={cover} alt={resource.title} loading="lazy" />
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* ═══ ARTÍCULO ═══ */}
             <section className={styles.bodySection}>

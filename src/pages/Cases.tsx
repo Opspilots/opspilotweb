@@ -6,7 +6,6 @@ import { useHeroReveal } from '../hooks/useHeroReveal';
 import { useDragScroll } from '../hooks/useDragScroll';
 import { usePageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
-import { SceneCanvas } from '../components/three/SceneCanvas';
 import {
     ChevronLeft,
     ChevronRight,
@@ -145,15 +144,6 @@ const CarouselSection: React.FC = () => {
     const rafRef = useRef<number>(0);
     useDragScroll(trackRef);
 
-    // Mirrors `currentIndex` into a ref for the decorative 3D background
-    // (`CaseDeckScene`), read every frame via `useFrame` — never via React
-    // state/props, so changing slides never re-renders the Canvas. Purely
-    // additive: does not touch the carousel's scroll/index logic above.
-    const activeIndexRef = useRef(currentIndex);
-    useEffect(() => {
-        activeIndexRef.current = currentIndex;
-    }, [currentIndex]);
-
     const getScrollUnit = useCallback((): number => {
         if (!trackRef.current) return 0;
         const card = trackRef.current.children[0] as HTMLElement | null;
@@ -188,14 +178,36 @@ const CarouselSection: React.FC = () => {
 
     return (
         <section className={styles.carouselSection}>
-            <SceneCanvas
-                loader={() => import('../components/three/scenes/CaseDeckScene')}
-                sceneProps={{ activeIndexRef }}
-                fallback={<div className={styles.sceneFallback} />}
-                className={styles.carouselScene}
-            />
             <div className={`${sys.container} ${styles.carouselContentLayer}`}>
                 <div className={styles.carouselWrapper}>
+                    {/* Case ledger — instrument strip mirroring the carousel state */}
+                    <div className={styles.caseLedger}>
+                        <div className={`${styles.ledgerRow} ${styles.ledgerHead}`} aria-hidden="true">
+                            <span>Sector</span>
+                            <span className={styles.ledgerResult}>Resultado</span>
+                            <span className={styles.ledgerStatus}>Estado</span>
+                        </div>
+                        {CASES.map((c, i) => (
+                            <button
+                                key={i}
+                                type="button"
+                                className={`${styles.ledgerRow} ${i === currentIndex ? styles.ledgerRowActive : ''}`}
+                                onClick={() => scrollToIndex(i)}
+                                aria-label={`Ver caso ${i + 1}: ${c.sector}`}
+                                aria-current={i === currentIndex}
+                            >
+                                <span>{c.sector}</span>
+                                <span className={styles.ledgerResult}>
+                                    {c.stats[0].v} {c.stats[0].l}
+                                </span>
+                                <span className={styles.ledgerStatus}>
+                                    <span className={styles.ledgerDot} aria-hidden="true" />
+                                    Operativo
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+
                     <div
                         ref={trackRef}
                         className={styles.carouselTrack}

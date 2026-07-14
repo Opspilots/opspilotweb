@@ -34,6 +34,23 @@ function normalize(value: string): string {
 const featured = RESOURCES.find((r) => r.featured)!;
 const rest = RESOURCES.filter((r) => !r.featured);
 
+const CoverSlot: React.FC<{ cover: string | undefined; label: string; className?: string }> = ({
+    cover,
+    label,
+    className,
+}) => (
+    <div className={`${styles.cover}${className ? ` ${className}` : ''}`} aria-hidden="true">
+        {cover ? (
+            <img className={styles.coverImg} src={cover} alt="" loading="lazy" />
+        ) : (
+            <span className={styles.coverPh}>
+                <span className={styles.coverDot} />
+                {label}
+            </span>
+        )}
+    </div>
+);
+
 export const Resources: React.FC = () => {
     usePageSEO({
         title: 'Recursos · Guías y artículos prácticos — OpsPilot',
@@ -153,24 +170,31 @@ export const Resources: React.FC = () => {
                     <div className={sys.container}>
                         <Link to={`/recursos/${featured.slug}`} className={styles.featuredLink}>
                             <article className={styles.featuredCard} ref={featuredRef}>
-                                <div className={styles.featuredMeta}>
-                                    <span className={styles.cardCat}>{featured.cat}</span>
-                                    <span className={styles.cardTime}>
-                                        <Clock size={12} strokeWidth={2} />
-                                        {featured.time} lectura
-                                    </span>
+                                <div className={styles.featuredBody}>
+                                    <div className={styles.featuredMeta}>
+                                        <span className={styles.cardCat}>{featured.cat}</span>
+                                        <span className={styles.cardTime}>
+                                            <Clock size={12} strokeWidth={2} />
+                                            {featured.time} lectura
+                                        </span>
+                                    </div>
+                                    <h2 className={styles.featuredTitle}>{featured.title}</h2>
+                                    <p className={styles.featuredDesc}>{featured.desc}</p>
+                                    <TextLink
+                                        interactive={false}
+                                        tone="subtle"
+                                        size="sm"
+                                        className={styles.featuredCta}
+                                        icon={<ArrowRight size={15} strokeWidth={2} />}
+                                    >
+                                        {CTA_BY_CAT[featured.cat]}
+                                    </TextLink>
                                 </div>
-                                <h2 className={styles.featuredTitle}>{featured.title}</h2>
-                                <p className={styles.featuredDesc}>{featured.desc}</p>
-                                <TextLink
-                                    interactive={false}
-                                    tone="subtle"
-                                    size="sm"
-                                    className={styles.featuredCta}
-                                    icon={<ArrowRight size={15} strokeWidth={2} />}
-                                >
-                                    {CTA_BY_CAT[featured.cat]}
-                                </TextLink>
+                                <CoverSlot
+                                    cover={featured.cover}
+                                    label={featured.cat}
+                                    className={styles.coverFeatured}
+                                />
                             </article>
                         </Link>
                     </div>
@@ -185,16 +209,19 @@ export const Resources: React.FC = () => {
                             {visible.map((r) => (
                                 <Link key={r.slug} to={`/recursos/${r.slug}`} className={`${styles.cardLink} reveal`}>
                                     <article className={styles.card}>
-                                        <div className={styles.cardMeta}>
-                                            <span className={styles.cardCat}>{r.cat}</span>
-                                            <span className={styles.cardTime}>
-                                                <Clock size={11} strokeWidth={2} />
-                                                {r.time}
-                                            </span>
+                                        <CoverSlot cover={r.cover} label={r.cat} />
+                                        <div className={styles.cardBody}>
+                                            <div className={styles.cardMeta}>
+                                                <span className={styles.cardCat}>{r.cat}</span>
+                                                <span className={styles.cardTime}>
+                                                    <Clock size={11} strokeWidth={2} />
+                                                    {r.time}
+                                                </span>
+                                            </div>
+                                            <h2 className={styles.cardTitle}>{r.title}</h2>
+                                            <p className={styles.cardDesc}>{r.desc}</p>
+                                            <span className={styles.cardFooter}>{CTA_BY_CAT[r.cat]}</span>
                                         </div>
-                                        <h2 className={styles.cardTitle}>{r.title}</h2>
-                                        <p className={styles.cardDesc}>{r.desc}</p>
-                                        <span className={styles.cardFooter}>{CTA_BY_CAT[r.cat]}</span>
                                     </article>
                                 </Link>
                             ))}

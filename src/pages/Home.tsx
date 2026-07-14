@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { SplitText } from "gsap/SplitText";
 import { Button } from "../components/ui/Button";
@@ -10,7 +9,6 @@ import { useScrollReveal } from "../hooks/useScrollReveal";
 import { useDragScroll } from "../hooks/useDragScroll";
 import { usePageSEO } from "../hooks/usePageSEO";
 import { useCountUp } from "../hooks/useCountUp";
-import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 import { ROUTES } from "../lib/routes";
 import {
   Check,
@@ -24,10 +22,10 @@ import {
 } from "lucide-react";
 import styles from "./Home.module.css";
 import sys from "../styles/page-system.module.css";
-import Aurora from "../components/common/Aurora";
+import { HeroDashboard } from "../components/home/HeroDashboard";
 import { TextLink } from "../components/common/TextLink";
 
-gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, ScrambleTextPlugin, SplitText);
+gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin, SplitText);
 
 const CASES = [
   {
@@ -106,15 +104,12 @@ export const Home: React.FC = () => {
   });
 
   const heroRef = useRef<HTMLDivElement>(null);
-  const whyOpsRef = useRef<HTMLDivElement>(null);
 
   const problemRef = useScrollReveal<HTMLDivElement>({ stagger: true });
   const methodScrollRef = useScrollReveal<HTMLDivElement>({ stagger: true });
   const caseRef = useScrollReveal<HTMLDivElement>({ stagger: true });
   const whyRef = useScrollReveal<HTMLDivElement>({ stagger: true });
   const ctaRef = useScrollReveal<HTMLDivElement>();
-
-  const prefersReducedMotion = usePrefersReducedMotion();
 
   // Case carousel — scroll-snap track (same pattern as Cases.tsx' carousel):
   // native horizontal scroll/drag, dot indicators and prev/next buttons.
@@ -191,72 +186,23 @@ export const Home: React.FC = () => {
         const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
         // Masked line reveal — each heroLine clips its inner span, which
-        // rises from below the mask (premium alternative to a plain fade).
+        // rises from below the mask. Mechanical timing (Factory).
         tl.from(`.${styles.heroTitle} .${styles.heroLineInner}`, {
           yPercent: 112,
-          duration: 1.05,
-          stagger: 0.11,
-          ease: "power4.out",
+          duration: 0.45,
+          stagger: 0.06,
+          ease: "power3.out",
         })
           .from(
             `.${styles.heroSubtitle}`,
-            { opacity: 0, y: 18, duration: 0.7 },
-            "-=0.65",
+            { opacity: 0, y: 10, duration: 0.3 },
+            "-=0.2",
           )
           .from(
             `.${styles.ctaGroup} > *`,
-            { opacity: 0, y: 14, duration: 0.55, stagger: 0.08 },
-            "-=0.45",
-          )
-          // Radar mark: solid strokes (brackets, axes, ticks, plain rings)
-          // draw themselves in via DrawSVG…
-          .from(
-            `.${styles.heroMark} line, .${styles.heroMark} path, .${styles.heroMark} [data-draw], .${styles.markCoreRing}`,
-            {
-              drawSVG: "0%",
-              duration: 1.1,
-              stagger: 0.035,
-              ease: "power2.inOut",
-            },
-            "-=0.9",
-          )
-          // …while dashed rings fade in (DrawSVG would overwrite their
-          // decorative dasharray) and the SMIL-animated groups fade only
-          // (an inline GSAP transform would freeze <animateTransform>).
-          .from(
-            `.${styles.markRing1}, .${styles.markRing2}, .${styles.heroMark} [data-ring]`,
-            {
-              opacity: 0,
-              duration: 1.2,
-              stagger: 0.12,
-              ease: "power2.out",
-            },
-            "<",
-          )
-          .from(
-            `.${styles.heroMark} g, .${styles.heroMark} [data-fade]`,
-            { opacity: 0, duration: 1.0, stagger: 0.1, ease: "power2.out" },
-            "<+0.3",
-          )
-          .from(
-            `.${styles.markCenterDot}`,
-            { scale: 0, transformOrigin: "50% 50%", duration: 0.5 },
-            "-=0.7",
+            { opacity: 0, y: 8, duration: 0.25, stagger: 0.05 },
+            "-=0.15",
           );
-
-        // Scroll-out: hero content sinks and dims as the section leaves,
-        // giving the page a depth "curtain" feel on the way to Problema.
-        gsap.to(`.${styles.heroContent}`, {
-          yPercent: 14,
-          opacity: 0.35,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroRef.current,
-            start: "42% top",
-            end: "bottom top",
-            scrub: 0.6,
-          },
-        });
       }
     }, heroRef);
 
@@ -284,10 +230,9 @@ export const Home: React.FC = () => {
         onEnter: () => {
           gsap.from(`.${styles.caseStat}`, {
             opacity: 0,
-            y: 14,
-            scale: 0.9,
-            duration: 0.55,
-            stagger: 0.07,
+            y: 10,
+            duration: 0.2,
+            stagger: 0.05,
             ease: "power2.out",
           });
         },
@@ -297,22 +242,7 @@ export const Home: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  useEffect(() => {
-    const el = whyOpsRef.current;
-    if (!el || window.matchMedia("(hover: none)").matches) return;
-
-    const onMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      el.style.setProperty("--spot-x", `${x}px`);
-      el.style.setProperty("--spot-y", `${y}px`);
-    };
-    el.addEventListener("mousemove", onMove);
-    return () => el.removeEventListener("mousemove", onMove);
-  }, []);
-
-  // Section-level scroll choreography (Problema / Por qué / Método / CTA).
+  // Section-level scroll choreography (Problema / Método / CTA).
   // All motion-gated via gsap.matchMedia; desktop-only pieces additionally
   // gated on min-width so they never fight the mobile scroll-snap tracks.
   useEffect(() => {
@@ -353,8 +283,8 @@ export const Home: React.FC = () => {
         }, problemRef),
       );
 
-      // ── MÉTODO: step numbers scramble into place (terminal feel,
-      //    same family as the hero radar aesthetic).
+      // ── MÉTODO: step numbers scramble into place (terminal voice,
+      //    same family as the hero dashboard instrument aesthetic).
       ctxs.push(
         gsap.context(() => {
           ScrollTrigger.create({
@@ -415,33 +345,6 @@ export const Home: React.FC = () => {
       () => {
         const ctxs: gsap.Context[] = [];
 
-        // ── POR QUÉ: scrub narrative — as you scroll through, the
-        //    generic column recedes while the OpsPilot column's glow
-        //    intensifies. Starts well after the reveal animation is done.
-        ctxs.push(
-          gsap.context(() => {
-            const scrubBase = {
-              trigger: `.${styles.whyGrid}`,
-              start: "top 42%",
-              end: "bottom 72%",
-              scrub: 0.6,
-            };
-            gsap.to(`.${styles.whyColGeneric}`, {
-              opacity: 0.55,
-              scale: 0.985,
-              transformOrigin: "50% 0%",
-              ease: "none",
-              scrollTrigger: { ...scrubBase },
-            });
-            gsap.to(`.${styles.whyColOps}`, {
-              boxShadow: "0 0 84px -12px rgba(57, 206, 134, 0.3)",
-              borderColor: "rgba(57, 206, 134, 0.55)",
-              ease: "none",
-              scrollTrigger: { ...scrubBase },
-            });
-          }, whyRef),
-        );
-
         // ── MÉTODO: sequential scrub activation — steps 01→04 light up
         //    one after another as the section crosses the viewport.
         ctxs.push(
@@ -464,8 +367,7 @@ export const Home: React.FC = () => {
               tl.to(num, { color: "rgba(57, 206, 134, 0.95)", duration: 1 }).to(
                 badge,
                 {
-                  backgroundColor: "rgba(57, 206, 134, 0.3)",
-                  boxShadow: "0 8px 28px -8px rgba(57, 206, 134, 0.35)",
+                  backgroundColor: "rgba(57, 206, 134, 0.24)",
                   duration: 1,
                 },
                 "<",
@@ -485,17 +387,6 @@ export const Home: React.FC = () => {
     <div className={styles.page}>
       {/* ═══ HERO ═══ */}
       <section className={styles.hero} ref={heroRef}>
-        <div className={styles.auroraBackground}>
-          <Aurora
-            colorStops={["#0a1118", "#1b998b", "#39ce86"]}
-            blend={0.5}
-            amplitude={1.0}
-            speed={0.6}
-          />
-        </div>
-        <div className={styles.heroVeil} />
-        <div className={styles.heroNoise} aria-hidden="true" />
-
         <div className={styles.heroInner}>
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>
@@ -532,387 +423,10 @@ export const Home: React.FC = () => {
                 Ver soluciones
               </TextLink>
             </div>
-            {/* Anotación inline — solo visible en móvil (<1024px) */}
-            <p className={styles.heroMobileAnnotation} aria-hidden="true">
-              <span className={styles.heroMobileAnnotationNum}>80%</span>
-              del proceso automatizado, sin tocar una hoja de cálculo.
-            </p>
           </div>
 
-          <div className={styles.heroVisual} aria-hidden="true">
-            <svg
-              className={styles.heroMark}
-              viewBox="0 0 400 400"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Corner brackets */}
-              <path
-                d="M 28 10 L 10 10 L 10 28"
-                stroke="rgba(57,206,134,0.2)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-              <path
-                d="M 372 10 L 390 10 L 390 28"
-                stroke="rgba(57,206,134,0.2)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-              <path
-                d="M 10 372 L 10 390 L 28 390"
-                stroke="rgba(57,206,134,0.2)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-              <path
-                d="M 390 372 L 390 390 L 372 390"
-                stroke="rgba(57,206,134,0.2)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-
-              {/* Outer sparse ring */}
-              <circle
-                cx="200"
-                cy="200"
-                r="175"
-                stroke="rgba(57,206,134,0.09)"
-                strokeWidth="1"
-                strokeDasharray="1 13"
-                className={`${styles.markRing1} ${styles.markDecor}`}
-              />
-
-              {/* Structural ring */}
-              <circle
-                cx="200"
-                cy="200"
-                r="140"
-                stroke="rgba(57,206,134,0.18)"
-                strokeWidth="1"
-                strokeDasharray="26 14 6 14"
-                className={`${styles.markRing2} ${styles.markDecor}`}
-              />
-
-              {/* Main precision ring */}
-              <circle
-                data-ring
-                cx="200"
-                cy="200"
-                r="102"
-                stroke="rgba(57,206,134,0.28)"
-                strokeWidth="1.5"
-                strokeDasharray="50 10"
-              />
-
-              {/* Inner ring */}
-              <circle
-                data-draw
-                cx="200"
-                cy="200"
-                r="58"
-                stroke="rgba(57,206,134,0.18)"
-                strokeWidth="1"
-              />
-
-              {/* Core ring */}
-              <circle
-                cx="200"
-                cy="200"
-                r="20"
-                stroke="rgba(57,206,134,0.44)"
-                strokeWidth="1.5"
-                className={styles.markCoreRing}
-              />
-
-              {/* Sonar pulse */}
-              <circle
-                data-fade
-                cx="200"
-                cy="200"
-                r="20"
-                stroke="rgba(57,206,134,0.28)"
-                strokeWidth="1"
-                fill="none"
-                className={styles.markDecor}
-              >
-                {!prefersReducedMotion && (
-                  <>
-                    <animate
-                      attributeName="r"
-                      from="20"
-                      to="42"
-                      dur="3s"
-                      repeatCount="indefinite"
-                    />
-                    <animate
-                      attributeName="stroke-opacity"
-                      from="0.28"
-                      to="0"
-                      dur="3s"
-                      repeatCount="indefinite"
-                    />
-                  </>
-                )}
-              </circle>
-
-              {/* N/S/E/W axis lines */}
-              <line
-                x1="200"
-                y1="180"
-                x2="200"
-                y2="142"
-                stroke="rgba(57,206,134,0.28)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-              <line
-                x1="200"
-                y1="220"
-                x2="200"
-                y2="258"
-                stroke="rgba(57,206,134,0.28)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-              <line
-                x1="180"
-                y1="200"
-                x2="142"
-                y2="200"
-                stroke="rgba(57,206,134,0.28)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-              <line
-                x1="220"
-                y1="200"
-                x2="258"
-                y2="200"
-                stroke="rgba(57,206,134,0.28)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-
-              {/* 45° diagonal spokes */}
-              <line
-                x1="241"
-                y1="159"
-                x2="272"
-                y2="128"
-                stroke="rgba(57,206,134,0.14)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-              <line
-                x1="159"
-                y1="159"
-                x2="128"
-                y2="128"
-                stroke="rgba(57,206,134,0.14)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-              <line
-                x1="241"
-                y1="241"
-                x2="272"
-                y2="272"
-                stroke="rgba(57,206,134,0.14)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-              <line
-                x1="159"
-                y1="241"
-                x2="128"
-                y2="272"
-                stroke="rgba(57,206,134,0.14)"
-                strokeWidth="1"
-                className={styles.markDecor}
-              />
-
-              {/* Cardinal ticks on r=140 ring */}
-              <line
-                x1="200"
-                y1="62"
-                x2="200"
-                y2="50"
-                stroke="rgba(57,206,134,0.4)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                className={styles.markDecor}
-              />
-              <line
-                x1="200"
-                y1="338"
-                x2="200"
-                y2="350"
-                stroke="rgba(57,206,134,0.4)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                className={styles.markDecor}
-              />
-              <line
-                x1="62"
-                y1="200"
-                x2="50"
-                y2="200"
-                stroke="rgba(57,206,134,0.4)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                className={styles.markDecor}
-              />
-              <line
-                x1="338"
-                y1="200"
-                x2="350"
-                y2="200"
-                stroke="rgba(57,206,134,0.4)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                className={styles.markDecor}
-              />
-
-              {/* 45° ticks on r=140 ring */}
-              <line
-                x1="293"
-                y1="107"
-                x2="299"
-                y2="101"
-                stroke="rgba(57,206,134,0.22)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                className={styles.markDecor}
-              />
-              <line
-                x1="107"
-                y1="107"
-                x2="101"
-                y2="101"
-                stroke="rgba(57,206,134,0.22)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                className={styles.markDecor}
-              />
-              <line
-                x1="293"
-                y1="293"
-                x2="299"
-                y2="299"
-                stroke="rgba(57,206,134,0.22)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                className={styles.markDecor}
-              />
-              <line
-                x1="107"
-                y1="293"
-                x2="101"
-                y2="299"
-                stroke="rgba(57,206,134,0.22)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                className={styles.markDecor}
-              />
-
-              {/* Scanner line — rotates */}
-              <g className={styles.markDecor}>
-                {!prefersReducedMotion && (
-                  <animateTransform
-                    attributeName="transform"
-                    type="rotate"
-                    from="0 200 200"
-                    to="360 200 200"
-                    dur="8s"
-                    repeatCount="indefinite"
-                  />
-                )}
-                <line
-                  x1="200"
-                  y1="200"
-                  x2="200"
-                  y2="30"
-                  stroke="rgba(57,206,134,0.38)"
-                  strokeWidth="1.5"
-                />
-                <circle
-                  cx="200"
-                  cy="30"
-                  r="3"
-                  fill="none"
-                  stroke="rgba(57,206,134,0.65)"
-                  strokeWidth="1.5"
-                />
-              </g>
-
-              {/* Orbiting element at r=102 — CW */}
-              <g className={styles.markDecor}>
-                {!prefersReducedMotion && (
-                  <animateTransform
-                    attributeName="transform"
-                    type="rotate"
-                    from="60 200 200"
-                    to="420 200 200"
-                    dur="11s"
-                    repeatCount="indefinite"
-                  />
-                )}
-                <circle
-                  cx="302"
-                  cy="200"
-                  r="5.5"
-                  fill="none"
-                  stroke="rgba(57,206,134,0.6)"
-                  strokeWidth="1.5"
-                />
-                <circle cx="302" cy="200" r="2" fill="rgba(57,206,134,0.5)" />
-              </g>
-
-              {/* Orbiting dot at r=140 — CCW */}
-              <g className={styles.markDecor}>
-                {!prefersReducedMotion && (
-                  <animateTransform
-                    attributeName="transform"
-                    type="rotate"
-                    from="200 200 200"
-                    to="-160 200 200"
-                    dur="19s"
-                    repeatCount="indefinite"
-                  />
-                )}
-                <circle
-                  cx="340"
-                  cy="200"
-                  r="3.5"
-                  fill="rgba(57,206,134,0.42)"
-                />
-              </g>
-
-              {/* Orbiting dot at r=175 — slow CW */}
-              <g className={styles.markDecor}>
-                {!prefersReducedMotion && (
-                  <animateTransform
-                    attributeName="transform"
-                    type="rotate"
-                    from="290 200 200"
-                    to="650 200 200"
-                    dur="32s"
-                    repeatCount="indefinite"
-                  />
-                )}
-                <circle cx="375" cy="200" r="2.5" fill="rgba(57,206,134,0.3)" />
-              </g>
-
-              {/* Center dot */}
-              <circle
-                cx="200"
-                cy="200"
-                r="4"
-                fill="rgba(57,206,134,0.88)"
-                className={styles.markCenterDot}
-              />
-            </svg>
+          <div className={styles.heroPanel}>
+            <HeroDashboard />
           </div>
         </div>
       </section>
@@ -1099,10 +613,7 @@ export const Home: React.FC = () => {
                 </div>
               ))}
             </div>
-            <div
-              className={`${styles.whyCol} ${styles.whyColOps} reveal`}
-              ref={whyOpsRef}
-            >
+            <div className={`${styles.whyCol} ${styles.whyColOps} reveal`}>
               <div className={styles.whyColHead}>
                 <span
                   className={`${styles.whyColBadge} ${styles.whyColBadgeOps}`}
