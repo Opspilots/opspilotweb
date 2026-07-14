@@ -8,14 +8,41 @@
     transition: background-color var(--transition-fast),
         border-color var(--transition-fast),
         color var(--transition-fast),
+        box-shadow var(--transition-normal),
         transform var(--transition-fast);
     cursor: pointer;
     border: 1px solid transparent;
     outline: none;
     position: relative;
+    overflow: hidden;
     letter-spacing: 0;
     white-space: nowrap;
     line-height: 1;
+}
+
+/* Barrido de brillo — un specular que cruza el botón al pasar el puntero.
+   pointer-events:none para no interferir con el click. */
+.button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 55%;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(100deg,
+            transparent,
+            rgba(255, 255, 255, 0.45),
+            transparent);
+    transform: translateX(-160%) skewX(-18deg);
+    opacity: 0;
+    transition: transform 0s;
+}
+
+.button:hover:not(:disabled)::after {
+    opacity: 1;
+    transform: translateX(320%) skewX(-18deg);
+    transition: transform 0.75s var(--ease-out-expo), opacity 0.2s linear;
 }
 
 .button:focus-visible {
@@ -26,6 +53,10 @@
 .button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.button:active:not(:disabled) {
+    transform: translateY(1px) scale(0.98);
 }
 
 /* ─── Variants ─── */
@@ -40,10 +71,8 @@
 .primary:hover:not(:disabled) {
     background-color: var(--color-btn-light-hover);
     border-color: var(--color-btn-light-hover);
-}
-
-.primary:active:not(:disabled) {
-    transform: translateY(1px);
+    /* Glow mint sutil — el único acento primario, tintado, nunca duro. */
+    box-shadow: var(--shadow-mint);
 }
 
 /* Secondary — dark fill neutro + hairline. Sirve sobre light cards. */
@@ -56,10 +85,6 @@
 .secondary:hover:not(:disabled) {
     background-color: var(--color-btn-dark-hover);
     border-color: var(--color-border-strong);
-}
-
-.secondary:active:not(:disabled) {
-    transform: translateY(1px);
 }
 
 /* Outline — ghost hairline. Sin bg en hover.
@@ -76,10 +101,6 @@
     border-color: var(--btn-outline-border-hover, var(--color-border-strong));
 }
 
-.outline:active:not(:disabled) {
-    transform: translateY(1px);
-}
-
 /* Ghost */
 .ghost {
     background-color: transparent;
@@ -89,10 +110,6 @@
 .ghost:hover:not(:disabled) {
     background-color: rgba(255, 255, 255, 0.04);
     color: var(--color-text-strong);
-}
-
-.ghost:active:not(:disabled) {
-    transform: translateY(1px);
 }
 
 /* ─── Sizes ─── */
@@ -119,4 +136,23 @@
 
 .fullWidth {
     width: 100%;
+}
+
+/* Objetivo táctil ≥44px en móvil: el tamaño sm (36px) se queda corto para el
+   dedo. Elevamos solo su altura mínima; md (44px) y lg (52px) ya cumplen. */
+@media (max-width: 767px) {
+    .sm {
+        min-height: 44px;
+    }
+}
+
+/* Reduced motion — sin barrido ni feedback de escala/desplazamiento. */
+@media (prefers-reduced-motion: reduce) {
+    .button::after {
+        display: none;
+    }
+
+    .button:active:not(:disabled) {
+        transform: none;
+    }
 }

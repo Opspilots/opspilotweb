@@ -18,7 +18,7 @@ export const Logo: React.FC<LogoProps> = ({ className, size = 60 }) => {
             width={size}
             height={size}
             className={className}
-            style={{ objectFit: 'contain' }}
+            style={{ objectFit: 'contain', transition: 'transform var(--transition-expressive)' }}
             loading="eager"
             decoding="async"
         />

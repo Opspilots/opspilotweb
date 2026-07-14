@@ -1,16 +1,22 @@
 import React from "react";
+import { useCountUp } from "../../hooks/useCountUp";
 import styles from "./HeroDashboard.module.css";
 
 /**
  * HeroDashboard — instrument-window panel for the Home hero.
  *
- * Pure DOM/CSS (no WebGL, no images): a title bar with window dots and a
+ * DOM/CSS only (no WebGL, no images): a title bar with window dots and a
  * live status label, a 2×2 grid of metric tiles (label mono / big tabular
- * value / inline SVG sparkline) and a bottom status row. Data echoes the
- * real case-study numbers used across the site.
+ * value that counts up / inline SVG sparkline) and a bottom status row of
+ * breathing service dots. Data echoes the real case-study numbers used
+ * across the site.
  *
- * Entry motion ("dashboard rise") lives in the CSS module and is gated
- * behind prefers-reduced-motion.
+ * "Living" layer — all transform/opacity only, all gated on
+ * prefers-reduced-motion, perpetual loops isolated to pure-CSS leaves:
+ *   · boot scan sweep across the panel on mount (shimmer de carga)
+ *   · tiles cascade in, values count up from zero
+ *   · live/status dots breathe on a staggered cadence
+ *   · sparklines flicker very subtly like a live feed (desktop only)
  */
 
 type Tone = "mint" | "warm";
@@ -51,7 +57,30 @@ const METRICS: Metric[] = [
 
 const STATUS = ["SII · OK", "BANCO · SYNC", "CRM · LIVE", "FACTURAS · AUTO"];
 
-export const HeroDashboard: React.FC = () => {
+/**
+ * Metric value that counts up from zero. Splits the raw label into
+ * prefix (−, ×, <), the numeric core, and suffix (%, h) so only the number
+ * animates — the tabular-nums font keeps the width rock-steady while it
+ * ticks. useCountUp is always called (hooks rule); non-numeric values just
+ * render verbatim.
+ */
+const MetricValue: React.FC<{ value: string }> = ({ value }) => {
+    const match = value.match(/^([^\d]*)(\d+(?:[.,]\d+)?)(.*)$/);
+    const end = match ? parseFloat(match[2].replace(",", ".")) : 0;
+    const ref = useCountUp<HTMLSpanElement>({ end, duration: 1.6 });
+
+    if (!match) return <>{value}</>;
+    const [, prefix, , suffix] = match;
+    return (
+        <>
+            {prefix}
+            <span ref={ref}>{Math.round(end)}</span>
+            {suffix}
+        </>
+    );
+};
+
+const HeroDashboardBase: React.FC = () => {
     return (
         <div className={styles.panel} aria-hidden="true">
             <div className={styles.titleBar}>
@@ -70,7 +99,9 @@ export const HeroDashboard: React.FC = () => {
                 {METRICS.map((m) => (
                     <div className={styles.tile} key={m.label}>
                         <span className={styles.tileLabel}>{m.label}</span>
-                        <span className={styles.tileValue}>{m.value}</span>
+                        <span className={styles.tileValue}>
+                            <MetricValue value={m.value} />
+                        </span>
                         <svg
                             className={styles.spark}
                             viewBox="0 0 120 40"
@@ -100,3 +131,10 @@ export const HeroDashboard: React.FC = () => {
         </div>
     );
 };
+
+/**
+ * Memoised: the panel takes no props and its living layer is pure CSS, so
+ * it never needs to re-render once mounted — isolating it keeps the hero's
+ * count-up/scroll work from touching this subtree.
+ */
+export const HeroDashboard = React.memo(HeroDashboardBase);

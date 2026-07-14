@@ -23,7 +23,9 @@
 
 .size-sm {
     font-size: var(--font-size-sm);
-    font-weight: 600;
+    /* El sistema tiene peso máx. 500 (variables.css); usamos el token en vez
+       del 600 hardcodeado para mantener coherencia con size-md. */
+    font-weight: var(--font-weight-medium);
     padding: var(--spacing-3) 0;
 }
 
@@ -32,10 +34,29 @@
 .tone-muted { color: var(--color-text-muted); }
 .tone-subtle { color: var(--color-text-subtle); }
 
-/* ─── Interactive hover: slide gap + mint color ─── */
+/* La flecha trailing se desliza con el hover. */
+.textLink svg {
+    transition: transform var(--transition-fast);
+}
+
+/* ─── Interactive hover: slide gap + mint color + flecha ─── */
 .textLink:not(.static):hover {
     color: var(--color-mint);
     gap: var(--spacing-3);
+}
+
+.textLink:not(.static):hover svg {
+    transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .textLink svg {
+        transition: none;
+    }
+
+    .textLink:not(.static):hover svg {
+        transform: none;
+    }
 }
 
 /* ─── Static (non-interactive) variant — no hover affordance, since

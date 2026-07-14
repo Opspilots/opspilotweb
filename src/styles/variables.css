@@ -20,15 +20,15 @@
     --color-text-strong: #FFFFFF;
     --color-text: #E6EBF2;
     --color-text-muted: #8E9BAA;
-    --color-text-subtle: #8a96a6;
+    --color-text-subtle: #8a96a6;   /* Casi-duplicado de -muted (tono ligeramente más frío); ambos referenciados, se conservan */
 
     /* Accents */
     --color-mint: #39ce86;
     --color-mint-dark: #2bb874;
     --color-mint-soft: rgba(57, 206, 134, 0.10);
 
-    --color-warm: #e8a563;           /* Ámbar templado — acento secundario */
-    --color-warm-soft: rgba(217, 148, 87, 0.10);
+    --color-warm: #e8a563;           /* Ámbar templado — acento secundario. Base RGB: 232, 165, 99 */
+    --color-warm-soft: rgba(232, 165, 99, 0.10);   /* Misma base que --color-warm (antes 217,148,87 → incoherente) */
 
     /* Light card (signature Factory) — única figura clara sobre canvas navy */
     --color-card-light: #edece8;
@@ -49,8 +49,12 @@
     --color-info: #6189c4;
 
     /* ═══════════════════════════════════════════
-       BACKWARDS-COMPAT TOKENS
-       (mantener nombres viejos apuntando a los nuevos)
+       BACKWARDS-COMPAT TOKENS (DEPRECADOS — alias, no eliminar)
+       Duplican tokens nuevos con nombres viejos. Se mantienen porque aún
+       pueden estar referenciados por código legacy; NO son colores nuevos.
+       Preferir siempre los tokens canónicos (--color-mint, --color-text-*, etc.).
+       Los --color-dark-* ya no se usan en src tras modernizar Footer, pero se
+       conservan como red de seguridad de compatibilidad.
        ═══════════════════════════════════════════ */
     --color-primary-dark: var(--color-mint-dark);
     --color-accent: var(--color-mint);
@@ -60,8 +64,8 @@
     --color-dark-bg-alt: var(--color-bg-elevated);
     --color-dark-surface: var(--color-bg-raised);
     --color-dark-border: var(--color-border-subtle);
-    --color-dark-text-main: var(--color-text-strong);
-    --color-dark-text-muted: var(--color-text-muted);
+    --color-dark-text-main: var(--color-text-strong);   /* == --color-text-strong */
+    --color-dark-text-muted: var(--color-text-muted);   /* == --color-text-muted */
 
     /* ═══════════════════════════════════════════
        TYPOGRAPHY — Factory
@@ -156,7 +160,35 @@
     --ease-custom: cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: 150ms var(--ease-custom);
     --transition-normal: 200ms var(--ease-custom);
-    --transition-slow: 200ms var(--ease-custom);
+    /* slow: paso propio (300ms) para reveals/paneles. Antes duplicaba a normal (200ms).
+       Sin consumidores en src → cambio seguro (no altera componentes existentes). */
+    --transition-slow: 300ms var(--ease-custom);
+
+    /* Easings premium — para reveals/hovers grandes (los controles siguen fast/normal) */
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    --transition-expressive: 480ms var(--ease-spring);
+
+    /* ═══════════════════════════════════════════
+       SHADOWS — tintadas al navy profundo (#03070c), nunca negro puro
+       ═══════════════════════════════════════════ */
+    --shadow-sm: 0 2px 8px -2px rgba(3, 7, 12, 0.5);
+    --shadow-md: 0 10px 30px -10px rgba(3, 7, 12, 0.55);
+    --shadow-lg: 0 24px 60px -22px rgba(3, 7, 12, 0.65);
+    --shadow-mint: 0 12px 40px -12px rgba(57, 206, 134, 0.28);
+
+    /* ═══════════════════════════════════════════
+       GLASS — superficies translúcidas con backdrop-filter
+       ═══════════════════════════════════════════ */
+    --glass-bg: rgba(18, 26, 36, 0.62);
+    --glass-border: rgba(255, 255, 255, 0.10);
+    --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+    /* ═══════════════════════════════════════════
+       GRADIENTS / MESH
+       ═══════════════════════════════════════════ */
+    --gradient-mint: linear-gradient(135deg, #39ce86, #2bb874);
+    --gradient-surface: linear-gradient(180deg, rgba(31, 42, 55, 0.6), rgba(15, 22, 32, 0.6));
 
     /* ═══════════════════════════════════════════
        Z-INDEX
