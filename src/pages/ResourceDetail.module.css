@@ -3,17 +3,10 @@
    flat article header + hairline prose blocks
    ═══════════════════════════════════════════ */
 
-.header {
-    padding: var(--spacing-14) 0 var(--spacing-10);
-    background: var(--color-bg-deep);
-    border-bottom: 1px solid var(--color-border-subtle);
-}
-
-@media (min-width: 1024px) {
-    .header {
-        padding: var(--spacing-18) 0 var(--spacing-12);
-    }
-}
+/* El header del artículo reutiliza el hero interno compartido (sys.pageHero /
+   sys.pageHeroContent): mismo padding, medida y hairline inferior que el resto
+   de páginas. Aquí solo viven las piezas propias del artículo (backlink, meta,
+   título editorial y lead). */
 
 .backLink {
     display: inline-flex;
@@ -82,6 +75,9 @@
     line-height: 1.08;
     letter-spacing: var(--tracking-display);
     text-wrap: balance;
+    /* break-word rompe solo cuando una palabra no cabe; anywhere partía
+       palabras normales de forma antiestética en titulares. */
+    overflow-wrap: break-word;
     max-width: 880px;
     margin: 0 0 var(--spacing-6);
 }
@@ -90,6 +86,7 @@
     font-size: clamp(1rem, 1.3vw, 1.1875rem);
     color: var(--color-text-muted);
     line-height: 1.6;
+    overflow-wrap: anywhere;
     max-width: 68ch;
     margin: 0;
 }
@@ -106,12 +103,27 @@
 
 .coverFrame {
     position: relative;
-    max-width: 880px;
+    max-width: 960px;
     aspect-ratio: 16 / 9;
     background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-panel);
     overflow: hidden;
+    box-shadow: var(--glass-inset), var(--shadow-lg);
+}
+
+/* Fade the base of the hero into the page navy so the image reads as a
+   cinematic header rather than a boxed thumbnail. */
+.coverFrame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        to bottom,
+        transparent 52%,
+        rgba(10, 14, 20, 0.85) 100%
+    );
 }
 
 .coverImg {
@@ -119,6 +131,19 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    animation: coverReveal 900ms var(--ease-out-expo) both;
+}
+
+/* Gentle settle on load — scale/opacity only, GPU-cheap. */
+@keyframes coverReveal {
+    from {
+        opacity: 0;
+        transform: scale(1.06);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* ═══════════════════════════════════════════
@@ -134,9 +159,15 @@
     justify-content: center;
 }
 
+/* Reading measure 64ch — longitud de línea óptima para lectura larga
+   (68ch quedaba algo ancho al tamaño base). */
 .article {
-    max-width: 720px;
+    max-width: 64ch;
     width: 100%;
+    /* Long URLs/slugs pasted inside prose must break rather than push the
+       page wide on phones. overflow-wrap is inherited, so this covers every
+       block child (p, li, note). */
+    overflow-wrap: anywhere;
 }
 
 .blockH2 {
@@ -147,10 +178,37 @@
     letter-spacing: var(--tracking-tight);
     line-height: 1.25;
     margin: var(--spacing-11) 0 var(--spacing-4);
+    /* Deja aire bajo la navbar fija (4.75rem) al saltar a un ancla. */
+    scroll-margin-top: 6rem;
 }
 
 .article > .blockH2:first-child {
     margin-top: 0;
+}
+
+/* Pregunta de FAQ — nivel sub-h2: menor que un h2 de cuerpo y con acento
+   "+" mint para que se lea como pregunta, no como sección. El peso no
+   diferencia (la marca topa en 500), así que lo hace el tamaño y el acento. */
+.blockFaqQ {
+    display: flex;
+    gap: var(--spacing-3);
+    font-family: var(--font-family-base);
+    font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    letter-spacing: var(--tracking-tight);
+    line-height: 1.4;
+    margin: var(--spacing-8) 0 var(--spacing-3);
+    scroll-margin-top: 6rem;
+}
+
+.blockFaqQ::before {
+    content: '+';
+    flex: none;
+    color: var(--color-mint);
+    font-family: var(--font-family-mono);
+    font-weight: var(--font-weight-regular);
+    line-height: inherit;
 }
 
 .blockP {
@@ -215,6 +273,11 @@
     padding: var(--spacing-3) var(--spacing-6);
     border-radius: var(--radius-control);
     text-decoration: none;
+    /* Comfortable tap target; long link labels wrap inside the pill instead
+       of forcing it past the viewport. */
+    min-height: 44px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
     transition: background var(--transition-fast);
 }
 
@@ -249,16 +312,38 @@
     align-items: flex-start;
     gap: var(--spacing-3);
     padding: var(--spacing-7);
-    background: transparent;
-    border: 1px solid var(--color-border-subtle);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-card);
+    box-shadow: var(--glass-inset), var(--shadow-sm);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
     text-decoration: none;
     color: inherit;
-    transition: border-color var(--transition-normal);
+    transition:
+        transform var(--transition-expressive),
+        box-shadow var(--transition-expressive),
+        border-color var(--transition-normal);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .relatedCard {
+        background: var(--color-bg-elevated);
+    }
 }
 
 .relatedCard:hover {
-    border-color: var(--color-border-strong);
+    transform: translateY(-4px);
+    border-color: var(--color-border-mint);
+    box-shadow: var(--glass-inset), var(--shadow-lg);
+}
+
+/* Meta de card relacionada — cat con dot + tiempo de lectura, igual que las
+   cards del listado (antes solo mostraban la cat, se veían vacías). */
+.relatedMeta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
 }
 
 .relatedTitle {
@@ -281,8 +366,12 @@
 
 /* ─── Mobile ─── */
 @media (max-width: 639px) {
-    .header {
-        padding: var(--spacing-10) 0 var(--spacing-8);
+    /* El padding del header lo aporta sys.pageHero en su breakpoint móvil. */
+
+    /* Back link is the only nav on the article header — give it a real
+       tap target on phones (it's inline-flex, so min-height applies). */
+    .backLink {
+        min-height: 44px;
     }
 
     .title {
@@ -295,5 +384,24 @@
 
     .blockH2 {
         margin: var(--spacing-9) 0 var(--spacing-3);
+    }
+
+    .blockFaqQ {
+        margin: var(--spacing-7) 0 var(--spacing-3);
+    }
+}
+
+/* ─── Motion safety ─── */
+@media (prefers-reduced-motion: reduce) {
+    .coverImg {
+        animation: none;
+    }
+
+    .relatedCard {
+        transition: none;
+    }
+
+    .relatedCard:hover {
+        transform: none;
     }
 }

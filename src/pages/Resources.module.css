@@ -57,7 +57,8 @@
     overflow: hidden;
 }
 
-/* instrument hairline across the middle; label masks it */
+/* instrument hairline across the middle; label masks it (placeholder only —
+   the real cover image sits on top of it) */
 .cover::after {
     content: '';
     position: absolute;
@@ -68,12 +69,41 @@
     background: var(--color-border-subtle);
 }
 
+/* Gradient wash that fades up on hover — deepens the navy at the base and
+   adds a mint kiss at the top corner. Sits above the image, below the
+   placeholder label. Solo opacity. */
+.cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    background:
+        linear-gradient(160deg, rgba(57, 206, 134, 0.14), transparent 42%),
+        linear-gradient(0deg, rgba(3, 7, 12, 0.6), transparent 58%);
+    transition: opacity var(--transition-expressive);
+}
+
 .coverImg {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scale(1.001); /* promote to its own layer for a crisp zoom */
+    transition: transform var(--transition-expressive);
+}
+
+/* Hover-zoom the cover inside its overflow:hidden frame + reveal the wash. */
+.cardLink:hover .coverImg,
+.featuredLink:hover .coverImg {
+    transform: scale(1.06);
+}
+
+.cardLink:hover .cover::before,
+.featuredLink:hover .cover::before {
+    opacity: 1;
 }
 
 .coverPh {
@@ -232,11 +262,14 @@
     color: var(--color-text-strong);
 }
 
+/* Filtro activo REFORZADO (CRO): fondo mint suave + texto strong + peso medio,
+   no solo el borde y el dot. Se lee de un vistazo qué categoría filtra. */
 .catPillActive,
 .catPillActive:hover {
-    background: transparent;
+    background: var(--color-mint-soft);
     border-color: var(--color-border-mint);
     color: var(--color-text-strong);
+    font-weight: var(--font-weight-medium);
 }
 
 .catPillActive::before {
@@ -305,15 +338,29 @@
 .featuredCard {
     display: grid;
     grid-template-columns: 1fr;
-    background: transparent;
-    border: 1px solid var(--color-border-subtle);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-panel);
     overflow: hidden;
-    transition: border-color var(--transition-normal);
+    box-shadow: var(--glass-inset), var(--shadow-md);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    transition:
+        transform var(--transition-expressive),
+        box-shadow var(--transition-expressive),
+        border-color var(--transition-normal);
 }
 
-.featuredCard:hover {
-    border-color: var(--color-border-strong);
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .featuredCard {
+        background: var(--color-bg-elevated);
+    }
+}
+
+.featuredLink:hover .featuredCard {
+    transform: translateY(-4px);
+    border-color: var(--color-border-mint);
+    box-shadow: var(--glass-inset), var(--shadow-lg), var(--shadow-mint);
 }
 
 @media (min-width: 860px) {
@@ -388,6 +435,28 @@
     padding: var(--spacing-10) 0 var(--space-section-default);
 }
 
+/* Contador de resultados (CRO): confirma que el filtro respondió. */
+.resultCount {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 var(--spacing-6);
+}
+
+/* Indicador de scroll horizontal: oculto por defecto, solo visible en el
+   carrusel móvil (media query de más abajo). */
+.scrollHint {
+    display: none;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: var(--spacing-4) 0 0;
+}
+
 .grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -405,6 +474,17 @@
     .grid {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    /* Editorial asymmetry: the first card leads across two columns with a
+       cinematic wide cover. Tiles cleanly (2+1, then rows of 3) and stays
+       robust when filtering re-orders the list. */
+    .cardLink:first-child {
+        grid-column: span 2;
+    }
+
+    .cardLink:first-child .cover {
+        aspect-ratio: 21 / 9;
+    }
 }
 
 .cardLink {
@@ -418,15 +498,29 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: transparent;
-    border: 1px solid var(--color-border-subtle);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-card);
     overflow: hidden;
-    transition: border-color var(--transition-normal);
+    box-shadow: var(--glass-inset), var(--shadow-sm);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    transition:
+        transform var(--transition-expressive),
+        box-shadow var(--transition-expressive),
+        border-color var(--transition-normal);
 }
 
-.card:hover {
-    border-color: var(--color-border-strong);
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .card {
+        background: var(--color-bg-elevated);
+    }
+}
+
+.cardLink:hover .card {
+    transform: translateY(-4px);
+    border-color: var(--color-border-mint);
+    box-shadow: var(--glass-inset), var(--shadow-lg);
 }
 
 .cardBody {
@@ -464,6 +558,9 @@
 }
 
 .cardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
@@ -472,6 +569,23 @@
     margin-top: var(--spacing-3);
     padding-top: var(--spacing-4);
     border-top: 1px solid var(--color-border-subtle);
+    transition: color var(--transition-fast);
+}
+
+/* Micro-flecha: hace el CTA afordante como acción, no como etiqueta. */
+.cardFooter::after {
+    content: '→';
+    flex: none;
+    transition: transform var(--transition-fast);
+}
+
+/* Hover: el footer vira a mint y la flecha avanza — comunica "ir a la guía". */
+.cardLink:hover .cardFooter {
+    color: var(--color-mint);
+}
+
+.cardLink:hover .cardFooter::after {
+    transform: translateX(3px);
 }
 
 /* ═══════════════════════════════════════════
@@ -483,9 +597,10 @@
     grid-template-columns: 1fr;
     gap: var(--spacing-10);
     padding: var(--spacing-12) var(--spacing-10);
-    background: transparent;
-    border: 1px solid var(--color-border-subtle);
+    background: var(--gradient-surface);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-panel);
+    box-shadow: var(--glass-inset), var(--shadow-md);
 }
 
 @media (min-width: 860px) {
@@ -637,7 +752,64 @@
         scroll-snap-align: start;
     }
 
+    /* "Hay más →": solo aparece en el carrusel horizontal móvil. */
+    .scrollHint {
+        display: block;
+        text-align: right;
+        padding-right: var(--spacing-7);
+    }
+
     .emptyState {
         padding: var(--spacing-10) var(--spacing-6);
+    }
+
+    /* Comfortable touch targets (>=44px) for the toolbar controls. */
+    .searchInput {
+        min-height: 44px;
+    }
+
+    .catPill {
+        min-height: 44px;
+    }
+
+    .emptyReset {
+        min-height: 44px;
+    }
+}
+
+/* ─── Motion safety ───
+   Cursor-hover richness (zoom, lift, wash) is transform/opacity only, but
+   collapse it entirely for users who ask for reduced motion or on touch
+   pointers where a lingering :hover would feel stuck. */
+@media (prefers-reduced-motion: reduce) {
+    .coverImg,
+    .card,
+    .featuredCard,
+    .cover::before,
+    .cardFooter::after {
+        transition: none;
+    }
+
+    .cardLink:hover .coverImg,
+    .featuredLink:hover .coverImg,
+    .cardLink:hover .card,
+    .featuredLink:hover .featuredCard,
+    .cardLink:hover .cardFooter::after {
+        transform: none;
+    }
+}
+
+@media (hover: none) {
+    .cardLink:hover .coverImg,
+    .featuredLink:hover .coverImg,
+    .cardLink:hover .card,
+    .featuredLink:hover .featuredCard,
+    .cardLink:hover .cardFooter::after {
+        transform: none;
+    }
+
+    .cardLink:hover .cover::before,
+    .featuredLink:hover .cover::before {
+        opacity: 0;
     }
 }

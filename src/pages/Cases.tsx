@@ -4,7 +4,9 @@ import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { useDragScroll } from '../hooks/useDragScroll';
-import { usePageSEO } from '../hooks/usePageSEO';
+import { PageSEO } from '../hooks/usePageSEO';
+import { buildBreadcrumb } from '../lib/seo';
+import { StructuredData } from '../components/seo/StructuredData';
 import { ROUTES } from '../lib/routes';
 import {
     ChevronLeft,
@@ -30,13 +32,15 @@ interface CaseData {
     stats: StatData[];
     quote: string;
     author: string;
+    // Firma técnica de la solución — dato diferencial por caso en el ledger
+    stack: string;
 }
 
 const CASES: CaseData[] = [
     {
         sector: 'Reformas',
         title: 'De la libreta al sistema que trabaja solo',
-        text: 'Empresa familiar de reformas que lo llevaba todo con Excel y llamadas. Diseñamos su marca, construimos un sistema a medida con presupuestos asistidos por IA y automatizamos las citas por WhatsApp. En tres meses triplicaron su capacidad sin incorporar a nadie más.',
+        text: 'Una empresa familiar de reformas lo llevaba todo con Excel y llamadas sueltas. Perdían presupuestos por falta de seguimiento. Les construimos un software a medida: presupuestos asistidos por IA y citas automatizadas por WhatsApp. En tres meses triplicaron su capacidad sin contratar a nadie.',
         stats: [
             { v: '3×', l: 'Capacidad de atención' },
             { v: '−70%', l: 'Tiempo en gestión' },
@@ -44,11 +48,12 @@ const CASES: CaseData[] = [
         ],
         quote: 'Pasamos de perder presupuestos por falta de seguimiento a tener un sistema que trabaja solo.',
         author: 'CEO',
+        stack: 'IA · WhatsApp',
     },
     {
         sector: 'Asesoría fiscal',
         title: 'Una asesoría que cierra cuentas mientras duerme',
-        text: 'Despacho con cientos de clientes ahogado en tareas repetitivas. Implementamos lectura inteligente de documentos, conciliación bancaria automática y un asistente IA que prepara los modelos antes de la revisión humana. Cierre mensual al 80% en automático.',
+        text: 'Un despacho con cientos de clientes se ahogaba en tareas repetitivas. Digitalizamos el flujo de trabajo con lectura inteligente de documentos, conciliación bancaria automática y un asistente de IA que prepara los modelos antes de la revisión humana. Hoy el cierre mensual sale al 80% solo.',
         stats: [
             { v: '80%', l: 'Cierre automático' },
             { v: '−5h/día', l: 'En tareas repetitivas' },
@@ -56,11 +61,12 @@ const CASES: CaseData[] = [
         ],
         quote: 'Antes era imposible escalar sin contratar; ahora podemos crecer sin que el equipo reviente.',
         author: 'Socio director',
+        stack: 'OCR · IA',
     },
     {
         sector: 'Agencia de servicios',
         title: 'Una agencia que recupera 20 horas a la semana',
-        text: 'Agencia de marketing con cinco herramientas distintas que no se hablaban entre sí. Construimos un sistema único que sustituyó CRM, gestión, facturación y comunicación interna, con reporting en tiempo real para dirección y un asistente IA para dudas internas.',
+        text: 'Una agencia de marketing usaba cinco herramientas que no se hablaban entre sí. Lo unificamos todo en un solo software a medida: CRM, gestión, facturación y comunicación interna, con reporting en tiempo real para dirección y un asistente de IA para dudas del equipo. Recuperaron 20 horas cada semana.',
         stats: [
             { v: '20h', l: 'Ahorradas a la semana' },
             { v: '5→1', l: 'Apps en un solo sistema' },
@@ -68,6 +74,7 @@ const CASES: CaseData[] = [
         ],
         quote: 'Dejamos de pagar cinco herramientas y ganamos visibilidad real de cada cliente.',
         author: 'Directora de operaciones',
+        stack: 'CRM · Reporting',
     },
 ];
 
@@ -96,7 +103,7 @@ const DIFFERENTIATORS: DiffItem[] = [
     {
         Icon: MessageCircle,
         title: 'Soporte directo con quien lo construyó',
-        text: 'Hablas con quien diseñó y programó tu sistema. Sin tickets, sin agentes de soporte que no conocen tu caso, sin tiempos de espera que no tiene ningún sentido.',
+        text: 'Hablas con quien diseñó y programó tu sistema. Sin tickets, sin agentes de soporte que no conocen tu caso, sin colas de espera que no llevan a ninguna parte.',
     },
     {
         Icon: Cpu,
@@ -185,7 +192,7 @@ const CarouselSection: React.FC = () => {
                         <div className={`${styles.ledgerRow} ${styles.ledgerHead}`} aria-hidden="true">
                             <span>Sector</span>
                             <span className={styles.ledgerResult}>Resultado</span>
-                            <span className={styles.ledgerStatus}>Estado</span>
+                            <span className={styles.ledgerStack}>Stack</span>
                         </div>
                         {CASES.map((c, i) => (
                             <button
@@ -200,10 +207,7 @@ const CarouselSection: React.FC = () => {
                                 <span className={styles.ledgerResult}>
                                     {c.stats[0].v} {c.stats[0].l}
                                 </span>
-                                <span className={styles.ledgerStatus}>
-                                    <span className={styles.ledgerDot} aria-hidden="true" />
-                                    Operativo
-                                </span>
+                                <span className={styles.ledgerStack}>{c.stack}</span>
                             </button>
                         ))}
                     </div>
@@ -220,20 +224,29 @@ const CarouselSection: React.FC = () => {
                     </div>
 
                     <div className={styles.carouselFooter}>
-                        <div className={styles.dots} role="tablist" aria-label="Navegar entre casos">
+                        {/* Botones simples: el carrusel es una región con scroll,
+                            no un tablist con tabpanels — usamos aria-current como el ledger */}
+                        <div className={styles.dots} role="group" aria-label="Navegar entre casos">
                             {CASES.map((_, i) => (
                                 <button
                                     key={i}
-                                    role="tab"
-                                    aria-selected={i === currentIndex}
+                                    type="button"
+                                    aria-current={i === currentIndex}
                                     className={`${styles.dot} ${i === currentIndex ? styles.dotActive : ''}`}
                                     onClick={() => scrollToIndex(i)}
-                                    aria-label={`Caso ${i + 1}`}
+                                    aria-label={`Ir al caso ${i + 1}`}
                                 />
                             ))}
                         </div>
                         <div className={styles.navButtons}>
+                            <span className={styles.counter} aria-hidden="true">
+                                <span className={styles.counterNow}>
+                                    {String(currentIndex + 1).padStart(2, '0')}
+                                </span>
+                                /{String(CASES.length).padStart(2, '0')}
+                            </span>
                             <button
+                                type="button"
                                 className={styles.navBtn}
                                 onClick={() => scrollToIndex(currentIndex - 1)}
                                 disabled={currentIndex === 0}
@@ -242,6 +255,7 @@ const CarouselSection: React.FC = () => {
                                 <ChevronLeft size={18} strokeWidth={2} />
                             </button>
                             <button
+                                type="button"
                                 className={styles.navBtn}
                                 onClick={() => scrollToIndex(currentIndex + 1)}
                                 disabled={currentIndex === CASES.length - 1}
@@ -251,6 +265,14 @@ const CarouselSection: React.FC = () => {
                             </button>
                         </div>
                     </div>
+
+                    <p className={styles.caseDisclaimer}>
+                        Casos reales, cifras representativas. Cada caso resume varios
+                        proyectos del mismo sector. Omitimos nombres y datos
+                        identificativos por privacidad de cada cliente. Los testimonios
+                        son de cargos reales, anonimizados; las métricas ilustran
+                        resultados típicos, no una auditoría.
+                    </p>
                 </div>
             </div>
         </section>
@@ -267,14 +289,17 @@ const WhySection: React.FC = () => {
                     <h2 className={styles.whyTitle}>Hacemos las cosas de otra manera</h2>
                     <p className={styles.whySub}>
                         No somos una agencia digital ni una consultora. Somos un equipo pequeño
-                        que construye software a medida para empresas que quieren trabajar mejor,
+                        que construye software a medida para PYMEs que quieren trabajar mejor,
                         sin depender de herramientas genéricas ni de procesos que no se adaptan a ellas.
                     </p>
                 </div>
 
                 <div className={styles.whyGrid}>
                     {DIFFERENTIATORS.map((d, i) => (
-                        <div key={i} className={`${styles.whyItem} reveal`}>
+                        <div
+                            key={i}
+                            className={`${styles.whyItem} ${i === DIFFERENTIATORS.length - 1 ? styles.whyItemClosing : ''} reveal`}
+                        >
                             <div className={styles.whyIconWrap} aria-hidden="true">
                                 <d.Icon size={18} strokeWidth={1.75} />
                             </div>
@@ -289,12 +314,17 @@ const WhySection: React.FC = () => {
 };
 
 export const Cases: React.FC = () => {
-    usePageSEO({
-        title: 'Casos de éxito · Software a medida — OpsPilot',
+    const seoProps = {
+        title: 'Casos de éxito: software a medida para PYMEs · OpsPilot',
         description:
-            'Empresas reales que transformaron su operativa con software a medida, asistentes IA y automatización: reformas, asesorías fiscales y agencias de servicios.',
+            'Ejemplos de digitalización de PYMEs con software a medida, IA y automatización: reformas, asesoría fiscal y agencias. Resultados medibles, no promesas.',
         canonical: 'https://opspilot.es/casos',
-    });
+    };
+
+    const breadcrumb = buildBreadcrumb([
+        { name: 'Inicio', url: 'https://opspilot.es/' },
+        { name: 'Casos', url: 'https://opspilot.es/casos' },
+    ]);
 
     const heroRef = useHeroReveal<HTMLDivElement>();
 
@@ -302,6 +332,8 @@ export const Cases: React.FC = () => {
 
     return (
         <div className={sys.page}>
+            <PageSEO {...seoProps} />
+            <StructuredData data={breadcrumb} />
             {/* ═══ HERO ═══ */}
             <section className={sys.pageHero}>
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
@@ -311,8 +343,8 @@ export const Cases: React.FC = () => {
                             problemas <em className={sys.pageHeroAccent}>resueltos</em>.
                         </h1>
                         <p className={`${sys.pageHeroSubtitle} reveal`}>
-                            No hace falta ser una gran empresa para necesitar buenos procesos.
-                            Esto es lo que hemos construido para empresas como la tuya.
+                            No hace falta ser una gran empresa para tener buenos procesos.
+                            Esto es software a medida que hemos construido para PYMEs como la tuya.
                         </p>
                     </div>
                 </div>
@@ -330,15 +362,15 @@ export const Cases: React.FC = () => {
                     <div className={sys.endCtaBlock} ref={ctaRef}>
                         <h2 className={sys.endCtaTitle}>¿Tu empresa podría ser la siguiente?</h2>
                         <p className={sys.endCtaSub}>
-                            Analizamos tu situación en 30 minutos y te decimos qué podríamos
-                            hacer por ti. Sin compromiso.
+                            Analizamos tu operativa en 30 minutos y te decimos qué software a
+                            medida tendría sentido para ti. Sin compromiso.
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>
                                 <Button variant="secondary" size="lg">Reservar diagnóstico</Button>
                             </Link>
-                            <Link to={ROUTES.servicios}>
-                                <Button variant="outline" size="lg">Ver servicios</Button>
+                            <Link to={ROUTES.soluciones}>
+                                <Button variant="outline" size="lg">Ver soluciones</Button>
                             </Link>
                         </div>
                     </div>

@@ -7,8 +7,10 @@ import { SplitText } from "gsap/SplitText";
 import { Button } from "../components/ui/Button";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { useDragScroll } from "../hooks/useDragScroll";
-import { usePageSEO } from "../hooks/usePageSEO";
+import { PageSEO } from "../hooks/usePageSEO";
 import { useCountUp } from "../hooks/useCountUp";
+import { useMagnetic } from "../hooks/useMagnetic";
+import { useSpotlight } from "../hooks/useSpotlight";
 import { ROUTES } from "../lib/routes";
 import {
   Check,
@@ -23,6 +25,8 @@ import {
 import styles from "./Home.module.css";
 import sys from "../styles/page-system.module.css";
 import { HeroDashboard } from "../components/home/HeroDashboard";
+import { AmbientBackground } from "../components/fx/AmbientBackground";
+import { SpotlightCard } from "../components/fx/SpotlightCard";
 import { TextLink } from "../components/common/TextLink";
 
 gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin, SplitText);
@@ -78,6 +82,47 @@ const CASES = [
   },
 ];
 
+const PROBLEMS = [
+  {
+    title: "Tu información vive en cuatro sitios",
+    text: "Cuatro apps que nunca cuadran entre sí. Buscas el mismo dato tres veces al día.",
+    tag: "4 apps",
+  },
+  {
+    title: "Lo que factura lo llevas en un Excel que se rompe",
+    text: "Presupuestos y comisiones en una hoja que peta al primer descuido. Un clic y adiós.",
+    tag: "Excel",
+  },
+  {
+    title: "Tu equipo cambia de pestaña cada cinco minutos",
+    text: "Cinco herramientas para un solo trabajo. Y ninguna se habla con la otra.",
+    tag: "5 apps",
+  },
+];
+
+const STEPS = [
+  {
+    icon: MessagesSquare,
+    title: "Te escuchamos",
+    text: "30 minutos para entender tu negocio a fondo. Sin tecnicismos.",
+  },
+  {
+    icon: Search,
+    title: "Encontramos el cuello de botella",
+    text: "Detectamos qué procesos te frenan de verdad y cuáles ni tocar.",
+  },
+  {
+    icon: FileCheck,
+    title: "Te proponemos algo concreto",
+    text: "Plan claro, precio cerrado y plazos definidos desde el día uno.",
+  },
+  {
+    icon: Wrench,
+    title: "Lo construimos y nos quedamos",
+    text: "Montamos tu sistema y seguimos ahí cuando nos necesites.",
+  },
+];
+
 function AnimatedStat({ value }: { value: string }) {
   const match = value.match(/^([−\-]?)(\d+(?:\.\d+)?)(.*)/);
   const numericEnd = match ? parseFloat(match[2]) : 0;
@@ -95,13 +140,12 @@ function AnimatedStat({ value }: { value: string }) {
 }
 
 export const Home: React.FC = () => {
-  usePageSEO({
-    title:
-      "OpsPilot — Software a medida y productos verticales para PYMEs en España",
+  const seoProps = {
+    title: "Software a medida para PYMEs en España | OpsPilot",
     description:
-      "Diseñamos y construimos contigo el software que tu empresa necesita. Trato cercano, presupuesto cerrado, respuesta en menos de 24h. Productos verticales (fiscalidad, energía, obra, ERP) y desarrollo a medida.",
+      "Desarrollamos software a medida para PYMEs en España. Presupuesto cerrado, respuesta en menos de 24h y trato directo. Cuéntanos tu problema.",
     canonical: "https://opspilot.es/",
-  });
+  };
 
   const heroRef = useRef<HTMLDivElement>(null);
 
@@ -110,6 +154,11 @@ export const Home: React.FC = () => {
   const caseRef = useScrollReveal<HTMLDivElement>({ stagger: true });
   const whyRef = useScrollReveal<HTMLDivElement>({ stagger: true });
   const ctaRef = useScrollReveal<HTMLDivElement>();
+
+  // Cinematic FX: magnetic pull on the primary hero CTA, spotlight that
+  // tracks the pointer across the hero dashboard frame.
+  const heroCtaRef = useMagnetic<HTMLAnchorElement>({ strength: 0.12, radius: 18 });
+  const heroPanelRef = useSpotlight<HTMLDivElement>();
 
   // Case carousel — scroll-snap track (same pattern as Cases.tsx' carousel):
   // native horizontal scroll/drag, dot indicators and prev/next buttons.
@@ -243,148 +292,221 @@ export const Home: React.FC = () => {
   }, []);
 
   // Section-level scroll choreography (Problema / Método / CTA).
-  // All motion-gated via gsap.matchMedia; desktop-only pieces additionally
-  // gated on min-width so they never fight the mobile scroll-snap tracks.
+  // Gated con gsap.matchMedia: el pin a pantalla completa solo en desktop con
+  // movimiento permitido; móvil y reduced-motion reciben versiones estáticas.
   useEffect(() => {
     const mm = gsap.matchMedia();
+    const MINT = "rgba(57, 206, 134, 0.95)";
 
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const ctxs: gsap.Context[] = [];
-
-      // ── PROBLEMA: vertical progress line draws with scroll, markers
-      //    light up as their row crosses the viewport.
-      ctxs.push(
-        gsap.context(() => {
-          gsap.fromTo(
-            `.${styles.problemProgress}`,
-            { scaleY: 0 },
-            {
-              scaleY: 1,
-              ease: "none",
-              scrollTrigger: {
-                trigger: `.${styles.problemList}`,
-                start: "top 72%",
-                end: "bottom 58%",
-                scrub: 0.5,
-              },
-            },
-          );
-          gsap.utils
-            .toArray<HTMLElement>(`.${styles.problemRow}`)
-            .forEach((row) => {
-              ScrollTrigger.create({
-                trigger: row,
-                start: "top 66%",
-                onEnter: () => row.classList.add(styles.problemRowActive),
-                onLeaveBack: () =>
-                  row.classList.remove(styles.problemRowActive),
-              });
-            });
-        }, problemRef),
-      );
-
-      // ── MÉTODO: step numbers scramble into place (terminal voice,
-      //    same family as the hero dashboard instrument aesthetic).
-      ctxs.push(
-        gsap.context(() => {
-          ScrollTrigger.create({
-            trigger: `.${styles.processGrid}`,
-            start: "top 78%",
-            once: true,
-            onEnter: () => {
-              gsap.utils
-                .toArray<HTMLElement>(`.${styles.processStepNum}`)
-                .forEach((num, i) => {
-                  gsap.to(num, {
-                    duration: 0.9,
-                    delay: i * 0.12,
-                    scrambleText: {
-                      text: num.textContent ?? "",
-                      chars: "0123456789",
-                      speed: 0.4,
-                    },
-                  });
-                });
-            },
-          });
-        }, methodScrollRef),
-      );
-
-      // ── CTA: "¿Hablamos?" rises char by char from a built-in
-      //    SplitText mask (v3.13+).
-      const title = ctaRef.current?.querySelector<HTMLElement>(
-        `.${sys.endCtaTitle}`,
-      );
-      let split: SplitText | null = null;
-      let charsTween: gsap.core.Tween | null = null;
-      if (title) {
-        split = SplitText.create(title, { type: "chars", mask: "chars" });
-        charsTween = gsap.from(split.chars, {
-          yPercent: 120,
-          duration: 0.8,
-          stagger: 0.04,
-          ease: "power4.out",
-          scrollTrigger: {
-            trigger: ctaRef.current,
-            start: "top 78%",
-            once: true,
+    // Escribe (scramble) los números de los pasos del método al entrar.
+    const scrambleSteps = (steps: HTMLElement[]) =>
+      steps.forEach((step, i) => {
+        const num = step.querySelector<HTMLElement>(`.${styles.methodStepNum}`);
+        if (!num) return;
+        gsap.to(num, {
+          duration: 0.9,
+          delay: i * 0.12,
+          scrambleText: {
+            text: num.textContent ?? "",
+            chars: "0123456789",
+            speed: 0.4,
           },
         });
-      }
+      });
 
-      return () => {
-        ctxs.forEach((c) => c.revert());
-        charsTween?.scrollTrigger?.kill();
-        charsTween?.kill();
-        split?.revert();
-      };
-    });
+    // Ilumina cada paso: número a mint + barra inferior que se dibuja.
+    const lightSteps = (steps: HTMLElement[]) =>
+      steps.forEach((step, i) => {
+        const num = step.querySelector<HTMLElement>(`.${styles.methodStepNum}`);
+        const bar = step.querySelector<HTMLElement>(`.${styles.methodStepBar}`);
+        if (num) gsap.to(num, { color: MINT, duration: 0.4, delay: i * 0.12 });
+        if (bar)
+          gsap.fromTo(
+            bar,
+            { scaleX: 0 },
+            { scaleX: 1, duration: 0.5, delay: i * 0.12, ease: "power2.out" },
+          );
+      });
 
+    // ─── DESKTOP + motion: Problema se FIJA y releva tarjeta a tarjeta. ───
     mm.add(
       "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
       () => {
-        const ctxs: gsap.Context[] = [];
+        const triggers: ScrollTrigger[] = [];
+        const pin = problemRef.current;
+        const cards = pin
+          ? gsap.utils.toArray<HTMLElement>(`.${styles.problemCard}`, pin)
+          : [];
 
-        // ── MÉTODO: sequential scrub activation — steps 01→04 light up
-        //    one after another as the section crosses the viewport.
-        ctxs.push(
-          gsap.context(() => {
-            const steps = gsap.utils.toArray<HTMLElement>(
-              `.${styles.processStep}`,
-            );
-            const tl = gsap.timeline({
-              scrollTrigger: {
-                trigger: `.${styles.processGrid}`,
-                start: "top 70%",
-                end: "bottom 40%",
-                scrub: 0.6,
+        if (pin && cards.length) {
+          // Modo apilado: las tarjetas pasan a position:absolute (CSS) para
+          // ocupar el mismo hueco y relevarse una sobre otra.
+          pin.classList.add(styles.problemDeckOn);
+          gsap.set(cards, {
+            yPercent: (i: number) => (i === 0 ? 0 : 100),
+            opacity: (i: number) => (i === 0 ? 1 : 0),
+            scale: 1,
+          });
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: pin,
+              start: "top top",
+              end: () => "+=" + Math.round(window.innerHeight * cards.length),
+              pin: true,
+              scrub: 0.6,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          });
+          for (let i = 1; i < cards.length; i++) {
+            tl.to(
+              cards[i - 1],
+              {
+                yPercent: -22,
+                opacity: 0,
+                scale: 0.94,
+                ease: "power2.in",
+                duration: 0.5,
               },
-            });
-            steps.forEach((step) => {
-              const num = step.querySelector(`.${styles.processStepNum}`);
-              const badge = step.querySelector(`.${styles.processNumLabel}`);
-              if (!num || !badge) return;
-              tl.to(num, { color: "rgba(57, 206, 134, 0.95)", duration: 1 }).to(
-                badge,
-                {
-                  backgroundColor: "rgba(57, 206, 134, 0.24)",
-                  duration: 1,
-                },
-                "<",
-              );
-            });
-          }, methodScrollRef),
-        );
+              i - 1,
+            ).fromTo(
+              cards[i],
+              { yPercent: 100, opacity: 0, scale: 1 },
+              { yPercent: 0, opacity: 1, ease: "power3.out", duration: 0.6 },
+              i - 1 + 0.08,
+            );
+          }
+          tl.to({}, { duration: 0.4 }); // respiro antes de soltar el pin
+          if (tl.scrollTrigger) triggers.push(tl.scrollTrigger);
+        }
 
-        return () => ctxs.forEach((c) => c.revert());
+        // MÉTODO — reveal con contraste (números + barras) al entrar.
+        const grid = methodScrollRef.current?.querySelector<HTMLElement>(
+          `.${styles.methodGrid}`,
+        );
+        const steps = grid
+          ? gsap.utils.toArray<HTMLElement>(`.${styles.methodStep}`, grid)
+          : [];
+        if (grid && steps.length) {
+          triggers.push(
+            ScrollTrigger.create({
+              trigger: grid,
+              start: "top 72%",
+              once: true,
+              onEnter: () => {
+                scrambleSteps(steps);
+                lightSteps(steps);
+              },
+            }),
+          );
+        }
+
+        return () => {
+          pin?.classList.remove(styles.problemDeckOn);
+          triggers.forEach((t) => t.kill());
+          if (cards.length) gsap.set(cards, { clearProps: "all" });
+        };
       },
     );
 
-    return () => mm.revert();
+    // ─── MÓVIL + motion: sin pin; tarjetas apiladas que entran al scrollear. ─
+    mm.add(
+      "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
+      () => {
+        const triggers: ScrollTrigger[] = [];
+        const cards = problemRef.current
+          ? gsap.utils.toArray<HTMLElement>(
+              `.${styles.problemCard}`,
+              problemRef.current,
+            )
+          : [];
+        cards.forEach((card) => {
+          const tween = gsap.from(card, {
+            opacity: 0,
+            y: 24,
+            duration: 0.5,
+            ease: "power2.out",
+            scrollTrigger: { trigger: card, start: "top 84%", once: true },
+          });
+          if (tween.scrollTrigger) triggers.push(tween.scrollTrigger);
+        });
+
+        const grid = methodScrollRef.current?.querySelector<HTMLElement>(
+          `.${styles.methodGrid}`,
+        );
+        const steps = grid
+          ? gsap.utils.toArray<HTMLElement>(`.${styles.methodStep}`, grid)
+          : [];
+        if (grid && steps.length) {
+          triggers.push(
+            ScrollTrigger.create({
+              trigger: grid,
+              start: "top 82%",
+              once: true,
+              onEnter: () => {
+                scrambleSteps(steps);
+                lightSteps(steps);
+              },
+            }),
+          );
+        }
+
+        return () => triggers.forEach((t) => t.kill());
+      },
+    );
+
+    // ─── CTA "¿Hablamos?" — char por char desde una máscara SplitText ───
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const title = ctaRef.current?.querySelector<HTMLElement>(
+        `.${sys.endCtaTitle}`,
+      );
+      if (!title) return;
+      const split = SplitText.create(title, { type: "chars", mask: "chars" });
+      const tween = gsap.from(split.chars, {
+        yPercent: 120,
+        duration: 0.8,
+        stagger: 0.04,
+        ease: "power4.out",
+        scrollTrigger: { trigger: ctaRef.current, start: "top 78%", once: true },
+      });
+      return () => {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+        split.revert();
+      };
+    });
+
+    // ─── Reduced motion: estados finales estáticos, sin scroll-jacking ───
+    mm.add("(prefers-reduced-motion: reduce)", () => {
+      methodScrollRef.current
+        ?.querySelectorAll<HTMLElement>(`.${styles.methodStepNum}`)
+        .forEach((n) => (n.style.color = MINT));
+      methodScrollRef.current
+        ?.querySelectorAll<HTMLElement>(`.${styles.methodStepBar}`)
+        .forEach((b) => (b.style.transform = "scaleX(1)"));
+    });
+
+    // Primer scroll: en SSG el layout se estabiliza tras cargar fuentes e
+    // imágenes; sin un refresh ScrollTrigger midió el pin antes de tiempo y el
+    // efecto "no arrancaba" la primera vez. Forzamos recálculo cuando todo
+    // asienta (load, fuentes listas y un tick de seguridad).
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("load", refresh);
+    const rid = window.setTimeout(refresh, 400);
+    document.fonts?.ready.then(refresh).catch(() => {});
+
+    return () => {
+      window.removeEventListener("load", refresh);
+      window.clearTimeout(rid);
+      mm.revert();
+    };
   }, []);
 
   return (
     <div className={styles.page}>
+      <PageSEO {...seoProps} />
+      <AmbientBackground />
+
       {/* ═══ HERO ═══ */}
       <section className={styles.hero} ref={heroRef}>
         <div className={styles.heroInner}>
@@ -395,21 +517,21 @@ export const Home: React.FC = () => {
               </span>
               <span className={styles.heroLine}>
                 <span className={styles.heroLineInner}>
-                  para PYMEs que ya no
+                  para tu PYME.
                 </span>
               </span>
               <span className={styles.heroLine}>
                 <span className={styles.heroLineInner}>
-                  caben en el <span className={styles.heroAccent}>Excel.</span>
+                  Sin plantillas. Sin <span className={styles.heroAccent}>sorpresas.</span>
                 </span>
               </span>
             </h1>
             <p className={styles.heroSubtitle}>
-              Diseñamos el sistema que tu negocio necesita, no el que te quieren
-              vender. Presupuesto cerrado, respuesta en menos de 24h.
+              Construimos el sistema que tu PYME necesita, no el que te quieren
+              vender. Precio cerrado y respuesta en menos de 24 horas.
             </p>
             <div className={styles.ctaGroup}>
-              <Link to={ROUTES.contacto}>
+              <Link to={ROUTES.contacto} ref={heroCtaRef}>
                 <Button variant="primary" size="lg">
                   Cuéntanos tu problema
                 </Button>
@@ -426,68 +548,42 @@ export const Home: React.FC = () => {
           </div>
 
           <div className={styles.heroPanel}>
-            <HeroDashboard />
+            <div className={styles.heroPanelFrame} ref={heroPanelRef}>
+              <HeroDashboard />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ═══ PROBLEMA ═══ */}
+      {/* ═══ PROBLEMA — pin + relevo a pantalla completa ═══ */}
       <section className={styles.problemSection}>
-        <div className={sys.container} ref={problemRef}>
-          <div className={styles.problemSplit}>
-            <div className={`${styles.problemIntro} reveal`}>
+        <div className={styles.problemPin} ref={problemRef}>
+          <div className={sys.container}>
+            <div className={`${styles.problemHead} reveal`}>
+              <p className={styles.sectionKicker}>El problema</p>
               <h2 className={sys.sectionTitle}>
                 Las herramientas que usas no fueron pensadas para ti.
               </h2>
-              <p className={styles.problemIntroText}>
-                Construimos sistemas pensados en cómo trabajas tú, no al
-                revés.
-              </p>
             </div>
-            <div className={styles.problemList}>
-              <span className={styles.problemProgress} aria-hidden="true" />
-              <div className={`${styles.problemRow} reveal`}>
-                <span className={styles.problemMarker} aria-hidden="true">
-                  1
-                </span>
-                <div className={styles.problemRowBody}>
-                  <h3 className={styles.problemTitle}>
-                    Tu información vive en cuatro sitios
-                  </h3>
-                  <p className={styles.problemText}>
-                    Datos repartidos en cuatro apps que nunca cuadran entre
-                    sí.
-                  </p>
-                </div>
-              </div>
-              <div className={`${styles.problemRow} reveal`}>
-                <span className={styles.problemMarker} aria-hidden="true">
-                  2
-                </span>
-                <div className={styles.problemRowBody}>
-                  <h3 className={styles.problemTitle}>
-                    Lo importante lo llevas en hojas que se rompen
-                  </h3>
-                  <p className={styles.problemText}>
-                    Presupuestos y comisiones viven en un Excel que se rompe
-                    fácilmente.
-                  </p>
-                </div>
-              </div>
-              <div className={`${styles.problemRow} reveal`}>
-                <span className={styles.problemMarker} aria-hidden="true">
-                  3
-                </span>
-                <div className={styles.problemRowBody}>
-                  <h3 className={styles.problemTitle}>
-                    Tu equipo cambia de pestaña cada cinco minutos
-                  </h3>
-                  <p className={styles.problemText}>
-                    Tu equipo salta entre cinco herramientas para hacer el
-                    mismo trabajo.
-                  </p>
-                </div>
-              </div>
+            <div className={styles.problemDeck}>
+              {PROBLEMS.map((p, i) => (
+                <article className={styles.problemCard} key={i}>
+                  <span className={styles.problemNum} aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className={styles.problemCardBody}>
+                    <span className={styles.problemTag}>{p.tag}</span>
+                    <h3 className={styles.problemTitle}>{p.title}</h3>
+                    <p className={styles.problemText}>{p.text}</p>
+                  </div>
+                  <span className={styles.problemCount} aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                    <span className={styles.problemCountTotal}>
+                      / {String(PROBLEMS.length).padStart(2, "0")}
+                    </span>
+                  </span>
+                </article>
+              ))}
             </div>
           </div>
         </div>
@@ -511,33 +607,41 @@ export const Home: React.FC = () => {
               aria-label="Casos de éxito"
             >
               {CASES.map((c, i) => (
-                <article className={styles.caseCard} key={i}>
-                  <span className={styles.caseEyebrow}>{c.eyebrow}</span>
-                  <h3 className={styles.caseCardTitle}>{c.title}</h3>
-                  <p className={styles.caseCardSummary}>{c.summary}</p>
-                  <ul className={styles.caseCardBullets}>
-                    {c.bullets.map((b, j) => (
-                      <li key={j}>
-                        <span className={styles.caseCheck}>
-                          <Check size={14} strokeWidth={2.2} />
-                        </span>
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className={styles.caseCardStats}>
-                    {c.stats.map((s, j) => (
-                      <div className={styles.caseStat} key={j}>
-                        <span
-                          className={`${styles.caseStatNumber} ${sys.statAccent}`}
-                        >
-                          <AnimatedStat value={s.value} />
-                        </span>
-                        <span className={styles.caseStatLabel}>{s.label}</span>
-                      </div>
-                    ))}
+                <SpotlightCard as="article" className={styles.caseCard} key={i}>
+                  <div className={styles.caseCardMain}>
+                    <h3 className={styles.caseCardTitle}>{c.title}</h3>
+                    <p className={styles.caseCardSummary}>{c.summary}</p>
+                    <ul className={styles.caseCardBullets}>
+                      {c.bullets.map((b, j) => (
+                        <li key={j}>
+                          <span className={styles.caseCheck}>
+                            <Check size={14} strokeWidth={2.2} />
+                          </span>
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </article>
+
+                  <aside className={styles.caseCardPanel}>
+                    <div className={styles.casePanelBar}>
+                      <span className={styles.casePanelDot} aria-hidden="true" />
+                      Resultados
+                    </div>
+                    <div className={styles.caseCardStats}>
+                      {c.stats.map((s, j) => (
+                        <div className={styles.caseStat} key={j}>
+                          <span
+                            className={`${styles.caseStatNumber} ${sys.statAccent}`}
+                          >
+                            <AnimatedStat value={s.value} />
+                          </span>
+                          <span className={styles.caseStatLabel}>{s.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </aside>
+                </SpotlightCard>
               ))}
             </div>
 
@@ -581,6 +685,11 @@ export const Home: React.FC = () => {
               </div>
             </div>
           </div>
+          <p className={styles.caseDisclaimer}>
+            Casos reales, cifras representativas. Cada caso resume varios proyectos
+            del mismo sector. Nombres y testimonios anonimizados por privacidad de
+            cada cliente.
+          </p>
         </div>
       </section>
 
@@ -593,7 +702,7 @@ export const Home: React.FC = () => {
             </h2>
           </header>
           <div className={styles.whyGrid} ref={whyTrackRef}>
-            <div className={`${styles.whyCol} ${styles.whyColGeneric} reveal`}>
+            <SpotlightCard className={`${styles.whyCol} ${styles.whyColGeneric} reveal`}>
               <div className={styles.whyColHead}>
                 <span className={styles.whyColBadge}>Software genérico</span>
               </div>
@@ -612,14 +721,15 @@ export const Home: React.FC = () => {
                   <span className={styles.whyRowText}>{text}</span>
                 </div>
               ))}
-            </div>
-            <div className={`${styles.whyCol} ${styles.whyColOps} reveal`}>
+            </SpotlightCard>
+            <SpotlightCard className={`${styles.whyCol} ${styles.whyColOps} reveal`}>
               <div className={styles.whyColHead}>
                 <span
                   className={`${styles.whyColBadge} ${styles.whyColBadgeOps}`}
                 >
                   OpsPilot a medida
                 </span>
+                <span className={styles.whyRecommended}>Recomendado</span>
               </div>
               {[
                 "El sistema se adapta exactamente a cómo trabajas",
@@ -636,7 +746,7 @@ export const Home: React.FC = () => {
                   <span className={styles.whyRowText}>{text}</span>
                 </div>
               ))}
-            </div>
+            </SpotlightCard>
           </div>
         </div>
       </section>
@@ -645,57 +755,28 @@ export const Home: React.FC = () => {
       <section className={styles.methodSection}>
         <div className={sys.container} ref={methodScrollRef}>
           <header className={`${sys.sectionHeader} reveal`}>
+            <p className={styles.sectionKicker}>Cómo trabajamos</p>
             <h2 className={sys.sectionTitle}>Así trabajamos contigo.</h2>
           </header>
-          <div className={styles.processGrid} ref={processTrackRef}>
-            <div className={`${styles.processStep} reveal`}>
-              <div className={styles.processNumWrap}>
-                <span className={styles.processNumLabel}>
-                  <MessagesSquare size={24} strokeWidth={1.6} />
-                </span>
-                <span className={styles.processStepNum}>01</span>
-              </div>
-              <h3 className={styles.stepTitle}>Te escuchamos</h3>
-              <p className={styles.stepText}>
-                30 minutos para entender tu negocio a fondo.
-              </p>
-            </div>
-            <div className={`${styles.processStep} reveal`}>
-              <div className={styles.processNumWrap}>
-                <span className={styles.processNumLabel}>
-                  <Search size={24} strokeWidth={1.6} />
-                </span>
-                <span className={styles.processStepNum}>02</span>
-              </div>
-              <h3 className={styles.stepTitle}>Localizamos el problema</h3>
-              <p className={styles.stepText}>
-                Detectamos qué procesos te están frenando de verdad.
-              </p>
-            </div>
-            <div className={`${styles.processStep} reveal`}>
-              <div className={styles.processNumWrap}>
-                <span className={styles.processNumLabel}>
-                  <FileCheck size={24} strokeWidth={1.6} />
-                </span>
-                <span className={styles.processStepNum}>03</span>
-              </div>
-              <h3 className={styles.stepTitle}>Te proponemos algo concreto</h3>
-              <p className={styles.stepText}>
-                Plan claro, precio cerrado, plazos definidos desde el día uno.
-              </p>
-            </div>
-            <div className={`${styles.processStep} reveal`}>
-              <div className={styles.processNumWrap}>
-                <span className={styles.processNumLabel}>
-                  <Wrench size={24} strokeWidth={1.6} />
-                </span>
-                <span className={styles.processStepNum}>04</span>
-              </div>
-              <h3 className={styles.stepTitle}>Lo hacemos y nos quedamos</h3>
-              <p className={styles.stepText}>
-                Construimos contigo y seguimos ahí cuando nos necesites.
-              </p>
-            </div>
+          <div className={styles.methodGrid} ref={processTrackRef}>
+            {STEPS.map((step, i) => {
+              const Icon = step.icon;
+              return (
+                <article className={`${styles.methodStep} reveal`} key={i}>
+                  <div className={styles.methodStepTop}>
+                    <span className={styles.methodStepIcon}>
+                      <Icon size={22} strokeWidth={1.6} />
+                    </span>
+                    <span className={styles.methodStepNum}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <h3 className={styles.methodStepTitle}>{step.title}</h3>
+                  <p className={styles.methodStepText}>{step.text}</p>
+                  <span className={styles.methodStepBar} aria-hidden="true" />
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

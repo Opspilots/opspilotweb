@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
-import { usePageSEO } from '../hooks/usePageSEO';
+import { PageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import { RESOURCES, RESOURCE_CATEGORIES, type ResourceCategory } from '../lib/resources';
+import { buildBreadcrumb } from '../lib/seo';
+import { StructuredData } from '../components/seo/StructuredData';
 import sys from '../styles/page-system.module.css';
 import styles from './Resources.module.css';
 import { TextLink } from '../components/common/TextLink';
@@ -52,23 +54,26 @@ const CoverSlot: React.FC<{ cover: string | undefined; label: string; className?
 );
 
 export const Resources: React.FC = () => {
-    usePageSEO({
-        title: 'Recursos · Guías y artículos prácticos — OpsPilot',
+    const seoProps = {
+        title: 'Recursos para automatizar y digitalizar tu PYME — OpsPilot',
         description:
-            'Guías, artículos y herramientas gratuitas sobre automatización, software a medida y digitalización para PYMEs. Escritas para personas de negocio.',
+            'Guías, artículos y herramientas gratis para automatizar y digitalizar tu PYME. Aprende cómo automatizar tu negocio, sin tecnicismos ni relleno.',
         canonical: 'https://opspilot.es/recursos',
-    });
+    };
 
     const heroRef = useHeroReveal<HTMLDivElement>();
 
     const featuredRef = useScrollReveal<HTMLElement>();
-    const gridRef = useScrollReveal<HTMLDivElement>({ stagger: true });
     const nlRef = useScrollReveal<HTMLDivElement>();
     const [nlStatus, setNlStatus] = useState<NLStatus>('idle');
     const [nlEmail, setNlEmail] = useState('');
 
     const [query, setQuery] = useState('');
     const [activeCat, setActiveCat] = useState<CategoryFilter>('Todos');
+
+    // deps = [query, activeCat]: al cambiar el filtro, el hook recablea los
+    // ScrollTrigger sobre las tarjetas nuevas y revela las ya visibles (fix R1).
+    const gridRef = useScrollReveal<HTMLDivElement>({ stagger: true, deps: [query, activeCat] });
 
     const isFiltering = query.trim() !== '' || activeCat !== 'Todos';
 
@@ -106,6 +111,13 @@ export const Resources: React.FC = () => {
 
     return (
         <div className={sys.page}>
+            <PageSEO {...seoProps} />
+            <StructuredData
+                data={buildBreadcrumb([
+                    { name: 'Inicio', url: 'https://opspilot.es/' },
+                    { name: 'Recursos', url: 'https://opspilot.es/recursos' },
+                ])}
+            />
             {/* ═══ HERO ═══ */}
             <section className={sys.pageHero}>
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
@@ -114,8 +126,8 @@ export const Resources: React.FC = () => {
                             Aprende a hacer más con <em className={sys.pageHeroAccent}>menos</em>.
                         </h1>
                         <p className={`${sys.pageHeroSubtitle} reveal`}>
-                            Guías prácticas, artículos y herramientas gratuitas sobre automatización
-                            y digitalización. Escritas para personas de negocio, no para técnicos.
+                            Guías, artículos y herramientas gratis para automatizar y digitalizar
+                            tu PYME. Escritas para dueños de negocio, no para técnicos.
                         </p>
                     </div>
                 </div>
@@ -130,7 +142,7 @@ export const Resources: React.FC = () => {
                             <input
                                 type="text"
                                 className={styles.searchInput}
-                                placeholder="Busca por tema: web, IA, presupuesto, sistema..."
+                                placeholder="Busca por tema: automatización, web, IA, presupuestos..."
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
                                 aria-label="Buscar recursos"
@@ -204,7 +216,13 @@ export const Resources: React.FC = () => {
             {/* ═══ GRID ═══ */}
             <section className={styles.gridSection}>
                 <div className={sys.container} ref={gridRef}>
-                    {visible.length > 0 ? (
+                    {/* Contador de resultados: feedback y confianza al filtrar. */}
+                    {isFiltering && visible.length > 0 && (
+                        <p className={styles.resultCount} aria-live="polite">
+                            {visible.length} {visible.length === 1 ? 'recurso' : 'recursos'}
+                        </p>
+                    )}
+                    {visible.length > 0 && (
                         <div className={styles.grid}>
                             {visible.map((r) => (
                                 <Link key={r.slug} to={`/recursos/${r.slug}`} className={`${styles.cardLink} reveal`}>
@@ -226,9 +244,17 @@ export const Resources: React.FC = () => {
                                 </Link>
                             ))}
                         </div>
-                    ) : (
+                    )}
+                    {/* Indicador de scroll horizontal (solo móvil): avisa de que
+                       la fila continúa fuera de pantalla. */}
+                    {visible.length > 1 && (
+                        <p className={styles.scrollHint} aria-hidden="true">
+                            Desliza para ver más →
+                        </p>
+                    )}
+                    {visible.length === 0 && (
                         <div className={styles.emptyState}>
-                            <p className={styles.emptyTitle}>No hay recursos que coincidan con tu búsqueda.</p>
+                            <p className={styles.emptyTitle}>Nada coincide con tu búsqueda.</p>
                             <p className={styles.emptyText}>
                                 Prueba con otro término o quita el filtro de categoría.
                             </p>
@@ -255,14 +281,14 @@ export const Resources: React.FC = () => {
                             <p className={styles.nlLabel}>Newsletter semanal</p>
                             <h2 className={styles.nlTitle}>Una idea útil cada semana.</h2>
                             <p className={styles.nlText}>
-                                Automatizaciones prácticas, herramientas y casos reales.
-                                Sin relleno, sin spam. Solo cosas que puedes aplicar.
+                                Cada semana te mando una automatización que puedes montar tú mismo.
+                                Con la herramienta o el caso real que hay detrás. Nada de relleno.
                             </p>
                         </div>
                         <div className={styles.nlRight}>
                             {nlStatus === 'success' ? (
                                 <p className={styles.nlSuccess}>
-                                    ¡Suscrito! Te llegará el próximo email esta semana.
+                                    Hecho. El primer email te llega esta semana.
                                 </p>
                             ) : (
                                 <form className={styles.nlForm} onSubmit={handleNewsletter}>
@@ -294,7 +320,7 @@ export const Resources: React.FC = () => {
             <section className={sys.endCta}>
                 <div className={sys.container}>
                     <div className={sys.endCtaBlock}>
-                        <h2 className={sys.endCtaTitle}>¿Quieres ayuda personalizada?</h2>
+                        <h2 className={sys.endCtaTitle}>¿Quieres automatizar tu negocio con ayuda?</h2>
                         <p className={sys.endCtaSub}>
                             Diagnóstico gratuito de 30 minutos. Sin compromiso.
                         </p>

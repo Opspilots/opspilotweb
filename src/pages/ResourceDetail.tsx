@@ -2,12 +2,14 @@ import React from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import { usePageSEO } from '../hooks/usePageSEO';
+import { PageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import { RESOURCES, getResourceBySlug, type ResourceBlock } from '../lib/resources';
+import { StructuredData } from '../components/seo/StructuredData';
+import { buildArticle, buildBreadcrumb, buildFAQ, SITE_URL } from '../lib/seo';
 import sys from '../styles/page-system.module.css';
 import styles from './ResourceDetail.module.css';
-import { ArrowLeft, Clock, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, ExternalLink } from 'lucide-react';
 
 function Block({ block }: { block: ResourceBlock }) {
     switch (block.type) {
@@ -58,12 +60,6 @@ export const ResourceDetail: React.FC = () => {
 
     const bodyRef = useScrollReveal<HTMLDivElement>({ stagger: true });
 
-    usePageSEO({
-        title: resource ? `${resource.title} — Recursos OpsPilot` : 'Recurso no encontrado — OpsPilot',
-        description: resource?.desc ?? 'Este recurso no existe o se ha movido.',
-        canonical: resource ? `https://opspilot.es/recursos/${resource.slug}` : undefined,
-    });
-
     if (!resource) {
         return <Navigate to={ROUTES.recursos} replace />;
     }
@@ -75,24 +71,70 @@ export const ResourceDetail: React.FC = () => {
         ? related
         : RESOURCES.filter((r) => r.slug !== resource.slug).slice(0, 2);
 
+    // ── Structured data (JSON-LD) por artículo ──
+    const articleUrl = `${SITE_URL}/recursos/${resource.slug}`;
+    const publishedISO = resource.date;
+    const modifiedISO = resource.updated ?? resource.date;
+    // Article enriquecido: partimos del builder compartido y le añadimos
+    // datePublished/dateModified/author desde el Resource sin tocar seo.ts.
+    const articleData = {
+        ...buildArticle(resource, articleUrl),
+        ...(publishedISO ? { datePublished: publishedISO } : {}),
+        ...(modifiedISO ? { dateModified: modifiedISO } : {}),
+        author: { '@type': 'Person', name: resource.author ?? 'Equipo OpsPilot' },
+    };
+    const breadcrumbData = buildBreadcrumb([
+        { name: 'Inicio', url: `${SITE_URL}/` },
+        { name: 'Recursos', url: `${SITE_URL}/recursos` },
+        { name: resource.title, url: articleUrl },
+    ]);
+
+    // Fecha visible (discreta), formateada en español.
+    const formattedDate = resource.date
+        ? new Date(resource.date).toLocaleDateString('es-ES', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        })
+        : null;
+
     return (
         <div className={sys.page}>
-            {/* ═══ HEADER ═══ */}
-            <section className={styles.header}>
+            <PageSEO
+                title={`${resource.title} — Recursos OpsPilot`}
+                description={resource.desc}
+                canonical={`https://opspilot.es/recursos/${resource.slug}`}
+            />
+            <StructuredData data={articleData} />
+            <StructuredData data={breadcrumbData} />
+            {resource.faq && resource.faq.length > 0 && (
+                <StructuredData data={buildFAQ(resource.faq)} />
+            )}
+            {/* ═══ HEADER — reutiliza el hero interno compartido (sys.pageHero)
+                 para igualar ritmo/medida/hairline con el resto de páginas ═══ */}
+            <section className={sys.pageHero}>
                 <div className={sys.container}>
-                    <Link to={ROUTES.recursos} className={styles.backLink}>
-                        <ArrowLeft size={15} strokeWidth={2} />
-                        Todos los recursos
-                    </Link>
-                    <div className={styles.headerMeta}>
-                        <span className={styles.cat}>{resource.cat}</span>
-                        <span className={styles.time}>
-                            <Clock size={12} strokeWidth={2} />
-                            {resource.time} lectura
-                        </span>
+                    <div className={sys.pageHeroContent}>
+                        <Link to={ROUTES.recursos} className={styles.backLink}>
+                            <ArrowLeft size={15} strokeWidth={2} />
+                            Todos los recursos
+                        </Link>
+                        <div className={styles.headerMeta}>
+                            <span className={styles.cat}>{resource.cat}</span>
+                            <span className={styles.time}>
+                                <Clock size={12} strokeWidth={2} />
+                                {resource.time} lectura
+                            </span>
+                            {formattedDate && (
+                                <span className={styles.time}>
+                                    <Calendar size={12} strokeWidth={2} />
+                                    {formattedDate}
+                                </span>
+                            )}
+                        </div>
+                        <h1 className={styles.title}>{resource.title}</h1>
+                        <p className={styles.lead}>{resource.desc}</p>
                     </div>
-                    <h1 className={styles.title}>{resource.title}</h1>
-                    <p className={styles.lead}>{resource.desc}</p>
                 </div>
             </section>
 
@@ -114,6 +156,17 @@ export const ResourceDetail: React.FC = () => {
                         {resource.blocks.map((block, i) => (
                             <Block key={i} block={block} />
                         ))}
+                        {resource.faq && resource.faq.length > 0 && (
+                            <>
+                                <h2 className={styles.blockH2}>Preguntas frecuentes</h2>
+                                {resource.faq.map((item, i) => (
+                                    <React.Fragment key={i}>
+                                        <h3 className={styles.blockFaqQ}>{item.q}</h3>
+                                        <p className={styles.blockP}>{item.a}</p>
+                                    </React.Fragment>
+                                ))}
+                            </>
+                        )}
                     </article>
                 </div>
             </section>
@@ -128,7 +181,13 @@ export const ResourceDetail: React.FC = () => {
                         <div className={styles.relatedGrid}>
                             {fallbackRelated.map((r) => (
                                 <Link key={r.slug} to={`/recursos/${r.slug}`} className={styles.relatedCard}>
-                                    <span className={styles.cat}>{r.cat}</span>
+                                    <div className={styles.relatedMeta}>
+                                        <span className={styles.cat}>{r.cat}</span>
+                                        <span className={styles.time}>
+                                            <Clock size={11} strokeWidth={2} />
+                                            {r.time} lectura
+                                        </span>
+                                    </div>
                                     <h3 className={styles.relatedTitle}>{r.title}</h3>
                                     <p className={styles.relatedDesc}>{r.desc}</p>
                                 </Link>

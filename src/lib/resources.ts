@@ -17,6 +17,14 @@ export interface Resource {
     featured?: boolean;
     /** Ruta pública de la imagen de portada 16:9 (webp). Opcional: sin ella se usa el placeholder CSS. */
     cover?: string;
+    /** Fecha de publicación en ISO 8601 (p.ej. '2026-06-15'). Alimenta datePublished del Article JSON-LD. */
+    date?: string;
+    /** Fecha de última actualización en ISO 8601. Alimenta dateModified; si falta, se usa `date`. */
+    updated?: string;
+    /** Autor visible y del structured data. Por defecto 'Equipo OpsPilot'. */
+    author?: string;
+    /** Pares pregunta/respuesta para el bloque FAQ y el FAQPage JSON-LD. */
+    faq?: { q: string; a: string }[];
     blocks: ResourceBlock[];
 }
 
@@ -29,7 +37,27 @@ export const RESOURCES: Resource[] = [
         time: '8 min',
         featured: true,
         cover: '/images/resources/automatiza-tu-negocio-sin-saber-de-tecnologia.webp',
+        date: '2026-06-18',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Se puede automatizar un negocio sin saber programar?',
+                a: 'Sí. La mayoría de automatizaciones útiles para una PYME se montan con herramientas no-code (Zapier, Make, el propio CRM) o con software ya construido para tu sector. No necesitas escribir código: necesitas conocer bien tu proceso actual.',
+            },
+            {
+                q: '¿Por dónde empiezo a automatizar mi negocio?',
+                a: 'Por el proceso repetitivo que más tiempo te roba y menos criterio exige: copiar datos entre Excel, hacer seguimientos, generar el mismo documento cada semana. Mide cuánto tiempo se va hoy, automatiza ese, y mide de nuevo un mes después.',
+            },
+            {
+                q: '¿Cuánto se tarda en ver resultados de una automatización?',
+                a: 'Una primera automatización bien elegida (mucho tiempo ahorrado, poco esfuerzo de montaje) suele dar resultado en semanas, no en meses. Esa primera victoria es la que justifica seguir digitalizando el resto.',
+            },
+        ],
         blocks: [
+            {
+                type: 'p',
+                text: 'Respuesta corta: automatizar tu negocio no exige saber de tecnología. Exige conocer tu proceso actual y elegir bien qué tarea repetitiva quitas de encima primero. El resto son herramientas.',
+            },
             {
                 type: 'p',
                 text: '"Automatizar" suena a programadores, servidores y proyectos de seis meses. En la práctica, para la mayoría de PYMEs significa algo mucho más aburrido y mucho más rentable: dejar de hacer a mano tareas repetitivas que ya sabes hacer, para poder dedicar ese tiempo a vender, atender clientes o simplemente parar de trabajar a las diez de la noche.',
@@ -94,10 +122,30 @@ export const RESOURCES: Resource[] = [
     {
         slug: 'senales-pyme-necesita-sistema-de-gestion',
         cat: 'Artículo',
-        title: '5 señales de que tu PYME necesita un sistema de gestión',
-        desc: 'Si pierdes clientes por falta de seguimiento o tus datos viven en hojas sueltas, sigue leyendo.',
+        title: '5 señales de que tu PYME necesita un sistema de gestión (ERP/CRM)',
+        desc: 'Pierdes clientes por falta de seguimiento, tus datos viven en Excel sueltos y no sabes tu margen real. 5 señales de que necesitas un sistema.',
         time: '5 min',
+        date: '2025-11-12',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Cuándo necesita una PYME un sistema de gestión?',
+                a: 'Cuando el caos operativo ya cuesta dinero o clientes: se escapan seguimientos comerciales, los datos viven en Excels duplicados, no sabes tu margen hasta cerrar el mes y cada persona nueva tarda semanas en aprender los procesos. Con tres o más señales, el "no sistema" ya te está costando más que el software.',
+            },
+            {
+                q: '¿Qué diferencia hay entre un ERP y un CRM?',
+                a: 'Un CRM gestiona la relación comercial (leads, seguimientos, ventas). Un ERP gestiona la operación interna (facturación, inventario, costes, personal). Muchas PYMEs empiezan por el dolor más agudo y amplían después; algunas plataformas cubren ambos.',
+            },
+            {
+                q: '¿Excel sirve como sistema de gestión?',
+                a: 'Excel es excelente para calcular y terrible como base de datos de negocio: no controla quién cambió qué, las versiones se duplican y un error de fórmula puede pasar meses sin detectarse. Sirve para arrancar, no para escalar.',
+            },
+        ],
         blocks: [
+            {
+                type: 'p',
+                text: 'Respuesta rápida: tu PYME necesita un sistema de gestión cuando el desorden ya te cuesta clientes, horas o margen — no cuando "toca digitalizarse". Estas cinco señales lo confirman.',
+            },
             {
                 type: 'p',
                 text: 'La mayoría de negocios no deciden digitalizarse por gusto — lo hacen porque el caos actual ya les está costando dinero o clientes de forma visible. Estas son las cinco señales que vemos con más frecuencia antes de que una PYME dé el paso.',
@@ -136,9 +184,21 @@ export const RESOURCES: Resource[] = [
     {
         slug: 'caso-reformas-de-excel-a-sistema',
         cat: 'Caso práctico',
-        title: 'De Excel a sistema: cómo una empresa de reformas triplicó su capacidad',
-        desc: 'El caso real de una empresa familiar que pasó de libretas a un sistema que trabaja solo.',
+        title: 'De Excel a sistema: cómo una empresa de reformas multiplicó su capacidad de obra',
+        desc: 'Caso ilustrativo: cómo una empresa de reformas pasó de Excel y albaranes en papel a un sistema con certificaciones automáticas y coste real.',
         time: '6 min',
+        date: '2026-02-20',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Cómo se digitaliza una empresa de reformas que trabaja con Excel?',
+                a: 'Por fases: primero un catálogo de partidas y packs reutilizables para dejar de escribir cada presupuesto desde cero; después certificaciones de obra automáticas con firma digital del cliente; y por último control de coste real (materiales y subcontratas) imputado a cada obra para saber el margen en tiempo real.',
+            },
+            {
+                q: '¿Qué es una certificación de obra y por qué automatizarla?',
+                a: 'Es lo que se factura según avanza el trabajo, comparando lo presupuestado con lo ejecutado. Hecha a mano cada mes es lenta y propensa a error; generada desde las partidas ya ejecutadas y versionada, es trazable y ocupa minutos.',
+            },
+        ],
         blocks: [
             {
                 type: 'note',
@@ -173,10 +233,30 @@ export const RESOURCES: Resource[] = [
     {
         slug: 'checklist-tu-web-trabaja-para-ti',
         cat: 'Checklist',
-        title: '¿Tu web trabaja para ti o contra ti? 10 puntos para saberlo',
-        desc: 'Una auditoría rápida y gratuita para saber si tu web está generando clientes o espantándolos.',
+        title: '¿Tu web trabaja para ti o contra ti? Checklist de 10 puntos',
+        desc: 'Auditoría web gratuita en 10 puntos: velocidad en móvil, contacto visible, SSL y objetivo claro. Comprueba si tu web capta clientes o los espanta.',
         time: '3 min',
+        date: '2025-09-30',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Cómo sé si mi web está funcionando bien?',
+                a: 'Revisa 10 puntos clave: carga en menos de 3 segundos en móvil con datos, teléfono o WhatsApp visible sin scroll, se ve bien en móvil, un objetivo claro por página, explica qué haces en la primera pantalla, sin enlaces rotos, aparece en Google por tu negocio + ciudad, tiene certificado SSL, el formulario funciona y se actualizó en el último año. Fallar en tres o más significa que pierde clientes.',
+            },
+            {
+                q: '¿Por qué es tan importante que la web cargue rápido en el móvil?',
+                a: 'Porque la mayoría de tus visitantes entran desde el móvil con datos, no con wifi. Si tarda más de 3 segundos, muchos se van antes de ver nada. Compruébalo con la conexión de tu teléfono, no con el wifi de la oficina.',
+            },
+            {
+                q: '¿Qué es el certificado SSL y por qué lo necesita mi web?',
+                a: 'Es lo que activa el candado en la barra de direcciones y cifra la conexión. Sin él, Google y el navegador avisan al visitante de que la web "no es segura", lo que espanta antes de que llegue a contactar.',
+            },
+        ],
         blocks: [
+            {
+                type: 'p',
+                text: 'Respuesta rápida: tu web trabaja para ti si carga rápido en móvil, deja el contacto a la vista, tiene un objetivo claro por página y transmite confianza (SSL, contenido actual). Si falla en tres o más de los 10 puntos de abajo, está perdiendo clientes.',
+            },
             {
                 type: 'p',
                 text: 'La mayoría de webs de PYMEs no fallan por diseño — fallan por detalles concretos que espantan al visitante antes de que llegue a contactar. Revisa estos 10 puntos en la tuya, hoy mismo:',
@@ -205,10 +285,30 @@ export const RESOURCES: Resource[] = [
     {
         slug: 'asistentes-ia-productivos',
         cat: 'Artículo',
-        title: 'Asistentes IA productivos: lo que nadie te cuenta antes de implementar uno',
-        desc: 'Ventajas reales, limitaciones y cuándo tiene sentido invertir en agentes inteligentes.',
+        title: 'Asistentes IA para empresas: ventajas, límites y cuándo implementar uno',
+        desc: 'Qué hace bien hoy un asistente de IA en una empresa, qué no, y cuándo compensa invertir. Ventajas reales, límites y errores a evitar.',
         time: '7 min',
+        date: '2026-05-08',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Para qué sirve un asistente de IA en una empresa?',
+                a: 'Funciona muy bien en tareas concretas y repetibles: extraer datos de facturas y tickets con OCR, responder preguntas frecuentes, clasificar consultas entrantes, redactar primeros borradores y buscar información dentro de tu propio negocio. Siempre con revisión humana en decisiones que importan.',
+            },
+            {
+                q: '¿Cuándo NO tiene sentido invertir en IA todavía?',
+                a: 'Cuando el proceso está mal definido, los datos de partida son un caos, o la decisión tiene consecuencias legales o económicas serias sin ningún punto de revisión humana. Ahí el primer proyecto no es "meter IA": es ordenar el proceso.',
+            },
+            {
+                q: '¿La IA se equivoca?',
+                a: 'Sí, y lo hace con confianza: un asistente mal configurado puede dar una respuesta incorrecta con el mismo tono seguro que una correcta. Por eso necesita un punto de revisión humana en todo lo que afecte a dinero, contratos, salud o datos legales.',
+            },
+        ],
         blocks: [
+            {
+                type: 'p',
+                text: 'Respuesta directa: un asistente de IA rinde muy bien en tareas concretas y repetibles (extraer, clasificar, resumir, buscar) y mal en todo lo demás. Compensa cuando ya tienes un proceso claro y datos ordenados; no compensa para tapar un proceso roto.',
+            },
             {
                 type: 'p',
                 text: 'Entre el discurso de marketing ("la IA lo hace todo") y el escepticismo ("es una moda"), hay una realidad más aburrida y más útil: los asistentes de IA funcionan muy bien para tareas concretas y bien definidas, y bastante mal para todo lo demás. Esto es lo que conviene saber antes de invertir en uno.',
@@ -248,10 +348,30 @@ export const RESOURCES: Resource[] = [
     {
         slug: 'como-pedir-presupuesto-de-software',
         cat: 'Guía',
-        title: 'Cómo pedir un presupuesto de software sin que te timen',
-        desc: 'Todo lo que debes preguntar antes de contratar el desarrollo de tu app, sistema o web.',
+        title: 'Cómo pedir un presupuesto de software sin que te timen: guía y preguntas',
+        desc: 'Las preguntas que debes hacer antes de contratar desarrollo de software: propiedad del código, mantenimiento, alcance y señales de alarma en una propuesta.',
         time: '10 min',
+        date: '2026-01-15',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Qué preguntar antes de contratar el desarrollo de software?',
+                a: 'Pregunta si el presupuesto es cerrado o por horas, quién es el dueño del código y de los datos al terminar (la respuesta correcta es siempre: tú), qué incluye exactamente el precio, cuánto cuesta el mantenimiento después, si puedes ver proyectos similares y cómo se gestionan los cambios de alcance a mitad de proyecto.',
+            },
+            {
+                q: '¿Cuáles son las señales de alarma en un presupuesto de software?',
+                a: 'Precio muy por debajo del resto sin explicación, nada por escrito de qué incluye, pago completo por adelantado, que no pregunten casi nada sobre tu negocio antes de dar un número, y un contrato que no menciona quién es el dueño del código al finalizar.',
+            },
+            {
+                q: '¿Es mejor un presupuesto cerrado o por horas?',
+                a: 'Un presupuesto cerrado da certeza de coste pero exige un alcance bien definido. Por horas es más flexible, pero solo si acuerdas por escrito qué pasa cuando se superan las estimadas. Lo importante no es la modalidad: es que el proceso para gestionar cambios esté claro desde el principio.',
+            },
+        ],
         blocks: [
+            {
+                type: 'p',
+                text: 'Respuesta directa: para no equivocarte, exige por escrito qué incluye el precio, quién es el dueño del código al terminar (tú), y cuánto cuesta el mantenimiento después. Un proveedor que no pregunta por tu negocio antes de dar un número es la primera señal de alarma.',
+            },
             {
                 type: 'p',
                 text: 'Contratar desarrollo de software es distinto a contratar casi cualquier otro servicio: es difícil de valorar antes de tenerlo, es fácil de vender mal, y los errores se pagan meses después. Esta guía te da las preguntas concretas que debes hacer antes de firmar nada.',
@@ -299,6 +419,27 @@ export const RESOURCES: Resource[] = [
         desc: 'Plataforma fiscal y contable española completa, con SII y VeriFactu nativos, OCR de tickets y asistente IA. Para autónomos, PYMEs y asesorías.',
         time: '6 min',
         cover: '/images/resources/fiscalidad-plataforma-fiscal-contable.webp',
+        date: '2026-07-02',
+        updated: '2026-07-10',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Qué es VeriFactu y a quién obliga?',
+                a: 'VeriFactu es el sistema de facturación verificable de la AEAT: cada factura deja de ser un documento que se imprime y pasa a ser un registro firmado y encadenado que se comunica a Hacienda. Fiscalidad genera ese XML firmado y gestiona el encadenamiento de forma nativa, sin módulos de pago aparte.',
+            },
+            {
+                q: '¿Sirve Fiscalidad para autónomos y también para asesorías?',
+                a: 'Sí. Autónomos que quieren facturar y presentar sus modelos sin hojas de cálculo, PYMEs que necesitan contabilidad completa según el PGC, y asesorías que gestionan varios clientes desde una cuenta con consolidación de grupos.',
+            },
+            {
+                q: '¿Qué modelos de la AEAT calcula?',
+                a: 'Modelos 303, 111, 115, 130, 190, 202, 347 y 390, calculados a partir de la contabilidad ya registrada, además del envío al SII.',
+            },
+            {
+                q: '¿Las actualizaciones normativas tienen coste extra?',
+                a: 'No. Las normas fiscales cambian (VeriFactu, nuevos modelos, cambios de tipos) y las actualizaciones están incluidas en la suscripción mensual fija, sin coste por documento.',
+            },
+        ],
         blocks: [
             {
                 type: 'p',
@@ -347,6 +488,22 @@ export const RESOURCES: Resource[] = [
         desc: 'Comparador multi-proveedor con snapshots inmutables, gestión por CIF con CUPS y liquidación de comisiones con trazabilidad completa.',
         time: '5 min',
         cover: '/images/resources/energydeal-crm-energetico.webp',
+        date: '2026-03-11',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Qué es un CRM vertical para el sector energético?',
+                a: 'Un CRM construido alrededor de los conceptos del sector: CUPS, puntos de suministro, tarifas de luz y gas por comercializadora y liquidación de comisiones. Un CRM genérico no sabe qué es un CUPS ni cómo se comisiona una venta energética; EnergyDeal sí.',
+            },
+            {
+                q: '¿Para qué sirven los snapshots inmutables de una comparativa?',
+                a: 'Congelan cada comparativa tal y como se generó. Aunque las tarifas cambien semanas después, puedes reproducir exactamente qué condiciones se ofrecieron al cliente, ante una reclamación o una auditoría.',
+            },
+            {
+                q: '¿Cómo gestiona EnergyDeal las comisiones de los agentes?',
+                a: 'Modela el ciclo completo con estados explícitos (pending, validated, paid, reverted) y log de auditoría: quién vendió qué, cuándo se activó el contrato, cuánto se debe y si ya se pagó. La conversación de fin de mes es sobre datos, no sobre memoria.',
+            },
+        ],
         blocks: [
             {
                 type: 'p',
@@ -391,6 +548,22 @@ export const RESOURCES: Resource[] = [
         desc: 'SaaS para construcción y reformas: partidas con descomposición, firma digital del cliente, certificaciones versionadas y control de coste real con OCR.',
         time: '6 min',
         cover: '/images/resources/presupuestador-obra-bc3.webp',
+        date: '2026-04-22',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Qué es el formato BC3/FIEBDC y por qué importa?',
+                a: 'BC3 (estándar FIEBDC) es el formato español para intercambiar presupuestos de obra entre programas y agentes: constructoras, arquitectos y aparejadores. Presupuestador lo importa y exporta de forma nativa, así que puedes intercambiar mediciones sin rehacer nada a mano.',
+            },
+            {
+                q: '¿Cómo ayuda a saber si una obra es rentable?',
+                a: 'Con el control de coste real por OCR de albaranes: cada compra de material queda imputada a su obra en el momento y la comparación presupuestado-vs-real está disponible mientras la obra sigue abierta, cuando todavía se puede corregir el margen.',
+            },
+            {
+                q: '¿Puede firmar el cliente los presupuestos y certificaciones?',
+                a: 'Sí, mediante un enlace público donde firma digitalmente, con trazabilidad y sin imprimir nada. Las certificaciones se generan desde las partidas ejecutadas y quedan versionadas.',
+            },
+        ],
         blocks: [
             {
                 type: 'p',
@@ -439,6 +612,22 @@ export const RESOURCES: Resource[] = [
         desc: 'ERP todo-en-uno para el día a día de un negocio de hostelería: mesas y comandas, stock y proveedores, turnos, reservas y cierre de caja con analítica.',
         time: '5 min',
         cover: '/images/resources/erp-hosteleria-tpv-restaurantes.webp',
+        date: '2026-06-30',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Qué incluye un ERP de hostelería?',
+                a: 'Reúne en un solo sistema el TPV de sala (mesas y comandas), el inventario y los pedidos a proveedores, la gestión de personal y turnos, las reservas y el cierre de caja con analítica. Todo conectado: lo que se vende descuenta stock y la analítica se alimenta sola.',
+            },
+            {
+                q: '¿Sirve para un grupo con varios locales?',
+                a: 'Sí. Los grupos pequeños con más de un local pueden ver ventas y consumo por local en tiempo real, en lugar de sumar Excels de cada sitio a final de mes.',
+            },
+            {
+                q: '¿Tiene permanencia o coste por terminal?',
+                a: 'Funciona con suscripción mensual fija, sin permanencia y con soporte humano en español incluido, como el resto de productos de OpsPilot.',
+            },
+        ],
         blocks: [
             {
                 type: 'p',

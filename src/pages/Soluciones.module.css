@@ -2,6 +2,31 @@
    Soluciones — sector pill switcher
    ═══════════════════════════════════════════ */
 
+/* ─── Hero eyebrow ─── */
+/* Mono uppercase + dot mint — reutiliza el lenguaje de eyebrow del sistema
+   (ver .eyebrow en index.css) para dar ritmo tipográfico sobre el título. */
+.heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-4);
+}
+
+.heroEyebrow::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-mint);
+  flex-shrink: 0;
+}
+
 /* ─── Hero title override ─── */
 /* letter-spacing inherits from sys.pageHeroTitle's --tracking-display (-0.045em) */
 .heroTitle {
@@ -67,19 +92,28 @@
 }
 
 .tab {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--spacing-4);
     width: 100%;
+    min-height: 44px;
     text-align: left;
     padding: var(--spacing-4) var(--spacing-5);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-card);
     background: transparent;
-    color: var(--color-text-muted);
+    /* Idle legible: --color-text en vez de --color-text-muted, que quedaba
+       casi invisible sobre el fondo transparente. La jerarquía se mantiene:
+       idle (text) < activo (text-strong). */
+    color: var(--color-text);
     font-family: var(--font-family-base);
     cursor: pointer;
-    transition: border-color var(--transition-fast), color var(--transition-fast);
+    /* transform/opacity + box-shadow only — cheap on the GPU */
+    transition: transform 200ms var(--ease-out-expo),
+        border-color var(--transition-fast),
+        color var(--transition-fast),
+        box-shadow var(--transition-normal);
 }
 
 /* Status dot — hollow when idle, mint when active (signal, never fill) */
@@ -111,6 +145,7 @@
 .tab:hover {
     border-color: var(--color-border-strong);
     color: var(--color-text);
+    transform: translateX(3px);
 }
 
 .tab:focus-visible {
@@ -119,14 +154,29 @@
 }
 
 .tabActive {
-    background: transparent;
+    background: var(--gradient-surface);
     border-color: var(--color-border-mint);
     color: var(--color-text-strong);
+    box-shadow: var(--shadow-mint);
 }
 
+/* Active pill shouldn't drift on hover — it's already the anchored state. */
+.tabActive:hover {
+    transform: none;
+    border-color: var(--color-border-mint);
+}
+
+/* Al activar, el punto mint entra con un pop (scale 0→1) — refuerza la señal
+   de "sector seleccionado" sin ruido. */
 .tabActive::before {
     background: var(--color-mint);
     border-color: var(--color-mint);
+    animation: dotPop 260ms var(--ease-out-expo);
+}
+
+@keyframes dotPop {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
 }
 
 .tabIndex {
@@ -158,9 +208,11 @@
 }
 
 .panel {
+    position: relative;
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-panel);
-    background: transparent;
+    background: var(--gradient-surface);
+    box-shadow: var(--glass-inset), var(--shadow-md);
     padding: var(--spacing-8) var(--spacing-7);
 }
 
@@ -185,8 +237,9 @@
     justify-content: center;
     color: var(--color-mint);
     background: transparent;
-    border: 1px solid var(--color-border-subtle);
+    border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-card);
+    box-shadow: var(--shadow-mint);
     flex-shrink: 0;
 }
 
@@ -265,9 +318,27 @@
     flex-shrink: 0;
 }
 
-/* The CTA link uses the shared TextLink component
-   (components/common/TextLink.tsx, tone="muted" size="sm") — see
-   Soluciones.tsx. */
+/* CTA principal del panel — Button secundario envuelto en <Link>. El wrapper
+   solo controla el layout/espaciado; el estilo visual lo pone el Button. */
+.panelCta {
+    display: inline-block;
+    margin-top: var(--spacing-1);
+}
+
+/* ─── Reduced motion — no pill drift ni pop del dot ─── */
+@media (prefers-reduced-motion: reduce) {
+    .tab {
+        transition: border-color var(--transition-fast), color var(--transition-fast);
+    }
+
+    .tab:hover {
+        transform: none;
+    }
+
+    .tabActive::before {
+        animation: none;
+    }
+}
 
 /* ─── Mobile ─── */
 @media (max-width: 767px) {

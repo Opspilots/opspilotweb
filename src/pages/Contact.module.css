@@ -25,10 +25,9 @@
 }
 
 /* ─── Form card ─── */
+/* El fondo/borde/sombra los aporta la utilidad global .glass; aquí solo forma. */
 .formCard {
     padding: var(--spacing-10);
-    background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-panel);
 }
 
@@ -79,7 +78,8 @@
     font-weight: var(--font-weight-medium);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--color-text-muted);
+    /* Contraste AA: a 12px mono el muted queda flojo sobre navy; subimos a text. */
+    color: var(--color-text);
 }
 
 .field input,
@@ -87,20 +87,48 @@
 .field textarea {
     width: 100%;
     padding: 0.75rem 0.95rem;
-    background: transparent;
+    background: rgba(10, 14, 20, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: var(--radius-control);
     color: var(--color-text-strong);
     font-family: var(--font-family-base);
     font-size: var(--font-size-sm);
-    transition: border-color var(--transition-fast) var(--ease-custom);
+    transition: border-color var(--transition-fast) var(--ease-custom),
+        box-shadow var(--transition-fast) var(--ease-custom),
+        background-color var(--transition-fast) var(--ease-custom);
     outline: none;
 }
 
+/* Foco con glow mint sutil — halo tintado, nunca duro. */
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
     border-color: var(--color-mint);
+    background: rgba(10, 14, 20, 0.55);
+    box-shadow: 0 0 0 3px var(--color-mint-soft);
+}
+
+/* Error de campo — borde y halo en rojo templado, no negro puro. */
+.field input[aria-invalid="true"],
+.field select[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+    border-color: var(--color-error);
+}
+
+.field input[aria-invalid="true"]:focus,
+.field select[aria-invalid="true"]:focus,
+.field textarea[aria-invalid="true"]:focus {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px rgba(225, 90, 90, 0.14);
+}
+
+/* Mensaje de error inline bajo el campo — mono, discreto, sin alarmismo. */
+.fieldError {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    color: var(--color-error);
 }
 
 .field input::placeholder,
@@ -141,6 +169,49 @@
     padding: var(--spacing-3) var(--spacing-4);
     border: 1px solid rgba(225, 90, 90, 0.25);
     border-radius: var(--radius-control);
+}
+
+/* Estado de carga del submit — barra skeleton con barrido de luz sobre el
+   botón claro. Sin spinner: encaja con el lenguaje shimmer del sistema. */
+.submitSkeleton {
+    position: relative;
+    overflow: hidden;
+    width: 55%;
+    max-width: 200px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: rgba(20, 16, 12, 0.16);
+}
+
+.submitSkeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(20, 16, 12, 0.35),
+            transparent);
+    animation: shimmerSweep 1.2s var(--ease-custom) infinite;
+}
+
+/* Etiqueta solo para lectores de pantalla (el skeleton es aria-hidden). */
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .submitSkeleton::after {
+        animation: none;
+    }
 }
 
 .formSuccess {
@@ -280,10 +351,28 @@
     margin: 0 0 var(--spacing-6);
 }
 
+/* Icono dentro del botón de WhatsApp — separación por gap, no margin inline. */
+.waButtonLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+/* Enlace de email sobre la light card — hereda el color del texto de la card. */
+.emailLink {
+    color: inherit;
+}
+
 @media (max-width: 639px) {
     .formCard {
         padding: var(--spacing-7) var(--spacing-5);
         border-radius: var(--radius-card);
+    }
+
+    /* Comfortable tap targets on phones (textarea already sets min-height). */
+    .field input,
+    .field select {
+        min-height: 44px;
     }
 
     .formSub {

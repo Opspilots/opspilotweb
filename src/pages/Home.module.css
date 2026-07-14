@@ -4,10 +4,21 @@
    ═══════════════════════════════════════════ */
 
 .page {
-    background-color: var(--color-bg-deep);
-    min-height: 100vh;
+    /* Transparente: la capa AmbientBackground (fixed, z-index 0) vive detrás
+       y asoma a través de las secciones translúcidas. */
+    background-color: transparent;
+    min-height: 100vh;      /* fallback navegadores sin dvh */
+    min-height: 100dvh;
     color: var(--color-text);
     overflow-x: hidden;
+    position: relative;
+    z-index: 0;
+}
+
+/* Todo el contenido de las secciones por encima de la capa ambiental */
+.page > section {
+    position: relative;
+    z-index: 1;
 }
 
 /* .container, .sectionHeader, .sectionTitle now come from the shared
@@ -20,6 +31,7 @@
 
 .hero {
     position: relative;
+    min-height: calc(100vh - 4.75rem);   /* fallback sin dvh */
     min-height: calc(100dvh - 4.75rem);
     display: flex;
     flex-direction: column;
@@ -27,7 +39,127 @@
     justify-content: center;
     padding: var(--spacing-12) 0;
     overflow: hidden;
-    background: var(--color-bg-deep);
+    /* Transparente para dejar ver los halos ambientales; un glow mint local
+       refuerza el foco justo detrás del titular. */
+    background:
+        radial-gradient(60% 55% at 22% 42%, rgba(57, 206, 134, 0.09), transparent 70%),
+        transparent;
+}
+
+/* Eyebrow de instrumento sobre el titular */
+.heroEyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-6);
+}
+
+.heroEyebrow::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    box-shadow: 0 0 0 0 rgba(57, 206, 134, 0.6);
+    animation: heroPulse 2.6s ease-out infinite;
+}
+
+@keyframes heroPulse {
+    0% { box-shadow: 0 0 0 0 rgba(57, 206, 134, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(57, 206, 134, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(57, 206, 134, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .heroEyebrow::before { animation: none; }
+}
+
+/* Halo suave tras la palabra de acento */
+.heroAccent {
+    color: var(--color-mint);
+    position: relative;
+    text-shadow: 0 0 30px rgba(57, 206, 134, 0.35);
+}
+
+/* Fila de confianza — microcopy mono, hairline superior */
+.heroTrust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-3) var(--spacing-5);
+    margin-top: var(--spacing-9);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--color-border-subtle);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-text-subtle);
+}
+
+.heroTrustItem {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.heroTrustItem svg {
+    color: var(--color-mint);
+    flex-shrink: 0;
+}
+
+.heroTrustSep {
+    width: 4px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+}
+
+@media (max-width: 639px) {
+    .heroTrustSep { display: none; }
+    .heroTrust { gap: var(--spacing-2) var(--spacing-4); }
+}
+
+/* Marco del dashboard: glow + spotlight que sigue al puntero */
+.heroPanelFrame {
+    position: relative;
+    border-radius: var(--radius-panel);
+    isolation: isolate;
+}
+
+/* Glow ambiental detrás del panel */
+.heroPanelFrame::before {
+    content: '';
+    position: absolute;
+    inset: -14% -10%;
+    z-index: -1;
+    background:
+        radial-gradient(50% 50% at 60% 30%, rgba(57, 206, 134, 0.16), transparent 70%),
+        radial-gradient(46% 46% at 30% 90%, rgba(232, 165, 99, 0.10), transparent 70%);
+    filter: blur(24px);
+    opacity: 0.9;
+}
+
+/* Spotlight que sigue al ratón (via useSpotlight → --mx/--my) */
+.heroPanelFrame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: var(--radius-panel);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(57, 206, 134, 0.14), transparent 60%);
+}
+
+.heroPanelFrame[data-spotlight-active]::after {
+    opacity: 1;
 }
 
 .heroInner {
@@ -83,6 +215,9 @@
     margin-bottom: var(--spacing-7);
     letter-spacing: var(--tracking-display);
     text-wrap: balance;
+    /* Rompe tokens largos (nombres, URLs) antes de que empujen el ancho en
+       viewports estrechos; solo actúa si no hay otra oportunidad de corte. */
+    overflow-wrap: break-word;
     display: flex;
     flex-direction: column;
     gap: 0.04em;
@@ -103,11 +238,6 @@
     will-change: transform;
 }
 
-/* Mint sólido para la palabra de acento (sin gradient-text) */
-.heroAccent {
-    color: var(--color-mint);
-}
-
 .heroSubtitle {
     font-size: clamp(1.05rem, 1.4vw, 1.2rem);
     color: var(--color-text-muted);
@@ -124,6 +254,12 @@
     justify-content: flex-start;
 }
 
+/* El Link (anchor inline) necesita ser una caja para el transform magnético */
+.ctaGroup > a {
+    display: inline-flex;
+    will-change: transform;
+}
+
 /* .ctaSecondary is now just a layout hook for the shared TextLink
    component (see components/common/TextLink.tsx) — the link/hover
    styling itself lives in TextLink.module.css. Only the mobile
@@ -134,8 +270,8 @@
    ═══════════════════════════════════════════ */
 
 .problemSection {
-    padding: var(--space-section-tight) 0 var(--space-section-default);
-    background: var(--color-bg);
+    padding: var(--space-section-tight) 0;
+    background: rgba(15, 22, 32, 0.62);
     position: relative;
 }
 
@@ -151,130 +287,160 @@
 .problemSection::before { top: 0; }
 .problemSection::after { bottom: 0; }
 
-/* Asymmetric split: heading/intro on the left, divided list on the
-   right. Single column below 1024px. */
-.problemSplit {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacing-10);
-}
-
-@media (min-width: 1024px) {
-    .problemSplit {
-        grid-template-columns: 0.9fr 1.1fr;
-        gap: var(--spacing-14);
-    }
-}
-
-.problemIntro {
-    max-width: 480px;
-}
-
-.problemIntro h2 {
-    margin: 0;
-}
-
-.problemIntroText {
-    font-size: var(--font-size-base);
-    color: var(--color-text-muted);
-    line-height: 1.6;
-    margin: var(--spacing-5) 0 0;
-    max-width: 38ch;
-}
-
-@media (min-width: 1024px) {
-    .problemIntro {
-        padding-top: var(--spacing-2);
-    }
-}
-
-.problemList {
-    position: relative;
+/* Contenedor que se FIJA (pin) en desktop+motion. En reposo, móvil o
+   reduced-motion fluye como una columna normal. */
+.problemPin {
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
-/* Vertical progress line drawn by scroll (GSAP scrub) — legitimate
-   instrument. Runs through the center of the 36px markers, which sit
-   above it with their opaque bg so the line reads as connecting "nodes".
-   Hidden at rest (scaleY 0): purely decorative, so reduced-motion users
-   simply never see it. */
-.problemProgress {
-    position: absolute;
-    left: 17px;
-    top: var(--spacing-7);
-    bottom: var(--spacing-7);
-    width: 2px;
-    background: var(--color-mint);
-    transform: scaleY(0);
-    transform-origin: top;
-    pointer-events: none;
+.problemHead {
+    max-width: 620px;
+    margin-bottom: var(--spacing-10);
 }
 
-.problemRow {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-5);
-    padding: var(--spacing-7) 0;
-    border-top: 1px solid var(--color-border-subtle);
-}
+.problemHead h2 { margin: 0; }
 
-.problemRowBody {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
-}
-
-/* Marker — mono instrument voice. Opaque bg so the progress line can
-   never bleed through the number. */
-.problemMarker {
-    position: relative;
-    z-index: 1;
-    flex-shrink: 0;
-    width: 36px;
-    height: 36px;
+/* Kicker de sección — voz de instrumento reutilizable en cada capítulo */
+.sectionKicker {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: var(--spacing-3);
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-regular);
-    color: var(--color-text-muted);
-    background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-control);
-    transition: color var(--transition-normal), border-color var(--transition-normal);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-subtle);
+    margin-bottom: var(--spacing-5);
 }
 
-.problemRow:hover .problemMarker,
-.problemRow:focus-within .problemMarker,
-.problemRowActive .problemMarker {
+.sectionKicker::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--color-mint);
+    display: inline-block;
+}
+
+/* Deck: contenedor de las tarjetas. En flujo normal se apilan verticalmente;
+   en modo pin (.problemDeckOn) pasan a absolute y se relevan una sobre otra. */
+.problemDeck {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+}
+
+/* Tarjeta de problema — ocupa el ancho completo. */
+.problemCard {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-7);
+    width: 100%;
+    padding: var(--spacing-8);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card, 18px);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+        var(--color-bg-elevated);
+    overflow: hidden;
+}
+
+/* Número gigante como marca de agua (contorno). */
+.problemNum {
+    flex-shrink: 0;
+    font-family: var(--font-family-mono);
+    font-size: clamp(3.5rem, 9vw, 6.5rem);
+    font-weight: var(--font-weight-regular);
+    line-height: 0.8;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--color-border-mint);
+    user-select: none;
+}
+
+.problemCardBody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    flex: 1;
+    min-width: 0;
+}
+
+.problemTag {
+    align-self: flex-start;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.06em;
     color: var(--color-mint);
-    border-color: var(--color-border-mint);
+    padding: var(--spacing-1) var(--spacing-3);
+    border: 1px solid var(--color-border-mint);
+    border-radius: var(--radius-control);
+    background: var(--color-mint-soft);
 }
 
 .problemTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-lg);
+    font-size: clamp(var(--font-size-lg), 3vw, var(--font-size-2xl, 1.8rem));
     font-weight: var(--font-weight-medium);
     color: var(--color-text-strong);
-    line-height: 1.2;
+    line-height: 1.15;
     letter-spacing: var(--tracking-tight);
     margin: 0;
 }
 
 .problemText {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     color: var(--color-text-muted);
-    line-height: 1.65;
+    line-height: 1.6;
     margin: 0;
+    max-width: 52ch;
 }
 
-@media (max-width: 639px) {
-    .problemRow {
-        padding: var(--spacing-6) 0;
+/* Indicador 01 / 03 arriba a la derecha de la tarjeta. */
+.problemCount {
+    position: absolute;
+    top: var(--spacing-6);
+    right: var(--spacing-7);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    color: var(--color-mint);
+    letter-spacing: 0.04em;
+}
+
+.problemCountTotal { color: var(--color-text-subtle); }
+
+/* ── Modo pin activo (desktop + motion): tarjetas superpuestas. ── */
+.problemDeckOn {
+    min-height: 100vh;
+    justify-content: center;
+}
+
+.problemDeckOn .problemHead { margin-bottom: var(--spacing-8); }
+
+.problemDeckOn .problemDeck {
+    position: relative;
+    min-height: 46vh;
+}
+
+.problemDeckOn .problemCard {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    min-height: 46vh;
+    will-change: transform, opacity;
+}
+
+@media (max-width: 767px) {
+    .problemCard {
+        flex-direction: column;
+        align-items: flex-start;
         gap: var(--spacing-4);
+        padding: var(--spacing-6);
     }
+
+    .problemCount { display: none; }
+
+    .problemNum { font-size: 3rem; }
 }
 
 /* ═══════════════════════════════════════════
@@ -283,7 +449,7 @@
 
 .methodSection {
     padding: var(--space-section-loose) 0;
-    background: var(--color-bg);
+    background: rgba(15, 22, 32, 0.62);
     position: relative;
 }
 
@@ -299,110 +465,102 @@
 .methodSection::before { top: 0; }
 .methodSection::after { bottom: 0; }
 
-.processGrid {
-    display: flex;
+.methodGrid {
+    display: grid;
+    grid-template-columns: 1fr;
     gap: var(--spacing-5);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    cursor: grab;
-    /* Extend slightly past the right edge so the peeking card feels open */
-    padding-right: var(--spacing-7);
-    margin-right: calc(-1 * var(--spacing-7));
-    position: relative;
-    z-index: 1;
 }
 
-.processGrid::-webkit-scrollbar {
-    display: none;
-}
-
-.processGrid:active {
-    cursor: grabbing;
-}
-
-@media (min-width: 768px) {
-    .processGrid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
+@media (min-width: 600px) {
+    .methodGrid {
+        grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-6);
-        overflow-x: visible;
-        scroll-snap-type: none;
-        cursor: auto;
-        padding-right: 0;
-        margin-right: 0;
     }
 }
 
-.processStep {
-    position: relative;
-    padding-top: var(--spacing-2);
-    text-align: left;
-    flex: 0 0 80%;
-    scroll-snap-align: start;
-}
-
-/* Desktop reset must come after the base rule above so it wins the
-   cascade at equal specificity (media-query nesting alone does not
-   raise specificity). */
-@media (min-width: 768px) {
-    .processStep {
-        flex: initial;
-        scroll-snap-align: none;
+@media (min-width: 1024px) {
+    .methodGrid {
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
-.processNumWrap {
+/* Tarjeta de paso — elevada, con borde propio y barra de carga inferior.
+   El número arranca apagado y se ilumina a mint al entrar (contraste). */
+.methodStep {
     position: relative;
-    margin-bottom: var(--spacing-6);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    padding: var(--spacing-7) var(--spacing-6) var(--spacing-8);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card, 18px);
+    background: var(--color-bg-elevated);
+    overflow: hidden;
+    transition: border-color var(--transition-normal), transform var(--transition-normal);
+}
+
+.methodStep:hover {
+    border-color: var(--color-border-mint);
+    transform: translateY(-3px);
+}
+
+.methodStepTop {
+    display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: var(--spacing-3);
+    justify-content: space-between;
+    margin-bottom: var(--spacing-6);
 }
 
-/* Step number — mono instrument voice; the scroll scrub (Home.tsx)
-   scrambles it in and lights it up to mint. */
-.processStepNum {
-    font-family: var(--font-family-mono);
-    font-size: 1.75rem;
-    font-weight: var(--font-weight-regular);
-    color: var(--color-text-muted);
-    letter-spacing: var(--tracking-tight);
-    line-height: 1;
-}
-
-.processNumLabel {
-    position: relative;
-    z-index: 1;
-    width: 54px;
-    height: 54px;
+.methodStepIcon {
+    width: 48px;
+    height: 48px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: var(--color-mint);
     background: var(--color-mint-soft);
+    border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-control);
-    transition: background var(--transition-normal);
 }
 
-.stepTitle {
+.methodStepNum {
+    font-family: var(--font-family-mono);
+    font-size: 2rem;
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-subtle);
+    letter-spacing: var(--tracking-tight);
+    line-height: 1;
+}
+
+.methodStepTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-strong);
-    margin-bottom: var(--spacing-3);
-    line-height: 1.2;
+    margin: 0 0 var(--spacing-3);
+    line-height: 1.25;
     letter-spacing: var(--tracking-tight);
 }
 
-.stepText {
+.methodStepText {
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
-    line-height: 1.65;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Barra inferior que se dibuja al entrar (contraste de carga). */
+.methodStepBar {
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--gradient-mint, var(--color-mint));
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .methodStep:hover { transform: none; }
 }
 
 /* ═══════════════════════════════════════════
@@ -411,7 +569,7 @@
 
 .caseSection {
     padding: var(--space-section-loose) 0;
-    background: var(--color-bg-deep);
+    background: transparent;
     position: relative;
     overflow: hidden;
 }
@@ -470,10 +628,124 @@
     flex: 0 0 100%;
     scroll-snap-align: start;
     padding: var(--spacing-10) var(--spacing-8);
-    background: transparent;
+    background: rgba(24, 34, 46, 0.35);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-card);
     box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+    transition: border-color var(--transition-normal),
+        background-color var(--transition-normal);
+}
+
+/* Bento en desktop: narrativa + panel de resultados */
+@media (min-width: 900px) {
+    .caseCard {
+        display: grid;
+        grid-template-columns: 1.4fr 0.9fr;
+        gap: var(--spacing-10);
+        align-items: stretch;
+    }
+}
+
+.caseCardMain {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Panel de resultados — mismo lenguaje que el HeroDashboard */
+.caseCardPanel {
+    display: flex;
+    flex-direction: column;
+    background: rgba(10, 14, 20, 0.55);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
+    padding: var(--spacing-6);
+    align-self: start;
+}
+
+.casePanelBar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    padding-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.casePanelDot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    box-shadow: 0 0 8px rgba(57, 206, 134, 0.8);
+}
+
+/* Stats dentro del panel: pila vertical con hairlines, no grid de 3 */
+.caseCardPanel .caseCardStats {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+    gap: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.caseCardPanel .caseStat {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.caseCardPanel .caseStat:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.caseCardPanel .caseStatNumber {
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    flex-shrink: 0;
+}
+
+.caseCardPanel .caseStatLabel {
+    text-align: right;
+    max-width: 18ch;
+}
+
+/* Spotlight que sigue al puntero (::before pinta bajo el contenido) */
+.caseCard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(57, 206, 134, 0.11), transparent 60%);
+}
+
+.caseCard[data-spotlight-active] {
+    border-color: var(--color-border-mint);
+    background-color: rgba(24, 34, 46, 0.55);
+}
+
+.caseCard[data-spotlight-active]::before {
+    opacity: 1;
 }
 
 @media (min-width: 1024px) {
@@ -485,6 +757,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.caseDisclaimer {
+    max-width: 62ch;
+    margin-top: var(--spacing-6);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    color: var(--color-text-muted);
+    text-wrap: pretty;
 }
 
 .caseDots {
@@ -688,7 +969,7 @@
 
 .whySection {
     padding: var(--space-section-loose) 0;
-    background: var(--color-bg);
+    background: rgba(15, 22, 32, 0.62);
     position: relative;
 }
 
@@ -747,6 +1028,38 @@
     flex-direction: column;
     flex: 0 0 85%;
     scroll-snap-align: start;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition: border-color var(--transition-normal),
+        background-color var(--transition-normal);
+}
+
+/* Spotlight en las columnas comparativas */
+.whyCol::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(57, 206, 134, 0.09), transparent 60%);
+}
+
+.whyCol[data-spotlight-active]::before {
+    opacity: 1;
+}
+
+.whyColOps[data-spotlight-active] {
+    border-color: var(--color-mint);
+    background-color: rgba(57, 206, 134, 0.04);
+}
+
+.whyColGeneric[data-spotlight-active] {
+    border-color: var(--color-border-strong);
 }
 
 /* Desktop reset must come after the base rule above so it wins the
@@ -764,19 +1077,44 @@
     background: transparent;
 }
 
-/* OpsPilot column — static state: faint mint hairline, mint dot in the
-   header badge. No glow, no gradient, no spotlight. */
+/* OpsPilot column — elevada: fondo mint tenue, borde mint y un glow suave
+   que la levanta sobre la columna genérica. Elevación vía box-shadow (no
+   transform: el reveal de GSAP resetea transform a none tras animar). */
 .whyColOps {
-    background: transparent;
-    border-color: rgba(57, 206, 134, 0.25);
+    background: rgba(57, 206, 134, 0.045);
+    border-color: rgba(57, 206, 134, 0.32);
+    box-shadow:
+        inset 0 1px 0 rgba(57, 206, 134, 0.12),
+        0 28px 70px -34px rgba(57, 206, 134, 0.5);
+}
+
+/* Columna genérica — ligeramente recedida */
+.whyColGeneric {
+    background: rgba(255, 255, 255, 0.012);
 }
 
 .whyColHead {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
     margin-bottom: var(--spacing-6);
     padding-bottom: var(--spacing-6);
     border-bottom: 1px solid var(--color-border-subtle);
+}
+
+/* Chip "Recomendado" en la cabecera de la columna OpsPilot */
+.whyRecommended {
+    flex-shrink: 0;
+    font-family: var(--font-family-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-mint);
+    padding: var(--spacing-1) var(--spacing-3);
+    border: 1px solid var(--color-border-mint);
+    border-radius: var(--radius-full);
+    background: var(--color-mint-soft);
 }
 
 .whyColBadge {
@@ -917,6 +1255,21 @@
 
     .caseStatNumber {
         font-size: clamp(1.4rem, 5vw, 1.875rem);
+    }
+}
+
+/* ═══════════════════════════════════════════
+   TÁCTIL — sin spotlights que sigan al puntero
+   En punteros gruesos no hay cursor que seguir: los halos radiales que
+   useSpotlight/SpotlightCard encienden vía data-spotlight-active solo cuestan
+   repintado. Los apagamos (coherente con el bloque @media (hover:none) de
+   index.css para la utilidad .spotlight).
+   ═══════════════════════════════════════════ */
+@media (hover: none) {
+    .heroPanelFrame::after,
+    .caseCard::before,
+    .whyCol::before {
+        display: none;
     }
 }
 

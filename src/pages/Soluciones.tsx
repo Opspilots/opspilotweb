@@ -4,12 +4,13 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
-import { usePageSEO } from '../hooks/usePageSEO';
+import { PageSEO } from '../hooks/usePageSEO';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { ROUTES } from '../lib/routes';
+import { buildBreadcrumb } from '../lib/seo';
+import { StructuredData } from '../components/seo/StructuredData';
 import sys from '../styles/page-system.module.css';
 import styles from './Soluciones.module.css';
-import { TextLink } from '../components/common/TextLink';
 
 import { ClipboardList, Zap, Building2, Target, Globe, Settings, Check } from 'lucide-react';
 
@@ -18,7 +19,7 @@ const sectores = [
         icon: <ClipboardList size={20} strokeWidth={1.6} />,
         title: 'Asesorías y despachos profesionales',
         who: 'Gestorías, asesorías fiscales, laborales y legales',
-        solution: 'Automatización documental — flujos de firma, comunicación y archivo digital sin fricciones',
+        solution: 'Software para asesorías y despachos que automatiza firma, comunicación y archivo documental. Adiós al papeleo.',
         benefits: ['Documentos sin papel', 'Seguimiento en tiempo real', 'Clientes siempre informados'],
         cta: 'Cuéntanos tu caso',
         href: ROUTES.contacto,
@@ -27,7 +28,7 @@ const sectores = [
         icon: <Zap size={20} strokeWidth={1.6} />,
         title: 'Empresas de energía y comercializadoras',
         who: 'Comerciales y back-office de energía eléctrica y gas',
-        solution: 'Análisis de tarifas y onboarding digital — propuesta instantánea, cartera centralizada y gestión automatizada',
+        solution: 'CRM para comercializadoras de energía: comparas tarifas al instante, digitalizas el alta y centralizas la cartera.',
         benefits: ['Análisis en segundos', 'Propuestas sin errores', 'Pipeline de clientes claro'],
         cta: 'Cuéntanos tu caso',
         href: ROUTES.contacto,
@@ -36,7 +37,7 @@ const sectores = [
         icon: <Building2 size={20} strokeWidth={1.6} />,
         title: 'Reformas, instalaciones y oficios',
         who: 'Empresas de construcción, fontanería, electricidad y climatización',
-        solution: 'Presupuestación y seguimiento de obra — de la visita al cobro sin llamadas innecesarias',
+        solution: 'Software para reformas e instalaciones: presupuestas en la visita y sigues la obra hasta el cobro. Sin llamadas de más.',
         benefits: ['Presupuestos en 2 minutos', 'Clientes sin llamadas extras', 'Cobros sin perseguir'],
         cta: 'Cuéntanos tu caso',
         href: ROUTES.contacto,
@@ -45,7 +46,7 @@ const sectores = [
         icon: <Target size={20} strokeWidth={1.6} />,
         title: 'Agencias y negocios de servicios',
         who: 'Agencias de marketing, consultoras y equipos de servicios recurrentes',
-        solution: 'CRM y gestión de proyectos — pipeline visual, seguimientos automáticos y cero leads perdidos',
+        solution: 'Software de gestión para agencias de servicios: pipeline visual, seguimientos automáticos y cero leads perdidos.',
         benefits: ['Nada se pierde', 'Pipeline siempre actualizado', 'Menos tiempo administrativo'],
         cta: 'Cuéntanos tu caso',
         href: ROUTES.contacto,
@@ -54,7 +55,7 @@ const sectores = [
         icon: <Globe size={20} strokeWidth={1.6} />,
         title: 'PYMEs con operativa dispersa',
         who: 'Empresas que gestionan con Excel, llamadas y WhatsApp',
-        solution: 'Centralización operativa — una sola herramienta para empleados, tareas, proveedores y analítica',
+        solution: 'Digitalización de PYMEs en una sola herramienta: empleados, tareas, proveedores y analítica, todo junto.',
         benefits: ['Control total en un sitio', 'Decisiones con datos reales', 'Menos caos operativo'],
         cta: 'Cuéntanos tu caso',
         href: ROUTES.contacto,
@@ -63,7 +64,7 @@ const sectores = [
         icon: <Settings size={20} strokeWidth={1.6} />,
         title: 'Procesos únicos sin solución estándar',
         who: 'Cualquier empresa con un flujo específico que el software del mercado no resuelve',
-        solution: 'Desarrollo a medida — analizamos tu caso, lo construimos para ti y lo mantenemos vivo',
+        solution: 'Software a medida: analizamos tu flujo, lo construimos para ti y lo mantenemos vivo con tu negocio.',
         benefits: ['100% adaptado a ti', 'Integrado con lo que ya tienes', 'Escalable sin límites'],
         cta: 'Cuéntanos tu caso',
         href: ROUTES.contacto,
@@ -71,11 +72,11 @@ const sectores = [
 ];
 
 export const Soluciones: React.FC = () => {
-    usePageSEO({
-        title: 'Soluciones por sector — Asesorías, energía, obra y agencias · OpsPilot',
-        description: 'Soluciones digitales adaptadas a tu sector: asesorías y despachos, comercializadoras de energía, reformas e instalaciones, agencias y PYMEs. Tecnología que encaja con cómo trabajas.',
+    const seoProps = {
+        title: 'Software por sector: asesorías, energía y obra · OpsPilot',
+        description: 'Software para asesorías, CRM para comercializadoras de energía, gestión para reformas y agencias, y digitalización de PYMEs. Encaja con cómo trabajas.',
         canonical: 'https://opspilot.es/soluciones',
-    });
+    };
 
     const heroRef = useHeroReveal<HTMLDivElement>();
 
@@ -86,6 +87,17 @@ export const Soluciones: React.FC = () => {
     const [selected, setSelected] = useState(0);
     const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const active = sectores[selected];
+
+    // El tablist es vertical en ≥1024px y horizontal por debajo. `aria-orientation`
+    // debe reflejar el layout real para no confundir a lectores de pantalla.
+    const [isDesktop, setIsDesktop] = useState(false);
+    useEffect(() => {
+        const mq = window.matchMedia('(min-width: 1024px)');
+        const update = () => setIsDesktop(mq.matches);
+        update();
+        mq.addEventListener('change', update);
+        return () => mq.removeEventListener('change', update);
+    }, []);
 
     const handleTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
         const count = sectores.length;
@@ -118,10 +130,20 @@ export const Soluciones: React.FC = () => {
 
     return (
         <div className={sys.page}>
+            <PageSEO {...seoProps} />
+            <StructuredData
+                data={buildBreadcrumb([
+                    { name: 'Inicio', url: 'https://opspilot.es/' },
+                    { name: 'Soluciones', url: 'https://opspilot.es/soluciones' },
+                ])}
+            />
             {/* Hero */}
             <section className={sys.pageHero}>
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
                     <div className={sys.pageHeroContent} ref={heroRef}>
+                        <span className={`${styles.heroEyebrow} reveal`}>
+                            6 sectores · encaje por operativa
+                        </span>
                         <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>
                             ¿En qué sector{' '}
                             <em className={sys.pageHeroAccent}>opera tu negocio?</em>
@@ -142,7 +164,7 @@ export const Soluciones: React.FC = () => {
                             className={styles.tabList}
                             role="tablist"
                             aria-label="Sectores"
-                            aria-orientation="vertical"
+                            aria-orientation={isDesktop ? 'vertical' : 'horizontal'}
                         >
                             {sectores.map((s, i) => (
                                 <button
@@ -203,9 +225,12 @@ export const Soluciones: React.FC = () => {
                                         ))}
                                     </ul>
 
-                                    <TextLink to={active.href} tone="muted" size="sm">
-                                        {active.cta}
-                                    </TextLink>
+                                    {/* CTA principal del panel — es el punto de conversión de la
+                                        página, así que sube de TextLink débil a Button secundario
+                                        para que destaque con claridad. */}
+                                    <Link to={active.href} className={styles.panelCta}>
+                                        <Button variant="secondary" size="md">{active.cta}</Button>
+                                    </Link>
                                 </motion.div>
                             </AnimatePresence>
                         </div>
@@ -225,8 +250,8 @@ export const Soluciones: React.FC = () => {
                             <Link to={ROUTES.contacto}>
                                 <Button variant="secondary" size="lg">Reservar diagnóstico gratuito</Button>
                             </Link>
-                            <Link to={ROUTES.servicios}>
-                                <Button variant="outline" size="lg">Ver servicios</Button>
+                            <Link to={ROUTES.casos}>
+                                <Button variant="outline" size="lg">Ver casos</Button>
                             </Link>
                         </div>
                     </div>
