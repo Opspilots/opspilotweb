@@ -10,7 +10,24 @@
 /* Contenido por encima de la capa ambiental (AmbientBackground, z-index 0) */
 .main {
     flex: 1;
-    padding-top: 4.75rem;
+    /* Compensa la navbar fija. --navbar-offset (no --navbar-height) para que
+       en iOS con viewport-fit=cover el contenido tampoco arranque bajo el
+       notch. */
+    padding-top: var(--navbar-offset);
+    /* Reserva un viewport completo aunque el contenido de la ruta activa
+       todavía no esté pintado. vite-react-ssg prerrenderiza las rutas con
+       `route.lazy()` (react-router 7) vía React Suspense: cuando ese import
+       no se resuelve de forma síncrona durante el build, el HTML estático
+       queda con el boundary "pendiente" (placeholder vacío + contenido real
+       oculto en un <template>/<div hidden>) y React SOLO lo revela en
+       cliente ~2s después (su propio heurístico anti-flicker: $RC/$RV en el
+       bundle). Con <main> colapsado a la altura del padding durante esa
+       ventana, el <footer> (hermano, siempre presente) se pintaba pegado a
+       la navbar y saltaba ~1 pantalla hacia abajo al revelarse el contenido
+       real — el CLS de 0.907 medido en el footer. min-height aquí no arregla
+       la causa raíz (el Suspense sin resolver en el build), pero garantiza
+       que el footer nace ya en, aproximadamente, su posición final. */
+    min-height: calc(100dvh - var(--navbar-offset));
     position: relative;
     z-index: 1;
 }

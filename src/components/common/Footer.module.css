@@ -8,14 +8,19 @@
     z-index: 2;
     background-color: var(--color-bg-deep);
     color: var(--color-text-strong);
-    padding: var(--spacing-14) 0 var(--spacing-8);
+    /* Último elemento de la página: el inset inferior lo separa de la barra
+       de gestos de iOS. */
+    padding: var(--spacing-14) 0 calc(var(--spacing-8) + env(safe-area-inset-bottom, 0px));
     border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
+/* Mismo eje y mismo gutter que navbar/secciones. Antes el gutter era 24px
+   fijo y nunca subía a 40px en DESKTOP: el footer quedaba 4px más pegado al
+   borde que el resto de la web, y 16px en escritorio. */
 .container {
-    max-width: 1200px;
+    max-width: var(--container-max);
     margin: 0 auto;
-    padding: 0 var(--spacing-6);
+    padding: 0 var(--gutter);
 }
 
 /* ── Banda CTA superior ── */
@@ -203,7 +208,7 @@
 
 @media (max-width: 639px) {
     .footer {
-        padding: var(--spacing-10) 0 var(--spacing-6);
+        padding: var(--spacing-10) 0 calc(var(--spacing-6) + env(safe-area-inset-bottom, 0px));
     }
 
     .cta {

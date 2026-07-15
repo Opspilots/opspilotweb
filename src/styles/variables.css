@@ -1,3 +1,44 @@
+/* ═══════════════════════════════════════════
+   BREAKPOINTS — fuente única de verdad
+   ═══════════════════════════════════════════
+
+   El sistema tiene TRES puntos de corte. No hay más. Si necesitas uno nuevo,
+   la respuesta casi siempre es rediseñar el componente, no añadir un cuarto.
+
+     MÓVIL     ≤ 639px   (complemento mobile-first: ≥ 640px)
+               Una columna, tipografía reducida, spacing de sección mínimo.
+
+     TÁCTIL    ≤ 767px   (complemento mobile-first: ≥ 768px)
+               Frontera "layout móvil ↔ layout escritorio": aquí voltean el
+               menú de la navbar, la rejilla del footer y el layout de
+               problemas. También la usamos para lo que depende del PUNTERO
+               (targets ≥44px, animaciones perpetuas), no del ancho.
+
+     DESKTOP   ≥ 1024px
+               Multi-columna real, gutter ancho, secciones sticky.
+
+   USO — escribe el literal y anota el nombre del corte en un comentario al
+   lado, de forma que un grep por "639" o por "DESKTOP" encuentre lo mismo:
+
+       @media (max-width: 639px)  { }    -->  MÓVIL
+       @media (min-width: 768px)  { }    -->  ≥TÁCTIL
+       @media (min-width: 1024px) { }    -->  DESKTOP
+
+   ¿POR QUÉ LITERALES Y NO UN TOKEN?
+   Las custom properties NO se pueden usar en la condición de una @media: la
+   media query se evalúa antes de que exista el árbol de estilo, así que
+   `@media (max-width: var(--bp-mobile))` no funciona — falla en silencio.
+   Las alternativas reales eran `@custom-media` vía postcss-custom-media (un
+   plugin + config + un modo de fallo nuevo en el build) o esta tabla. Con 3
+   valores estables, la tabla gana: cero build steps, cero dependencias, y un
+   único sitio que consultar. Deliberadamente NO se declaran como custom
+   properties: un token que parece usable en @media pero falla en silencio es
+   peor que ningún token.
+
+   Lo que SÍ es responsive vía token (y por tanto NO necesita @media en los
+   consumidores): --gutter, --space-section-*, --navbar-height-scrolled.
+   Ver más abajo. */
+
 :root {
     /* ═══════════════════════════════════════════
        COLOR — OpsPilot Visual System v2
@@ -20,7 +61,13 @@
     --color-text-strong: #FFFFFF;
     --color-text: #E6EBF2;
     --color-text-muted: #8E9BAA;
-    --color-text-subtle: #8a96a6;   /* Casi-duplicado de -muted (tono ligeramente más frío); ambos referenciados, se conservan */
+    /* Antes #8a96a6: un segundo gris a 1.5 puntos de --color-text-muted, una
+       diferencia que nadie puede ver y que ningún uso justificaba. Unificado
+       como alias. Se conserva el nombre porque tiene ~20 referencias y sí
+       comunica intención semántica (texto terciario: metadatos, labels mono,
+       marcadores de sección). Si algún día el gris terciario debe divergir de
+       verdad, este es el sitio donde hacerlo. */
+    --color-text-subtle: var(--color-text-muted);
 
     /* Accents */
     --color-mint: #39ce86;
@@ -73,7 +120,15 @@
        Wordmark: Bricolage Grotesque (solo Navbar/Footer)
        Instrumento: JetBrains Mono
        ═══════════════════════════════════════════ */
-    --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+    /* 'Inter Fallback' (declarada abajo) se interpone entre 'Inter' y las
+       fuentes de sistema: sin ella, el navegador pinta el primer frame con
+       system-ui/-apple-system (fuente ajena, con métricas propias) mientras
+       Inter descarga desde Google Fonts (font-display: swap en index.html),
+       y al intercambiarla el texto reflowea porque los anchos/alturas no
+       coinciden. Esto es lo que medía Lighthouse como CLS 0.39: el <h1> del
+       hero (Home) es multilinea, clamp() hasta 4.5rem y sin altura fija, así
+       que cualquier reflow de línea empuja todo el contenido de debajo. */
+    --font-family-base: 'Inter', 'Inter Fallback', system-ui, -apple-system, sans-serif;
     --font-family-display: var(--font-family-base);
     --font-family-heading: var(--font-family-display);
     --font-family-wordmark: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
@@ -139,20 +194,56 @@
     --space-hero-bottom: 5rem;
 
     /* ═══════════════════════════════════════════
-       RADII — Factory (control 3px, card 10px, panel 20px)
+       LAYOUT — gutter, contenedores, navbar
        ═══════════════════════════════════════════ */
-    --radius-sm: 3px;
-    --radius-md: 3px;
-    --radius-lg: 10px;
-    --radius-xl: 10px;
-    --radius-2xl: 20px;
-    --radius-3xl: 20px;
+
+    /* Gutter lateral único. Sube a 40px en DESKTOP vía el override de :root
+       (abajo), así que los consumidores escriben `padding: 0 var(--gutter)`
+       y NO necesitan su propia @media. Antes convivían tres gutters (28/40
+       en el sistema de página, 28/40/24-al-scrollear en la navbar, 24 fijo
+       en el footer) y el footer quedaba 4px más pegado al borde que todo lo
+       demás. */
+    --gutter: 1.75rem;                 /* 28 — móvil/táctil (== --spacing-7) */
+
+    /* Anchos de contenedor. --container-max es el eje común de TODA la web
+       (navbar, hero, secciones, footer): antes el logo y el hero iban a
+       1280px y el resto a 1200px, así que por encima de 1280px de viewport
+       se salían 40px del eje del contenido. --container-narrow es para
+       bloques intencionalmente estrechos (el CTA de cierre). */
+    --container-max: 1200px;
+    --container-narrow: 960px;
+
+    /* Altura de la barra. `-scrolled` baja a 3.5rem en escritorio (barra
+       flotante) y a 4rem en TÁCTIL (barra pegada al borde) vía el override
+       de :root de abajo.
+       Usa los `-offset-*` para posicionar cualquier cosa CONTRA la navbar
+       (padding del contenido, sticky, paneles): incluyen el notch/Dynamic
+       Island de iOS. En pantallas sin notch env() vale 0 y offset == height. */
+    --navbar-height: 4.75rem;
+    --navbar-height-scrolled: 3.5rem;
+    --navbar-offset: calc(var(--navbar-height) + env(safe-area-inset-top, 0px));
+    --navbar-offset-scrolled: calc(var(--navbar-height-scrolled) + env(safe-area-inset-top, 0px));
+
+    /* ═══════════════════════════════════════════
+       RADII — Factory: SOLO tres radios reales.
+       ═══════════════════════════════════════════ */
+    --radius-control: 3px;             /* botones, inputs, chips */
+    --radius-card: 10px;               /* tarjetas */
+    --radius-panel: 20px;              /* paneles, bloques de cierre */
     --radius-full: 9999px;
 
-    /* Alias semánticos */
-    --radius-control: 3px;
-    --radius-card: 10px;
-    --radius-panel: 20px;
+    /* Escala numérica — DEPRECADA, alias de los semánticos.
+       La escala tenía 7 nombres para 3 valores (sm==md, lg==xl, 2xl==3xl),
+       lo que invitaba a creer que había 7 pasos y a elegir "el siguiente"
+       esperando un cambio visual que nunca llegaba. Ahora son alias
+       explícitos: mismos valores computados, cero cambio visual.
+       En código nuevo usa --radius-control/card/panel. */
+    --radius-sm: var(--radius-control);
+    --radius-md: var(--radius-control);
+    --radius-lg: var(--radius-card);
+    --radius-xl: var(--radius-card);
+    --radius-2xl: var(--radius-panel);
+    --radius-3xl: var(--radius-panel);
 
     /* ═══════════════════════════════════════════
        TRANSITIONS — motion mecánico
@@ -199,15 +290,62 @@
 }
 
 /* ═══════════════════════════════════════════
-   MOBILE — reduce section spacing
+   FALLBACK CON MÉTRICAS AJUSTADAS — anti-CLS
+   Fix de Cumulative Layout Shift (Lighthouse Home: 0.39 → objetivo <0.1).
+   Causa raíz: Inter se carga desde Google Fonts (index.html) con
+   `display=swap`, así que el primer paint usa la fuente de sistema del
+   fallback (system-ui/-apple-system) mientras Inter descarga, y al
+   intercambiarla el texto reflowea porque el ancho/alto de línea de esas
+   fuentes no coincide con el de Inter. Con --font-family-base aplicado a
+   TODO el texto (html, h1-h6 vía --font-family-display) y usado en el <h1>
+   multilinea del hero de Home (clamp() hasta 4.5rem, sin altura fija), ese
+   reflow es justo lo que Lighthouse contabiliza como layout shift grande.
+   Solución: una cara @font-face local (sin red, resuelve al instante) que
+   reescala Arial para que ocupe EXACTAMENTE el mismo cuadro que Inter
+   (ascent/descent/line-gap + size-adjust). Es la técnica que usa next/font
+   para Inter; los valores son los coeficientes públicos derivados de las
+   métricas del propio Inter (independientes de la versión/hash de Google
+   Fonts). Con esto el swap posterior a Inter real pinta en el mismo sitio:
+   CLS ~0 en vez de reflow completo del documento.
    ═══════════════════════════════════════════ */
-@media (max-width: 639px) {
+@font-face {
+    font-family: 'Inter Fallback';
+    src: local('Arial');
+    ascent-override: 90.49%;
+    descent-override: 22.56%;
+    line-gap-override: 0%;
+    size-adjust: 107.64%;
+}
+
+/* ═══════════════════════════════════════════
+   OVERRIDES RESPONSIVE DE TOKEN
+   Cambiar el token aquí en vez de en cada consumidor: quien use --gutter o
+   --space-section-* no necesita escribir @media propias.
+   ═══════════════════════════════════════════ */
+
+/* ≤TÁCTIL — spacing de sección reducido.
+   Antes esto vivía en ≤639px, pero el LAYOUT vuelca a móvil en ≤767px (menú
+   de navbar, rejilla del footer, .problemCard apilada). Eso abría una zona
+   muerta de 640-767px con layout apilado y 128px de aire de escritorio entre
+   secciones. El criterio ahora es único: por debajo de 768px el layout es
+   móvil, así que el spacing también. */
+@media (max-width: 767px) {
     :root {
         --space-section-tight:   2.5rem;
         --space-section-default: 3.5rem;
         --space-section-loose:   4.5rem;
         --space-hero-top:        4rem;
         --space-hero-bottom:     3rem;
+
+        /* La barra pegada al borde es más alta que la flotante de escritorio. */
+        --navbar-height-scrolled: 4rem;
+    }
+}
+
+/* DESKTOP — gutter ancho. */
+@media (min-width: 1024px) {
+    :root {
+        --gutter: 2.5rem;              /* 40 (== --spacing-10) */
     }
 }
 

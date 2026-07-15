@@ -80,17 +80,30 @@ function AnimatedOutlet() {
  */
 export function RootLayout() {
     const location = useLocation();
-    // Home ya monta su propio AmbientBackground completo (mesh + deriva) dentro
-    // de Home.tsx. En el RESTO de rutas montamos aquí la variante sutil para que
-    // los heroes internos tengan la misma profundidad ambiental, sin duplicar el
-    // mesh en `/`. Se coloca como hermano (fuera del wrapper animado) para que su
-    // position:fixed siga anclado al viewport durante las transiciones.
+    // AmbientBackground se monta SIEMPRE aquí, como hermano de <AnimatedOutlet>
+    // (fuera del wrapper animado de motion/react) — nunca dentro de la página
+    // de ruta. `pageVariants.enter` fija `filter: 'blur(0px)'` en el
+    // <motion.div> del outlet, y ese valor (aunque visualmente sea un no-op)
+    // instaura un containing block nuevo para cualquier descendiente
+    // `position: fixed`: motion/react reafirma ese estilo desde su propio
+    // scheduler (rAF), así que intentar limpiarlo a mano después (transform/
+    // filter/willChange = 'none') no es fiable — motion lo vuelve a escribir.
+    // Antes Home montaba su propio `<AmbientBackground variant="full" />`
+    // DENTRO de Home.tsx (es decir, dentro de {outlet}, descendiente del
+    // wrapper animado), así que en Home — y solo en Home — su capa fixed
+    // dejaba de anclarse al viewport: `.root`/`.grain` pasaban a medirse
+    // contra la altura total del documento, y cualquier cambio de esa altura
+    // (swap de fuente, reveals, ScrollTrigger.refresh) se contabilizaba como
+    // un layout shift enorme (root cause confirmado del CLS ~0.39–1.46 que
+    // medía Lighthouse en Home). Unificado aquí, con la MISMA variante que ya
+    // usaban el resto de rutas, se elimina la causa de raíz en vez de
+    // parchear el síntoma.
     const isHome = location.pathname === '/';
 
     return (
         <Layout>
             <ScrollToTop />
-            {!isHome && <AmbientBackground variant="subtle" />}
+            <AmbientBackground variant={isHome ? 'full' : 'subtle'} />
             <Suspense fallback={null}>
                 <AnimatedOutlet />
             </Suspense>

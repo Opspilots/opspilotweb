@@ -21,80 +21,16 @@ import {
   Search,
   FileCheck,
   Wrench,
-  Building2,
-  Calculator,
-  Target,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import styles from "./Home.module.css";
 import sys from "../styles/page-system.module.css";
 import { HeroDashboard } from "../components/home/HeroDashboard";
-import { AmbientBackground } from "../components/fx/AmbientBackground";
 import { SpotlightCard } from "../components/fx/SpotlightCard";
 import { TextLink } from "../components/common/TextLink";
+import { CASES } from "../data";
+import { ICONS } from "../components/icons/registry";
 
 gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin, SplitText);
-
-const CASES: {
-  eyebrow: string;
-  Icon: LucideIcon;
-  title: string;
-  summary: string;
-  bullets: string[];
-  stats: { value: string; label: string }[];
-}[] = [
-  {
-    eyebrow: "Reformas",
-    Icon: Building2,
-    title: "De la libreta al sistema que trabaja solo",
-    summary:
-      "Empresa familiar de reformas que triplicó su capacidad sin contratar a nadie más.",
-    bullets: [
-      "Marca, identidad y presupuestos con IA generando imágenes realistas de la reforma antes de empezar",
-      "WhatsApp automatizado para citas y visitas — cero llamadas para confirmar",
-      "Sistema a medida que centraliza clientes, obras y facturación en un solo lugar",
-    ],
-    stats: [
-      { value: "3×", label: "Capacidad de atención en tres meses" },
-      { value: "−70%", label: "Tiempo dedicado a gestión administrativa" },
-      { value: "0 €", label: "Inversión adicional en personal" },
-    ],
-  },
-  {
-    eyebrow: "Asesoría fiscal",
-    Icon: Calculator,
-    title: "Una asesoría que cierra cuentas mientras duerme",
-    summary:
-      "Despacho con cientos de clientes que automatizó el cierre mensual sin perder calidad.",
-    bullets: [
-      "Conciliación bancaria automática y lectura inteligente de documentos",
-      "Asistente IA que prepara los modelos antes de la revisión humana",
-      "Portal de cliente para firmar documentos sin emails de ida y vuelta",
-    ],
-    stats: [
-      { value: "80%", label: "Cierre mensual automatizado" },
-      { value: "−5h/día", label: "En tareas repetitivas del equipo" },
-      { value: "+45%", label: "Más capacidad sin contratar" },
-    ],
-  },
-  {
-    eyebrow: "Agencia de servicios",
-    Icon: Target,
-    title: "Una agencia que recupera 20 horas a la semana",
-    summary:
-      "Agencia que reemplazó cinco herramientas distintas por un solo sistema hecho a medida.",
-    bullets: [
-      "Sistema único que sustituyó CRM, gestión, facturación y comunicación interna",
-      "Reporting en tiempo real para dirección, sin tener que pedir nada",
-      "Asistente IA que responde dudas internas de proceso al instante",
-    ],
-    stats: [
-      { value: "20h", label: "Ahorradas a la semana en todo el equipo" },
-      { value: "5 → 1", label: "Apps reemplazadas por un solo sistema" },
-      { value: "100%", label: "Información centralizada y siempre al día" },
-    ],
-  },
-];
 
 const PROBLEMS = [
   {
@@ -454,7 +390,6 @@ export const Home: React.FC = () => {
   return (
     <div className={styles.page}>
       <PageSEO {...seoProps} />
-      <AmbientBackground />
 
       {/* ═══ HERO ═══ */}
       <section className={styles.hero} ref={heroRef}>
@@ -556,49 +491,52 @@ export const Home: React.FC = () => {
               tabIndex={0}
               aria-label="Casos de éxito"
             >
-              {CASES.map((c, i) => (
-                <SpotlightCard as="article" className={styles.caseCard} key={i}>
-                  <div className={styles.caseCardMain}>
-                    <div className={styles.caseCardHead}>
-                      <span className={styles.caseIconTile} aria-hidden="true">
-                        <c.Icon size={20} strokeWidth={1.6} />
-                      </span>
-                      <span className={styles.caseSector}>
-                        <span className={styles.caseSectorDot} aria-hidden="true" />
-                        {c.eyebrow}
-                      </span>
+              {CASES.map((c) => {
+                const CaseIcon = ICONS[c.iconKey];
+                return (
+                  <SpotlightCard as="article" className={styles.caseCard} key={c.id}>
+                    <div className={styles.caseCardMain}>
+                      <div className={styles.caseCardHead}>
+                        <span className={styles.caseIconTile} aria-hidden="true">
+                          <CaseIcon size={20} strokeWidth={1.6} />
+                        </span>
+                        <span className={styles.caseSector}>
+                          <span className={styles.caseSectorDot} aria-hidden="true" />
+                          {c.label}
+                        </span>
+                      </div>
+                      <h3 className={styles.caseCardTitle}>{c.title}</h3>
+                      <p className={styles.caseCardSummary}>{c.summary}</p>
+                      <ul className={styles.caseCardBullets}>
+                        {c.bullets.map((b, j) => (
+                          <li key={j}>
+                            <span className={styles.caseCheck}>
+                              <Check size={14} strokeWidth={2.2} />
+                            </span>
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <h3 className={styles.caseCardTitle}>{c.title}</h3>
-                    <p className={styles.caseCardSummary}>{c.summary}</p>
-                    <ul className={styles.caseCardBullets}>
-                      {c.bullets.map((b, j) => (
-                        <li key={j}>
-                          <span className={styles.caseCheck}>
-                            <Check size={14} strokeWidth={2.2} />
-                          </span>
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
 
-                  <aside className={styles.caseCardPanel}>
-                    <div className={styles.casePanelBar}>Resultados</div>
-                    <div className={styles.caseCardStats}>
-                      {c.stats.map((s, j) => (
-                        <div className={styles.caseStat} key={j}>
-                          <span
-                            className={`${styles.caseStatNumber} ${sys.statAccent}`}
-                          >
-                            <AnimatedStat value={s.value} />
-                          </span>
-                          <span className={styles.caseStatLabel}>{s.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </aside>
-                </SpotlightCard>
-              ))}
+                    <aside className={styles.caseCardPanel}>
+                      <div className={styles.casePanelBar}>Resultados</div>
+                      <div className={styles.caseCardStats}>
+                        {(c.stats ?? []).map((s, j) => (
+                          <div className={styles.caseStat} key={j}>
+                            <span
+                              className={`${styles.caseStatNumber} ${sys.statAccent}`}
+                            >
+                              <AnimatedStat value={s.value} />
+                            </span>
+                            <span className={styles.caseStatLabel}>{s.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </aside>
+                  </SpotlightCard>
+                );
+              })}
             </div>
 
             <div className={styles.caseCarouselFooter}>

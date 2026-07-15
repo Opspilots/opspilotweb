@@ -566,10 +566,10 @@
    Mobile — < 640px
    ═══════════════════════════════════════════ */
 @media (max-width: 639px) {
-    .carouselSection {
-        padding: var(--space-section-default) 0;
-    }
-
+    /* .carouselSection y .whySection NO rebajan aquí su spacing a `default`:
+       el token --space-section-loose ya baja solo (128px → 72px en ≤TÁCTIL,
+       ver variables.css). Con el override encima acababan en 56px mientras
+       secciones del mismo rol semántico en Home se quedaban en 72px. */
     .caseCard {
         /* Inherits flex: 0 0 100% — exactly one slide visible on mobile too. */
         padding: var(--spacing-7) var(--spacing-6);
@@ -597,10 +597,6 @@
     }
 
     /* Why section */
-    .whySection {
-        padding: var(--space-section-default) 0;
-    }
-
     .whyHeader {
         margin-bottom: var(--spacing-8);
     }

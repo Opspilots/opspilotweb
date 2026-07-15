@@ -15,85 +15,16 @@ import { StructuredData } from '../components/seo/StructuredData';
 import sys from '../styles/page-system.module.css';
 import styles from './Soluciones.module.css';
 
-import { ClipboardList, Zap, Building2, Target, Globe, Settings } from 'lucide-react';
+import { SECTORS } from '../data';
+import { ICONS } from '../components/icons/registry';
 
 if (typeof window !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
 }
 
-interface Sector {
-    icon: React.ReactNode;
-    label: string;
-    title: string;
-    who: string;
-    solution: string;
-    benefits: string[];
-    cta: string;
-    href: string;
-}
-
-const sectores: Sector[] = [
-    {
-        icon: <ClipboardList size={22} strokeWidth={1.6} />,
-        label: 'Asesorías y despachos',
-        title: 'Asesorías y despachos profesionales',
-        who: 'Gestorías, asesorías fiscales, laborales y legales',
-        solution: 'Software para asesorías y despachos que automatiza firma, comunicación y archivo documental. Adiós al papeleo.',
-        benefits: ['Documentos sin papel', 'Seguimiento en tiempo real', 'Clientes siempre informados'],
-        cta: 'Cuéntanos tu caso',
-        href: ROUTES.contacto,
-    },
-    {
-        icon: <Zap size={22} strokeWidth={1.6} />,
-        label: 'Energía y comercializadoras',
-        title: 'Empresas de energía y comercializadoras',
-        who: 'Comerciales y back-office de energía eléctrica y gas',
-        solution: 'CRM para comercializadoras de energía: comparas tarifas al instante, digitalizas el alta y centralizas la cartera.',
-        benefits: ['Análisis en segundos', 'Propuestas sin errores', 'Pipeline de clientes claro'],
-        cta: 'Cuéntanos tu caso',
-        href: ROUTES.contacto,
-    },
-    {
-        icon: <Building2 size={22} strokeWidth={1.6} />,
-        label: 'Reformas e instalaciones',
-        title: 'Reformas, instalaciones y oficios',
-        who: 'Empresas de construcción, fontanería, electricidad y climatización',
-        solution: 'Software para reformas e instalaciones: presupuestas en la visita y sigues la obra hasta el cobro. Sin llamadas de más.',
-        benefits: ['Presupuestos en 2 minutos', 'Clientes sin llamadas extras', 'Cobros sin perseguir'],
-        cta: 'Cuéntanos tu caso',
-        href: ROUTES.contacto,
-    },
-    {
-        icon: <Target size={22} strokeWidth={1.6} />,
-        label: 'Agencias y servicios',
-        title: 'Agencias y negocios de servicios',
-        who: 'Agencias de marketing, consultoras y equipos de servicios recurrentes',
-        solution: 'Software de gestión para agencias de servicios: pipeline visual, seguimientos automáticos y cero leads perdidos.',
-        benefits: ['Nada se pierde', 'Pipeline siempre actualizado', 'Menos tiempo administrativo'],
-        cta: 'Cuéntanos tu caso',
-        href: ROUTES.contacto,
-    },
-    {
-        icon: <Globe size={22} strokeWidth={1.6} />,
-        label: 'PYMEs con operativa dispersa',
-        title: 'PYMEs con operativa dispersa',
-        who: 'Empresas que gestionan con Excel, llamadas y WhatsApp',
-        solution: 'Digitalización de PYMEs en una sola herramienta: empleados, tareas, proveedores y analítica, todo junto.',
-        benefits: ['Control total en un sitio', 'Decisiones con datos reales', 'Menos caos operativo'],
-        cta: 'Cuéntanos tu caso',
-        href: ROUTES.contacto,
-    },
-    {
-        icon: <Settings size={22} strokeWidth={1.6} />,
-        label: 'Procesos únicos a medida',
-        title: 'Procesos únicos sin solución estándar',
-        who: 'Cualquier empresa con un flujo específico que el software del mercado no resuelve',
-        solution: 'Software a medida: analizamos tu flujo, lo construimos para ti y lo mantenemos vivo con tu negocio.',
-        benefits: ['100% adaptado a ti', 'Integrado con lo que ya tienes', 'Escalable sin límites'],
-        cta: 'Cuéntanos tu caso',
-        href: ROUTES.contacto,
-    },
-];
+// CTA del panel de detalle: idéntico en los 6 sectores, así que es
+// presentación (no dato) — se hardcodea aquí en vez de repetirse en src/data.
+const SECTOR_CTA_LABEL = 'Cuéntanos tu caso';
 
 export const Soluciones: React.FC = () => {
     const seoProps = {
@@ -110,7 +41,8 @@ export const Soluciones: React.FC = () => {
     const [selected, setSelected] = useState(0);
     const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const trackRef = useRef<HTMLDivElement>(null);
-    const active = sectores[selected];
+    const active = SECTORS[selected];
+    const ActiveIcon = ICONS[active.iconKey];
 
     // Efecto scroll (desktop + movimiento): el explorador se queda sticky y, al
     // bajar, la selección avanza por la lista de sectores (mapeo scroll→índice).
@@ -129,8 +61,8 @@ export const Soluciones: React.FC = () => {
                 end: 'bottom bottom',
                 onUpdate: (self) => {
                     const idx = Math.min(
-                        sectores.length - 1,
-                        Math.floor(self.progress * sectores.length),
+                        SECTORS.length - 1,
+                        Math.floor(self.progress * SECTORS.length),
                     );
                     setSelected((prev) => (prev === idx ? prev : idx));
                 },
@@ -150,7 +82,7 @@ export const Soluciones: React.FC = () => {
     }, []);
 
     const handleTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
-        const count = sectores.length;
+        const count = SECTORS.length;
         let nextIndex: number | null = null;
 
         if (e.key === 'ArrowDown' || e.key === 'ArrowRight') nextIndex = (index + 1) % count;
@@ -218,25 +150,30 @@ export const Soluciones: React.FC = () => {
                                     <div className={styles.ledgerHead} aria-hidden="true">
                                         <span>Elige tu sector</span>
                                     </div>
-                                    {sectores.map((s, i) => (
-                                        <button
-                                            key={s.title}
-                                            ref={(el) => { tabRefs.current[i] = el; }}
-                                            type="button"
-                                            role="tab"
-                                            id={`sector-tab-${i}`}
-                                            aria-selected={i === selected}
-                                            aria-controls={`sector-panel-${i}`}
-                                            tabIndex={i === selected ? 0 : -1}
-                                            className={`${styles.row} ${i === selected ? styles.rowActive : ''}`}
-                                            onClick={() => setSelected(i)}
-                                            onKeyDown={(e) => handleTabKeyDown(e, i)}
-                                        >
-                                            <span className={styles.rowIcon} aria-hidden="true">{s.icon}</span>
-                                            <span className={styles.rowLabel}>{s.label}</span>
-                                            <ArrowRight size={15} strokeWidth={2} className={styles.rowArrow} aria-hidden="true" />
-                                        </button>
-                                    ))}
+                                    {SECTORS.map((s, i) => {
+                                        const RowIcon = ICONS[s.iconKey];
+                                        return (
+                                            <button
+                                                key={s.id}
+                                                ref={(el) => { tabRefs.current[i] = el; }}
+                                                type="button"
+                                                role="tab"
+                                                id={`sector-tab-${i}`}
+                                                aria-selected={i === selected}
+                                                aria-controls={`sector-panel-${i}`}
+                                                tabIndex={i === selected ? 0 : -1}
+                                                className={`${styles.row} ${i === selected ? styles.rowActive : ''}`}
+                                                onClick={() => setSelected(i)}
+                                                onKeyDown={(e) => handleTabKeyDown(e, i)}
+                                            >
+                                                <span className={styles.rowIcon} aria-hidden="true">
+                                                    <RowIcon size={22} strokeWidth={1.6} />
+                                                </span>
+                                                <span className={styles.rowLabel}>{s.label}</span>
+                                                <ArrowRight size={15} strokeWidth={2} className={styles.rowArrow} aria-hidden="true" />
+                                            </button>
+                                        );
+                                    })}
                                 </div>
 
                                 {/* Columna derecha — panel de detalle del sector activo */}
@@ -255,7 +192,9 @@ export const Soluciones: React.FC = () => {
                                             exit={prefersReducedMotion ? undefined : { opacity: 0, y: -12 }}
                                             transition={{ duration: prefersReducedMotion ? 0 : 0.28, ease: [0.32, 0.72, 0, 1] }}
                                         >
-                                            <div className={styles.panelIcon} aria-hidden="true">{active.icon}</div>
+                                            <div className={styles.panelIcon} aria-hidden="true">
+                                                <ActiveIcon size={22} strokeWidth={1.6} />
+                                            </div>
 
                                             <h2 className={styles.panelTitle}>{active.title}</h2>
 
@@ -277,9 +216,9 @@ export const Soluciones: React.FC = () => {
                                             </ul>
 
                                             <div className={styles.panelCta}>
-                                                <Link to={active.href}>
+                                                <Link to={ROUTES.contacto}>
                                                     <Button variant="primary" size="lg">
-                                                        {active.cta}
+                                                        {SECTOR_CTA_LABEL}
                                                     </Button>
                                                 </Link>
                                             </div>

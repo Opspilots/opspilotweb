@@ -17,7 +17,8 @@
     gap: var(--spacing-8);
 }
 
-@media (min-width: 900px) {
+/* DESKTOP (antes 900px, huérfano) */
+@media (min-width: 1024px) {
     .contactGrid {
         grid-template-columns: 1.4fr 1fr;
         gap: var(--spacing-10);
@@ -60,7 +61,8 @@
     gap: var(--spacing-5);
 }
 
-@media (min-width: 600px) {
+/* ≥MÓVIL (antes 600px, huérfano) */
+@media (min-width: 640px) {
     .row {
         grid-template-columns: 1fr 1fr;
     }

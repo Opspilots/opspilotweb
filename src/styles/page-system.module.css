@@ -7,19 +7,22 @@
     min-height: 100vh;
     min-height: 100dvh;
     color: var(--color-text);
-    overflow-x: hidden;
+    /* `clip`, no `hidden`: por spec CSS, si un eje de overflow es `hidden` el
+       otro eje computa a `auto`, y eso convierte `.page` en scroll container
+       propio — rompiendo cualquier `position: sticky` de sus descendientes
+       (p. ej. el explorador sticky de Soluciones), que se ancla a ese
+       contenedor fantasma en vez de al viewport. `clip` recorta el overflow
+       horizontal sin crear scroll container. Mismo fix que Home.module.css. */
+    overflow-x: clip;
 }
 
+/* El eje canónico de la web (27 usos). Navbar, hero del home y footer se
+   alinean a este mismo --container-max. El gutter ya sube a 40px en DESKTOP
+   desde el token, así que aquí no hace falta @media. */
 .container {
-    max-width: 1200px;
+    max-width: var(--container-max);
     margin: 0 auto;
-    padding: 0 var(--spacing-7);
-}
-
-@media (min-width: 1024px) {
-    .container {
-        padding: 0 var(--spacing-10);
-    }
+    padding: 0 var(--gutter);
 }
 
 /* ─── Page hero (más compacto que el home) ─── */
@@ -183,7 +186,9 @@
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-panel);
     box-shadow: var(--glass-inset), var(--shadow-lg);
-    max-width: 960px;
+    /* Intencionalmente más estrecho que --container-max: el bloque de cierre
+       se lee como una figura centrada, no como una sección a todo el eje. */
+    max-width: var(--container-narrow);
     margin: 0 auto;
     position: relative;
     overflow: hidden;

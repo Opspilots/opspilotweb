@@ -29,8 +29,11 @@
 
     .solViewport {
         position: sticky;
-        top: 4.75rem;
-        min-height: calc(100vh - 4.75rem);
+        /* -scrolled: cuando este track se pega, la navbar ya ha encogido a
+           3.5rem. Con la altura por defecto quedaba un hueco de 1.25rem
+           entre la barra y el explorador. */
+        top: var(--navbar-offset-scrolled);
+        min-height: calc(100vh - var(--navbar-offset-scrolled));
         display: flex;
         align-items: center;
     }
@@ -276,10 +279,25 @@
     gap: var(--spacing-3);
 }
 
-@media (min-width: 560px) {
+/* La lista vive en `.panel` (columna derecha del explorador), así que su ancho
+   útil no es el del viewport.
+   Antes saltaba a 3 columnas desde 560px: cada celda quedaba en ~155px y, con
+   el check de 20px y el gap de 12px, el texto se quedaba con ~123px reales —
+   una o dos palabras por línea. La progresión ahora es 1 → 2 → 3 y la tercera
+   columna solo entra en DESKTOP, donde el panel mide ~688px y cada celda ~229px. */
+
+/* ≥MÓVIL: dos columnas a ancho completo (~292px por celda). */
+@media (min-width: 640px) {
+    .benefitsList {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-4);
+    }
+}
+
+/* DESKTOP */
+@media (min-width: 1024px) {
     .benefitsList {
         grid-template-columns: repeat(3, 1fr);
-        gap: var(--spacing-4);
     }
 }
 

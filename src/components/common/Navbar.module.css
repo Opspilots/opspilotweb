@@ -6,7 +6,10 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 4.75rem;
+    /* height incluye el notch; padding-top lo reserva para que el contenido
+       (logo, menú) se centre en la banda visible, no bajo la Dynamic Island. */
+    height: var(--navbar-offset);
+    padding-top: env(safe-area-inset-top, 0px);
     z-index: var(--z-index-navbar);
     background: transparent;
     border: 1px solid transparent;
@@ -26,7 +29,7 @@
     top: 8px;
     left: 12px;
     right: 12px;
-    height: 3.5rem;
+    height: var(--navbar-offset-scrolled);
     border-radius: var(--radius-full);
     background: var(--glass-bg);
     -webkit-backdrop-filter: blur(14px) saturate(1.2);
@@ -43,25 +46,23 @@
 }
 
 /* ─── Container ─── */
+/* Mismo eje (--container-max) y mismo gutter (--gutter) que el resto de la
+   web: antes 1280px aquí contra 1200px en secciones y footer, así que por
+   encima de 1280px de viewport el logo no se alineaba con nada de lo que
+   tenía debajo.
+   El gutter ya sube a 40px en DESKTOP desde el token → sin @media aquí.
+   Ojo: NO devuelvas un `padding` distinto al estado .scrolled. Existía uno
+   (40px → 24px en DESKTOP) que, con `transition: padding`, deslizaba el logo
+   16px en horizontal cada vez que arrancabas a scrollear. La barra ya cambia
+   de alto, ancho, radio y fondo al scrollear; el logo debe quedarse quieto. */
 .container {
-    max-width: 1280px;
+    max-width: var(--container-max);
     margin: 0 auto;
-    padding: 0 var(--spacing-7);
+    padding: 0 var(--gutter);
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: padding var(--transition-normal);
-}
-
-@media (min-width: 1024px) {
-    .container {
-        padding: 0 var(--spacing-10);
-    }
-
-    .navbar.scrolled .container {
-        padding: 0 var(--spacing-6);
-    }
 }
 
 /* ─── Logo — wordmark (único uso de Bricolage Grotesque) ─── */
@@ -233,13 +234,19 @@
 /* ─── Mobile Menu ─── */
 .mobileMenu {
     position: fixed;
-    /* Arranca justo bajo la navbar en estado por defecto (height: 4.75rem). */
-    top: 4.75rem;
+    /* Arranca justo bajo la navbar en su estado por defecto. */
+    top: var(--navbar-offset);
     left: 0;
     right: 0;
     bottom: 0;
     background-color: var(--color-bg);
-    padding: var(--spacing-8) var(--spacing-6);
+    /* El panel es fixed hasta bottom:0 y su último elemento es el CTA
+       principal: sin el inset inferior, en iOS queda debajo de la barra de
+       gestos (home indicator) y es difícil de pulsar. */
+    padding:
+        var(--spacing-8)
+        var(--spacing-6)
+        calc(var(--spacing-8) + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
     gap: var(--spacing-2);
@@ -253,10 +260,11 @@
     transform: translateX(0);
 }
 
-/* Estado scrolled: la navbar móvil mide 4rem, así que el panel sube para
-   seguir arrancando justo bajo ella (sin hueco ni solape). */
+/* Estado scrolled: la navbar móvil encoge, así que el panel sube para seguir
+   arrancando justo bajo ella (sin hueco ni solape). El token ya vale 4rem en
+   ≤TÁCTIL — que es el único rango donde este panel existe. */
 .mobileMenu.scrolled {
-    top: 4rem;
+    top: var(--navbar-offset-scrolled);
 }
 
 .mobileNavLink {
@@ -293,7 +301,7 @@
     margin-top: var(--spacing-8);
 }
 
-/* ─── Breakpoint: show desktop menu ─── */
+/* ─── ≥TÁCTIL: menú de escritorio ─── */
 @media (min-width: 768px) {
     .desktopMenu {
         display: flex;
@@ -308,13 +316,16 @@
     }
 }
 
-/* ─── Mobile overrides ─── */
+/* ─── ≤TÁCTIL: la barra se pega al borde en vez de flotar ─── */
 @media (max-width: 767px) {
     .navbar.scrolled {
         top: 0;
         left: 0;
         right: 0;
-        height: 4rem;
+        /* La altura la aporta --navbar-height-scrolled (4rem en este rango) a
+           través de --navbar-offset-scrolled, que además reserva el notch: al
+           ir pegada a top:0, sin ese inset el logo cae bajo la Dynamic Island
+           en landscape. El padding-top vive en `.navbar`. */
         border-radius: 0;
         background: var(--color-bg-deep);
         border: none;

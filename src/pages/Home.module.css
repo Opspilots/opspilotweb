@@ -34,13 +34,13 @@
 
 .hero {
     position: relative;
-    min-height: calc(100vh - 4.75rem);   /* fallback sin dvh */
-    min-height: calc(100dvh - 4.75rem);
+    min-height: calc(100vh - var(--navbar-offset));   /* fallback sin dvh */
+    min-height: calc(100dvh - var(--navbar-offset));
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    /* `.main` ya aporta el offset de 4.75rem de la navbar fija, así que el hero
+    /* `.main` ya aporta el offset de la navbar fija (--navbar-offset), así que el hero
        llena exactamente el resto del viewport. El padding vertical se comprime
        con la altura de pantalla vía clamp: en portátiles de viewport corto
        (1280×720, escalado Windows) baja hasta spacing-6 para que titular +
@@ -170,13 +170,16 @@
     opacity: 1;
 }
 
+/* Mismo eje que sys.container / navbar / footer: antes iba a 1280px y por
+   encima de ese viewport el titular del hero no se alineaba con el contenido
+   de las secciones de debajo. */
 .heroInner {
     position: relative;
     z-index: 2;
     width: 100%;
-    max-width: 1280px;
+    max-width: var(--container-max);
     margin: 0 auto;
-    padding: 0 var(--spacing-7);
+    padding: 0 var(--gutter);
     display: grid;
     grid-template-columns: 1fr;
     align-items: center;
@@ -184,11 +187,11 @@
     flex: 1;
 }
 
+/* DESKTOP */
 @media (min-width: 1024px) {
     .heroInner {
         /* Titular a la izquierda (1.1fr), dashboard a la derecha (0.9fr). */
         grid-template-columns: 1.1fr 0.9fr;
-        padding: 0 var(--spacing-10);
         gap: var(--spacing-16);
     }
 }
@@ -464,7 +467,11 @@
         max-width: none;
         margin-bottom: 0;
         position: sticky;
-        top: calc(4.75rem + var(--spacing-8));
+        /* -scrolled, no la altura por defecto: para cuando esta sección llega
+           a pegarse ya has scrolleado, así que la navbar mide 3.5rem y no
+           4.75rem. Con la altura por defecto el titular se anclaba 20px más
+           abajo de lo que debía, dejando un hueco contra la barra. */
+        top: calc(var(--navbar-offset-scrolled) + var(--spacing-8));
     }
 
     .problemDeck {
@@ -514,13 +521,15 @@
     gap: var(--spacing-5);
 }
 
-@media (min-width: 600px) {
+/* ≥MÓVIL (antes 600px, huérfano) */
+@media (min-width: 640px) {
     .methodGrid {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-6);
     }
 }
 
+/* DESKTOP */
 @media (min-width: 1024px) {
     .methodGrid {
         grid-template-columns: repeat(4, 1fr);
@@ -685,8 +694,8 @@
         background-color var(--transition-normal);
 }
 
-/* Bento en desktop: narrativa + panel de resultados */
-@media (min-width: 900px) {
+/* Bento en DESKTOP: narrativa + panel de resultados (antes 900px, huérfano) */
+@media (min-width: 1024px) {
     .caseCard {
         display: grid;
         grid-template-columns: 1.4fr 0.9fr;
@@ -1054,7 +1063,8 @@
     border-top: 1px solid var(--color-border-subtle);
 }
 
-@media (min-width: 600px) {
+/* ≥MÓVIL (antes 600px, huérfano) */
+@media (min-width: 640px) {
     .caseCardStats {
         grid-template-columns: repeat(3, 1fr);
         gap: var(--spacing-5);

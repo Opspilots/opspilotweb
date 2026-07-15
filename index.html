@@ -3,7 +3,10 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- viewport-fit=cover: la web pinta hasta los bordes físicos en iOS (notch /
+       Dynamic Island / barra de gestos). Es lo que activa env(safe-area-inset-*),
+       que ya consumen navbar, menú móvil y footer. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0e14" />
   <meta name="color-scheme" content="dark" />
 

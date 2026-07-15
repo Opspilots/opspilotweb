@@ -19,59 +19,8 @@ import {
 } from 'lucide-react';
 import sys from '../styles/page-system.module.css';
 import styles from './Cases.module.css';
-
-interface StatData {
-    v: string;
-    l: string;
-}
-
-interface CaseData {
-    sector: string;
-    title: string;
-    text: string;
-    stats: StatData[];
-    quote: string;
-    author: string;
-}
-
-const CASES: CaseData[] = [
-    {
-        sector: 'Reformas',
-        title: 'De la libreta al sistema que trabaja solo',
-        text: 'Una empresa familiar de reformas lo llevaba todo con Excel y llamadas sueltas. Perdían presupuestos por falta de seguimiento. Les construimos un software a medida: presupuestos asistidos por IA y citas automatizadas por WhatsApp. En tres meses triplicaron su capacidad sin contratar a nadie.',
-        stats: [
-            { v: '3×', l: 'Capacidad de atención' },
-            { v: '−70%', l: 'Tiempo en gestión' },
-            { v: '0 €', l: 'Personal extra' },
-        ],
-        quote: 'Pasamos de perder presupuestos por falta de seguimiento a tener un sistema que trabaja solo.',
-        author: 'CEO',
-    },
-    {
-        sector: 'Asesoría fiscal',
-        title: 'Una asesoría que cierra cuentas mientras duerme',
-        text: 'Un despacho con cientos de clientes se ahogaba en tareas repetitivas. Digitalizamos el flujo de trabajo con lectura inteligente de documentos, conciliación bancaria automática y un asistente de IA que prepara los modelos antes de la revisión humana. Hoy el cierre mensual sale al 80% solo.',
-        stats: [
-            { v: '80%', l: 'Cierre automático' },
-            { v: '−5h/día', l: 'En tareas repetitivas' },
-            { v: '+45%', l: 'Más capacidad sin contratar' },
-        ],
-        quote: 'Antes era imposible escalar sin contratar; ahora podemos crecer sin que el equipo reviente.',
-        author: 'Socio director',
-    },
-    {
-        sector: 'Agencia de servicios',
-        title: 'Una agencia que recupera 20 horas a la semana',
-        text: 'Una agencia de marketing usaba cinco herramientas que no se hablaban entre sí. Lo unificamos todo en un solo software a medida: CRM, gestión, facturación y comunicación interna, con reporting en tiempo real para dirección y un asistente de IA para dudas del equipo. Recuperaron 20 horas cada semana.',
-        stats: [
-            { v: '20h', l: 'Ahorradas a la semana' },
-            { v: '5→1', l: 'Apps en un solo sistema' },
-            { v: '100%', l: 'Información centralizada' },
-        ],
-        quote: 'Dejamos de pagar cinco herramientas y ganamos visibilidad real de cada cliente.',
-        author: 'Directora de operaciones',
-    },
-];
+import { CASES } from '../data';
+import type { Case } from '../data';
 
 interface DiffItem {
     Icon: React.FC<{ size?: number; strokeWidth?: number }>;
@@ -103,21 +52,21 @@ const DIFFERENTIATORS: DiffItem[] = [
 ];
 
 // Pure card — no hooks
-const CaseCard: React.FC<{ c: CaseData; index: number }> = ({ c, index }) => (
+const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => (
     <article className={styles.caseCard}>
         <div className={styles.cardHead}>
             <span className={styles.cardSector}>
                 <span className={styles.sectorDot} aria-hidden="true" />
-                {c.sector}
+                {c.label}
             </span>
             <span className={styles.cardIndex}>{String(index + 1).padStart(2, '0')}</span>
         </div>
 
         <div className={styles.cardStats}>
-            {c.stats.map((s, j) => (
+            {(c.stats ?? []).map((s, j) => (
                 <div key={j} className={styles.cardStat}>
-                    <span className={`${styles.cardStatVal} ${sys.statAccent}`}>{s.v}</span>
-                    <span className={styles.cardStatLabel}>{s.l}</span>
+                    <span className={`${styles.cardStatVal} ${sys.statAccent}`}>{s.value}</span>
+                    <span className={styles.cardStatLabel}>{s.label}</span>
                 </div>
             ))}
         </div>
@@ -184,7 +133,7 @@ const CarouselSection: React.FC = () => {
                         aria-label="Casos de éxito"
                     >
                         {CASES.map((c, i) => (
-                            <CaseCard key={i} c={c} index={i} />
+                            <CaseCard key={c.id} c={c} index={i} />
                         ))}
                     </div>
 
