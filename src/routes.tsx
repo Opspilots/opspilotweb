@@ -22,6 +22,22 @@ export const routes: RouteRecord[] = [
     {
         path: '/',
         element: <RootLayout />,
+        // Fallback de hidratación: vite-react-ssg añade un loader síncrono-async
+        // (fetch del manifest de datos estáticos) a TODAS las rutas coincidentes
+        // en build SSG, incluida esta raíz — no solo a los hijos `lazy`. Eso hace
+        // que react-router v7 considere la ruta "no inicializada" en cada carga
+        // inicial y, sin `HydrateFallback`, renderice `null` para TODO el árbol
+        // mientras hidrata (log: "No `HydrateFallback` element provided..."):
+        // un mismatch total contra el HTML pre-renderizado que en viewports
+        // mobile (latencia real del fetch) hace que React descarte la hidratación
+        // y monte un árbol nuevo desde cero, dejando duplicados <nav>/<footer>
+        // del DOM SSR original junto a los recién montados.
+        // Reutilizar el propio RootLayout como HydrateFallback evita el flash/CLS:
+        // se renderiza en la MISMA posición del árbol que el `element` real (así
+        // que Navbar/Footer no se remontan al resolver), y su <Outlet> interno
+        // (vía useOutlet()) resuelve a `null` mientras tanto — sin contenido de
+        // página que parpadee o cambie de layout.
+        HydrateFallback: RootLayout,
         entry: 'src/components/layout/RootLayout.tsx',
         children: [
             {
