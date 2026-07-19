@@ -9,7 +9,8 @@ export type SectorId =
     | 'reformas'
     | 'agencias'
     | 'pymes'
-    | 'medida';
+    | 'medida'
+    | 'hosteleria';
 
 export type IconKey =
     | 'clipboard'
@@ -18,7 +19,8 @@ export type IconKey =
     | 'target'
     | 'globe'
     | 'settings'
-    | 'calculator';
+    | 'calculator'
+    | 'utensils';
 
 export interface Sector {
     id: SectorId;
@@ -28,6 +30,56 @@ export interface Sector {
     who: string;
     solution: string;
     benefits: readonly string[];
+    /** Cross-link opcional al producto vertical propio en Recursos (solo los
+     *  sectores que tienen uno: energía, reformas, asesorías, hostelería). El
+     *  resto de sectores no llevan producto propio, así que se omite. */
+    relatedResource?: { label: string; slug: string };
+}
+
+// Iconos de la mini-interfaz de CaseMockPanel (mismo componente compartido
+// que HeroLeadWidget, ver src/components/marketing/MockPreview.tsx). NO
+// viven en `IconKey`: ese tipo es para iconos de IDENTIDAD (sector/caso,
+// resueltos vía el registro compartido de components/icons/registry.tsx),
+// mientras que estos son decorativos y solo tienen sentido dentro del
+// mock — mezclar ambos habría inflado `IconKey` con entradas que ningún
+// otro consumidor necesita. Resueltos a componentes lucide-react en
+// src/components/cases/CaseMockPanel.tsx.
+export type ShowcaseIconKey =
+    | 'chatMessage'
+    | 'calendarCheck'
+    | 'fileText'
+    | 'receipt'
+    | 'documentCheck'
+    | 'users';
+
+/** Un módulo/tile del bloque "modules" del mock — ver MockModuleItem en
+ * MockPreview.tsx (misma forma, icono por clave en vez de componente). */
+export interface ShowcaseModuleItem {
+    key: string;
+    icon: ShowcaseIconKey;
+    label: string;
+    active?: boolean;
+}
+
+/** Variante de bloque destacado del mock (ver MockBlock en MockPreview.tsx).
+ * `testimonial` no se usa hoy por ningún caso pero se deja fuera a
+ * propósito: el tipo de datos solo modela lo que realmente se usa. */
+export type ShowcaseBlock =
+    | { type: 'sequence'; beforeIcon: ShowcaseIconKey; afterIcon: ShowcaseIconKey }
+    | { type: 'modules'; items: readonly ShowcaseModuleItem[] };
+
+/** Mini-interfaz FIJA por caso (CaseMockPanel), que representa la mejora de
+ * ese sector concreto — sustituye a las antiguas stats numéricas y al panel
+ * de iconos "antes → después" (CaseTransition) de iteraciones previas. */
+export interface CaseShowcase {
+    accent: 'mint' | 'warm';
+    /** Etiqueta mono sobre el titular del mock (ver MockPreview `kicker`). */
+    kicker?: string;
+    title: string;
+    sub?: string;
+    /** Nota secundaria de bajo peso visual — contexto, no protagonista. */
+    beforeTag: string;
+    block: ShowcaseBlock;
 }
 
 export interface Case {
@@ -44,7 +96,10 @@ export interface Case {
     text: string;
     /** Bullets de highlights — usados en la tarjeta del carrusel de Home */
     bullets: readonly string[];
-    stats?: readonly { value: string; label: string }[];
+    /** Mini-interfaz fija que representa la mejora del sector, usada por
+     * CaseMockPanel (compartido entre Home y Casos, reutiliza MockPreview —
+     * el mismo componente del Paso 4 del hero). */
+    showcase: CaseShowcase;
     quote?: string;
     author?: string;
 }

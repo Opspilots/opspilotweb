@@ -108,43 +108,13 @@
     letter-spacing: var(--tracking-wide);
 }
 
-/* ─── Card stats ─── */
-.cardStats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-5);
+/* ─── Mini-interfaz del caso (CaseMockPanel) ───
+   Mismo espacio/hairlines que ocupaba el antiguo bloque de stats. */
+.cardTransition {
     padding: var(--spacing-8) 0;
     border-top: 1px solid var(--color-border-subtle);
     border-bottom: 1px solid var(--color-border-subtle);
     margin-bottom: var(--spacing-8);
-}
-
-.cardStat {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
-}
-
-.cardStatVal {
-    /* Color comes from the shared `sys.statAccent` class
-       (page-system.module.css) — see Cases.tsx, which applies it
-       alongside this class. Canonical amber "data accent" treatment,
-       matching Home's case-carousel stat numbers. */
-    font-family: var(--font-family-display);
-    font-size: clamp(1.875rem, 4vw, 3.5rem);
-    font-weight: var(--font-weight-extrabold);
-    line-height: 1;
-    letter-spacing: -0.045em;
-}
-
-.cardStatLabel {
-    font-family: var(--font-family-mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
-    line-height: 1.45;
-    max-width: 20ch;
 }
 
 /* ─── Card content: narrative + quote ─── */
@@ -541,6 +511,18 @@
     max-width: 52ch;
 }
 
+/* Indicador de scroll horizontal: oculto por defecto, solo visible en el
+   carrusel móvil (media query de más abajo). */
+.scrollHint {
+    display: none;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: var(--spacing-4) 0 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .whyItem,
     .whyItemBar,
@@ -576,18 +558,9 @@
         border-radius: var(--radius-card);
     }
 
-    .cardStats {
-        grid-template-columns: 1fr 1fr;
-        gap: var(--spacing-4);
-    }
-
-    /* Third stat full width */
-    .cardStat:nth-child(3) {
-        grid-column: 1 / -1;
-    }
-
-    .cardStatVal {
-        font-size: clamp(1.75rem, 12vw, 2.5rem);
+    .cardTransition {
+        padding: var(--spacing-6) 0;
+        margin-bottom: var(--spacing-6);
     }
 
     .carouselFooter {
@@ -628,7 +601,7 @@
     }
 
     .whyItem {
-        flex: 0 0 82%;
+        flex: 0 0 85%;
         scroll-snap-align: start;
         padding: var(--spacing-7) var(--spacing-6);
     }
@@ -636,5 +609,13 @@
     /* Horizontal row — no single item spans full width */
     .whyItem:last-child {
         grid-column: unset;
+    }
+
+    /* "Desliza para ver más →": solo aparece en el carrusel horizontal móvil,
+       mismo patrón que Resources.module.css .scrollHint. */
+    .scrollHint {
+        display: block;
+        text-align: right;
+        padding-right: var(--spacing-7);
     }
 }

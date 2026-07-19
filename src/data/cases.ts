@@ -7,13 +7,13 @@
 // párrafo narrativo) y se conservan ambos tal cual, sin tocar el render de
 // ninguna de las dos páginas.
 //
-// Donde SÍ había la misma información contada dos veces con distinta
-// redacción (las etiquetas de las estadísticas, y en el caso 3 también el
-// valor "5 → 1" vs "5→1"), se resolvió a favor de la versión de Home.tsx por
-// ser la más descriptiva/completa; ambas cajas de stats (Home y Casos)
-// permiten el ajuste de línea del texto (sin truncado/ellipsis), así que no
-// hay riesgo de overflow visual al aplicar la versión larga en /casos.
-// REVISAR: confirmar que la redacción elegida es la deseada en ambas páginas.
+// `showcase` alimenta CaseMockPanel (componente compartido en
+// src/components/cases/CaseMockPanel.tsx), usado tanto en la tarjeta de Home
+// como en la de Casos — reutiliza MockPreview (el mismo lenguaje visual del
+// Paso 4 de HeroLeadWidget, ver src/components/marketing/MockPreview.tsx)
+// para mostrar una mini-interfaz FIJA por caso que representa la mejora de
+// ese sector. El "antes" queda reducido a `beforeTag`, una nota secundaria
+// de bajo peso visual (ya no un cluster de iconos con protagonismo propio).
 import type { Case } from './types';
 
 export const CASES: readonly Case[] = [
@@ -32,16 +32,14 @@ export const CASES: readonly Case[] = [
             'WhatsApp automatizado para citas y visitas — cero llamadas para confirmar',
             'Sistema a medida que centraliza clientes, obras y facturación en un solo lugar',
         ],
-        // DIVERGENCIA resuelta: labels — Home tenía "Capacidad de atención en
-        // tres meses" / "Tiempo dedicado a gestión administrativa" /
-        // "Inversión adicional en personal"; Casos tenía versiones más cortas
-        // ("Capacidad de atención" / "Tiempo en gestión" / "Personal extra").
-        // Me quedo con la versión de Home (más descriptiva).
-        stats: [
-            { value: '3×', label: 'Capacidad de atención en tres meses' },
-            { value: '−70%', label: 'Tiempo dedicado a gestión administrativa' },
-            { value: '0 €', label: 'Inversión adicional en personal' },
-        ],
+        showcase: {
+            accent: 'mint',
+            kicker: 'Automático',
+            title: 'Visita confirmada, sin mover un dedo',
+            sub: 'Directo del chat al calendario, sin llamadas de por medio.',
+            beforeTag: 'Antes: agenda por WhatsApp suelto.',
+            block: { type: 'sequence', beforeIcon: 'chatMessage', afterIcon: 'calendarCheck' },
+        },
         quote:
             'Pasamos de perder presupuestos por falta de seguimiento a tener un sistema que trabaja solo.',
         author: 'CEO',
@@ -61,15 +59,21 @@ export const CASES: readonly Case[] = [
             'Asistente IA que prepara los modelos antes de la revisión humana',
             'Portal de cliente para firmar documentos sin emails de ida y vuelta',
         ],
-        // DIVERGENCIA resuelta: labels 1 y 2 — Home: "Cierre mensual
-        // automatizado" / "En tareas repetitivas del equipo"; Casos: "Cierre
-        // automático" / "En tareas repetitivas". El label 3 ya era idéntico.
-        // Me quedo con la versión de Home (más completa).
-        stats: [
-            { value: '80%', label: 'Cierre mensual automatizado' },
-            { value: '−5h/día', label: 'En tareas repetitivas del equipo' },
-            { value: '+45%', label: 'Más capacidad sin contratar' },
-        ],
+        showcase: {
+            accent: 'warm',
+            kicker: 'Cierre al día',
+            title: 'El cierre mensual, ya resuelto',
+            sub: 'Conciliación, modelos y firma, sin tocarlos a mano.',
+            beforeTag: 'Antes: todo a mano, documento a documento.',
+            block: {
+                type: 'modules',
+                items: [
+                    { key: 'conciliacion', icon: 'receipt', label: 'Conciliación', active: true },
+                    { key: 'modelos', icon: 'fileText', label: 'Modelos', active: true },
+                    { key: 'firma', icon: 'documentCheck', label: 'Firma', active: true },
+                ],
+            },
+        },
         quote:
             'Antes era imposible escalar sin contratar; ahora podemos crecer sin que el equipo reviente.',
         author: 'Socio director',
@@ -89,15 +93,22 @@ export const CASES: readonly Case[] = [
             'Reporting en tiempo real para dirección, sin tener que pedir nada',
             'Asistente IA que responde dudas internas de proceso al instante',
         ],
-        // DIVERGENCIA resuelta: los 3 labels y el valor del segundo stat —
-        // Home: "5 → 1" (con espacios) + labels largos; Casos: "5→1" (sin
-        // espacios) + labels cortos. Me quedo con la versión de Home (valor
-        // con espacios, más legible; labels más completos).
-        stats: [
-            { value: '20h', label: 'Ahorradas a la semana en todo el equipo' },
-            { value: '5 → 1', label: 'Apps reemplazadas por un solo sistema' },
-            { value: '100%', label: 'Información centralizada y siempre al día' },
-        ],
+        showcase: {
+            accent: 'mint',
+            kicker: 'Todo en uno',
+            title: 'Cinco herramientas, un solo sistema',
+            sub: 'Clientes, facturación, agenda y comunicación, unificados.',
+            beforeTag: 'Antes: cinco herramientas sueltas.',
+            block: {
+                type: 'modules',
+                items: [
+                    { key: 'clientes', icon: 'users', label: 'Clientes', active: true },
+                    { key: 'facturacion', icon: 'receipt', label: 'Facturas', active: true },
+                    { key: 'agenda', icon: 'calendarCheck', label: 'Agenda', active: true },
+                    { key: 'comunicacion', icon: 'chatMessage', label: 'Mensajes', active: true },
+                ],
+            },
+        },
         quote:
             'Dejamos de pagar cinco herramientas y ganamos visibilidad real de cada cliente.',
         author: 'Directora de operaciones',

@@ -8,7 +8,6 @@ import { Button } from "../components/ui/Button";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { useDragScroll } from "../hooks/useDragScroll";
 import { PageSEO } from "../hooks/usePageSEO";
-import { useCountUp } from "../hooks/useCountUp";
 import { useMagnetic } from "../hooks/useMagnetic";
 import { useSpotlight } from "../hooks/useSpotlight";
 import { ROUTES } from "../lib/routes";
@@ -24,8 +23,9 @@ import {
 } from "lucide-react";
 import styles from "./Home.module.css";
 import sys from "../styles/page-system.module.css";
-import { HeroDashboard } from "../components/home/HeroDashboard";
+import { HeroLeadWidget } from "../components/home/HeroLeadWidget";
 import { SpotlightCard } from "../components/fx/SpotlightCard";
+import { CaseMockPanel } from "../components/cases/CaseMockPanel";
 import { TextLink } from "../components/common/TextLink";
 import { CASES } from "../data";
 import { ICONS } from "../components/icons/registry";
@@ -73,27 +73,11 @@ const STEPS = [
   },
 ];
 
-function AnimatedStat({ value }: { value: string }) {
-  const match = value.match(/^([−\-]?)(\d+(?:\.\d+)?)(.*)/);
-  const numericEnd = match ? parseFloat(match[2]) : 0;
-  const ref = useCountUp<HTMLSpanElement>({ end: numericEnd, duration: 1.4 });
-
-  if (!match) return <span>{value}</span>;
-  const [, prefix, , suffix] = match;
-  return (
-    <span>
-      {prefix}
-      <span ref={ref}>{Math.round(numericEnd)}</span>
-      {suffix}
-    </span>
-  );
-}
-
 export const Home: React.FC = () => {
   const seoProps = {
     title: "Software a medida para PYMEs en España | OpsPilot",
     description:
-      "Desarrollamos software a medida para PYMEs en España. Presupuesto cerrado, respuesta en menos de 24h y trato directo. Cuéntanos tu problema.",
+      "Software a medida para pymes de toda España, hecho en Córdoba. Presupuesto cerrado, respuesta en menos de 24h. Cuéntanos tu problema.",
     canonical: "https://opspilot.es/",
   };
 
@@ -107,7 +91,10 @@ export const Home: React.FC = () => {
 
   // Cinematic FX: magnetic pull on the primary hero CTA, spotlight that
   // tracks the pointer across the hero dashboard frame.
-  const heroCtaRef = useMagnetic<HTMLAnchorElement>({ strength: 0.12, radius: 18 });
+  const heroCtaRef = useMagnetic<HTMLAnchorElement>({
+    strength: 0.12,
+    radius: 18,
+  });
   const heroPanelRef = useSpotlight<HTMLDivElement>();
 
   // Case carousel — scroll-snap track (same pattern as Cases.tsx' carousel):
@@ -208,38 +195,11 @@ export const Home: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  useEffect(() => {
-    const reduce = window.matchMedia?.(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduce) return;
-
-    // Scoped to caseRef (the case-section container that actually wraps
-    // .caseCarouselWrapper / .caseStat) — NOT heroRef, which only contains
-    // the hero section and is an unrelated DOM subtree. gsap.context() scopes
-    // string-selector lookups to descendants of its scope element, so
-    // using heroRef here meant `.caseCarouselWrapper`/`.caseStat` could
-    // never resolve, regardless of the (correctly hashed) CSS Modules class
-    // names.
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: `.${styles.caseCarouselWrapper}`,
-        start: "top 78%",
-        once: true,
-        onEnter: () => {
-          gsap.from(`.${styles.caseStat}`, {
-            opacity: 0,
-            y: 10,
-            duration: 0.2,
-            stagger: 0.05,
-            ease: "power2.out",
-          });
-        },
-      });
-    }, caseRef);
-
-    return () => ctx.revert();
-  }, []);
+  // Nota: el antiguo stagger reveal de los stats/panel de casos (.caseStat →
+  // [data-pcp-block]) se eliminó junto con esos campos. CaseMockPanel (la
+  // mini-interfaz fija que ahora vive en el panel de casos) es autocontenido:
+  // gestiona su propio ScrollTrigger de entrada en viewport internamente,
+  // así que no necesita cableado desde aquí.
 
   // Section-level scroll choreography (Problema / Método / CTA).
   // Gated con gsap.matchMedia: el pin a pantalla completa solo en desktop con
@@ -352,7 +312,11 @@ export const Home: React.FC = () => {
         duration: 0.8,
         stagger: 0.04,
         ease: "power4.out",
-        scrollTrigger: { trigger: ctaRef.current, start: "top 78%", once: true },
+        scrollTrigger: {
+          trigger: ctaRef.current,
+          start: "top 78%",
+          once: true,
+        },
       });
       return () => {
         tween.scrollTrigger?.kill();
@@ -395,18 +359,20 @@ export const Home: React.FC = () => {
       <section className={styles.hero} ref={heroRef}>
         <div className={styles.heroInner}>
           <div className={styles.heroContent}>
+            <span className={styles.heroEyebrow}>
+              Con sede en Córdoba — trabajamos en toda España
+            </span>
             <h1 className={styles.heroTitle}>
               <span className={styles.heroLine}>
                 <span className={styles.heroLineInner}>Software a medida</span>
               </span>
               <span className={styles.heroLine}>
-                <span className={styles.heroLineInner}>
-                  para tu PYME.
-                </span>
+                <span className={styles.heroLineInner}>para tu PYME.</span>
               </span>
               <span className={styles.heroLine}>
                 <span className={styles.heroLineInner}>
-                  Sin plantillas. Sin <span className={styles.heroAccent}>sorpresas.</span>
+                  Sin plantillas. Sin{" "}
+                  <span className={styles.heroAccent}>sorpresas.</span>
                 </span>
               </span>
             </h1>
@@ -433,7 +399,7 @@ export const Home: React.FC = () => {
 
           <div className={styles.heroPanel}>
             <div className={styles.heroPanelFrame} ref={heroPanelRef}>
-              <HeroDashboard />
+              <HeroLeadWidget />
             </div>
           </div>
         </div>
@@ -451,22 +417,22 @@ export const Home: React.FC = () => {
               </div>
               <div className={styles.problemDeck}>
                 {PROBLEMS.map((p, i) => (
-                <article className={styles.problemCard} key={i}>
-                  <span className={styles.problemNum} aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div className={styles.problemCardBody}>
-                    <span className={styles.problemTag}>{p.tag}</span>
-                    <h3 className={styles.problemTitle}>{p.title}</h3>
-                    <p className={styles.problemText}>{p.text}</p>
-                  </div>
-                  <span className={styles.problemCount} aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                    <span className={styles.problemCountTotal}>
-                      / {String(PROBLEMS.length).padStart(2, "0")}
+                  <article className={styles.problemCard} key={i}>
+                    <span className={styles.problemNum} aria-hidden="true">
+                      {String(i + 1).padStart(2, "0")}
                     </span>
-                  </span>
-                </article>
+                    <div className={styles.problemCardBody}>
+                      <span className={styles.problemTag}>{p.tag}</span>
+                      <h3 className={styles.problemTitle}>{p.title}</h3>
+                      <p className={styles.problemText}>{p.text}</p>
+                    </div>
+                    <span className={styles.problemCount} aria-hidden="true">
+                      {String(i + 1).padStart(2, "0")}
+                      <span className={styles.problemCountTotal}>
+                        / {String(PROBLEMS.length).padStart(2, "0")}
+                      </span>
+                    </span>
+                  </article>
                 ))}
               </div>
             </div>
@@ -494,16 +460,20 @@ export const Home: React.FC = () => {
               {CASES.map((c) => {
                 const CaseIcon = ICONS[c.iconKey];
                 return (
-                  <SpotlightCard as="article" className={styles.caseCard} key={c.id}>
+                  <SpotlightCard
+                    as="article"
+                    className={styles.caseCard}
+                    key={c.id}
+                  >
                     <div className={styles.caseCardMain}>
                       <div className={styles.caseCardHead}>
-                        <span className={styles.caseIconTile} aria-hidden="true">
+                        <span
+                          className={styles.caseIconTile}
+                          aria-hidden="true"
+                        >
                           <CaseIcon size={20} strokeWidth={1.6} />
                         </span>
-                        <span className={styles.caseSector}>
-                          <span className={styles.caseSectorDot} aria-hidden="true" />
-                          {c.label}
-                        </span>
+                        <span className={styles.caseSector}>{c.label}</span>
                       </div>
                       <h3 className={styles.caseCardTitle}>{c.title}</h3>
                       <p className={styles.caseCardSummary}>{c.summary}</p>
@@ -520,19 +490,7 @@ export const Home: React.FC = () => {
                     </div>
 
                     <aside className={styles.caseCardPanel}>
-                      <div className={styles.casePanelBar}>Resultados</div>
-                      <div className={styles.caseCardStats}>
-                        {(c.stats ?? []).map((s, j) => (
-                          <div className={styles.caseStat} key={j}>
-                            <span
-                              className={`${styles.caseStatNumber} ${sys.statAccent}`}
-                            >
-                              <AnimatedStat value={s.value} />
-                            </span>
-                            <span className={styles.caseStatLabel}>{s.label}</span>
-                          </div>
-                        ))}
-                      </div>
+                      <CaseMockPanel showcase={c.showcase} />
                     </aside>
                   </SpotlightCard>
                 );
@@ -580,9 +538,9 @@ export const Home: React.FC = () => {
             </div>
           </div>
           <p className={styles.caseDisclaimer}>
-            Casos reales, cifras representativas. Cada caso resume varios proyectos
-            del mismo sector. Nombres y testimonios anonimizados por privacidad de
-            cada cliente.
+            Casos reales, cifras representativas. Cada caso resume varios
+            proyectos del mismo sector. Nombres y testimonios anonimizados por
+            privacidad de cada cliente.
           </p>
         </div>
       </section>
@@ -596,17 +554,19 @@ export const Home: React.FC = () => {
             </h2>
           </header>
           <div className={styles.whyGrid} ref={whyTrackRef}>
-            <SpotlightCard className={`${styles.whyCol} ${styles.whyColGeneric} reveal`}>
+            <SpotlightCard
+              className={`${styles.whyCol} ${styles.whyColGeneric} reveal`}
+            >
               <div className={styles.whyColHead}>
                 <span className={styles.whyColBadge}>Software genérico</span>
               </div>
               {[
                 "Te adaptas tú a la herramienta, no al revés",
                 "Pagas por funciones que nunca vas a usar",
-                "Soporte por tickets o foros en inglés",
+                "Un ticket, un foro en inglés, y a esperar",
                 "6–12 meses para ver resultados reales",
-                "Datos en silos sin conexión entre apps",
-                "Precio que sube cada año sin avisarte",
+                "Cada app en su silo, sin hablarse entre ellas",
+                "Y el precio sube cada año. Sin avisarte",
               ].map((text, i) => (
                 <div className={styles.whyRow} key={i}>
                   <span className={styles.whyIconNeg}>
@@ -616,7 +576,9 @@ export const Home: React.FC = () => {
                 </div>
               ))}
             </SpotlightCard>
-            <SpotlightCard className={`${styles.whyCol} ${styles.whyColOps} reveal`}>
+            <SpotlightCard
+              className={`${styles.whyCol} ${styles.whyColOps} reveal`}
+            >
               <div className={styles.whyColHead}>
                 <span
                   className={`${styles.whyColBadge} ${styles.whyColBadgeOps}`}
@@ -628,10 +590,10 @@ export const Home: React.FC = () => {
               {[
                 "El sistema se adapta exactamente a cómo trabajas",
                 "Solo pagas lo que tu negocio realmente necesita",
-                "Acceso directo al equipo que construyó tu sistema",
+                "Escribes al equipo que lo construyó. Te responde esa misma persona",
                 "Primeros resultados visibles en 4–6 semanas",
-                "Todo integrado en un solo sistema centralizado",
-                "Precio cerrado desde el día uno, sin sorpresas",
+                "Un sistema. Todo conectado, todo a la vista",
+                "Precio cerrado desde el día uno. Así de simple",
               ].map((text, i) => (
                 <div className={styles.whyRow} key={i}>
                   <span className={styles.whyIconPos}>
@@ -680,8 +642,8 @@ export const Home: React.FC = () => {
           <div className={sys.endCtaBlock} ref={ctaRef}>
             <h2 className={sys.endCtaTitle}>¿Hablamos?</h2>
             <p className={sys.endCtaSub}>
-              30 minutos. Sin compromiso. Te decimos qué tiene sentido construir
-              y qué no — sin venderte nada.
+              Treinta minutos que te ahorran meses de dudas. Te decimos qué
+              construir y qué no, sin venderte de más.
             </p>
             <div className={sys.endCtaButtons}>
               <Link to={ROUTES.contacto}>

@@ -94,44 +94,6 @@
     text-shadow: 0 0 30px rgba(57, 206, 134, 0.35);
 }
 
-/* Fila de confianza — microcopy mono, hairline superior */
-.heroTrust {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacing-3) var(--spacing-5);
-    margin-top: var(--spacing-9);
-    padding-top: var(--spacing-6);
-    border-top: 1px solid var(--color-border-subtle);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    letter-spacing: 0.04em;
-    color: var(--color-text-subtle);
-}
-
-.heroTrustItem {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-2);
-}
-
-.heroTrustItem svg {
-    color: var(--color-mint);
-    flex-shrink: 0;
-}
-
-.heroTrustSep {
-    width: 4px;
-    height: 4px;
-    border-radius: var(--radius-full);
-    background: var(--color-border-strong);
-}
-
-@media (max-width: 639px) {
-    .heroTrustSep { display: none; }
-    .heroTrust { gap: var(--spacing-2) var(--spacing-4); }
-}
-
 /* Marco del dashboard: glow + spotlight que sigue al puntero */
 .heroPanelFrame {
     position: relative;
@@ -226,7 +188,7 @@
     align-items: flex-start;
 }
 
-/* Dashboard (HeroDashboard.tsx) — columna derecha en desktop. */
+/* Hero lead widget (HeroLeadWidget.tsx) — columna derecha en desktop. */
 .heroPanel {
     width: 100%;
     max-width: 560px;
@@ -342,27 +304,6 @@
 }
 
 .problemHead h2 { margin: 0; }
-
-/* Kicker de sección — voz de instrumento reutilizable en cada capítulo */
-.sectionKicker {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-3);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--color-text-subtle);
-    margin-bottom: var(--spacing-5);
-}
-
-.sectionKicker::before {
-    content: '';
-    width: 24px;
-    height: 1px;
-    background: var(--color-mint);
-    display: inline-block;
-}
 
 /* Deck: contenedor de las tarjetas. En flujo normal se apilan verticalmente;
    en modo pin (.problemDeckOn) pasan a absolute y se relevan una sobre otra. */
@@ -744,118 +685,19 @@
     color: var(--color-mint);
 }
 
-.caseSectorDot {
-    width: 6px;
-    height: 6px;
-    border-radius: var(--radius-full);
-    background: var(--color-mint);
-    box-shadow: 0 0 8px rgba(57, 206, 134, 0.8);
-    flex-shrink: 0;
-}
-
-/* Panel de resultados — mismo lenguaje que el HeroDashboard. Estirado a la
-   altura de la narrativa y con los stats centrados verticalmente para que el
-   bento quede equilibrado (antes flotaba arriba con hueco). */
+/* Panel de resultados — mismo lenguaje que el widget del hero. Estirado a la
+   altura de la narrativa; el contenido (CaseMockPanel, la mini-interfaz fija
+   que representa la mejora del sector) se centra verticalmente para que el
+   bento quede equilibrado. */
 .caseCardPanel {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     background: rgba(10, 14, 20, 0.55);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-card);
     padding: var(--spacing-6) var(--spacing-7);
     align-self: stretch;
-}
-
-.casePanelBar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--color-text-muted);
-    padding-bottom: var(--spacing-4);
-    margin-bottom: var(--spacing-4);
-    border-bottom: 1px solid var(--color-border-subtle);
-}
-
-/* Stats dentro del panel: tres "tarjetas de resultado" apiladas, centradas
-   vertical y horizontalmente. Cada una es una mini-tile con acento mint
-   superior — antes eran filas planas number/label muy simples. */
-.caseCardPanel .caseCardStats {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    grid-template-columns: none;
-    gap: var(--spacing-3);
-    padding-top: 0;
-    border-top: none;
-}
-
-.caseCardPanel .caseStat {
-    position: relative;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-5) var(--spacing-4);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-card);
-    background: rgba(255, 255, 255, 0.02);
-    overflow: hidden;
-    transition:
-        transform var(--transition-normal),
-        border-color var(--transition-normal),
-        background-color var(--transition-normal);
-}
-
-/* Acento mint superior — firma de "métrica" */
-.caseCardPanel .caseStat::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 30px;
-    height: 2px;
-    border-radius: var(--radius-full);
-    background: var(--gradient-mint);
-    opacity: 0.75;
-}
-
-.caseCardPanel .caseStat:last-child {
-    border-bottom: 1px solid var(--color-border-subtle);
-    padding-bottom: var(--spacing-5);
-}
-
-@media (hover: hover) {
-    .caseCardPanel .caseStat:hover {
-        transform: translateY(-2px);
-        border-color: var(--color-border-mint);
-        background: var(--color-mint-soft);
-    }
-}
-
-.caseCardPanel .caseStatNumber {
-    font-size: clamp(1.875rem, 3vw, 2.5rem);
-    flex-shrink: 0;
-}
-
-.caseCardPanel .caseStatLabel {
-    text-align: center;
-    max-width: 24ch;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .caseCardPanel .caseStat {
-        transition: border-color var(--transition-normal), background-color var(--transition-normal);
-    }
-    .caseCardPanel .caseStat:hover {
-        transform: none;
-    }
 }
 
 /* Spotlight que sigue al puntero (::before pinta bajo el contenido) */
@@ -980,28 +822,6 @@
     cursor: not-allowed;
 }
 
-/* Eyebrow — mono instrument voice with mint status dot, no pill */
-.caseEyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-regular);
-    color: var(--color-mint);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: var(--spacing-6);
-}
-
-.caseEyebrow::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-mint);
-}
-
 .caseCardTitle {
     font-family: var(--font-family-display);
     font-size: clamp(1.5rem, 2.4vw, 2rem);
@@ -1055,48 +875,6 @@
     flex-shrink: 0;
 }
 
-.caseCardStats {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-    padding-top: var(--spacing-7);
-    border-top: 1px solid var(--color-border-subtle);
-}
-
-/* ≥MÓVIL (antes 600px, huérfano) */
-@media (min-width: 640px) {
-    .caseCardStats {
-        grid-template-columns: repeat(3, 1fr);
-        gap: var(--spacing-5);
-    }
-}
-
-.caseStat {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
-}
-
-.caseStatNumber {
-    /* Color comes from the shared `sys.statAccent` class (page-system.module.css)
-       — see Home.tsx, which applies it alongside this class. */
-    font-family: var(--font-family-display);
-    font-size: clamp(1.875rem, 3vw, 2.5rem);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--tracking-tight);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-}
-
-.caseStatLabel {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--color-text-muted);
-    line-height: 1.45;
-}
-
 /* ═══════════════════════════════════════════
    WHY OPSPILOT — tabla comparación
    ═══════════════════════════════════════════ */
@@ -1119,26 +897,20 @@
 .whySection::before { top: 0; }
 .whySection::after { bottom: 0; }
 
+/* Mobile (<768px): columna única, ambas tarjetas apiladas a ancho completo.
+   Antes esto era un carrusel horizontal con scroll-snap (flex 0 0 85% +
+   "peek" del 15% siguiente) — igual que .caseCarouselTrack. Para un carrusel
+   de casos eso funciona (una tarjeta completa por vez, todas equivalentes).
+   Para ESTA sección no: son dos mitades de un mismo argumento (× problema /
+   ✓ solución) que necesitan verse las dos con texto legible sin depender de
+   que el usuario descubra el swipe — con el peek, la tarjeta OpsPilot (✓)
+   quedaba reducida a una tira de ~15% de ancho, ilegible, y el mensaje se
+   invertía (solo se leían los × del software genérico). Apilar en columna
+   garantiza que ambos lados se lean completos sin gesto adicional. */
 .whyGrid {
     display: flex;
+    flex-direction: column;
     gap: var(--spacing-5);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    cursor: grab;
-    /* Extend slightly past the right edge so the peeking card feels open */
-    padding-right: var(--spacing-7);
-    margin-right: calc(-1 * var(--spacing-7));
-}
-
-.whyGrid::-webkit-scrollbar {
-    display: none;
-}
-
-.whyGrid:active {
-    cursor: grabbing;
 }
 
 @media (min-width: 768px) {
@@ -1146,11 +918,6 @@
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-6);
-        overflow-x: visible;
-        scroll-snap-type: none;
-        cursor: auto;
-        padding-right: 0;
-        margin-right: 0;
     }
 }
 
@@ -1160,8 +927,6 @@
     border: 1px solid var(--color-border-subtle);
     display: flex;
     flex-direction: column;
-    flex: 0 0 85%;
-    scroll-snap-align: start;
     position: relative;
     overflow: hidden;
     isolation: isolate;
@@ -1194,16 +959,6 @@
 
 .whyColGeneric[data-spotlight-active] {
     border-color: var(--color-border-strong);
-}
-
-/* Desktop reset must come after the base rule above so it wins the
-   cascade at equal specificity (media-query nesting alone does not
-   raise specificity). */
-@media (min-width: 768px) {
-    .whyCol {
-        flex: initial;
-        scroll-snap-align: none;
-    }
 }
 
 /* Generic column — muted, flat */
@@ -1358,10 +1113,6 @@
         justify-content: center;
     }
 
-    .processGrid {
-        gap: var(--spacing-4);
-    }
-
     .caseCard {
         /* Inherits flex: 0 0 100% — exactly one slide visible on mobile too. */
         padding: var(--spacing-7) var(--spacing-6);
@@ -1373,22 +1124,26 @@
         gap: var(--spacing-4);
     }
 
+    /* Antes se ocultaban por completo en mobile (display:none) — se perdía
+       la prueba cuantificable/concreta de cada caso justo donde más hace
+       falta brevedad+contundencia. El nuevo CaseMockPanel (mini-interfaz
+       visual, ver componente compartido) solo ilustra UNO de los 2-3
+       resultados de cada caso, no sustituye la lista completa — así que se
+       mantienen visibles, con tipografía y espaciado compactados en vez de
+       desaparecer. Preferible una tarjeta algo más alta que perder el dato. */
     .caseCardBullets {
-        display: none;
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .caseCardBullets li {
+        font-size: var(--font-size-xs);
+        line-height: 1.45;
     }
 
     .caseCardSummary {
         font-size: var(--font-size-base);
         margin-bottom: var(--spacing-5);
-    }
-
-    .caseCardStats {
-        grid-template-columns: repeat(3, 1fr);
-        gap: var(--spacing-3);
-    }
-
-    .caseStatNumber {
-        font-size: clamp(1.4rem, 5vw, 1.875rem);
     }
 }
 
@@ -1431,24 +1186,16 @@
     }
 }
 
+/* Solo el carrusel de casos (.caseCard) sigue siendo un scroller horizontal
+   a todos los anchos — el resto de tracks que usaban este mismo patrón
+   (comparación "por qué OpsPilot", método) ya no lo son: la comparación pasó
+   a columna apilada en mobile (ver .whyGrid arriba) y el método es una grid
+   estática desde siempre (.methodGrid). Ya no hace falta el @media scoped a
+   mobile que existía aquí para esos dos — un view(inline) timeline sobre un
+   contenedor que no se desplaza en ese eje no tendría rango que recorrer. */
 @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
-        /* Case carousel: horizontal scroller at every width */
         .caseCard {
-            animation: trackCardIn linear both, trackCardOut linear both;
-            animation-timeline: view(inline), view(inline);
-            animation-range: entry 0% entry 85%, exit 15% exit 100%;
-        }
-    }
-
-    /* Comparison + método tracks are only scrollers below 768px —
-       on desktop they become static grids, so scope to mobile. Note:
-       inside the supporting range these CSS animations own opacity and
-       transform on the cards (they win over the GSAP inline reveal),
-       which is the intended replacement on mobile. */
-    @media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
-        .whyCol,
-        .processStep {
             animation: trackCardIn linear both, trackCardOut linear both;
             animation-timeline: view(inline), view(inline);
             animation-range: entry 0% entry 85%, exit 15% exit 100%;

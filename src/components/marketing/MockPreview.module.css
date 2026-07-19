@@ -1,0 +1,411 @@
+/* ═══════════════════════════════════════════
+   MOCK PREVIEW — mini-maqueta de "web/panel generado" (nav + titular +
+   bloque de contenido destacado). Extraída del Paso 4 de HeroLeadWidget
+   (mismo lenguaje visual de "web ensamblándose") para reutilizarse también
+   en CaseMockPanel. Acento mint por defecto; `data-accent="warm"` lo
+   cambia a ámbar (ver ACCENT_VARS en el .tsx).
+
+   La cascada de entrada (nav → titular → bloque) solo corre cuando el
+   contenedor lleva `data-animate="true"` (prop `revealed`, ver .tsx) — así
+   un consumidor scroll-revealed puede montar el componente sin gastar la
+   animación fuera de pantalla, y re-disparrarla justo cuando conviene.
+   ═══════════════════════════════════════════ */
+
+.templatePreview {
+    position: relative;
+    padding: var(--spacing-7);
+    background: var(--color-bg-deep);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
+    /* Borde interno + sombra tintada — mismo idioma que cualquier
+       superficie anidada del sistema (shadow-md, un escalón por debajo de
+       shadow-lg de los paneles exteriores que la contienen). */
+    box-shadow: var(--glass-inset), var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+    transition: max-width 0.4s var(--ease-out-expo);
+}
+
+/* Vista "móvil" del mock — mismo contenido, contenedor angosto centrado en
+   vez de un bisel de teléfono falso. */
+.templatePreview[data-device='mobile'] {
+    max-width: 220px;
+    margin-inline: auto;
+}
+
+/* Menú "hamburguesa" — oculto en escritorio, sustituye a links+CTA en móvil */
+.tplNavMenu {
+    display: none;
+    margin-left: auto;
+    flex-direction: column;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+.tplNavMenu span {
+    display: block;
+    width: 14px;
+    height: 2px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+}
+
+.templatePreview[data-device='mobile'] .tplNavLinks,
+.templatePreview[data-device='mobile'] .tplNavCta {
+    display: none;
+}
+
+.templatePreview[data-device='mobile'] .tplNavMenu {
+    display: flex;
+}
+
+.templatePreview[data-device='mobile'] .modules {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.templatePreview[data-device='mobile'] .sequence {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.templatePreview[data-device='mobile'] .seqArrow {
+    width: 1px;
+    min-width: 0;
+    height: var(--spacing-4);
+    background: repeating-linear-gradient(
+        180deg,
+        var(--color-border-strong) 0 4px,
+        transparent 4px 8px
+    );
+}
+
+.tplNav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.tplBrand {
+    width: 16px;
+    height: 16px;
+    border-radius: var(--radius-sm);
+    background: var(--tpl-accent-fill);
+    flex-shrink: 0;
+    box-shadow: var(--tpl-accent-shadow);
+}
+
+.tplNavLinks {
+    display: inline-flex;
+    gap: var(--spacing-2);
+}
+
+.tplNavLinks span {
+    display: block;
+    width: 24px;
+    height: 5px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+}
+
+.tplNavCta {
+    margin-left: auto;
+    width: 38px;
+    height: 14px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--tpl-accent-border);
+    background: var(--tpl-accent-soft);
+    flex-shrink: 0;
+    transition: border-color 0.4s var(--ease-out-expo), background-color 0.4s var(--ease-out-expo);
+}
+
+.tplHeadline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.tplKicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-family-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--tpl-accent);
+    margin-bottom: var(--spacing-1);
+}
+
+.tplKicker::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+.tplTitle {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    line-height: 1.25;
+    letter-spacing: var(--tracking-tight);
+    margin: 0;
+    text-wrap: balance;
+}
+
+.tplSub {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.tplBlock {
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ── Bloque testimonial ── */
+.testimonial {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.stars {
+    display: inline-flex;
+    gap: 2px;
+    color: var(--color-mint);
+}
+
+.quoteBar {
+    display: block;
+    height: 8px;
+    width: 92%;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+}
+
+.quoteBarShort {
+    width: 64%;
+}
+
+.avatarRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-1);
+}
+
+.avatarDot {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    background: var(--gradient-mint);
+    flex-shrink: 0;
+    transition: box-shadow var(--transition-normal);
+}
+
+/* Micro-interactividad: el mock responde al hover en vez de ser puramente
+   decorativo — glow sutil, sin mover nada del layout. Solo en punteros con
+   hover real, para no dejar un estado "pegado" en touch. */
+@media (hover: hover) {
+    .testimonial:hover .avatarDot {
+        box-shadow: var(--shadow-mint);
+    }
+}
+
+.avatarName {
+    display: block;
+    width: 70px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+}
+
+/* ── Bloque de módulos ── */
+.modules {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-2);
+}
+
+.moduleTile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-2);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-control);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--color-text-muted);
+    transition: border-color var(--transition-normal), background-color var(--transition-normal),
+        color var(--transition-normal), transform var(--transition-fast) var(--ease-custom),
+        box-shadow var(--transition-fast) var(--ease-custom);
+}
+
+/* Generalizado a las custom properties de acento (antes hardcodeado a warm):
+   así el bloque de módulos puede usarse tanto en warm (rama "sistema" del
+   hero, Asesoría) como en mint (Agencia) sin duplicar la regla. Mismos
+   valores exactos que antes para warm (ver ACCENT_VARS.warm en el .tsx). */
+.moduleTileActive {
+    border-color: var(--tpl-accent-border);
+    background: var(--tpl-accent-soft);
+    color: var(--tpl-accent);
+}
+
+/* Micro-interactividad: los tiles del mock responden al hover (pequeña
+   elevación + sombra), no solo al estado "activo" — refuerza que la
+   plantilla se siente como algo tocable, no un dibujo estático. */
+@media (hover: hover) {
+    .moduleTile:hover {
+        border-color: var(--color-border-mint);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+}
+
+.moduleLabel {
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* ── Bloque secuencia antes → después ── */
+.sequence {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.seqTile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: var(--radius-control);
+    border: 1px solid var(--color-border-subtle);
+    transition: transform var(--transition-fast) var(--ease-custom),
+        box-shadow var(--transition-fast) var(--ease-custom);
+}
+
+.seqTileBefore {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--color-text-muted);
+    opacity: 0.65;
+}
+
+.seqTileAfter {
+    background: var(--color-mint-soft);
+    border-color: var(--color-border-mint);
+    color: var(--color-mint);
+    box-shadow: var(--shadow-mint);
+}
+
+@media (hover: hover) {
+    .seqTile:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+}
+
+.seqArrow {
+    flex: 1;
+    height: 1px;
+    min-width: var(--spacing-4);
+    background: repeating-linear-gradient(
+        90deg,
+        var(--color-border-strong) 0 4px,
+        transparent 4px 8px
+    );
+}
+
+/* ── Animación de "ensamblado" ──
+   Reutiliza el ritmo del antiguo HeroDashboard (nav → titular → CTA →
+   bloque de contenido en cascada). Gateada tras `[data-animate='true']`
+   (ver comentario de cabecera): en HeroLeadWidget se dispara en cada mount/
+   remount (`revealed` por defecto `true`, remontado vía `key={comboKey}`);
+   en CaseMockPanel se difiere hasta que el panel entra en viewport. */
+@media (prefers-reduced-motion: no-preference) {
+    .templatePreview[data-animate='true'] .tplNav { animation: tplBlockDown 0.4s var(--ease-out-expo) both; }
+    .templatePreview[data-animate='true'] .tplBrand { animation: tplBrandIn 0.5s var(--ease-out-expo) both; }
+    .templatePreview[data-animate='true'] .tplKicker { animation: tplKickerIn 0.35s var(--ease-out-expo) 0.1s both; }
+    .templatePreview[data-animate='true'] .tplTitle { animation: tplWipeIn 0.45s var(--ease-out-expo) 0.18s both; }
+    .templatePreview[data-animate='true'] .tplSub { animation: tplFadeUp 0.35s var(--ease-out-expo) 0.32s both; }
+    .templatePreview[data-animate='true'] .tplBlock { animation: tplFadeUp 0.4s var(--ease-out-expo) 0.42s both; }
+
+    .templatePreview[data-animate='true'] .moduleTile,
+    .templatePreview[data-animate='true'] .seqTile,
+    .templatePreview[data-animate='true'] .stars {
+        animation: tplPopIn 0.35s var(--ease-out-expo) both;
+        animation-delay: 0.48s;
+    }
+    .templatePreview[data-animate='true'] .moduleTile:nth-child(2) { animation-delay: 0.54s; }
+    .templatePreview[data-animate='true'] .moduleTile:nth-child(3) { animation-delay: 0.6s; }
+    .templatePreview[data-animate='true'] .moduleTile:nth-child(4) { animation-delay: 0.66s; }
+    .templatePreview[data-animate='true'] .seqTileAfter { animation-delay: 0.58s; }
+}
+
+@keyframes tplBlockDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Punto de marca: crossfade real de color (gris apagado → acento), no solo
+   opacity — así el cambio mint/warm entre combinaciones se lee como una
+   transición, no un salto. */
+@keyframes tplBrandIn {
+    from { opacity: 0; transform: translateY(-8px) scale(0.7); background: var(--color-border-strong); box-shadow: none; }
+    to { opacity: 1; transform: translateY(0) scale(1); background: var(--tpl-accent-fill); box-shadow: var(--tpl-accent-shadow); }
+}
+
+/* Kicker: mismo crossfade de color aplicado al texto — el `::before` (el
+   puntito) usa currentColor, así que hereda el mismo crossfade gratis. */
+@keyframes tplKickerIn {
+    from { opacity: 0; transform: translateY(8px); color: var(--color-text-muted); }
+    to { opacity: 1; transform: translateY(0); color: var(--tpl-accent); }
+}
+
+@keyframes tplWipeIn {
+    from { opacity: 0; clip-path: inset(0 100% 0 0); }
+    to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes tplFadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tplPopIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    60% { transform: scale(1.06); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tplNav, .tplBrand, .tplKicker, .tplTitle, .tplSub, .tplBlock,
+    .moduleTile, .seqTile, .stars {
+        animation: none;
+    }
+
+    .moduleTile:hover,
+    .seqTile:hover {
+        transform: none;
+    }
+}
+
+/* ─── Mobile — más compacto ─── */
+@media (max-width: 639px) {
+    .modules {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

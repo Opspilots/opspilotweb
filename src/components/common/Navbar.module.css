@@ -183,6 +183,15 @@
     justify-content: center;
     width: 2.75rem;
     height: 2.75rem;
+    /* El botón es un touch target de 44px, pero el trazo visible dentro mide
+       solo 20px: eso deja (44-20)/2 = 12px de aire entre el borde del botón y
+       el trazo. Como el botón se pega al padding del .container (--gutter),
+       ese aire se suma al gutter y el trazo queda 12px más lejos del borde
+       derecho que el logo del borde izquierdo. Empujamos el hit-area 12px
+       hacia el padding (nunca hacia el contenido) para que el TRAZO —no el
+       botón— quede alineado con el gutter real. El área táctil sigue
+       midiendo 44px, solo se desplaza. */
+    margin-right: -0.75rem;
     position: relative;
     z-index: 101;
     background: none;
@@ -243,9 +252,17 @@
     /* El panel es fixed hasta bottom:0 y su último elemento es el CTA
        principal: sin el inset inferior, en iOS queda debajo de la barra de
        gestos (home indicator) y es difícil de pulsar. */
+    /* Lateral = --gutter (28px) + 1px, el mismo token que .container: así el
+       texto del menú no salta respecto al logo al abrir (antes usaba
+       --spacing-6 = 24px, un token distinto que por casualidad se parece pero
+       no coincide). El +1px compensa el `border: 1px solid transparent` de
+       `.navbar` (línea ~15): ese borde inserta el contenido de `.container` 1px
+       más allá de su padding, pero `.mobileMenu` es un elemento fixed aparte
+       sin ese borde, así que sin el ajuste su padding por sí solo aterriza
+       1px a la izquierda del logo (medido: 28px vs 29px). */
     padding:
         var(--spacing-8)
-        var(--spacing-6)
+        calc(var(--gutter) + 1px)
         calc(var(--spacing-8) + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;

@@ -1,6 +1,6 @@
-// Fuente única de los 6 sectores mostrados en /soluciones. Migrado literal
+// Fuente única de los sectores mostrados en /soluciones. Migrado literal
 // desde src/pages/Soluciones.tsx (antes `const sectores`). `cta`/`href` se
-// eliminaron del dato: eran idénticos en las 6 entradas ('Cuéntanos tu caso'
+// eliminaron del dato: eran idénticos en todas las entradas ('Cuéntanos tu caso'
 // / ROUTES.contacto) — es presentación, no dato, y ahora está hardcodeado
 // en Soluciones.tsx.
 import type { Sector, SectorId } from './types';
@@ -15,6 +15,10 @@ export const SECTORS: readonly Sector[] = [
         solution:
             'Software para asesorías y despachos que automatiza firma, comunicación y archivo documental. Adiós al papeleo.',
         benefits: ['Documentos sin papel', 'Seguimiento en tiempo real', 'Clientes siempre informados'],
+        relatedResource: {
+            label: 'Prueba Fiscalidad, nuestra plataforma de facturación y contabilidad',
+            slug: 'fiscalidad-plataforma-fiscal-contable',
+        },
     },
     {
         id: 'energia',
@@ -25,6 +29,10 @@ export const SECTORS: readonly Sector[] = [
         solution:
             'CRM para comercializadoras de energía: comparas tarifas al instante, digitalizas el alta y centralizas la cartera.',
         benefits: ['Análisis en segundos', 'Propuestas sin errores', 'Pipeline de clientes claro'],
+        relatedResource: {
+            label: 'Descubre EnergyDeal, nuestro CRM especializado para el sector',
+            slug: 'energydeal-crm-energetico',
+        },
     },
     {
         id: 'reformas',
@@ -35,6 +43,10 @@ export const SECTORS: readonly Sector[] = [
         solution:
             'Software para reformas e instalaciones: presupuestas en la visita y sigues la obra hasta el cobro. Sin llamadas de más.',
         benefits: ['Presupuestos en 2 minutos', 'Clientes sin llamadas extras', 'Cobros sin perseguir'],
+        relatedResource: {
+            label: 'Conoce Presupuestador, nuestro software de presupuestos de obra',
+            slug: 'presupuestador-obra-bc3',
+        },
     },
     {
         id: 'agencias',
@@ -65,6 +77,24 @@ export const SECTORS: readonly Sector[] = [
         solution:
             'Software a medida: analizamos tu flujo, lo construimos para ti y lo mantenemos vivo con tu negocio.',
         benefits: ['100% adaptado a ti', 'Integrado con lo que ya tienes', 'Escalable sin límites'],
+    },
+    {
+        id: 'hosteleria',
+        iconKey: 'utensils',
+        label: 'Hostelería y restauración',
+        title: 'Restaurantes, bares y grupos de hostelería',
+        who: 'Restaurantes, bares y grupos con uno o varios locales',
+        // El TPV/ERP de hostelería es un nicho muy peleado a nivel nacional —
+        // en vez de competir de frente por el término genérico, el ángulo es
+        // la adaptación a tu operativa real y la ausencia de permanencia, no
+        // "somos el TPV más grande de España".
+        solution:
+            'ERP de hostelería a medida de tu operativa real: TPV, stock, turnos y reservas en un solo sistema, sin permanencia y con soporte cercano.',
+        benefits: ['Adaptado a tu operativa, no al revés', 'Sin permanencia ni letra pequeña', 'Soporte cercano, sin call center'],
+        relatedResource: {
+            label: 'Descubre nuestro ERP de hostelería completo',
+            slug: 'erp-hosteleria-tpv-restaurantes',
+        },
     },
 ];
 

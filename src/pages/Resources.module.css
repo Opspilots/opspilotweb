@@ -445,6 +445,20 @@
     margin: 0 0 var(--spacing-6);
 }
 
+/* Título de sección del grid: solo para lectores de pantalla / SEO.
+   Da jerarquía real al listado sin alterar el diseño visual del toolbar. */
+.gridSectionTitle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 /* Indicador de scroll horizontal: oculto por defecto, solo visible en el
    carrusel móvil (media query de más abajo). */
 .scrollHint {
@@ -770,6 +784,11 @@
 
     .catPill {
         min-height: 44px;
+    }
+
+    .searchClear {
+        min-height: 44px;
+        min-width: 44px;
     }
 
     .emptyReset {

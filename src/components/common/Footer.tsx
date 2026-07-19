@@ -1,9 +1,29 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './Footer.module.css';
 import { Logo } from './Logo';
 import { Button } from '../ui/Button';
 import { ROUTES } from '../../lib/routes';
+
+// Páginas que ya renderizan su propio panel de cierre (sys.endCtaBlock en
+// page-system.module.css: Home "¿Hablamos?", Soluciones, Casos, Recursos y
+// ResourceDetail). En esas rutas, la banda .cta de aquí duplicaba el mismo
+// mensaje ("Reservar diagnóstico") justo debajo — dos paneles casi idénticos
+// seguidos, puro scroll extra sin aportar nada. Contacto (la página ES el
+// formulario) y 404 no tienen endCta propio, así que ahí sí se muestra.
+// Lista mantenida a mano — si se añade un endCtaBlock a una página nueva,
+// añadir su ruta aquí también.
+const ROUTES_WITH_OWN_END_CTA: readonly string[] = [
+    ROUTES.home,
+    ROUTES.soluciones,
+    ROUTES.casos,
+    ROUTES.recursos,
+];
+
+const hasOwnEndCta = (pathname: string): boolean =>
+    ROUTES_WITH_OWN_END_CTA.includes(pathname) ||
+    // ResourceDetail vive en /recursos/:slug — mismo endCtaBlock que Recursos.
+    pathname.startsWith(`${ROUTES.recursos}/`);
 
 const WhatsAppIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -12,6 +32,9 @@ const WhatsAppIcon = () => (
 );
 
 export const Footer: React.FC = () => {
+    const { pathname } = useLocation();
+    const showEndCta = !hasOwnEndCta(pathname);
+
     return (
         <footer className={styles.footer}>
             <div className={styles.container}>
@@ -61,20 +84,23 @@ export const Footer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* ── Banda CTA — bajo los menús del pie ── */}
-                <div className={styles.cta}>
-                    <div className={styles.ctaText}>
-                        <h2 className={styles.ctaTitle}>
-                            ¿Hay un proceso que te está frenando?
-                        </h2>
-                        <p className={styles.ctaSub}>
-                            Cuéntanoslo. En 24 horas te decimos si tiene solución y qué costaría.
-                        </p>
+                {/* ── Banda CTA — bajo los menús del pie. Solo en páginas sin
+                    endCtaBlock propio (ver ROUTES_WITH_OWN_END_CTA arriba). ── */}
+                {showEndCta && (
+                    <div className={styles.cta}>
+                        <div className={styles.ctaText}>
+                            <h2 className={styles.ctaTitle}>
+                                ¿Hay un proceso que te está frenando?
+                            </h2>
+                            <p className={styles.ctaSub}>
+                                Cuéntanoslo. En 24 horas te decimos si tiene solución y qué costaría.
+                            </p>
+                        </div>
+                        <Link to={ROUTES.contacto} className={styles.ctaBtn}>
+                            <Button variant="primary" size="lg">Reservar diagnóstico</Button>
+                        </Link>
                     </div>
-                    <Link to={ROUTES.contacto} className={styles.ctaBtn}>
-                        <Button variant="primary" size="lg">Reservar diagnóstico</Button>
-                    </Link>
-                </div>
+                )}
 
                 <div className={styles.bottom}>
                     <p>&copy; {new Date().getFullYear()} OpsPilot. Todos los derechos reservados.</p>

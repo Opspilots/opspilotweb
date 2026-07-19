@@ -1,0 +1,438 @@
+/* ═══════════════════════════════════════════
+   HERO LEAD WIDGET — micro-formulario de 3 preguntas encadenadas
+   Ya no vive dentro de un marco "panel de navegador" (barra de ventana + URL
+   falsa) — es una superficie propia: mismo borde interno + sombra tintada
+   de siempre, sin la metáfora de chrome de navegador.
+   ═══════════════════════════════════════════ */
+
+.panel {
+    position: relative;
+    width: 100%;
+    background:
+        var(--gradient-surface),
+        var(--color-bg-elevated);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--glass-inset), var(--shadow-lg);
+    overflow: hidden;
+    isolation: isolate;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .panel {
+        animation: widgetRise 0.5s var(--ease-out-expo) 0.1s both;
+    }
+}
+
+@keyframes widgetRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Cuerpo interactivo ───
+   Ya no hay barra de navegador por encima (ver nota en el .tsx) — el panel
+   es una superficie propia, así que el body gana un poco de aire arriba
+   para compensar el separador que desapareció. */
+.body {
+    padding: var(--spacing-8) var(--spacing-6);
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Etiqueta solo para lectores de pantalla — mismo patrón que Contact.module.css */
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Progreso — dots + "Paso X de 4", mismo idioma mono/uppercase del resto */
+.progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-6);
+}
+
+.progressDots {
+    display: inline-flex;
+    gap: var(--spacing-2);
+}
+
+.progressDot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+    transition: background-color var(--transition-normal), width var(--transition-normal);
+}
+
+.progressDotActive {
+    width: 18px;
+    background: var(--color-mint);
+}
+
+.progressLabel {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+}
+
+/* Volver */
+.backBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-5);
+    padding: 0;
+    background: none;
+    border: none;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.backBtn:hover {
+    color: var(--color-text-strong);
+}
+
+.backBtn:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+/* ─── Pasos 1/2 — pregunta + chips ─── */
+.stepFieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.stepQuestion {
+    padding: 0;
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    line-height: 1.3;
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--spacing-5);
+}
+
+.chipGrid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.chip {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: var(--spacing-3) var(--spacing-5);
+    background: var(--color-bg-deep);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-control);
+    color: var(--color-text);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    text-align: left;
+    line-height: 1.4;
+    cursor: pointer;
+    transform: translateY(0) scale(1);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast),
+        color var(--transition-fast), transform var(--transition-fast) var(--ease-custom),
+        box-shadow var(--transition-fast) var(--ease-custom);
+}
+
+/* Hover: pequeña elevación + glow de borde (el ring extra, no el border-width,
+   para no provocar reflow al animar). */
+.chip:hover {
+    border-color: var(--color-border-mint);
+    background: var(--color-mint-soft);
+    transform: translateY(-2px) scale(1);
+    box-shadow: 0 8px 20px -10px rgba(57, 206, 134, 0.4), 0 0 0 1px var(--color-border-mint);
+}
+
+.chip:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+/* Pulsado: se hunde ligeramente — sensación física de "click aceptado". */
+.chip:active {
+    transform: translateY(1px) scale(0.97);
+    transition-duration: 90ms;
+}
+
+/* Seleccionado: el instante entre el click y el cambio de paso (ver
+   `chooseWithFeedback` en HeroLeadWidget.tsx) — relleno de acento real
+   (mint-soft + borde + sombra tintada), no solo un borde, para que el chip
+   elegido se sienta "aceptado" antes de desaparecer. */
+.chip[data-selected='true'] {
+    border-color: var(--color-border-mint);
+    background: var(--color-mint-soft);
+    color: var(--color-mint);
+    box-shadow: var(--shadow-mint);
+    transform: translateY(-1px) scale(1.01);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chip:active { transform: none; }
+}
+
+/* ═══════════════════════════════════════════
+   PASO 4 — plantilla generada (nav + titular + bloque + CTA)
+   Mismo lenguaje visual de "web ensamblándose" que tenía HeroDashboard, pero
+   dirigido por los datos de la combinación resuelta (Pasos 1+2+3) en vez de
+   un guion fijo. Acento mint por defecto; `data-accent="warm"` lo cambia a
+   ámbar para la rama "sistema" (mismo warm ya usado como acento de
+   dato/métrica en el resto de la web).
+   ═══════════════════════════════════════════ */
+
+/* Frase de diagnóstico — el remate del flujo se lee ANTES de ver la
+   plantilla: combina en lenguaje natural qué contestó la persona en los
+   Pasos 1+2+3 (ver getDiagnostic en el .tsx). Tipografía a un escalón del
+   resto del paso (display, no mono) para que se sienta como un titular
+   propio, no una etiqueta más. */
+.diagnostic {
+    margin: 0 0 var(--spacing-4);
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text-strong);
+}
+
+/* Latido de anticipación (~480ms) antes del primer ensamblado — reusa
+   `.shimmer` (utilidad global de index.css, ya gateada tras reduced-motion)
+   como base del barrido de luz. Ocupa aprox. el mismo espacio que
+   previewMeta+templatePreview+form para no dar un salto de tamaño brusco al
+   pasar de uno a otro. */
+.assembling {
+    flex: 1;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
+}
+
+.assemblingLabel {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+}
+
+/* Fila de contexto sobre la plantilla — el único rastro de "esto es una
+   web" que quedó tras quitar la barra de navegador (ver nota en el .tsx):
+   una etiqueta mono discreta + el toggle escritorio/móvil, no un chrome de
+   navegador falso. */
+.previewMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-3);
+}
+
+.previewLabel {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+}
+
+.deviceToggle {
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    background: var(--color-bg-deep);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+}
+
+.deviceBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 22px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.deviceBtn:hover {
+    color: var(--color-text-strong);
+}
+
+.deviceBtn[aria-pressed='true'] {
+    background: var(--color-mint-soft);
+    color: var(--color-mint);
+}
+
+.deviceBtn:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+/* El bloque de "plantilla generada" (nav + titular + bloque destacado) vive
+   ahora en el componente compartido MockPreview (ver
+   src/components/marketing/MockPreview.tsx + .module.css), reutilizado
+   también por CaseMockPanel — aquí solo queda el margen que reserva
+   HeroLeadWidget alrededor del componente. */
+.mockPreviewSlot {
+    margin-bottom: var(--spacing-6);
+}
+
+/* ─── Email ─── */
+.emailForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.field label {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text);
+}
+
+.field input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.75rem 0.95rem;
+    background: rgba(10, 14, 20, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--radius-control);
+    color: var(--color-text-strong);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--transition-fast) var(--ease-custom),
+        box-shadow var(--transition-fast) var(--ease-custom),
+        background-color var(--transition-fast) var(--ease-custom);
+    outline: none;
+}
+
+.field input:focus {
+    border-color: var(--color-mint);
+    background: rgba(10, 14, 20, 0.55);
+    box-shadow: 0 0 0 3px var(--color-mint-soft);
+}
+
+.field input[aria-invalid='true'] {
+    border-color: var(--color-error);
+}
+
+.field input[aria-invalid='true']:focus {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px rgba(225, 90, 90, 0.14);
+}
+
+.field input::placeholder {
+    color: var(--color-text-subtle);
+}
+
+.fieldError {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    color: var(--color-error);
+}
+
+.formError {
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    margin: 0;
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid rgba(225, 90, 90, 0.25);
+    border-radius: var(--radius-control);
+}
+
+/* ─── Éxito ─── */
+.success {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-8) var(--spacing-4);
+}
+
+.successDot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+    box-shadow: 0 0 0 6px var(--color-mint-soft);
+    margin-bottom: var(--spacing-3);
+}
+
+.successTitle {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    margin: 0;
+}
+
+.successText {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+    max-width: 32ch;
+}
+
+/* ─── Mobile — más compacto ─── */
+@media (max-width: 639px) {
+    .body {
+        padding: var(--spacing-6) var(--spacing-5);
+        min-height: 380px;
+    }
+
+    .stepQuestion {
+        font-size: var(--font-size-base);
+    }
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+    .panel {
+        animation: none;
+    }
+}

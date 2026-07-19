@@ -2,6 +2,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { SpotlightCard } from '../components/fx/SpotlightCard';
+import { CaseMockPanel } from '../components/cases/CaseMockPanel';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { useDragScroll } from '../hooks/useDragScroll';
@@ -62,14 +63,7 @@ const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => (
             <span className={styles.cardIndex}>{String(index + 1).padStart(2, '0')}</span>
         </div>
 
-        <div className={styles.cardStats}>
-            {(c.stats ?? []).map((s, j) => (
-                <div key={j} className={styles.cardStat}>
-                    <span className={`${styles.cardStatVal} ${sys.statAccent}`}>{s.value}</span>
-                    <span className={styles.cardStatLabel}>{s.label}</span>
-                </div>
-            ))}
-        </div>
+        <CaseMockPanel showcase={c.showcase} className={styles.cardTransition} />
 
         <div className={styles.cardContent}>
             <div className={styles.cardNarrative}>
@@ -200,7 +194,7 @@ const WhySection: React.FC = () => {
         <section className={styles.whySection}>
             <div className={sys.container} ref={whyRef}>
                 <div className={`${styles.whyHeader} reveal`}>
-                    <h2 className={styles.whyTitle}>Hacemos las cosas de otra manera</h2>
+                    <h2 className={styles.whyTitle}>Resultados que se ven. No promesas de folleto</h2>
                     <p className={styles.whySub}>
                         No somos una agencia digital ni una consultora. Somos un equipo pequeño
                         que construye software a medida para PYMEs que quieren trabajar mejor,
@@ -224,6 +218,13 @@ const WhySection: React.FC = () => {
                         </SpotlightCard>
                     ))}
                 </div>
+                {/* Indicador de scroll horizontal (solo móvil): avisa de que
+                   la fila continúa fuera de pantalla. */}
+                {DIFFERENTIATORS.length > 1 && (
+                    <p className={styles.scrollHint} aria-hidden="true">
+                        Desliza para ver más →
+                    </p>
+                )}
             </div>
         </section>
     );
@@ -231,9 +232,9 @@ const WhySection: React.FC = () => {
 
 export const Cases: React.FC = () => {
     const seoProps = {
-        title: 'Casos de éxito: software a medida para PYMEs · OpsPilot',
+        title: 'Casos de éxito de software a medida · OpsPilot',
         description:
-            'Ejemplos de digitalización de PYMEs con software a medida, IA y automatización: reformas, asesoría fiscal y agencias. Resultados medibles, no promesas.',
+            'Resultados reales de pymes que dejaron el Excel: más obra, menos horas perdidas, seguimientos que ya no se escapan. Casos con cifras, no promesas.',
         canonical: 'https://opspilot.es/casos',
     };
 
@@ -278,8 +279,8 @@ export const Cases: React.FC = () => {
                     <div className={sys.endCtaBlock} ref={ctaRef}>
                         <h2 className={sys.endCtaTitle}>¿Tu empresa podría ser la siguiente?</h2>
                         <p className={sys.endCtaSub}>
-                            Analizamos tu operativa en 30 minutos y te decimos qué software a
-                            medida tendría sentido para ti. Sin compromiso.
+                            Miramos tu operativa media hora y te decimos qué encajaría contigo.
+                            Sin compromiso, sin letra pequeña.
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>

@@ -1,0 +1,57 @@
+/* ═══════════════════════════════════════════
+   CASE MOCK PANEL — mini-interfaz fija por caso (MockPreview compartido)
+   + etiqueta "antes" secundaria.
+   Sustituye al antiguo CaseTransitionPanel (iconos "antes → después"
+   convergiendo): el protagonismo pasa a la mini-interfaz que representa la
+   mejora; el "antes" queda como nota al margen, sin peso visual propio.
+   ═══════════════════════════════════════════ */
+
+.wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+/* Reveal de entrada — fade + rise, disparado una sola vez al entrar en
+   viewport (ver useRevealOnce en el .tsx). El mismo estado `revealed` se
+   pasa a MockPreview (prop `revealed`) para que su propia cascada interna
+   (nav → titular → bloque) arranque en el mismo instante, no antes de que
+   el propio panel sea visible ni gastada fuera de pantalla. */
+@media (prefers-reduced-motion: no-preference) {
+    .wrap {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+    }
+
+    .wrap[data-revealed='true'] {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Etiqueta "antes" — deliberadamente con menos peso visual que el mock:
+   mono pequeño, color atenuado, un icono mínimo (guion) en vez de un
+   cluster de iconos o un párrafo. Contexto, no protagonista. */
+.beforeTag {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin: 0;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.02em;
+    color: var(--color-text-subtle);
+}
+
+.beforeTagIcon {
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wrap {
+        opacity: 1;
+        transform: none;
+    }
+}

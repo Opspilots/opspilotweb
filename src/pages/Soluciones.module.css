@@ -2,10 +2,29 @@
    Soluciones — explorador de sectores (tabla + panel)
    ═══════════════════════════════════════════ */
 
-/* ─── Hero title override ─── */
+/* ─── Hero title override ───
+   Antes esta declaración no tenía media query propia y competía en
+   especificidad IGUAL (una clase, sin @media) con `sys.pageHeroTitle` en
+   todo el rango <640px — un empate de cascada que hoy "gana" el valor
+   correcto (~31px) solo porque el chunk lazy de esta página se inyecta
+   después de page-system.module.css. Es un accidente de orden de bundling,
+   no una regla determinista (ver e2e/typography.spec.ts, TYPO-E2E-001).
+   Se resuelve igualando el valor móvil al de `sys.pageHeroTitle` en su
+   MISMA media query real (`max-width: 639px` — verificado en
+   page-system.module.css; el breakpoint no es 767px pese a lo que sugiere
+   el nombre "mobile" en otros sitios del código): así, gane quien gane la
+   cascada, el resultado es idéntico. El valor desktop (4.5rem, mayor que
+   el 4rem de `pageHeroTitle`) se queda fuera de la media query — Soluciones
+   sí necesita un titular más grande en desktop que el resto de páginas. */
 .heroTitle {
     font-size: clamp(2.5rem, 5vw, 4.5rem);
     line-height: 1.0;
+}
+
+@media (max-width: 639px) {
+    .heroTitle {
+        font-size: clamp(1.75rem, 8vw, 2.5rem);
+    }
 }
 
 .heroContentLayer {
@@ -36,6 +55,24 @@
         min-height: calc(100vh - var(--navbar-offset-scrolled));
         display: flex;
         align-items: center;
+    }
+
+    /* El panel de detalle (y, por align-items:stretch, la tabla de sectores
+       que se estira a su misma altura) varía de alto según el sector activo
+       — más o menos beneficios/texto. En viewports bajos (portátil con
+       barra de marcadores, ventana no maximizada…) ese alto puede superar
+       el hueco visible del viewport pineado. Como el bloque está en
+       scroll-jack (el scroll de la página avanza de sector, no revela el
+       resto del panel), la parte que sobra quedaba inalcanzable: ni la
+       tabla ni el panel se veían completos y el recorte se percibía como
+       "zoom". Con max-height + overflow-y:auto el conjunto se vuelve
+       desplazable puertas adentro cuando no cabe — el usuario ve el resto
+       con la misma rueda del ratón antes de que el scroll siga avanzando
+       de sector — sin tocar el caso común, donde el contenido ya cabe y
+       este límite no llega a activarse. */
+    .explorer {
+        max-height: calc(100vh - var(--navbar-offset-scrolled));
+        overflow-y: auto;
     }
 }
 
@@ -156,11 +193,34 @@
     opacity: 1;
 }
 
+/* Envoltorio de label+desc: en desktop/tablet solo se ve rowLabel (rowDesc
+   queda display:none más abajo); en la lista vertical de ≤767px se activa
+   rowDesc y ambas quedan apiladas — un único markup sirve a los tres
+   layouts sin duplicar nada por breakpoint. */
+.rowText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
 .rowLabel {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     line-height: 1.3;
     min-width: 0;
+}
+
+/* Línea de descripción (s.who) — solo discoverable en la lista vertical
+   móvil; ver el bloque `@media (max-width: 767px)` más abajo. */
+.rowDesc {
+    display: none;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-subtle);
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .rowArrow {
@@ -214,6 +274,18 @@
     box-shadow: var(--glass-inset), var(--shadow-md);
     overflow: hidden;
     isolation: isolate;
+}
+
+/* Los 7 paneles de sector viven siempre en el DOM (SEO: el copy de cada
+   sector debe existir en el HTML prerenderizado, no solo el del sector
+   activo). Solo el panel activo queda en flujo normal — determina el alto
+   de `.panelWrap` — el resto se superpone absoluto sobre él, invisible e
+   inalcanzable por teclado/lectores de pantalla (ver `inert`/aria-hidden en
+   Soluciones.tsx). */
+.panelHidden {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
 }
 
 .panelIcon {
@@ -323,6 +395,14 @@
     flex-shrink: 0;
 }
 
+/* Cross-link opcional al producto vertical propio (solo sectores con uno) —
+   se apoya en el .textLink compartido, aquí solo se ajusta el espaciado para
+   que quede pegado a la lista de beneficios y no al CTA principal. */
+.panelRelated {
+    margin-top: calc(-1 * var(--spacing-6));
+    margin-bottom: var(--spacing-6);
+}
+
 .panelCta {
     margin-top: auto;
 }
@@ -337,7 +417,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   ≤1023px — la tabla pasa a carril horizontal de pills
+   768–1023px (tablet) — la tabla pasa a carril horizontal de pills.
    ═══════════════════════════════════════════ */
 @media (max-width: 1023px) {
     .ledger {
@@ -358,6 +438,19 @@
     .row {
         grid-template-columns: auto auto;
         gap: var(--spacing-2);
+        /* BUG CRÍTICO (móvil/táctil, todos los viewports ≤1023 medidos en
+           auditoría): `.row` hereda `width: 100%` de la regla base (arriba,
+           pensada para el layout vertical de desktop) y nunca se sobreescribía
+           aquí. En flexbox, `flex-basis:auto` (de `flex: 0 0 auto`) resuelve
+           al valor de `width` cuando este está definido — así que cada pill
+           ocupaba el 100% del ancho del carril `.ledger` en vez de su ancho de
+           contenido. Resultado: un único tab a ancho completo, sin flecha, sin
+           borde del siguiente asomando y sin ninguna pista de que había 6
+           sectores más — inalcanzables sin adivinar un scroll horizontal
+           oculto. `width: auto` deja que `flex: 0 0 auto` funcione como se
+           pretendía (ancho de contenido), devolviendo el scroll horizontal
+           real con varios pills visibles/parciales. */
+        width: auto;
         flex: 0 0 auto;
         min-height: 0;
         padding: var(--spacing-3) var(--spacing-5);
@@ -382,6 +475,76 @@
 
     .rowArrow {
         display: none;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   ≤767px (móvil/táctil) — la tabla de sectores deja de ser un carril
+   horizontal y pasa a LISTA VERTICAL apilada: los 7 sectores (título +
+   descripción de una línea) quedan visibles/tappables con el scroll natural
+   de la página, sin depender de ningún gesto horizontal oculto. Era el bug
+   más grave de la auditoría móvil: en el carril de ≤1023px arriba, incluso
+   ya corregido el bug de `width`, solo un puñado de pills entra en pantalla
+   sin affordance de "desliza" — en un viewport de 375-430px de ancho eso
+   seguía dejando la mayoría de sectores fuera de la vista inicial. La lista
+   vertical evita ese riesgo por completo: nada queda oculto tras un gesto.
+   El fallback de selección por clic ya existente (`onClick={() => setSelected(i)}`
+   en Soluciones.tsx) es exactamente lo que hace tappable cada fila — aquí
+   solo se adapta el layout, no la lógica de selección. */
+@media (max-width: 767px) {
+    .ledger {
+        flex-direction: column;
+        overflow-x: visible;
+        overflow-y: visible;
+    }
+
+    .row {
+        grid-template-columns: auto 1fr auto;
+        gap: var(--spacing-3);
+        width: 100%;
+        flex: 1 1 auto;
+        min-height: 0;
+        padding: var(--spacing-4) var(--spacing-5);
+        border-bottom: 1px solid var(--color-border-subtle);
+        border-right: none;
+        white-space: normal;
+    }
+
+    .row:last-child {
+        border-bottom: none;
+    }
+
+    /* La barra de acento vuelve a ser vertical (izquierda), como en desktop,
+       porque el layout vuelve a ser una columna. */
+    .row::before {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: auto;
+        width: 3px;
+        height: auto;
+        transform: scaleY(0);
+    }
+
+    .rowActive::before {
+        transform: scaleY(1);
+    }
+
+    /* Flecha visible de forma persistente (no solo hover/activo): en una
+       lista vertical siempre visible es una señal de affordance ("tap para
+       ver detalle"), no una revelación de hover que no existe en táctil. */
+    .rowArrow {
+        display: inline-flex;
+        opacity: 0.4;
+        transform: none;
+    }
+
+    .rowActive .rowArrow {
+        opacity: 1;
+    }
+
+    .rowDesc {
+        display: block;
     }
 }
 

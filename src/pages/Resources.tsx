@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
@@ -68,7 +68,10 @@ export const Resources: React.FC = () => {
     const [nlStatus, setNlStatus] = useState<NLStatus>('idle');
     const [nlEmail, setNlEmail] = useState('');
 
-    const [query, setQuery] = useState('');
+    // Siembra la búsqueda desde ?q= (usado por el SearchAction del JSON-LD /
+    // sitelinks search box de Google) para que el input arranque con el término.
+    const [searchParams] = useSearchParams();
+    const [query, setQuery] = useState(() => searchParams.get('q') ?? '');
     const [activeCat, setActiveCat] = useState<CategoryFilter>('Todos');
 
     // deps = [query, activeCat]: al cambiar el filtro, el hook recablea los
@@ -216,6 +219,7 @@ export const Resources: React.FC = () => {
             {/* ═══ GRID ═══ */}
             <section className={styles.gridSection}>
                 <div className={sys.container} ref={gridRef}>
+                    <h2 className={styles.gridSectionTitle}>Todos los recursos.</h2>
                     {/* Contador de resultados: feedback y confianza al filtrar. */}
                     {isFiltering && visible.length > 0 && (
                         <p className={styles.resultCount} aria-live="polite">
@@ -230,13 +234,17 @@ export const Resources: React.FC = () => {
                                         <CoverSlot cover={r.cover} label={r.cat} />
                                         <div className={styles.cardBody}>
                                             <div className={styles.cardMeta}>
-                                                <span className={styles.cardCat}>{r.cat}</span>
+                                                {/* Sin cover real, CoverSlot ya muestra la categoría como badge
+                                                   flotante sobre el placeholder — repetirla aquí sería
+                                                   duplicado. Con cover real, el badge no se pinta, así que este
+                                                   texto es la única señal de categoría. */}
+                                                {r.cover && <span className={styles.cardCat}>{r.cat}</span>}
                                                 <span className={styles.cardTime}>
                                                     <Clock size={11} strokeWidth={2} />
                                                     {r.time}
                                                 </span>
                                             </div>
-                                            <h2 className={styles.cardTitle}>{r.title}</h2>
+                                            <h3 className={styles.cardTitle}>{r.title}</h3>
                                             <p className={styles.cardDesc}>{r.desc}</p>
                                             <span className={styles.cardFooter}>{CTA_BY_CAT[r.cat]}</span>
                                         </div>
@@ -322,7 +330,7 @@ export const Resources: React.FC = () => {
                     <div className={sys.endCtaBlock}>
                         <h2 className={sys.endCtaTitle}>¿Quieres automatizar tu negocio con ayuda?</h2>
                         <p className={sys.endCtaSub}>
-                            Diagnóstico gratuito de 30 minutos. Sin compromiso.
+                            Media hora, gratis, sin compromiso. Hablamos de tu caso concreto.
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>

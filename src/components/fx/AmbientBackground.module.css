@@ -104,10 +104,35 @@
     background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
 }
 
-/* ─── Móvil: halos estáticos + blur menor (perf en GPU móvil) ─── */
+/* ─── Móvil: halos estáticos + blur menor (perf en GPU móvil) ───
+   A este ancho, los tamaños en vw pensados para desktop (44-52vw) se
+   perciben como manchas concretas de ~200px en vez de un fondo ambiental
+   difuso. Se agrandan sustancialmente para que el blob sangre bien fuera
+   del viewport y solo se vea un borde suave, no un círculo entero. */
 @media (max-width: 767px) {
     .blob {
         filter: blur(70px);
         opacity: 0.4;
+    }
+
+    .blobMint {
+        width: 110vw;
+        height: 110vw;
+        top: -30vw;
+        left: -35vw;
+    }
+
+    .blobWarm {
+        width: 100vw;
+        height: 100vw;
+        top: 20vh;
+        right: -40vw;
+    }
+
+    .blobBlue {
+        width: 100vw;
+        height: 100vw;
+        bottom: -35vw;
+        left: -10vw;
     }
 }

@@ -478,6 +478,11 @@ export const RESOURCES: Resource[] = [
                 type: 'note',
                 text: 'Las normas fiscales cambian (VeriFactu, nuevos modelos, cambios de tipos). Las actualizaciones normativas están incluidas en la suscripción mensual fija — sin coste por documento ni sorpresas a fin de mes.',
             },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para asesorías — descúbrelo en Soluciones',
+                href: '/soluciones',
+            },
             { type: 'link', text: 'Ver Fiscalidad en acción', href: 'https://fiscalidad.mcpopspilot.org' },
         ],
     },
@@ -537,6 +542,11 @@ export const RESOURCES: Resource[] = [
                     'Comisiones con estados pending / validated / paid / reverted y trazabilidad completa.',
                     'Exportes fiscales (IVA y pagos) y log de auditoría de toda la actividad.',
                 ],
+            },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para el sector energético — descúbrelo en Soluciones',
+                href: '/soluciones',
             },
             { type: 'link', text: 'Conocer EnergyDeal', href: 'https://energydeal.es' },
         ],
@@ -602,6 +612,11 @@ export const RESOURCES: Resource[] = [
                 type: 'note',
                 text: '¿Quieres ver este flujo aplicado a un caso concreto? Lee el caso práctico "De Excel a sistema: cómo una empresa de reformas triplicó su capacidad" en esta misma sección de recursos.',
             },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para reformas e instalaciones — descúbrelo en Soluciones',
+                href: '/soluciones',
+            },
             { type: 'link', text: 'Probar Presupuestador', href: 'https://presupuestador.mcpopspilot.org' },
         ],
     },
@@ -661,6 +676,11 @@ export const RESOURCES: Resource[] = [
             {
                 type: 'note',
                 text: 'Como todos nuestros productos, ERP Hostelería funciona con suscripción mensual fija, sin permanencia y con soporte humano en español incluido.',
+            },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para hostelería — descúbrelo en Soluciones',
+                href: '/soluciones',
             },
             { type: 'link', text: 'Ver ERP Hostelería', href: 'https://erp.mcpopspilot.org' },
         ],

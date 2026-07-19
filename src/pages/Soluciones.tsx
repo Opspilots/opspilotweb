@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { AnimatePresence, motion } from 'motion/react';
+import { motion } from 'motion/react';
 import { ArrowRight, Check } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { TextLink } from '../components/common/TextLink';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
@@ -41,8 +42,6 @@ export const Soluciones: React.FC = () => {
     const [selected, setSelected] = useState(0);
     const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const trackRef = useRef<HTMLDivElement>(null);
-    const active = SECTORS[selected];
-    const ActiveIcon = ICONS[active.iconKey];
 
     // Efecto scroll (desktop + movimiento): el explorador se queda sticky y, al
     // bajar, la selección avanza por la lista de sectores (mapeo scroll→índice).
@@ -139,7 +138,7 @@ export const Soluciones: React.FC = () => {
                 <div className={styles.solTrack} ref={trackRef}>
                     <div className={styles.solViewport}>
                         <div className={sys.container}>
-                            <div className={styles.explorer} ref={listRef}>
+                            <div className={styles.explorer} ref={listRef} data-lenis-prevent>
                                 {/* Columna izquierda — tabla de sectores seleccionables */}
                                 <div
                                     className={`${styles.ledger} reveal`}
@@ -169,7 +168,13 @@ export const Soluciones: React.FC = () => {
                                                 <span className={styles.rowIcon} aria-hidden="true">
                                                     <RowIcon size={22} strokeWidth={1.6} />
                                                 </span>
-                                                <span className={styles.rowLabel}>{s.label}</span>
+                                                {/* rowDesc (s.who) solo se ve en la lista vertical de ≤767px
+                                                    (ver Soluciones.module.css) — en desktop/tablet queda
+                                                    oculto vía display:none, sin duplicar markup por breakpoint. */}
+                                                <span className={styles.rowText}>
+                                                    <span className={styles.rowLabel}>{s.label}</span>
+                                                    <span className={styles.rowDesc}>{s.who}</span>
+                                                </span>
                                                 <ArrowRight size={15} strokeWidth={2} className={styles.rowArrow} aria-hidden="true" />
                                             </button>
                                         );
@@ -179,51 +184,76 @@ export const Soluciones: React.FC = () => {
                                 {/* Columna derecha — panel de detalle del sector activo */}
                                 <div className={`${styles.panelWrap} reveal`}>
                                     <span className={styles.panelBar} aria-hidden="true" />
-                                    <AnimatePresence mode="wait" initial={false}>
-                                        <motion.div
-                                            key={selected}
-                                            id={`sector-panel-${selected}`}
-                                            role="tabpanel"
-                                            aria-labelledby={`sector-tab-${selected}`}
-                                            tabIndex={0}
-                                            className={styles.panel}
-                                            initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={prefersReducedMotion ? undefined : { opacity: 0, y: -12 }}
-                                            transition={{ duration: prefersReducedMotion ? 0 : 0.28, ease: [0.32, 0.72, 0, 1] }}
-                                        >
-                                            <div className={styles.panelIcon} aria-hidden="true">
-                                                <ActiveIcon size={22} strokeWidth={1.6} />
-                                            </div>
+                                    {/* Los 7 paneles se montan siempre (SEO: el copy de who/solution/
+                                        benefits de cada sector debe existir en el HTML prerenderizado,
+                                        no solo el del sector activo). Solo el activo queda en flujo
+                                        normal — determina el alto de `.panelWrap` —; el resto se
+                                        superpone absoluto (`.panelHidden`), invisible y con `inert`
+                                        para que no sea alcanzable por teclado ni lectores de pantalla. */}
+                                    {SECTORS.map((s, i) => {
+                                        const isActive = i === selected;
+                                        const PanelIcon = ICONS[s.iconKey];
+                                        return (
+                                            <motion.div
+                                                key={s.id}
+                                                id={`sector-panel-${i}`}
+                                                role="tabpanel"
+                                                aria-labelledby={`sector-tab-${i}`}
+                                                aria-hidden={!isActive}
+                                                tabIndex={isActive ? 0 : -1}
+                                                inert={!isActive}
+                                                className={`${styles.panel} ${isActive ? '' : styles.panelHidden}`}
+                                                initial={false}
+                                                animate={{
+                                                    opacity: isActive ? 1 : 0,
+                                                    y: prefersReducedMotion ? 0 : (isActive ? 0 : 12),
+                                                }}
+                                                transition={{ duration: prefersReducedMotion ? 0 : 0.28, ease: [0.32, 0.72, 0, 1] }}
+                                            >
+                                                <div className={styles.panelIcon} aria-hidden="true">
+                                                    <PanelIcon size={22} strokeWidth={1.6} />
+                                                </div>
 
-                                            <h2 className={styles.panelTitle}>{active.title}</h2>
+                                                <h2 className={styles.panelTitle}>{s.title}</h2>
 
-                                            <p className={styles.panelWho}>
-                                                <span className={styles.whoLabel}>Para</span> {active.who}
-                                            </p>
+                                                <p className={styles.panelWho}>
+                                                    <span className={styles.whoLabel}>Para</span> {s.who}
+                                                </p>
 
-                                            <p className={styles.panelSolution}>{active.solution}</p>
+                                                <p className={styles.panelSolution}>{s.solution}</p>
 
-                                            <ul className={styles.benefitsList}>
-                                                {active.benefits.map((b) => (
-                                                    <li key={b}>
-                                                        <span className={styles.check} aria-hidden="true">
-                                                            <Check size={12} strokeWidth={2.5} />
-                                                        </span>
-                                                        {b}
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                                <ul className={styles.benefitsList}>
+                                                    {s.benefits.map((b) => (
+                                                        <li key={b}>
+                                                            <span className={styles.check} aria-hidden="true">
+                                                                <Check size={12} strokeWidth={2.5} />
+                                                            </span>
+                                                            {b}
+                                                        </li>
+                                                    ))}
+                                                </ul>
 
-                                            <div className={styles.panelCta}>
-                                                <Link to={ROUTES.contacto}>
-                                                    <Button variant="primary" size="lg">
-                                                        {SECTOR_CTA_LABEL}
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        </motion.div>
-                                    </AnimatePresence>
+                                                {s.relatedResource && (
+                                                    <TextLink
+                                                        to={`${ROUTES.recursos}/${s.relatedResource.slug}`}
+                                                        tone="muted"
+                                                        size="sm"
+                                                        className={styles.panelRelated}
+                                                    >
+                                                        {s.relatedResource.label}
+                                                    </TextLink>
+                                                )}
+
+                                                <div className={styles.panelCta}>
+                                                    <Link to={ROUTES.contacto}>
+                                                        <Button variant="primary" size="lg">
+                                                            {SECTOR_CTA_LABEL}
+                                                        </Button>
+                                                    </Link>
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -237,7 +267,8 @@ export const Soluciones: React.FC = () => {
                     <div className={sys.endCtaBlock} ref={ctaRef}>
                         <h2 className={sys.endCtaTitle}>¿No encuentras tu sector aquí?</h2>
                         <p className={sys.endCtaSub}>
-                            Cuéntanoslo y te orientamos en 30 minutos. Sin compromiso, sin presión.
+                            Cuéntanoslo. Te orientamos en 30 minutos — sin compromiso ni presión
+                            por vender.
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>

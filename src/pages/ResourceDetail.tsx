@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
+import { TextLink } from '../components/common/TextLink';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { PageSEO } from '../hooks/usePageSEO';
@@ -35,7 +36,21 @@ function Block({ block }: { block: ResourceBlock }) {
             );
         case 'note':
             return <p className={styles.blockNote}>{block.text}</p>;
-        case 'link':
+        case 'link': {
+            // Rutas internas (p.ej. cross-link de vuelta a /soluciones) navegan
+            // con el router y sin el icono de salida; los enlaces a producto
+            // (dominio externo) mantienen el comportamiento previo: nueva
+            // pestaña + icono de enlace externo.
+            const isInternal = block.href.startsWith('/');
+            if (isInternal) {
+                return (
+                    <p className={styles.blockLinkWrap}>
+                        <TextLink to={block.href} tone="strong" size="sm">
+                            {block.text}
+                        </TextLink>
+                    </p>
+                );
+            }
             return (
                 <p className={styles.blockLinkWrap}>
                     <a
@@ -49,6 +64,7 @@ function Block({ block }: { block: ResourceBlock }) {
                     </a>
                 </p>
             );
+        }
         default:
             return null;
     }
@@ -89,6 +105,14 @@ export const ResourceDetail: React.FC = () => {
         { name: resource.title, url: articleUrl },
     ]);
 
+    // <title> con control de longitud: con el sufijo de marca, Google trunca a
+    // partir de ~60 caracteres. Si el título del recurso ya es largo, lo usamos
+    // solo (el H1 y el breadcrumb ya dejan claro que es contenido de OpsPilot).
+    const TITLE_SUFFIX = ' — Recursos OpsPilot';
+    const pageTitle = resource.title.length + TITLE_SUFFIX.length <= 60
+        ? `${resource.title}${TITLE_SUFFIX}`
+        : resource.title;
+
     // Fecha visible (discreta), formateada en español.
     const formattedDate = resource.date
         ? new Date(resource.date).toLocaleDateString('es-ES', {
@@ -101,7 +125,7 @@ export const ResourceDetail: React.FC = () => {
     return (
         <div className={sys.page}>
             <PageSEO
-                title={`${resource.title} — Recursos OpsPilot`}
+                title={pageTitle}
                 description={resource.desc}
                 canonical={`https://opspilot.es/recursos/${resource.slug}`}
             />
@@ -203,7 +227,7 @@ export const ResourceDetail: React.FC = () => {
                     <div className={sys.endCtaBlock}>
                         <h2 className={sys.endCtaTitle}>¿Quieres ayuda personalizada?</h2>
                         <p className={sys.endCtaSub}>
-                            Diagnóstico gratuito de 30 minutos. Sin compromiso.
+                            30 minutos gratis para ver si esto encaja en tu negocio. Sin compromiso.
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>

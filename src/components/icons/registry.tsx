@@ -10,6 +10,7 @@ import {
     Globe,
     Settings,
     Calculator,
+    UtensilsCrossed,
 } from 'lucide-react';
 import type { IconKey } from '../../data/types';
 
@@ -21,4 +22,5 @@ export const ICONS: Record<IconKey, LucideIcon> = {
     globe: Globe,
     settings: Settings,
     calculator: Calculator,
+    utensils: UtensilsCrossed,
 };

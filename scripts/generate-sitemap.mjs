@@ -26,9 +26,50 @@ const ROOT = join(__dirname, '..');
 const DIST_DIR = join(ROOT, 'dist');
 const PUBLIC_SITEMAP = join(ROOT, 'public', 'sitemap.xml');
 const DIST_SITEMAP = join(DIST_DIR, 'sitemap.xml');
+const RESOURCES_SRC = join(ROOT, 'src', 'lib', 'resources.ts');
 
-// Fecha del build (YYYY-MM-DD) usada como lastmod de todas las URLs.
+// Fecha del build (YYYY-MM-DD): fallback de lastmod para páginas estáticas
+// (Home, Soluciones, Casos, Contacto, listado de Recursos) que no tienen una
+// fecha real propia.
 const LASTMOD = new Date().toISOString().slice(0, 10);
+
+/**
+ * Lastmod real por artículo de /recursos, leído desde `src/lib/resources.ts`.
+ *
+ * Node ejecuta este script directamente con `node` (sin paso de build/tsx), y
+ * no puede hacer `import` de un módulo `.ts` sin un loader adicional. En vez
+ * de meter tsx/ts-node solo para esto, leemos el archivo fuente como texto:
+ * la forma de RESOURCES es lo bastante regular (un `slug` y un `date`/`updated`
+ * por objeto, en ese orden) para extraerlos con una regex simple y segura.
+ * Si el archivo cambia de forma y esto deja de encontrar coincidencias, el
+ * fallback (LASTMOD de build) sigue aplicándose sin romper nada.
+ * @returns {Map<string, string>} slug -> fecha ISO (updated ?? date)
+ */
+function loadResourceLastmods() {
+    /** @type {Map<string, string>} */
+    const map = new Map();
+    if (!existsSync(RESOURCES_SRC)) return map;
+
+    const src = readFileSync(RESOURCES_SRC, 'utf8');
+    const slugMatches = [...src.matchAll(/slug:\s*'([^']+)'/g)];
+
+    for (let i = 0; i < slugMatches.length; i++) {
+        const slug = slugMatches[i][1];
+        const start = slugMatches[i].index ?? 0;
+        const end = i + 1 < slugMatches.length ? (slugMatches[i + 1].index ?? src.length) : src.length;
+        const chunk = src.slice(start, end);
+
+        // `updated` (dateModified) gana sobre `date` (datePublished), igual
+        // que en ResourceDetail.tsx (`resource.updated ?? resource.date`).
+        // \b evita que `\bdate:` case dentro de `updated:`.
+        const updatedMatch = chunk.match(/updated:\s*'([^']+)'/);
+        const dateMatch = chunk.match(/\bdate:\s*'([^']+)'/);
+        const lastmod = updatedMatch?.[1] ?? dateMatch?.[1];
+        if (lastmod) map.set(slug, lastmod);
+    }
+
+    return map;
+}
 
 /**
  * Prioridad y frecuencia de cambio por ruta indexable.
@@ -83,8 +124,9 @@ function main() {
     }
 
     const files = findIndexHtml(DIST_DIR);
+    const resourceLastmods = loadResourceLastmods();
 
-    /** @type {{ path: string, loc: string, priority: string, changefreq: string }[]} */
+    /** @type {{ path: string, loc: string, priority: string, changefreq: string, lastmod: string }[]} */
     const entries = [];
 
     for (const file of files) {
@@ -95,7 +137,13 @@ function main() {
         const path = rel.replace(/\/?index\.html$/i, ''); // '' | 'soluciones' | 'recursos/slug'
         const loc = path === '' ? `${SITE_URL}/` : `${SITE_URL}/${path}`;
         const { priority, changefreq } = metaForPath(path);
-        entries.push({ path, loc, priority, changefreq });
+
+        // Artículos de /recursos/<slug>: lastmod real si lo tenemos, si no,
+        // fecha de build (mismo fallback que el resto de páginas estáticas).
+        const slug = path.startsWith('recursos/') ? path.slice('recursos/'.length) : null;
+        const lastmod = (slug && resourceLastmods.get(slug)) || LASTMOD;
+
+        entries.push({ path, loc, priority, changefreq, lastmod });
     }
 
     // Orden estable: prioridad descendente, luego alfabético por ruta.
@@ -105,11 +153,11 @@ function main() {
     });
 
     const urls = entries
-        .map(({ loc, priority, changefreq }) => {
+        .map(({ loc, priority, changefreq, lastmod }) => {
             return [
                 '  <url>',
                 `    <loc>${loc}</loc>`,
-                `    <lastmod>${LASTMOD}</lastmod>`,
+                `    <lastmod>${lastmod}</lastmod>`,
                 `    <changefreq>${changefreq}</changefreq>`,
                 `    <priority>${priority}</priority>`,
                 `    <xhtml:link rel="alternate" hreflang="es-ES" href="${loc}" />`,
@@ -129,8 +177,8 @@ ${urls}
     writeFileSync(DIST_SITEMAP, xml, 'utf8');
     writeFileSync(PUBLIC_SITEMAP, xml, 'utf8');
 
-    console.log(`[sitemap] ${entries.length} URLs escritas (lastmod ${LASTMOD}).`);
-    for (const e of entries) console.log(`  ${e.priority}  ${e.loc}`);
+    console.log(`[sitemap] ${entries.length} URLs escritas (fallback lastmod de build: ${LASTMOD}).`);
+    for (const e of entries) console.log(`  ${e.priority}  ${e.lastmod}  ${e.loc}`);
 }
 
 main();

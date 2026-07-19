@@ -112,8 +112,8 @@ export const Contact: React.FC = () => {
                             ¿Tienes algo que <em className={sys.pageHeroAccent}>resolver</em>?
                         </h1>
                         <p className={`${sys.pageHeroSubtitle} reveal`}>
-                            Cuéntanoslo. En 30 minutos te decimos si tiene solución,
-                            cómo sería y qué coste y plazo esperar. Sin compromiso.
+                            Cuéntanoslo sin rodeos. En media hora sabrás si tiene solución,
+                            qué cuesta y en qué plazo.
                         </p>
                     </div>
                 </div>
@@ -283,7 +283,7 @@ export const Contact: React.FC = () => {
                                         <span className={styles.methodIcon}><MapPin size={20} strokeWidth={1.5} /></span>
                                         <div>
                                             <strong>Ubicación</strong>
-                                            <p>Trabajamos en remoto desde España. Atendemos todo el territorio.</p>
+                                            <p>Con base en Córdoba. Trabajamos en remoto, en toda España.</p>
                                         </div>
                                     </div>
                                 </div>
