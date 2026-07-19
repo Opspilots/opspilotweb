@@ -1,8 +1,8 @@
 diff --git a/node_modules/vite-react-ssg/dist/shared/vite-react-ssg.Dj8AUNXT.mjs b/node_modules/vite-react-ssg/dist/shared/vite-react-ssg.Dj8AUNXT.mjs
-index a11b5e6..61f019e 100644
+index a11b5e6..7a579d8 100644
 --- a/node_modules/vite-react-ssg/dist/shared/vite-react-ssg.Dj8AUNXT.mjs
 +++ b/node_modules/vite-react-ssg/dist/shared/vite-react-ssg.Dj8AUNXT.mjs
-@@ -457,7 +457,7 @@ class RemixAdapter {
+@@ -457,12 +457,42 @@ class RemixAdapter {
      const styleCollector = getStyleCollector ? await getStyleCollector() : null;
      const helmetContext = {};
      let routerContext = null;
@@ -11,3 +11,38 @@ index a11b5e6..61f019e 100644
      const { dataRoutes, query } = createStaticHandler([...routes], { basename: base });
      const _context = await query(request);
      if (_context instanceof Response)
+       throw _context;
+     routerContext = _context;
++    // [opspilotweb patch] Backfill `loaderData` for every matched route so the
++    // `window.__staticRouterHydrationData` script that <StaticRouterProvider>
++    // embeds below always has an entry per matched route id. react-router's
++    // client createBrowserRouter() only treats a route as "already loaded"
++    // (routeHasLoaderOrMiddleware + `route.id in loaderData`) when deciding
++    // `router.state.initialized` on first paint. vite-react-ssg's client
++    // bootstrap (transformStaticLoaderRoute) attaches a synthetic loader to
++    // EVERY route, but here at SSR time routes without a real user loader
++    // never get a `loaderData` entry (react-router's processRouteLoaderData
++    // skips routes not present in `results`), and lazy routes that DO run
++    // (to resolve their Component) land an explicit `undefined` value that
++    // JSON.stringify silently drops when serialized into the hydration
++    // script. Either way the client sees the route as "missing data" ->
++    // `initialized` starts `false` -> React renders nothing/HydrateFallback
++    // while fetching static-loader-data-manifest/*.json over the network
++    // before it can hydrate for real. That fetch can lose the race against
++    // hydrateRoot() on slow/mobile connections, producing a real SSR/CSR
++    // mismatch (React error #418) that sometimes never recovers, leaving
++    // <main> permanently empty. Filling every matched route id with `null`
++    // (only when actually missing/undefined — real loader data is untouched)
++    // makes `initialized` true on the very first client render, so no
++    // network fetch is needed before hydration completes.
++    if (routerContext.matches) {
++      for (const match of routerContext.matches) {
++        const routeId = match.route.id;
++        if (routerContext.loaderData[routeId] === void 0) {
++          routerContext.loaderData[routeId] = null;
++        }
++      }
++    }
+     const router = createStaticRouter(dataRoutes, routerContext, { future: routerOptions.future });
+     let app = /* @__PURE__ */ jsx(HelmetProvider, { context: helmetContext, children: /* @__PURE__ */ jsx(StaticRouterProvider, { router, context: routerContext }) });
+     if (styleCollector)

@@ -22,21 +22,32 @@ export const routes: RouteRecord[] = [
     {
         path: '/',
         element: <RootLayout />,
-        // Fallback de hidratación: vite-react-ssg añade un loader síncrono-async
+        // Fallback de hidratación defensivo (ya NO cubre una carrera real).
+        //
+        // Contexto histórico: vite-react-ssg añade un loader síncrono-async
         // (fetch del manifest de datos estáticos) a TODAS las rutas coincidentes
-        // en build SSG, incluida esta raíz — no solo a los hijos `lazy`. Eso hace
-        // que react-router v7 considere la ruta "no inicializada" en cada carga
-        // inicial y, sin `HydrateFallback`, renderice `null` para TODO el árbol
-        // mientras hidrata (log: "No `HydrateFallback` element provided..."):
-        // un mismatch total contra el HTML pre-renderizado que en viewports
-        // mobile (latencia real del fetch) hace que React descarte la hidratación
-        // y monte un árbol nuevo desde cero, dejando duplicados <nav>/<footer>
-        // del DOM SSR original junto a los recién montados.
-        // Reutilizar el propio RootLayout como HydrateFallback evita el flash/CLS:
-        // se renderiza en la MISMA posición del árbol que el `element` real (así
-        // que Navbar/Footer no se remontan al resolver), y su <Outlet> interno
-        // (vía useOutlet()) resuelve a `null` mientras tanto — sin contenido de
-        // página que parpadee o cambie de layout.
+        // en build SSG, incluida esta raíz. Antes, el `loaderData` embebido por
+        // el SSR en `window.__staticRouterHydrationData` llegaba vacío (`{}`)
+        // para cualquier ruta sin loader de usuario real — así que react-router
+        // consideraba la ruta "no inicializada" en cada carga inicial y, sin
+        // `HydrateFallback`, renderizaba `null` para TODO el árbol mientras
+        // esperaba ese fetch de red (log: "No `HydrateFallback` element
+        // provided..."). En Home, cuyo chunk es bastante más pesado que el del
+        // resto de páginas, esa ventana asíncrona a veces perdía la carrera
+        // contra `hydrateRoot()` y dejaba <main> vacío para siempre (React
+        // error #418, no siempre recuperable) — reproducido y confirmado en
+        // ~10% de las cargas a 375px y ~80% a 768px antes del fix.
+        //
+        // El root cause real está arreglado de raíz vía patch a
+        // `vite-react-ssg` (ver patches/vite-react-ssg+0.9.1.patch): el build
+        // SSR ahora rellena `loaderData` con una entrada por cada ruta
+        // coincidente, así que `window.__staticRouterHydrationData` siempre
+        // satisface a react-router y `router.state.initialized` es `true`
+        // desde el primer render de cliente — sin fetch de red de por medio,
+        // sin ventana de carrera. Este `HydrateFallback` ya no se llega a
+        // invocar en el camino normal; se deja como red de seguridad (mismo
+        // componente, misma posición en el árbol, sin remonte de Navbar/Footer
+        // si algún día algo distinto vuelve a dejar la ruta "no inicializada").
         HydrateFallback: RootLayout,
         entry: 'src/components/layout/RootLayout.tsx',
         children: [
