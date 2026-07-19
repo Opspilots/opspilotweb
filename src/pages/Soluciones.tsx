@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Check } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { TextLink } from '../components/common/TextLink';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { useDragScroll } from '../hooks/useDragScroll';
 import { PageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import { buildBreadcrumb } from '../lib/seo';
@@ -42,6 +43,12 @@ export const Soluciones: React.FC = () => {
     const [selected, setSelected] = useState(0);
     const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const trackRef = useRef<HTMLDivElement>(null);
+    const ledgerRef = useRef<HTMLDivElement>(null);
+
+    // Mouse drag-to-scroll en el carril de sectores (mismo patrón que los
+    // carriles horizontales de Home.tsx). Solo actúa sobre puntero tipo
+    // mouse — no interfiere con el swipe táctil nativo del carrusel móvil.
+    useDragScroll(ledgerRef);
 
     // Efecto scroll (desktop + movimiento): el explorador se queda sticky y, al
     // bajar, la selección avanza por la lista de sectores (mapeo scroll→índice).
@@ -132,23 +139,22 @@ export const Soluciones: React.FC = () => {
                 </div>
             </section>
 
-            {/* Sectores — explorador de dos paneles (tabla + detalle). En desktop
+            {/* Sectores — explorador de dos paneles (lista + detalle). En desktop
                 el bloque se queda sticky y la selección avanza al hacer scroll. */}
             <section className={sys.section}>
                 <div className={styles.solTrack} ref={trackRef}>
                     <div className={styles.solViewport}>
                         <div className={sys.container}>
                             <div className={styles.explorer} ref={listRef} data-lenis-prevent>
-                                {/* Columna izquierda — tabla de sectores seleccionables */}
+                                {/* Columna izquierda — lista de sectores seleccionables (nav,
+                                    no tabla: sin fila de cabecera, ver Soluciones.module.css) */}
                                 <div
                                     className={`${styles.ledger} reveal`}
                                     role="tablist"
                                     aria-label="Sectores"
                                     aria-orientation="vertical"
+                                    ref={ledgerRef}
                                 >
-                                    <div className={styles.ledgerHead} aria-hidden="true">
-                                        <span>Elige tu sector</span>
-                                    </div>
                                     {SECTORS.map((s, i) => {
                                         const RowIcon = ICONS[s.iconKey];
                                         return (
@@ -166,9 +172,28 @@ export const Soluciones: React.FC = () => {
                                                 onKeyDown={(e) => handleTabKeyDown(e, i)}
                                             >
                                                 <span className={styles.rowIcon} aria-hidden="true">
-                                                    <RowIcon size={22} strokeWidth={1.6} />
+                                                    {prefersReducedMotion ? (
+                                                        <RowIcon size={22} strokeWidth={1.6} />
+                                                    ) : (
+                                                        // Crossfade+scale al activarse/desactivarse la fila — la
+                                                        // key cambia con el estado activo (no con iconKey, que es
+                                                        // fijo por fila) para que AnimatePresence anime el "pop"
+                                                        // justo cuando esta fila pasa a ser la seleccionada.
+                                                        <AnimatePresence mode="wait" initial={false}>
+                                                            <motion.span
+                                                                key={i === selected ? 'active' : 'inactive'}
+                                                                className={styles.rowIconMotion}
+                                                                initial={{ opacity: 0, scale: 0.85 }}
+                                                                animate={{ opacity: 1, scale: 1 }}
+                                                                exit={{ opacity: 0, scale: 0.85 }}
+                                                                transition={{ duration: 0.22, ease: 'easeOut' }}
+                                                            >
+                                                                <RowIcon size={22} strokeWidth={1.6} />
+                                                            </motion.span>
+                                                        </AnimatePresence>
+                                                    )}
                                                 </span>
-                                                {/* rowDesc (s.who) solo se ve en la lista vertical de ≤767px
+                                                {/* rowDesc (s.who) solo se ve en el carrusel de ≤767px
                                                     (ver Soluciones.module.css) — en desktop/tablet queda
                                                     oculto vía display:none, sin duplicar markup por breakpoint. */}
                                                 <span className={styles.rowText}>
@@ -179,6 +204,31 @@ export const Soluciones: React.FC = () => {
                                             </button>
                                         );
                                     })}
+                                </div>
+
+                                {/* Indicadores de posición del carrusel de sectores en móvil
+                                    (≤767px, ver .sectorDots en Soluciones.module.css) — mismo
+                                    patrón que .caseDots del carrusel de casos en Home.tsx.
+                                    Resuelven el gap de affordance que hizo abandonar el carril
+                                    horizontal anterior: de un vistazo se ve CUÁNTOS sectores hay
+                                    y CUÁL está activo, algo que ni el "peek" del borde ni el fade
+                                    comunican por sí solos. Son botones reales (no aria-hidden):
+                                    navegación adicional legítima, no decoración pura — por eso NO
+                                    llevan role="tab"/"tablist" (ya existe uno real en `.ledger`;
+                                    duplicarlo confundiría a lectores de pantalla con dos tablists
+                                    controlando el mismo panel). En desktop/tablet quedan en el DOM
+                                    pero display:none, así que no ocupan layout ni orden de tab. */}
+                                <div className={styles.sectorDots}>
+                                    {SECTORS.map((s, i) => (
+                                        <button
+                                            key={s.id}
+                                            type="button"
+                                            className={`${styles.sectorDot} ${i === selected ? styles.sectorDotActive : ''}`}
+                                            aria-label={`Ir a ${s.label}`}
+                                            aria-current={i === selected ? 'true' : undefined}
+                                            onClick={() => setSelected(i)}
+                                        />
+                                    ))}
                                 </div>
 
                                 {/* Columna derecha — panel de detalle del sector activo */}
@@ -211,7 +261,24 @@ export const Soluciones: React.FC = () => {
                                                 transition={{ duration: prefersReducedMotion ? 0 : 0.28, ease: [0.32, 0.72, 0, 1] }}
                                             >
                                                 <div className={styles.panelIcon} aria-hidden="true">
-                                                    <PanelIcon size={22} strokeWidth={1.6} />
+                                                    {prefersReducedMotion ? (
+                                                        <PanelIcon size={22} strokeWidth={1.6} />
+                                                    ) : (
+                                                        // Mismo patrón que .rowIcon: crossfade+scale cuando este
+                                                        // panel pasa a ser el activo (o deja de serlo).
+                                                        <AnimatePresence mode="wait" initial={false}>
+                                                            <motion.span
+                                                                key={isActive ? 'active' : 'inactive'}
+                                                                className={styles.panelIconMotion}
+                                                                initial={{ opacity: 0, scale: 0.85 }}
+                                                                animate={{ opacity: 1, scale: 1 }}
+                                                                exit={{ opacity: 0, scale: 0.85 }}
+                                                                transition={{ duration: 0.22, ease: 'easeOut' }}
+                                                            >
+                                                                <PanelIcon size={22} strokeWidth={1.6} />
+                                                            </motion.span>
+                                                        </AnimatePresence>
+                                                    )}
                                                 </div>
 
                                                 <h2 className={styles.panelTitle}>{s.title}</h2>

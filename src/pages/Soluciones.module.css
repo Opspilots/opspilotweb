@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   Soluciones — explorador de sectores (tabla + panel)
+   Soluciones — explorador de sectores (lista + panel)
    ═══════════════════════════════════════════ */
 
 /* ─── Hero title override ───
@@ -42,7 +42,7 @@
 
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
     .solTrack {
-        /* ~una "parada" de scroll por sector (6) + margen de lectura. */
+        /* ~una "parada" de scroll por sector (7) + margen de lectura. */
         height: 320vh;
     }
 
@@ -54,22 +54,30 @@
         top: var(--navbar-offset-scrolled);
         min-height: calc(100vh - var(--navbar-offset-scrolled));
         display: flex;
-        align-items: center;
+        /* `center` era la causa real del recorte superior: con contenido de
+           alto VARIABLE (antes) que en viewports bajos (900px con barra de
+           marcadores, ventana no maximizada…) podía superar el hueco
+           visible, centrar significaba que la mitad del desbordamiento
+           quedaba por ENCIMA del borde superior — y al estar en scroll-jack
+           (el scroll de página avanza de sector, no revela más contenido),
+           esa mitad era inalcanzable: se leía como "recorte"/"zoom"
+           permanente, no como algo que un scroll normal resolviera.
+           `flex-start` ancla el contenido siempre justo debajo de la
+           navbar — nunca puede quedar por encima del punto de anclaje. El
+           padding-block de abajo da el mismo aire visual que antes daba el
+           centrado, pero como TECHO, no como promedio. Además, `.panel`
+           ahora tiene alto FIJO (ver bloque ≥1024px junto a `.panel` más
+           abajo) que cabe con margen en cualquier viewport ≥800px de alto,
+           así que el caso que causaba el recorte ya no puede darse. */
+        align-items: flex-start;
+        padding-block: clamp(1.5rem, 4vh, 3rem);
     }
 
-    /* El panel de detalle (y, por align-items:stretch, la tabla de sectores
-       que se estira a su misma altura) varía de alto según el sector activo
-       — más o menos beneficios/texto. En viewports bajos (portátil con
-       barra de marcadores, ventana no maximizada…) ese alto puede superar
-       el hueco visible del viewport pineado. Como el bloque está en
-       scroll-jack (el scroll de la página avanza de sector, no revela el
-       resto del panel), la parte que sobra quedaba inalcanzable: ni la
-       tabla ni el panel se veían completos y el recorte se percibía como
-       "zoom". Con max-height + overflow-y:auto el conjunto se vuelve
-       desplazable puertas adentro cuando no cabe — el usuario ve el resto
-       con la misma rueda del ratón antes de que el scroll siga avanzando
-       de sector — sin tocar el caso común, donde el contenido ya cabe y
-       este límite no llega a activarse. */
+    /* Red de seguridad, no la solución: con `.panel` a alto fijo esto ya no
+       debería activarse en el caso común (verificado a 900px y 1080px de
+       alto con los 7 sectores). Se mantiene por si un navegador con zoom
+       alto o una fuente de sistema más grande empuja el contenido más de lo
+       previsto — ahí es mejor un scroll interno que un recorte silencioso. */
     .explorer {
         max-height: calc(100vh - var(--navbar-offset-scrolled));
         overflow-y: auto;
@@ -89,15 +97,27 @@
 
 @media (min-width: 1024px) {
     .explorer {
-        grid-template-columns: minmax(300px, 360px) 1fr;
-        gap: var(--spacing-8);
+        /* Columna de sectores algo más ancha (antes tope 360px) y más aire
+           entre columnas — el explorador ya vive en el mismo `--container-max`
+           de 1200px que el resto de secciones (Home, Casos), así que "se leía
+           cramped" no era el ancho del bloque sino la densidad de la tabla;
+           esto añade el resto del respiro tras quitar el estilo de tabla. */
+        grid-template-columns: minmax(320px, 400px) 1fr;
+        gap: var(--spacing-9);
     }
 }
 
-/* ─── Columna izquierda: tabla de sectores ─── */
+/* ─── Columna izquierda: lista de sectores (nav, no tabla) ───
+   Cada fila es su propia "tarjeta" redondeada dentro de este contenedor
+   (gap + padding + radius por fila, ver `.row`) en vez de celdas con borde
+   compartido — es la diferencia entre "lista de navegación" y "tabla de
+   datos": ninguna línea divisoria corre de un extremo a otro del componente,
+   y no hay fila de cabecera tipo `<thead>`. */
 .ledger {
     display: flex;
     flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-panel);
     background:
@@ -108,22 +128,10 @@
     isolation: isolate;
 }
 
-.ledgerHead {
-    display: flex;
-    align-items: center;
-    padding: var(--spacing-4) var(--spacing-5);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--color-text-subtle);
-    border-bottom: 1px solid var(--color-border-subtle);
-    flex-shrink: 0;
-}
-
 /* Fila de sector — botón/tab. Grid: icono · etiqueta · flecha. Las filas
-   reparten la altura disponible (flex: 1) para que la tabla llene el alto del
-   panel y se vea completa. */
+   reparten la altura disponible (flex: 1) para que la lista llene el alto
+   (fijo, ver `.panel` más abajo) del panel y se vea completa, sin dejar
+   hueco muerto al final. */
 .row {
     position: relative;
     display: grid;
@@ -132,11 +140,11 @@
     gap: var(--spacing-3);
     width: 100%;
     flex: 1 1 0;
-    min-height: 64px;
-    padding: var(--spacing-3) var(--spacing-5);
+    min-height: 56px;
+    padding: var(--spacing-3) var(--spacing-4);
     background: transparent;
     border: none;
-    border-bottom: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
     text-align: left;
     cursor: pointer;
     color: var(--color-text-muted);
@@ -145,20 +153,19 @@
         color var(--transition-fast);
 }
 
-.row:last-child {
-    border-bottom: none;
-}
-
-/* Barra de acento mint a la izquierda — señal de fila activa. */
+/* Indicador de fila activa — barra corta y flotante centrada verticalmente,
+   como un indicador de nav lateral, NO un borde de celda que toca los bordes
+   de la fila (eso es justo lo que hacía leerse como tabla). */
 .row::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
+    left: var(--spacing-2);
+    top: 50%;
     width: 3px;
+    height: 60%;
     background: var(--gradient-mint);
-    transform: scaleY(0);
+    border-radius: var(--radius-full);
+    transform: translateY(-50%) scaleY(0);
     transform-origin: center;
     transition: transform var(--transition-expressive);
 }
@@ -176,13 +183,16 @@
 }
 
 .rowActive::before {
-    transform: scaleY(1);
+    transform: translateY(-50%) scaleY(1);
 }
 
 .rowIcon {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 22px;
+    height: 22px;
     color: currentColor;
     opacity: 0.85;
 }
@@ -191,6 +201,18 @@
 .row:hover .rowIcon {
     color: var(--color-mint);
     opacity: 1;
+}
+
+/* Slot absoluto para el crossfade+scale del icono (AnimatePresence en
+   Soluciones.tsx) — icono entrante y saliente se superponen en el MISMO
+   punto durante los ~220ms de la transición, en vez de empujar el layout
+   mientras ambos coexisten. */
+.rowIconMotion {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Envoltorio de label+desc: en desktop/tablet solo se ve rowLabel (rowDesc
@@ -276,6 +298,53 @@
     isolation: isolate;
 }
 
+/* ═══════════════════════════════════════════
+   ≥1024px — alto FIJO del panel de detalle. El explorador vive en
+   scroll-jack ahí arriba (.solTrack/.solViewport): el panel nunca revela
+   contenido con un scroll normal, así que si su alto variaba por sector
+   (según longitud de título/who/solution) o superaba el hueco visible, la
+   parte sobrante quedaba inalcanzable — se percibía como "recorte" arriba
+   Y como un salto de tamaño al cambiar de sector. Fijar el alto a un valor
+   que quepa con margen el sector más largo (hostelería, verificado) y
+   recortar título/solution a un nº de líneas garantizado — en vez de
+   dejarlos crecer libres — asegura que los 7 sectores midan EXACTAMENTE lo
+   mismo. `.ledger` hereda este alto vía `align-items: stretch` en
+   `.explorer`, así que las filas de la lista también quedan con alto
+   consistente entre sectores. Por debajo de 1024px no hay scroll-jack ni
+   sticky — el panel vuelve a `min-height` libre (regla base arriba). */
+@media (min-width: 1024px) {
+    .panel {
+        height: 620px;
+        padding: var(--spacing-8) var(--spacing-9);
+    }
+
+    .panelIcon {
+        margin-bottom: var(--spacing-6);
+    }
+
+    .panelTitle {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .panelWho {
+        margin-bottom: var(--spacing-5);
+    }
+
+    .panelSolution {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .benefitsList {
+        margin-bottom: var(--spacing-7);
+    }
+}
+
 /* Los 7 paneles de sector viven siempre en el DOM (SEO: el copy de cada
    sector debe existir en el HTML prerenderizado, no solo el del sector
    activo). Solo el panel activo queda en flujo normal — determina el alto
@@ -289,6 +358,7 @@
 }
 
 .panelIcon {
+    position: relative;
     width: 60px;
     height: 60px;
     display: flex;
@@ -301,6 +371,17 @@
     box-shadow: var(--shadow-mint);
     flex-shrink: 0;
     margin-bottom: var(--spacing-7);
+}
+
+/* Mismo patrón que `.rowIconMotion` — overlay absoluto para que el
+   crossfade+scale del icono del panel (AnimatePresence, Soluciones.tsx) no
+   desplace el layout mientras entra/sale. */
+.panelIconMotion {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .panelTitle {
@@ -411,13 +492,23 @@
 @media (prefers-reduced-motion: reduce) {
     .row,
     .row::before,
-    .rowArrow {
+    .rowArrow,
+    .sectorDot {
         transition: none;
+    }
+
+    /* El `scroll-behavior: smooth` del carrusel móvil (ver ≤767px más abajo)
+       queda anulado: los saltos entre tarjetas son instantáneos en vez de
+       animados. El componente ya usa `prefersReducedMotion` en JS para el
+       mismo propósito en `scrollIntoView` (Soluciones.tsx) — esto cubre el
+       scroll nativo por swipe, que no pasa por ese código. */
+    .ledger {
+        scroll-behavior: auto;
     }
 }
 
 /* ═══════════════════════════════════════════
-   768–1023px (tablet) — la tabla pasa a carril horizontal de pills.
+   768–1023px (tablet) — la lista pasa a carril horizontal de pills.
    ═══════════════════════════════════════════ */
 @media (max-width: 1023px) {
     .ledger {
@@ -428,10 +519,6 @@
     }
 
     .ledger::-webkit-scrollbar {
-        display: none;
-    }
-
-    .ledgerHead {
         display: none;
     }
 
@@ -479,43 +566,81 @@
 }
 
 /* ═══════════════════════════════════════════
-   ≤767px (móvil/táctil) — la tabla de sectores deja de ser un carril
-   horizontal y pasa a LISTA VERTICAL apilada: los 7 sectores (título +
-   descripción de una línea) quedan visibles/tappables con el scroll natural
-   de la página, sin depender de ningún gesto horizontal oculto. Era el bug
-   más grave de la auditoría móvil: en el carril de ≤1023px arriba, incluso
-   ya corregido el bug de `width`, solo un puñado de pills entra en pantalla
-   sin affordance de "desliza" — en un viewport de 375-430px de ancho eso
-   seguía dejando la mayoría de sectores fuera de la vista inicial. La lista
-   vertical evita ese riesgo por completo: nada queda oculto tras un gesto.
-   El fallback de selección por clic ya existente (`onClick={() => setSelected(i)}`
-   en Soluciones.tsx) es exactamente lo que hace tappable cada fila — aquí
-   solo se adapta el layout, no la lógica de selección. */
+   ≤767px (móvil/táctil) — CARRUSEL horizontal con snap, un sector "tarjeta"
+   a la vez, con tres señales de affordance simultáneas (nunca una sola,
+   nunca cero):
+
+   1. PEEK — cada tarjeta ocupa ~84% del ancho: el ~16% del siguiente sector
+      queda visible asomando en el borde derecho. Comunica "hay más" antes
+      de que el usuario toque nada.
+   2. FADE — `.ledger` recorta ese borde con un mask-image degradado, así
+      el peek se lee como "contenido que continúa fuera de pantalla" y no
+      como una tarjeta cortada/rota por error.
+   3. DOTS — `.sectorDots` (ver JSX en Soluciones.tsx, mismo patrón que
+      `.caseDots` del carrusel de Home) muestra cuántos sectores hay en
+      total y cuál está activo — la señal que el peek/fade por sí solos NO
+      dan: conteo y posición.
+
+   Esto reemplaza un intento anterior de carril horizontal que se abandonó
+   tras la auditoría móvil: aquel carril (aún visible en el breakpoint
+   768-1023px de abajo) no tenía NINGUNA de estas tres señales — filas a
+   ancho completo (bug de `width`, ya corregido ahí), sin peek, sin fade,
+   sin dots. El resultado era que sectores quedaban ocultos sin ninguna
+   pista de que existía un gesto de swipe. El fallback de selección por
+   clic/tap (`onClick={() => setSelected(i)}` en Soluciones.tsx) sigue
+   siendo el mismo — aquí solo cambia el layout y las señales visuales. */
 @media (max-width: 767px) {
     .ledger {
-        flex-direction: column;
-        overflow-x: visible;
+        flex-direction: row;
+        align-items: stretch;
+        gap: var(--spacing-3);
+        overflow-x: auto;
         overflow-y: visible;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        cursor: grab;
+        /* El contenedor deja de ser una caja única con chrome propio —
+           cada `.row` pasa a ser su propia tarjeta bordeada (ver abajo). */
+        border: none;
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+        padding: var(--spacing-1) var(--spacing-1) var(--spacing-2);
+        margin: 0 calc(-1 * var(--spacing-1));
+        mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+    }
+
+    .ledger::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ledger:active {
+        cursor: grabbing;
     }
 
     .row {
         grid-template-columns: auto 1fr auto;
         gap: var(--spacing-3);
-        width: 100%;
-        flex: 1 1 auto;
+        flex: 0 0 84%;
+        width: 84%;
         min-height: 0;
         padding: var(--spacing-4) var(--spacing-5);
-        border-bottom: 1px solid var(--color-border-subtle);
-        border-right: none;
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-panel);
+        background:
+            var(--gradient-surface),
+            var(--color-bg-elevated);
+        box-shadow: var(--glass-inset), var(--shadow-sm);
         white-space: normal;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
     }
 
-    .row:last-child {
-        border-bottom: none;
-    }
-
-    /* La barra de acento vuelve a ser vertical (izquierda), como en desktop,
-       porque el layout vuelve a ser una columna. */
+    /* Barra de acento vertical a la izquierda de la tarjeta (como en
+       desktop) — cada tarjeta es de nuevo una unidad independiente. */
     .row::before {
         top: 0;
         bottom: 0;
@@ -524,15 +649,16 @@
         width: 3px;
         height: auto;
         transform: scaleY(0);
+        border-radius: var(--radius-panel) 0 0 var(--radius-panel);
     }
 
     .rowActive::before {
         transform: scaleY(1);
     }
 
-    /* Flecha visible de forma persistente (no solo hover/activo): en una
-       lista vertical siempre visible es una señal de affordance ("tap para
-       ver detalle"), no una revelación de hover que no existe en táctil. */
+    /* Flecha visible de forma persistente (no solo hover/activo): en
+       táctil no existe hover, así que es una señal de affordance fija
+       ("tap para ver detalle"), no una revelación. */
     .rowArrow {
         display: inline-flex;
         opacity: 0.4;
@@ -545,6 +671,65 @@
 
     .rowDesc {
         display: block;
+    }
+
+    /* ─── Dots de posición — mismo patrón visual que .caseDots/.caseDot
+       en Home.module.css (carrusel de casos de éxito). ─── */
+    .sectorDots {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 14px;
+        margin-top: var(--spacing-4);
+    }
+
+    .sectorDot {
+        position: relative;
+        width: 6px;
+        height: 6px;
+        border-radius: var(--radius-full);
+        background: var(--color-border-strong);
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all var(--transition-normal);
+    }
+
+    /* Área de toque cómoda (34px) sin agrandar el punto visible — mismo
+       truco que `.caseDot::before` en Home.module.css. */
+    .sectorDot::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 34px;
+        height: 34px;
+        transform: translate(-50%, -50%);
+    }
+
+    .sectorDotActive {
+        width: 22px;
+        background: var(--color-mint);
+    }
+
+    .sectorDot:focus-visible {
+        outline: 2px solid var(--color-mint);
+        outline-offset: 2px;
+    }
+}
+
+/* Fuera de ≤767px el carrusel no aplica — los dots no tienen sentido junto
+   a la lista vertical/carril de tabs de los demás breakpoints.
+   Envuelto en @media (min-width: 768px): antes era una regla sin media
+   query, así que por orden de cascada (misma especificidad, 0,0,1,0) pisaba
+   SIEMPRE a la regla `display: flex` de `@media (max-width: 767px)` de más
+   arriba — los dots nunca llegaban a pintarse ni siquiera en móvil. Bug
+   real, confirmado con getBoundingClientRect (display computado: "none" a
+   375px de viewport). */
+@media (min-width: 768px) {
+    .sectorDots {
+        display: none;
     }
 }
 
