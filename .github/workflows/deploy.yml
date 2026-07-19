@@ -24,7 +24,14 @@ jobs:
       - name: Rsync dist to VPS
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avzr --delete
+          # --omit-dir-times: algo (fuera de este pipeline) escribió directamente en
+          # /var/www/opspilotweb/dist/ en el VPS con otro usuario del sistema, así que
+          # las carpetas ya no las posee remote_user. Sin este flag, -a intenta ajustar
+          # el mtime de esas carpetas y falla con "Operation not permitted" (exit 23)
+          # aunque el contenido sí se transfiere bien. chown real requeriría root en el
+          # VPS; omitir mtime de directorios es la solución estándar de rsync para
+          # deploys donde el usuario remoto no es dueño del árbol de destino.
+          switches: -avzr --delete --omit-dir-times
           path: dist/
           remote_path: /var/www/opspilotweb/dist/
           remote_host: ${{ secrets.VPS_HOST }}
