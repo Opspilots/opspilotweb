@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
 import {
   Bell,
   CalendarCheck2,
+  ChevronDown,
   ChevronLeft,
   FileText,
   Keyboard,
@@ -397,6 +398,59 @@ export const HeroLeadWidget: React.FC = () => {
   const [isAssembling, setIsAssembling] = useState(false);
   const hasEnteredStep4 = useRef(false);
 
+  // ─── Colapso en móvil (≤767px, TÁCTIL — ver variables.css) ───
+  // Arranca colapsado (`expanded = false`) DETRÁS de un teaser compacto para
+  // no empujar el resto de la home bajo el pliegue en un móvil real; en
+  // escritorio el widget sigue siempre visible — eso lo fuerza el CSS
+  // (`.collapseOuter` en HeroLeadWidget.module.css, gated tras
+  // `@media (max-width: 767px)`), NO este estado, así que `expanded=false`
+  // por defecto es seguro también en desktop antes de que el CSS aplique.
+  // Justo por eso el valor inicial puede ser una constante fija en vez de
+  // depender de `window.matchMedia` (indisponible durante el SSR de
+  // vite-react-ssg): con un valor fijo el primer render del cliente coincide
+  // siempre con el HTML del servidor — cero riesgo de mismatch de hidratación
+  // (la home ya tuvo bugs de hidratación reales, ver commits recientes).
+  // Al ser un booleano que solo cambia por click del usuario (nunca por un
+  // efecto automático), tampoco hace falta lógica extra para "no
+  // recolapsar": no hay nada que lo reponga a `false` una vez en `true`.
+  const [expanded, setExpanded] = useState(false);
+  const bodyId = useId();
+  const collapsibleBodyRef = useRef<HTMLDivElement>(null);
+
+  const toggleExpanded = useCallback(() => {
+    setExpanded((v) => !v);
+  }, []);
+
+  // Foco al desplegar: mueve el foco al cuerpo recién visible (contenedor
+  // con tabIndex=-1) para que un usuario de teclado/lector de pantalla no se
+  // quede "atrás" en el botón. Al colapsar no hace falta gestión extra: el
+  // foco ya sigue en el propio botón que originó el click.
+  useEffect(() => {
+    if (expanded) collapsibleBodyRef.current?.focus();
+  }, [expanded]);
+
+  // Solo para accesibilidad (inert): saber si estamos realmente en viewport
+  // TÁCTIL. Es intencionalmente un estado aparte del `expanded` de arriba
+  // — si lo mezcláramos, `expanded=false` por defecto marcaría el contenido
+  // como `inert` también en ESCRITORIO (donde el CSS lo muestra siempre),
+  // dejando inputs/botones inaccesibles ahí. Se recalcula tras el montado
+  // (nunca durante SSR) y en cada cambio de viewport, así que no afecta a la
+  // hidratación: solo actualiza un atributo después de que el DOM ya coincide.
+  const [isTouchViewport, setIsTouchViewport] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsTouchViewport(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  // Con el widget colapsado en móvil el cuerpo sigue en el DOM (la animación
+  // de despliegue lo necesita) pero queda oculto visualmente a 0 de alto —
+  // sin `inert` sus inputs/chips seguirían siendo alcanzables con Tab aunque
+  // invisibles, una trampa de foco real. `inert` los saca del árbol de
+  // accesibilidad y del orden de tabulación mientras están colapsados.
+  const hiddenFromA11y = isTouchViewport && !expanded;
+
   const { status, errorMsg, submit } = useLeadForm();
 
   const stepBodyRef = useRef<HTMLDivElement>(null);
@@ -620,9 +674,29 @@ export const HeroLeadWidget: React.FC = () => {
   const step2 = necesidad ? STEP2_CONFIG[necesidad] : null;
 
   return (
-    <div className={styles.panel}>
-      <div className={styles.body}>
-        {status === 'success' ? (
+    <div className={styles.panel} data-expanded={expanded ? 'true' : 'false'}>
+      {/* Solo visible ≤767px (ver .mobileToggle) — en escritorio el CSS lo
+         oculta y el widget completo permanece siempre visible como hoy. */}
+      <button
+        type="button"
+        className={styles.mobileToggle}
+        onClick={toggleExpanded}
+        aria-expanded={expanded}
+        aria-controls={bodyId}
+      >
+        <span>Configura tu proyecto</span>
+        <ChevronDown className={styles.mobileToggleIcon} size={18} strokeWidth={2.2} aria-hidden="true" />
+      </button>
+      <div className={styles.collapseOuter}>
+        <div className={styles.collapseInner}>
+          <div
+            className={styles.body}
+            id={bodyId}
+            ref={collapsibleBodyRef}
+            tabIndex={-1}
+            inert={hiddenFromA11y}
+          >
+            {status === 'success' ? (
           <div className={styles.success} role="status">
             <span className={styles.successDot} aria-hidden="true" />
             <p className={styles.successTitle}>Recibido.</p>
@@ -827,6 +901,8 @@ export const HeroLeadWidget: React.FC = () => {
             </div>
           </>
         )}
+          </div>
+        </div>
       </div>
     </div>
   );

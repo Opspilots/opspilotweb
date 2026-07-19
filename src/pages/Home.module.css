@@ -700,6 +700,26 @@
     align-self: stretch;
 }
 
+/* <1024px (bento en dos columnas solo desde 1024px, ver arriba): el panel
+   mini-interfaz se apilaba debajo del texto y duplicaba visualmente lo que
+   los bullets ya cuentan — dos bloques largos de scroll para un mismo
+   argumento. Se oculta por completo por debajo de 1024px en vez de
+   comprimirse: la lista de bullets ya es la prueba concreta del caso, el
+   mockup solo aporta valor cuando puede vivir EN PARALELO al texto (bento
+   de escritorio). El icono de sector se conserva (ayuda a escanear de qué
+   sector es cada slide en el carrusel) pero pierde su sombra decorativa,
+   que aquí solo sumaba peso visual sin la mini-interfaz al lado con la que
+   dialogaba. */
+@media (max-width: 1023px) {
+    .caseCardPanel {
+        display: none;
+    }
+
+    .caseIconTile {
+        box-shadow: none;
+    }
+}
+
 /* Spotlight que sigue al puntero (::before pinta bajo el contenido) */
 .caseCard::before {
     content: '';
@@ -897,20 +917,36 @@
 .whySection::before { top: 0; }
 .whySection::after { bottom: 0; }
 
-/* Mobile (<768px): columna única, ambas tarjetas apiladas a ancho completo.
-   Antes esto era un carrusel horizontal con scroll-snap (flex 0 0 85% +
-   "peek" del 15% siguiente) — igual que .caseCarouselTrack. Para un carrusel
-   de casos eso funciona (una tarjeta completa por vez, todas equivalentes).
-   Para ESTA sección no: son dos mitades de un mismo argumento (× problema /
-   ✓ solución) que necesitan verse las dos con texto legible sin depender de
-   que el usuario descubra el swipe — con el peek, la tarjeta OpsPilot (✓)
-   quedaba reducida a una tira de ~15% de ancho, ilegible, y el mensaje se
-   invertía (solo se leían los × del software genérico). Apilar en columna
-   garantiza que ambos lados se lean completos sin gesto adicional. */
+/* Historial de esta sección en mobile — dos iteraciones descartadas antes de
+   llegar a la tabla actual:
+   1) Carrusel horizontal con scroll-snap (flex 0 0 85% + "peek" del 15%
+      siguiente), igual que .caseCarouselTrack. Funciona para un carrusel de
+      casos (una tarjeta completa por vez, todas equivalentes); NO funciona
+      aquí porque son dos mitades de un mismo argumento (× genérico /
+      ✓ OpsPilot) que hay que poder comparar sin depender de que el usuario
+      descubra el swipe — con el peek, la tarjeta OpsPilot quedaba reducida a
+      una tira ilegible y el mensaje se invertía (solo se leían los ×).
+   2) Dos SpotlightCard completas apiladas en columna única (una tarjeta de 6
+      filas debajo de la otra). Mejor que el carrusel, pero seguía obligando
+      a scrollear un bloque largo, leerlo entero y solo AL FINAL volver arriba
+      para comparar la fila equivalente del otro lado — nada de "un vistazo".
+   Ahora (<768px): UNA tabla compacta (.compareTableWrap más abajo) con una
+   fila por característica y columnas Genérico/OpsPilot lado a lado, para que
+   el contraste se lea de un vistazo sin scroll ida-y-vuelta. Las dos
+   SpotlightCard (.whyGrid) se conservan tal cual solo desde 768px, donde ya
+   hay espacio horizontal de sobra para que columnas completas funcionen. */
+.compareTableWrap {
+    margin-bottom: var(--spacing-6);
+}
+
+@media (min-width: 768px) {
+    .compareTableWrap {
+        display: none;
+    }
+}
+
 .whyGrid {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-5);
+    display: none;
 }
 
 @media (min-width: 768px) {
@@ -1075,10 +1111,123 @@
     opacity: 0.55;
 }
 
-@media (max-width: 639px) {
-    .whyCol {
-        padding: var(--spacing-6) var(--spacing-6);
-    }
+/* .whyCol solo se renderiza visible desde 768px (ver .whyGrid arriba) — no
+   necesita ajuste de padding propio por debajo de 640px. */
+
+/* ─── Tabla comparativa de móvil — fila por característica, columna
+   Genérico / columna OpsPilot. Card-wrap con el mismo lenguaje visual que
+   el resto de la página (borde sutil, radius-card) para que no se lea como
+   una <table> "de libro de texto". Etiqueta oculta a lectores de pantalla
+   (mismo patrón que HeroLeadWidget.module.css / Contact.module.css). ─── */
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.compareTable {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.012);
+}
+
+.compareTable thead th {
+    font-family: var(--font-family-mono);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-regular);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: left;
+    padding: var(--spacing-3) var(--spacing-3);
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.compareTableFeatureCol {
+    /* 22% (antes) se quedaba corto para "INTEGRACIÓN"/"ESTABILIDAD" en
+       mayúscula mono: el texto medía 81px en una celda de 69px y desbordaba
+       sobre la columna Genérico. 28% es el mínimo verificado (con
+       getClientRects, no a ojo) donde las 6 etiquetas —incluidas esas dos—
+       caben en una sola línea sin partirse con una letra huérfana. */
+    width: 28%;
+}
+
+.compareTableGenericCol {
+    width: 36%;
+    color: var(--color-text-muted);
+}
+
+.compareTableOpsCol {
+    width: 36%;
+    color: var(--color-mint);
+    background: rgba(57, 206, 134, 0.045);
+}
+
+.compareTable tbody th[scope="row"] {
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-regular);
+    text-transform: uppercase;
+    /* 0.06em original + mayúscula + columna estrecha era la combinación que
+       hacía que "INTEGRACIÓN"/"ESTABILIDAD" (81px) no cupieran en 69px de
+       columna. Se reduce a 0.03em y se sube el ancho de columna al 26%
+       (antes 22%, ver .compareTableFeatureCol) — con eso ya no desbordan. */
+    letter-spacing: 0.03em;
+    color: var(--color-text-muted);
+    text-align: left;
+    vertical-align: top;
+    /* Red de seguridad: si una etiqueta futura sigue sin caber, que rompa
+       dentro de su celda en vez de desbordar y pintarse sobre la columna
+       Genérico (bug real, confirmado con getBoundingClientRect: scrollWidth
+       81px > clientWidth 69px en la columna original). */
+    overflow-wrap: break-word;
+}
+
+.compareTable tbody td,
+.compareTable tbody th {
+    padding: var(--spacing-3) var(--spacing-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+}
+
+.compareTable tbody tr:last-child td,
+.compareTable tbody tr:last-child th {
+    border-bottom: none;
+}
+
+.compareTable tbody td {
+    color: var(--color-text-muted);
+}
+
+.compareTable tbody td.compareTableOpsCol {
+    color: var(--color-text);
+}
+
+.compareIconNeg,
+.compareIconPos {
+    display: inline-block;
+    vertical-align: -1px;
+    margin-right: var(--spacing-1);
+    flex-shrink: 0;
+}
+
+.compareIconNeg {
+    color: var(--color-error);
+    opacity: 0.6;
+}
+
+.compareIconPos {
+    color: var(--color-mint);
 }
 
 /* ═══════════════════════════════════════════
@@ -1124,13 +1273,10 @@
         gap: var(--spacing-4);
     }
 
-    /* Antes se ocultaban por completo en mobile (display:none) — se perdía
-       la prueba cuantificable/concreta de cada caso justo donde más hace
-       falta brevedad+contundencia. El nuevo CaseMockPanel (mini-interfaz
-       visual, ver componente compartido) solo ilustra UNO de los 2-3
-       resultados de cada caso, no sustituye la lista completa — así que se
-       mantienen visibles, con tipografía y espaciado compactados en vez de
-       desaparecer. Preferible una tarjeta algo más alta que perder el dato. */
+    /* .caseCardPanel (el mockup) ya se oculta por debajo de 1024px arriba,
+       junto a .caseCardPanel — feedback de usuario: duplicaba visualmente
+       lo que estos bullets ya comunican. Lo que queda visible en mobile
+       (icono + texto + bullets) se compacta aquí en vez de desaparecer. */
     .caseCardBullets {
         gap: var(--spacing-2);
         margin-bottom: var(--spacing-6);

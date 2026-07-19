@@ -377,11 +377,12 @@
         min-height: 44px;
     }
 
+    /* Antes truncaba a 2 líneas con line-clamp: el texto real ocupa 3 a este
+       ancho, así que cortaba a mitad de frase ("...en menos...") y se comía
+       la promesa de 24h — justo el dato que más ayuda a convertir. No hay
+       ninguna restricción de altura (no es una card en una grid) que
+       justifique el clamp, así que se deja envolver en sus 3 líneas. */
     .formSub {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
         margin-bottom: var(--spacing-6);
     }
 

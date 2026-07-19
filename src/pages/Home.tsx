@@ -73,6 +73,45 @@ const STEPS = [
   },
 ];
 
+// Comparativa "Por qué no el software de catálogo" — un único dataset que
+// alimenta DOS vistas responsive: la tabla compacta en móvil (<768px, ver
+// .compareTable) y las dos SpotlightCard de escritorio (≥768px, ver
+// .whyGrid). Cada fila empareja el mismo argumento en su versión genérica
+// y en su versión OpsPilot, más una etiqueta corta de característica para
+// la columna de fila de la tabla.
+const WHY_COMPARISON = [
+  {
+    feature: "Adaptación",
+    generic: "Te adaptas tú a la herramienta, no al revés",
+    ops: "El sistema se adapta exactamente a cómo trabajas",
+  },
+  {
+    feature: "Coste",
+    generic: "Pagas por funciones que nunca vas a usar",
+    ops: "Solo pagas lo que tu negocio realmente necesita",
+  },
+  {
+    feature: "Soporte",
+    generic: "Un ticket, un foro en inglés, y a esperar",
+    ops: "Escribes al equipo que lo construyó. Te responde esa misma persona",
+  },
+  {
+    feature: "Plazos",
+    generic: "6–12 meses para ver resultados reales",
+    ops: "Primeros resultados visibles en 4–6 semanas",
+  },
+  {
+    feature: "Integración",
+    generic: "Cada app en su silo, sin hablarse entre ellas",
+    ops: "Un sistema. Todo conectado, todo a la vista",
+  },
+  {
+    feature: "Estabilidad",
+    generic: "Y el precio sube cada año. Sin avisarte",
+    ops: "Precio cerrado desde el día uno. Así de simple",
+  },
+];
+
 export const Home: React.FC = () => {
   const seoProps = {
     title: "Software a medida para PYMEs en España | OpsPilot",
@@ -550,6 +589,60 @@ export const Home: React.FC = () => {
               Por qué no el software de catálogo.
             </h2>
           </header>
+          {/* Móvil (<768px): una sola tabla compacta — fila por característica,
+              columnas Genérico/OpsPilot. Sustituye al carrusel horizontal que
+              ya se probó antes en esta sección y se descartó por ilegibilidad
+              (ver comentario en Home.module.css junto a .compareTableWrap). */}
+          <div className={styles.compareTableWrap}>
+            <table className={styles.compareTable}>
+              <caption className={styles.srOnly}>
+                Comparativa entre software genérico y OpsPilot a medida
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col" className={styles.compareTableFeatureCol}>
+                    <span className={styles.srOnly}>Característica</span>
+                  </th>
+                  <th scope="col" className={styles.compareTableGenericCol}>
+                    Genérico
+                  </th>
+                  <th scope="col" className={styles.compareTableOpsCol}>
+                    OpsPilot
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {WHY_COMPARISON.map((row) => (
+                  <tr key={row.feature}>
+                    <th scope="row" className={styles.compareTableFeatureCol}>
+                      {row.feature}
+                    </th>
+                    <td className={styles.compareTableGenericCol}>
+                      <X
+                        size={12}
+                        strokeWidth={2.5}
+                        className={styles.compareIconNeg}
+                        aria-hidden="true"
+                      />
+                      {row.generic}
+                    </td>
+                    <td className={styles.compareTableOpsCol}>
+                      <Check
+                        size={12}
+                        strokeWidth={2.5}
+                        className={styles.compareIconPos}
+                        aria-hidden="true"
+                      />
+                      {row.ops}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Escritorio (≥768px): dos SpotlightCard lado a lado, mismo
+              dataset que la tabla móvil. */}
           <div className={styles.whyGrid} ref={whyTrackRef}>
             <SpotlightCard
               className={`${styles.whyCol} ${styles.whyColGeneric} reveal`}
@@ -557,19 +650,12 @@ export const Home: React.FC = () => {
               <div className={styles.whyColHead}>
                 <span className={styles.whyColBadge}>Software genérico</span>
               </div>
-              {[
-                "Te adaptas tú a la herramienta, no al revés",
-                "Pagas por funciones que nunca vas a usar",
-                "Un ticket, un foro en inglés, y a esperar",
-                "6–12 meses para ver resultados reales",
-                "Cada app en su silo, sin hablarse entre ellas",
-                "Y el precio sube cada año. Sin avisarte",
-              ].map((text, i) => (
-                <div className={styles.whyRow} key={i}>
+              {WHY_COMPARISON.map((row) => (
+                <div className={styles.whyRow} key={row.feature}>
                   <span className={styles.whyIconNeg}>
                     <X size={13} strokeWidth={2.5} />
                   </span>
-                  <span className={styles.whyRowText}>{text}</span>
+                  <span className={styles.whyRowText}>{row.generic}</span>
                 </div>
               ))}
             </SpotlightCard>
@@ -584,19 +670,12 @@ export const Home: React.FC = () => {
                 </span>
                 <span className={styles.whyRecommended}>Recomendado</span>
               </div>
-              {[
-                "El sistema se adapta exactamente a cómo trabajas",
-                "Solo pagas lo que tu negocio realmente necesita",
-                "Escribes al equipo que lo construyó. Te responde esa misma persona",
-                "Primeros resultados visibles en 4–6 semanas",
-                "Un sistema. Todo conectado, todo a la vista",
-                "Precio cerrado desde el día uno. Así de simple",
-              ].map((text, i) => (
-                <div className={styles.whyRow} key={i}>
+              {WHY_COMPARISON.map((row) => (
+                <div className={styles.whyRow} key={row.feature}>
                   <span className={styles.whyIconPos}>
                     <Check size={13} strokeWidth={2.5} />
                   </span>
-                  <span className={styles.whyRowText}>{text}</span>
+                  <span className={styles.whyRowText}>{row.ops}</span>
                 </div>
               ))}
             </SpotlightCard>

@@ -563,6 +563,15 @@
         margin-bottom: var(--spacing-6);
     }
 
+    /* La cita del cliente (nombre + cargo) sobra en móvil: el espacio es
+       escaso y el testimonio no aporta tanto como en desktop. Se oculta solo
+       aquí — el dato quote/author se conserva en el dataset para desktop.
+       display:none la saca del grid de .cardContent, así que el `gap` no
+       deja hueco fantasma tras ella. */
+    .cardQuote {
+        display: none;
+    }
+
     .carouselFooter {
         flex-direction: column-reverse;
         align-items: flex-start;

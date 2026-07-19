@@ -29,6 +29,92 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* ─── Toggle móvil (≤767px, TÁCTIL — ver variables.css) ───
+   El widget vive siempre expandido en escritorio (ver `.collapseOuter` más
+   abajo, que ignora `data-expanded` por encima de 767px) — este botón solo
+   existe para TÁCTIL, donde arranca colapsado detrás de un teaser compacto
+   para no empujar el resto de la home bajo el pliegue. `display:none` por
+   defecto lo saca también del orden de tabulación en escritorio. */
+.mobileToggle {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .mobileToggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        min-height: 44px;
+        padding: var(--spacing-5) var(--spacing-6);
+        background: none;
+        border: none;
+        border-bottom: 1px solid transparent;
+        color: var(--color-text-strong);
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-medium);
+        letter-spacing: var(--tracking-tight);
+        text-align: left;
+        cursor: pointer;
+        transition: background-color var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .mobileToggle:hover {
+        background: var(--color-mint-soft);
+    }
+
+    .mobileToggle:focus-visible {
+        outline: 2px solid var(--color-mint);
+        outline-offset: -2px;
+    }
+
+    /* Separador solo cuando hay cuerpo visible debajo — colapsado, el
+       teaser es la única superficie del panel y no necesita borde interno. */
+    .panel[data-expanded='true'] .mobileToggle {
+        border-bottom-color: var(--color-border-subtle);
+    }
+}
+
+.mobileToggleIcon {
+    flex-shrink: 0;
+    color: var(--color-mint);
+    transition: transform var(--transition-normal) var(--ease-custom);
+}
+
+.panel[data-expanded='true'] .mobileToggleIcon {
+    transform: rotate(180deg);
+}
+
+/* ─── Cuerpo colapsable (solo TÁCTIL) ───
+   Truco grid-template-rows 0fr↔1fr — anima el alto real del contenido sin
+   medirlo en JS y sin tocar `height:auto` (que no es animable). Un único
+   track `1fr` en un grid de alto automático se comporta como auto-size;
+   forzarlo a `0fr` lo colapsa a 0 de forma animable. En escritorio esta
+   regla ni se evalúa (fuera del @media): el cuerpo es SIEMPRE 1fr. */
+.collapseOuter {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows var(--transition-normal) var(--ease-custom);
+}
+
+.collapseInner {
+    overflow: hidden;
+}
+
+@media (max-width: 767px) {
+    .panel[data-expanded='false'] .collapseOuter {
+        grid-template-rows: 0fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .collapseOuter,
+    .mobileToggleIcon {
+        transition: none;
+    }
+}
+
 /* ─── Cuerpo interactivo ───
    Ya no hay barra de navegador por encima (ver nota en el .tsx) — el panel
    es una superficie propia, así que el body gana un poco de aire arriba
@@ -38,6 +124,13 @@
     min-height: 420px;
     display: flex;
     flex-direction: column;
+}
+
+/* Foco programático al desplegar en móvil (ver `collapsibleBodyRef` en el
+   .tsx) — el salto de foco ya es la señal, no hace falta el anillo visible
+   de un foco por teclado normal. */
+.body:focus-visible {
+    outline: none;
 }
 
 /* Etiqueta solo para lectores de pantalla — mismo patrón que Contact.module.css */
