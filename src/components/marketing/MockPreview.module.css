@@ -285,12 +285,17 @@
     gap: var(--spacing-3);
 }
 
+/* Icono + etiqueta agrupados en el mismo tile (misma estructura que
+   .moduleTile): la etiqueta hereda `currentColor` de before/after, así el
+   texto queda visualmente pegado a "su" icono en vez de flotar suelto. */
 .seqTile {
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
+    gap: var(--spacing-2);
+    min-width: 64px;
+    padding: var(--spacing-3) var(--spacing-2);
     flex-shrink: 0;
     border-radius: var(--radius-control);
     border: 1px solid var(--color-border-subtle);
@@ -309,6 +314,14 @@
     border-color: var(--color-border-mint);
     color: var(--color-mint);
     box-shadow: var(--shadow-mint);
+}
+
+.seqLabel {
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
 }
 
 @media (hover: hover) {

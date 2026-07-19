@@ -65,7 +65,15 @@ export interface ShowcaseModuleItem {
  * `testimonial` no se usa hoy por ningún caso pero se deja fuera a
  * propósito: el tipo de datos solo modela lo que realmente se usa. */
 export type ShowcaseBlock =
-    | { type: 'sequence'; beforeIcon: ShowcaseIconKey; afterIcon: ShowcaseIconKey }
+    | {
+          type: 'sequence';
+          beforeIcon: ShowcaseIconKey;
+          afterIcon: ShowcaseIconKey;
+          /** Etiqueta corta bajo cada icono — sin ella el icono queda "suelto",
+           *  sin decir qué representa (ver MockPreview SequenceBlock). */
+          beforeLabel: string;
+          afterLabel: string;
+      }
     | { type: 'modules'; items: readonly ShowcaseModuleItem[] };
 
 /** Mini-interfaz FIJA por caso (CaseMockPanel), que representa la mejora de

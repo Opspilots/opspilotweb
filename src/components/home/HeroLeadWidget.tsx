@@ -328,6 +328,19 @@ const SEQUENCE_BEFORE_ICONS: Record<AutomatizarTarea, React.FC<{ size?: number; 
   recordatorios: Bell,
 };
 
+// Etiqueta corta bajo el icono "antes" del bloque sequence — sin ella el
+// icono queda suelto, sin decir qué tarea representa (ver SequenceBlock en
+// MockPreview.tsx). El "después" es siempre el mismo Zap/"Automático": las
+// cuatro tareas convergen en la misma idea de "ya no lo haces tú".
+const SEQUENCE_BEFORE_LABELS: Record<AutomatizarTarea, string> = {
+  whatsapp: 'WhatsApp',
+  presupuestos: 'Presupuestos',
+  datos: 'Datos',
+  recordatorios: 'Recordatorios',
+};
+
+const SEQUENCE_AFTER_LABEL = 'Automático';
+
 const TOTAL_STEPS = 4;
 
 // Toggle escritorio/móvil del Paso 4 — recupera la idea del antiguo
@@ -360,6 +373,8 @@ function toMockBlock(block: TemplateBlock): MockBlock {
     type: 'sequence',
     beforeIcon: SEQUENCE_BEFORE_ICONS[block.before],
     afterIcon: Zap,
+    beforeLabel: SEQUENCE_BEFORE_LABELS[block.before],
+    afterLabel: SEQUENCE_AFTER_LABEL,
   };
 }
 

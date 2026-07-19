@@ -38,7 +38,13 @@ export const CASES: readonly Case[] = [
             title: 'Visita confirmada, sin mover un dedo',
             sub: 'Directo del chat al calendario, sin llamadas de por medio.',
             beforeTag: 'Antes: agenda por WhatsApp suelto.',
-            block: { type: 'sequence', beforeIcon: 'chatMessage', afterIcon: 'calendarCheck' },
+            block: {
+                type: 'sequence',
+                beforeIcon: 'chatMessage',
+                afterIcon: 'calendarCheck',
+                beforeLabel: 'WhatsApp',
+                afterLabel: 'Agenda',
+            },
         },
         quote:
             'Pasamos de perder presupuestos por falta de seguimiento a tener un sistema que trabaja solo.',

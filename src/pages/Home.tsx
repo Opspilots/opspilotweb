@@ -359,9 +359,6 @@ export const Home: React.FC = () => {
       <section className={styles.hero} ref={heroRef}>
         <div className={styles.heroInner}>
           <div className={styles.heroContent}>
-            <span className={styles.heroEyebrow}>
-              Con sede en Córdoba — trabajamos en toda España
-            </span>
             <h1 className={styles.heroTitle}>
               <span className={styles.heroLine}>
                 <span className={styles.heroLineInner}>Software a medida</span>

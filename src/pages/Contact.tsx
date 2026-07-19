@@ -7,7 +7,7 @@ import { buildBreadcrumb } from '../lib/seo';
 import { StructuredData } from '../components/seo/StructuredData';
 import sys from '../styles/page-system.module.css';
 import styles from './Contact.module.css';
-import { Mail, MessageSquare, MapPin } from 'lucide-react';
+import { Mail, MessageSquare } from 'lucide-react';
 
 const FORM_CONTACT_URL = 'https://formsubmit.co/ajax/opspilot.contact@gmail.com';
 
@@ -277,13 +277,6 @@ export const Contact: React.FC = () => {
                                         <div>
                                             <strong>WhatsApp</strong>
                                             <p>+34 640 75 61 26</p>
-                                        </div>
-                                    </div>
-                                    <div className={styles.method}>
-                                        <span className={styles.methodIcon}><MapPin size={20} strokeWidth={1.5} /></span>
-                                        <div>
-                                            <strong>Ubicación</strong>
-                                            <p>Con base en Córdoba. Trabajamos en remoto, en toda España.</p>
                                         </div>
                                     </div>
                                 </div>

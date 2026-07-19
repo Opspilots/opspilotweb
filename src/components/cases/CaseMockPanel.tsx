@@ -37,6 +37,8 @@ function toMockBlock(block: CaseShowcase['block']): MockBlock {
             type: 'sequence',
             beforeIcon: ICONS[block.beforeIcon],
             afterIcon: ICONS[block.afterIcon],
+            beforeLabel: block.beforeLabel,
+            afterLabel: block.afterLabel,
         };
     }
     return {

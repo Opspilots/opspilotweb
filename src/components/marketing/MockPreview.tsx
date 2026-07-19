@@ -38,7 +38,15 @@ export interface MockModuleItem {
 export type MockBlock =
   | { type: 'testimonial' }
   | { type: 'modules'; items: readonly MockModuleItem[] }
-  | { type: 'sequence'; beforeIcon: IconComponent; afterIcon: IconComponent };
+  | {
+      type: 'sequence';
+      beforeIcon: IconComponent;
+      afterIcon: IconComponent;
+      /** Etiqueta corta bajo cada icono — sin ella el tile queda "suelto",
+       * sin decir qué representa (mismo criterio que MockModuleItem.label). */
+      beforeLabel: string;
+      afterLabel: string;
+    };
 
 export interface MockPreviewProps {
   accent: MockAccent;
@@ -113,18 +121,24 @@ function ModulesBlock({ items }: { items: readonly MockModuleItem[] }) {
 function SequenceBlock({
   beforeIcon: BeforeIcon,
   afterIcon: AfterIcon,
+  beforeLabel,
+  afterLabel,
 }: {
   beforeIcon: IconComponent;
   afterIcon: IconComponent;
+  beforeLabel: string;
+  afterLabel: string;
 }) {
   return (
     <div className={styles.sequence}>
       <span className={`${styles.seqTile} ${styles.seqTileBefore}`}>
         <BeforeIcon size={17} strokeWidth={1.8} />
+        <span className={styles.seqLabel}>{beforeLabel}</span>
       </span>
       <span className={styles.seqArrow} aria-hidden="true" />
       <span className={`${styles.seqTile} ${styles.seqTileAfter}`}>
         <AfterIcon size={17} strokeWidth={1.8} />
+        <span className={styles.seqLabel}>{afterLabel}</span>
       </span>
     </div>
   );
@@ -173,7 +187,12 @@ export const MockPreview: React.FC<MockPreviewProps> = ({
         {block.type === 'testimonial' && <TestimonialBlock />}
         {block.type === 'modules' && <ModulesBlock items={block.items} />}
         {block.type === 'sequence' && (
-          <SequenceBlock beforeIcon={block.beforeIcon} afterIcon={block.afterIcon} />
+          <SequenceBlock
+            beforeIcon={block.beforeIcon}
+            afterIcon={block.afterIcon}
+            beforeLabel={block.beforeLabel}
+            afterLabel={block.afterLabel}
+          />
         )}
       </div>
     </div>
