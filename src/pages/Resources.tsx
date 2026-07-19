@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
@@ -70,9 +70,26 @@ export const Resources: React.FC = () => {
 
     // Siembra la búsqueda desde ?q= (usado por el SearchAction del JSON-LD /
     // sitelinks search box de Google) para que el input arranque con el término.
+    //
+    // Hydration-safe por construcción: `/recursos` se prerrenderiza como UNA
+    // página estática sin variantes de query-string, así que el HTML del
+    // servidor siempre trae `query=''`. Si el initializer de useState leyera
+    // `searchParams.get('q')` de forma síncrona, en tráfico real que llega
+    // con `?q=...` (sitelinks search box de Google) el primer render cliente
+    // calcularía un valor distinto al del servidor → mismatch de hidratación
+    // (React #418), React descarta el subárbol y lo remonta, lo que se ve
+    // como el toolbar apareciendo y desapareciendo. Mismo patrón que
+    // usePrefersReducedMotion: arrancamos con el valor SSR-safe y el valor
+    // real se aplica en un useEffect, ya después del montaje.
     const [searchParams] = useSearchParams();
-    const [query, setQuery] = useState(() => searchParams.get('q') ?? '');
+    const [query, setQuery] = useState('');
     const [activeCat, setActiveCat] = useState<CategoryFilter>('Todos');
+
+    useEffect(() => {
+        const q = searchParams.get('q');
+        if (q) setQuery(q);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     // deps = [query, activeCat]: al cambiar el filtro, el hook recablea los
     // ScrollTrigger sobre las tarjetas nuevas y revela las ya visibles (fix R1).
