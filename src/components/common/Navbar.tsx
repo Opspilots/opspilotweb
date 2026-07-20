@@ -42,16 +42,8 @@ function NavItem({ to, end, children }: { to: string; end?: boolean; children: R
 }
 
 export const Navbar: React.FC = () => {
-    const [scrolled, setScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { pathname } = useLocation();
-
-    useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 12);
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll();
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     useEffect(() => {
         setIsMenuOpen(false);
@@ -62,7 +54,7 @@ export const Navbar: React.FC = () => {
 
     return (
         <>
-            <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
+            <nav className={styles.navbar}>
                 <div className={styles.container}>
                     <Link to={ROUTES.home} className={styles.logo}>
                         <Logo size={50} />
@@ -93,7 +85,7 @@ export const Navbar: React.FC = () => {
 
             <div
                 id="mobile-nav-menu"
-                className={`${styles.mobileMenu} ${scrolled ? styles.scrolled : ''} ${isMenuOpen ? styles.open : ''}`}
+                className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}
                 inert={!isMenuOpen}
                 aria-hidden={!isMenuOpen}
             >

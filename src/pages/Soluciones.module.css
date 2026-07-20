@@ -151,10 +151,11 @@
 
     .solViewport {
         position: sticky;
-        /* -scrolled: cuando este track se pega, la navbar ya ha encogido a
-           su alto reducido. */
-        top: var(--navbar-offset-scrolled);
-        min-height: calc(100vh - var(--navbar-offset-scrolled));
+        /* La navbar ya no encoge al hacer scroll (efecto "scrolled" eliminado):
+           mide siempre --navbar-offset, así que el panel se ancla contra ese
+           único alto real. */
+        top: var(--navbar-offset);
+        min-height: calc(100vh - var(--navbar-offset));
         display: flex;
         /* column, NO el `row` por defecto de flex: ahora `.solViewport` tiene
            DOS hijos directos (el hero y el `.container` del explorador, ver

@@ -408,11 +408,9 @@
         max-width: none;
         margin-bottom: 0;
         position: sticky;
-        /* -scrolled, no la altura por defecto: para cuando esta sección llega
-           a pegarse ya has scrolleado, así que la navbar mide 3.5rem y no
-           4.75rem. Con la altura por defecto el titular se anclaba 20px más
-           abajo de lo que debía, dejando un hueco contra la barra. */
-        top: calc(var(--navbar-offset-scrolled) + var(--spacing-8));
+        /* La navbar ya no encoge al hacer scroll (efecto "scrolled" eliminado):
+           mide siempre --navbar-offset. */
+        top: calc(var(--navbar-offset) + var(--spacing-8));
     }
 
     .problemDeck {

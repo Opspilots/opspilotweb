@@ -178,9 +178,9 @@
     letter-spacing: var(--tracking-tight);
     line-height: 1.25;
     margin: var(--spacing-11) 0 var(--spacing-4);
-    /* Deja aire bajo la navbar fija al saltar a un ancla. Al llegar por ancla
-       la barra está scrolleada, así que el offset se mide contra -scrolled. */
-    scroll-margin-top: calc(var(--navbar-offset-scrolled) + var(--spacing-6));
+    /* Deja aire bajo la navbar fija al saltar a un ancla. La navbar ya no
+       encoge al hacer scroll: mide siempre --navbar-offset. */
+    scroll-margin-top: calc(var(--navbar-offset) + var(--spacing-6));
 }
 
 .article > .blockH2:first-child {

@@ -36,7 +36,7 @@
    peor que ningún token.
 
    Lo que SÍ es responsive vía token (y por tanto NO necesita @media en los
-   consumidores): --gutter, --space-section-*, --navbar-height-scrolled.
+   consumidores): --gutter, --space-section-*.
    Ver más abajo. */
 
 :root {
@@ -213,16 +213,13 @@
     --container-max: 1200px;
     --container-narrow: 960px;
 
-    /* Altura de la barra. `-scrolled` baja a 3.5rem en escritorio (barra
-       flotante) y a 4rem en TÁCTIL (barra pegada al borde) vía el override
-       de :root de abajo.
-       Usa los `-offset-*` para posicionar cualquier cosa CONTRA la navbar
-       (padding del contenido, sticky, paneles): incluyen el notch/Dynamic
+    /* Altura de la barra. La navbar ya NO encoge al hacer scroll (efecto
+       "scrolled" eliminado a propósito): un único alto real, siempre.
+       Usa `--navbar-offset` para posicionar cualquier cosa CONTRA la navbar
+       (padding del contenido, sticky, paneles): incluye el notch/Dynamic
        Island de iOS. En pantallas sin notch env() vale 0 y offset == height. */
     --navbar-height: 4.75rem;
-    --navbar-height-scrolled: 3.5rem;
     --navbar-offset: calc(var(--navbar-height) + env(safe-area-inset-top, 0px));
-    --navbar-offset-scrolled: calc(var(--navbar-height-scrolled) + env(safe-area-inset-top, 0px));
 
     /* ═══════════════════════════════════════════
        RADII — Factory: SOLO tres radios reales.
@@ -336,9 +333,6 @@
         --space-section-loose:   4.5rem;
         --space-hero-top:        4rem;
         --space-hero-bottom:     3rem;
-
-        /* La barra pegada al borde es más alta que la flotante de escritorio. */
-        --navbar-height-scrolled: 4rem;
     }
 }
 
