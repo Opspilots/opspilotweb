@@ -212,6 +212,14 @@
 .hamburger::after {
     content: '';
     position: absolute;
+    /* `left` es obligatorio: con left/right en auto y `width` explícito, la
+       posición estática que calcula Chromium para un pseudo-elemento
+       absolutamente posicionado NO es 0 — cae a mitad del ancho del propio
+       trazo (10px sobre 20px), así que before/after quedaban desplazados a la
+       derecha respecto al trazo central y el icono se veía como un "sort/
+       filter" torcido en vez de un hamburger recto (medido: left computado
+       10px en vez de 0). */
+    left: 0;
     width: 1.25rem;
     height: 2px;
     background-color: #FFFFFF;
@@ -261,12 +269,12 @@
        sin ese borde, así que sin el ajuste su padding por sí solo aterriza
        1px a la izquierda del logo (medido: 28px vs 29px). */
     padding:
-        var(--spacing-8)
+        var(--spacing-5)
         calc(var(--gutter) + 1px)
-        calc(var(--spacing-8) + env(safe-area-inset-bottom, 0px));
+        calc(var(--spacing-5) + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-2);
+    gap: var(--spacing-1);
     transform: translateX(100%);
     transition: transform var(--transition-normal), top var(--transition-normal);
     z-index: 100;
@@ -285,11 +293,11 @@
 }
 
 .mobileNavLink {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-3xl);
     font-weight: 400;
     font-family: var(--font-family-heading);
     color: var(--color-text-muted);
-    padding: var(--spacing-4) 0;
+    padding: var(--spacing-3) 0;
     border-bottom: 1px solid var(--color-border-subtle);
     transition: color var(--transition-fast);
     display: flex;
@@ -315,7 +323,7 @@
 }
 
 .mobileCta {
-    margin-top: var(--spacing-8);
+    margin-top: var(--spacing-5);
 }
 
 /* ─── ≥TÁCTIL: menú de escritorio ─── */

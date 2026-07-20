@@ -22,6 +22,16 @@ export type IconKey =
     | 'calculator'
     | 'utensils';
 
+export interface ProcessStep {
+    title: string;
+    description: string;
+}
+
+export interface FaqItem {
+    question: string;
+    answer: string;
+}
+
 export interface Sector {
     id: SectorId;
     iconKey: IconKey;
@@ -30,6 +40,8 @@ export interface Sector {
     who: string;
     solution: string;
     benefits: readonly string[];
+    processSteps: readonly ProcessStep[];
+    faq: readonly FaqItem[];
     /** Cross-link opcional al producto vertical propio en Recursos (solo los
      *  sectores que tienen uno: energía, reformas, asesorías, hostelería). El
      *  resto de sectores no llevan producto propio, así que se omite. */

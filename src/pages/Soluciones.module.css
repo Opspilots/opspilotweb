@@ -15,7 +15,19 @@
    el nombre "mobile" en otros sitios del código): así, gane quien gane la
    cascada, el resultado es idéntico. El valor desktop (4.5rem, mayor que
    el 4rem de `pageHeroTitle`) se queda fuera de la media query — Soluciones
-   sí necesita un titular más grande en desktop que el resto de páginas. */
+   sí necesita un titular más grande en desktop que el resto de páginas.
+
+   El titular ahora es parcialmente reactivo (lead-in fijo + `activeSector.label`,
+   ver Soluciones.tsx) — el ≥1024px override de más abajo le añade
+   `-webkit-line-clamp: 1` como red de seguridad: los 7 labels tienen
+   longitud distinta ("Asesorías y despachos" vs "PYMEs con operativa
+   dispersa") y, aunque a día de hoy ninguno fuerza un salto de línea dentro
+   del ancho del contenedor (verificado), el HUECO PINEADO tiene un
+   presupuesto de alto fijo (ver `.solHero`/`.solViewport` más abajo) que
+   asume que el titular mide SIEMPRE una línea — igual que `.panelTitle`/
+   `.panelSolution` ya hacían por el mismo motivo. Sin este clamp, un label
+   futuro más largo que desbordara a 2 líneas cambiaría el alto del hero
+   solo en ESE sector y desincronizaría el resto del cálculo del pin. */
 .heroTitle {
     font-size: clamp(2.5rem, 5vw, 4.5rem);
     line-height: 1.0;
@@ -32,55 +44,150 @@
     z-index: 1;
 }
 
-/* ═══════════════════════════════════════════
-   Track + viewport — en desktop el explorador se queda sticky mientras el
-   track aporta la distancia de scroll que hace avanzar la selección.
-   ═══════════════════════════════════════════ */
-.solTrack {
-    position: relative;
+/* Hero de esta página — ahora vive DENTRO de `.solViewport` (ver
+   Soluciones.tsx), pineado junto al explorador en vez de scrollear fuera de
+   vista antes de que el pin arranque. Esto convierte su alto en parte REAL
+   del presupuesto del hueco pineado (`100vh - navbar`, ver `.solViewport`
+   más abajo) — ya no es "preferencia de densidad heredada", como decía la
+   versión anterior de este comentario: si el hero creciera sin control aquí,
+   se comería directamente el margen que necesita el panel de 500px para
+   caber sin recorte a 1366×768. El recorte de padding/tamaños de este bloque
+   es ahora un requisito del scroll-jack, no solo un gusto visual.
+   Selectores compuestos (elemento+clase — `div.solHero` [antes
+   `section.solHero`: el wrapper pasó de `<section>` a `<div>` al mudarse
+   dentro de `.solViewport`, ver Soluciones.tsx], `h1.heroTitle`,
+   `p.heroSubtitle`) en vez de `.clase` a secas: especificidad (0,1,1) le
+   gana determinísticamente tanto a `sys.pageHero`/`pageHeroTitle`/
+   `pageHeroSubtitle` (una sola clase, otro módulo) como a la propia regla
+   base `.heroTitle` de arriba, sin depender de en qué orden se inyecten los
+   chunks — mismo problema de fondo que documenta el comentario de arriba,
+   resuelto aquí sin apoyarse en el accidente de bundling. No toca
+   `page-system.module.css`, así que Home/Casos/Contacto/Recursos, que
+   comparten esas clases, quedan intactas. Por debajo de 1024px no hay
+   override: ninguno de los breakpoints ≤1023 tenía el problema (no hay
+   scroll-jack ahí, el hero solo necesita seguir reflejando el sector activo,
+   sin recorte de tamaño), y el hero móvil ya era compacto por su propia
+   media query en page-system.module.css. */
+@media (min-width: 1024px) {
+    div.solHero {
+        padding: var(--spacing-4) 0 var(--spacing-3);
+        /* Separación real hero → explorador: antes venía gratis del padding-top
+           de `.explorerSection` (una sección distinta, más abajo en el
+           documento); ahora que ambos son hermanos dentro del mismo
+           `.solViewport` pineado, ese padding ya no llega hasta aquí (se quedó
+           fuera del pin, ver comentario de `.explorerSection` más abajo) y hay
+           que aportar el hueco explícitamente. */
+        margin-bottom: var(--spacing-4);
+    }
+
+    h1.heroTitle {
+        font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+        line-height: 1.15;
+        margin-bottom: var(--spacing-2);
+        /* Red de seguridad de alto constante — ver comentario de `.heroTitle`
+           más arriba: garantiza que el titular mida SIEMPRE una línea sin
+           importar qué tan largo sea `activeSector.label` en cada uno de los
+           7 sectores, igual criterio que `.panelTitle`/`.panelSolution`. */
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    p.heroSubtitle {
+        font-size: var(--font-size-sm);
+        line-height: 1.45;
+        max-width: 52ch;
+        margin-bottom: 0;
+    }
 }
 
+/* ═══════════════════════════════════════════
+   Sección del explorador — padding recortado en desktop.
+   Este padding vive en `section.explorerSection`, el contenedor EXTERIOR de
+   `.solTrack`/`.solViewport` — fuera del propio hueco pineado, así que solo
+   aporta el espacio ANTES de que el pin arranque y DESPUÉS de que termine
+   (cuando `.solViewport` deja de ser sticky al llegar al final del track).
+   No forma parte del presupuesto de alto que debe caber en `100vh - navbar`
+   mientras está pinned — ese presupuesto es exclusivamente el `padding-top`
+   de `.solViewport` + el hero + `.explorer` (ver ambos más abajo). Selector
+   compuesto `section.explorerSection` (especificidad clase+elemento) en vez
+   de tocar `sys.section` directamente: gana determinísticamente a `.section`
+   (una sola clase) sin depender del orden de inyección de los chunks — no
+   afecta a ninguna otra página que use `sys.section`. Por debajo de 1024px
+   no hay override: tablet/móvil conservan el padding compartido de siempre
+   (no tienen scroll-jack — el explorador ahí fluye en el documento sin pin,
+   así que no hay presupuesto de "hueco pineado" que cuidar). */
+@media (min-width: 1024px) {
+    section.explorerSection {
+        padding: var(--spacing-8) 0;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   Track + viewport — scroll-jack en desktop. El track (`.solTrack`) aporta
+   la distancia de scroll de página que el useEffect con ScrollTrigger
+   (Soluciones.tsx) traduce a progreso 0→1 y de ahí a un índice de sector
+   (`selected`); el viewport (`.solViewport`) se queda sticky mientras el
+   track recorre esa distancia, así el hero + el explorador permanecen fijos
+   en pantalla mientras el usuario sigue haciendo scroll (antes solo el
+   explorador vivía aquí — el hero era una `<section>` hermana que ya había
+   scrolleado fuera de vista para cuando el pin arrancaba; ver Soluciones.tsx
+   para el porqué del cambio). Gated a `prefers-reduced-motion: no-preference`:
+   con reduced motion (o <1024px, fuera de este `@media`) ambos colapsan a su
+   alto de contenido normal — el track deja de imponer altura extra y el
+   viewport deja de ser sticky — y la única forma de cambiar de sector vuelve
+   a ser clic/tap/teclado en las filas, igual que en el resto de breakpoints. */
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
     .solTrack {
-        /* ~una "parada" de scroll por sector (7) + margen de lectura. */
-        height: 320vh;
+        /* 7 sectores × ~34vh de "parada" de lectura + margen de entrada/
+           salida al pin. Recalculado para el panel compacto de 460px (antes
+           320vh, con un panel bien más alto y sin este `padding-top` de
+           `.solViewport`); mantener el 320vh original con contenido más
+           corto habría hecho que cada sector "durara" de más y el
+           scroll-jack se sintiera desconectado del progreso real de lectura. */
+        height: 280vh;
     }
 
     .solViewport {
         position: sticky;
         /* -scrolled: cuando este track se pega, la navbar ya ha encogido a
-           3.5rem. Con la altura por defecto quedaba un hueco de 1.25rem
-           entre la barra y el explorador. */
+           su alto reducido. */
         top: var(--navbar-offset-scrolled);
         min-height: calc(100vh - var(--navbar-offset-scrolled));
         display: flex;
-        /* `center` era la causa real del recorte superior: con contenido de
-           alto VARIABLE (antes) que en viewports bajos (900px con barra de
-           marcadores, ventana no maximizada…) podía superar el hueco
-           visible, centrar significaba que la mitad del desbordamiento
-           quedaba por ENCIMA del borde superior — y al estar en scroll-jack
-           (el scroll de página avanza de sector, no revela más contenido),
-           esa mitad era inalcanzable: se leía como "recorte"/"zoom"
-           permanente, no como algo que un scroll normal resolviera.
-           `flex-start` ancla el contenido siempre justo debajo de la
-           navbar — nunca puede quedar por encima del punto de anclaje. El
-           padding-block de abajo da el mismo aire visual que antes daba el
-           centrado, pero como TECHO, no como promedio. Además, `.panel`
-           ahora tiene alto FIJO (ver bloque ≥1024px junto a `.panel` más
-           abajo) que cabe con margen en cualquier viewport ≥800px de alto,
-           así que el caso que causaba el recorte ya no puede darse. */
+        /* column, NO el `row` por defecto de flex: ahora `.solViewport` tiene
+           DOS hijos directos (el hero y el `.container` del explorador, ver
+           Soluciones.tsx) en vez de uno solo como antes de este cambio — sin
+           `flex-direction: column` explícito, ambos habrían quedado lado a
+           lado en vez de apilados. Con un único hijo esto no hacía falta
+           (row/column daban el mismo resultado visual), así que el bug no
+           existía todavía. */
+        flex-direction: column;
+        /* flex-start + padding-top, NUNCA `center` — ese fue el bug real del
+           recorte superior en la versión anterior de este scroll-jack:
+           con `align-items: center`, cualquier vez que el contenido (hero +
+           `.explorer`) fuera más alto que el hueco visible del viewport
+           pineado, la mitad de arriba quedaba posicionada por ENCIMA del
+           borde superior del contenedor sticky — invisible, tapada por lo
+           que hubiera scrolleado antes (navbar), no solo recortada por abajo
+           como parecía a primera vista. flex-start ancla el borde superior
+           real del primer hijo (antes `.explorer`, ahora el hero) al top del
+           viewport pineado, así que siempre es lo primero visible, sin
+           importar cuánto mida el contenido ese frame. Revalidado tras mover
+           el hero aquí dentro (ver informe de verificación) — el fix sigue
+           aplicando igual, el riesgo ahora es más alto porque hay más
+           contenido total que debe caber, no porque el mecanismo cambie. */
         align-items: flex-start;
-        padding-block: clamp(1.5rem, 4vh, 3rem);
-    }
-
-    /* Red de seguridad, no la solución: con `.panel` a alto fijo esto ya no
-       debería activarse en el caso común (verificado a 900px y 1080px de
-       alto con los 7 sectores). Se mantiene por si un navegador con zoom
-       alto o una fuente de sistema más grande empuja el contenido más de lo
-       previsto — ahí es mejor un scroll interno que un recorte silencioso. */
-    .explorer {
-        max-height: calc(100vh - var(--navbar-offset-scrolled));
-        overflow-y: auto;
+        /* spacing-6 → spacing-3: con el hero como primer hijo real de
+           `.solViewport`, es SU propio padding (`div.solHero`, ver arriba)
+           el que aporta el aire superior antes del titular — este
+           padding-top del viewport ya no necesita cargar con ese rol él
+           solo (antes era el único responsable del aire por encima de
+           `.explorer`) y se reduce a un margen de seguridad mínimo respecto
+           al borde superior pineado, liberando presupuesto de alto para que
+           hero + explorador quepan juntos en `100vh - navbar`. */
+        padding-top: var(--spacing-3);
     }
 }
 
@@ -112,13 +219,15 @@
    (gap + padding + radius por fila, ver `.row`) en vez de celdas con borde
    compartido — es la diferencia entre "lista de navegación" y "tabla de
    datos": ninguna línea divisoria corre de un extremo a otro del componente,
-   y no hay fila de cabecera tipo `<thead>`. */
+   y no hay fila de cabecera tipo `<thead>`. Sin `border`: el contenedor se
+   separa del fondo solo por `background` (gradiente + color elevado) y
+   `box-shadow` (glass-inset + shadow-sm, ambos difusos — no una línea de 1px
+   haciendo de borde), look totalmente borderless por requisito explícito. */
 .ledger {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-2);
     padding: var(--spacing-3);
-    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-panel);
     background:
         var(--gradient-surface),
@@ -140,7 +249,11 @@
     gap: var(--spacing-3);
     width: 100%;
     flex: 1 1 0;
-    min-height: 56px;
+    /* Suelo bajo — a partir de aquí crecen para llenar el alto (fijo, ver
+       `.panel`) del panel vía flex:1, así que el valor real renderizado es
+       mayor; esto solo evita que el suelo empuje la lista más allá del panel
+       recortado (ver comentario de `.panel` ≥1024px más abajo). */
+    min-height: 40px;
     padding: var(--spacing-3) var(--spacing-4);
     background: transparent;
     border: none;
@@ -281,13 +394,15 @@
     opacity: 0.9;
 }
 
+/* Sin `border`: igual que `.ledger`, la separación del panel respecto al
+   fondo viene solo de `background` (radial mint + gradiente de superficie) y
+   `box-shadow` difuso (glass-inset + shadow-md) — cero hairline. */
 .panel {
     position: relative;
     display: flex;
     flex-direction: column;
     min-height: 420px;
     padding: var(--spacing-10) var(--spacing-9);
-    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-panel);
     background:
         radial-gradient(120% 90% at 100% 0%, rgba(57, 206, 134, 0.10), transparent 55%),
@@ -299,49 +414,92 @@
 }
 
 /* ═══════════════════════════════════════════
-   ≥1024px — alto FIJO del panel de detalle. El explorador vive en
-   scroll-jack ahí arriba (.solTrack/.solViewport): el panel nunca revela
-   contenido con un scroll normal, así que si su alto variaba por sector
-   (según longitud de título/who/solution) o superaba el hueco visible, la
-   parte sobrante quedaba inalcanzable — se percibía como "recorte" arriba
-   Y como un salto de tamaño al cambiar de sector. Fijar el alto a un valor
-   que quepa con margen el sector más largo (hostelería, verificado) y
-   recortar título/solution a un nº de líneas garantizado — en vez de
-   dejarlos crecer libres — asegura que los 7 sectores midan EXACTAMENTE lo
-   mismo. `.ledger` hereda este alto vía `align-items: stretch` en
-   `.explorer`, así que las filas de la lista también quedan con alto
-   consistente entre sectores. Por debajo de 1024px no hay scroll-jack ni
-   sticky — el panel vuelve a `min-height` libre (regla base arriba). */
+   ≥1024px — alto FIJO del panel de detalle. Dos motivos, el segundo más
+   crítico ahora que volvió el scroll-jack:
+   1. Cabe con margen en el hueco pineado de `.solViewport` (100vh - navbar,
+      menos su padding-top y el de `.explorerSection`) a 1440×900/1366×768.
+   2. Con el scroll-jack activo, un alto de panel que variara por sector
+      haría que `.ledger` (que hereda este alto vía `align-items: stretch`
+      en `.explorer`) cambiara de tamaño EN MITAD del scroll-jack cada vez
+      que `selected` avanza — el documento entero saltaría de alto mientras
+      el usuario sigue haciendo scroll, lo que además desincroniza el propio
+      `ScrollTrigger` (su cálculo de `end: 'bottom bottom'` asume que
+      `.solTrack` no cambia de alto). Fijar el alto evita ambos problemas a
+      la vez, con o sin scroll-jack activo.
+   El panel nunca revela contenido con scroll interno propio (el explorador
+   entero es un click/tap/scroll-jack-target), así que si su alto variaba
+   por sector (según longitud de título/who/solution) o el contenido
+   superaba el hueco fijo, la parte sobrante quedaba inalcanzable. Fijar el
+   alto a un valor que quepa con margen el sector más largo (hostelería,
+   verificado) y recortar título/solution a un nº de líneas garantizado —
+   en vez de dejarlos crecer libres — asegura que los 7 sectores midan
+   EXACTAMENTE lo mismo. Por debajo de 1024px el panel vuelve a
+   `min-height` libre (regla base arriba, sin scroll-jack en ese rango).
+
+   460px → 500px: al añadir el carrusel de páginas (overview/cómo funciona/
+   FAQ, ver `.pageNav` más abajo) el panel gana una fila fija de ~64px
+   (flechas + dots) que la versión de una sola página no tenía. Con 460px
+   ese añadido comía directamente el margen que dejaba "cabe con margen" en
+   el punto 1 de arriba; +40px lo recupera sin volver a desbordar el hueco
+   pineado a 1366×768 (verificado con Playwright, ver informe de la tarea:
+   sigue cabiendo en un viewport, con menos margen que antes pero sin
+   overflow). */
+/* Selectores compuestos (elemento+clase, no solo `.clase`) para .panelIcon/
+   .panelTitle/.panelWho/.panelSolution/.benefitsList: sus reglas BASE (sin
+   media query, ver más abajo en el archivo) se declaran DESPUÉS de este
+   bloque en el código fuente, y con igual especificidad (una sola clase) la
+   regla que aparece más tarde en la hoja de estilos gana el empate —
+   independientemente de que esté dentro de un @media que aplique. Antes esto
+   no era un problema porque el bloque ≥1024px solo añadía propiedades que la
+   regla base no tocaba (line-clamp, overflow...); ahora que también fijamos
+   font-size/margin aquí, esas SÍ colisionan con la regla base y perderían el
+   empate de cascada si se escriben como `.clase` a secas. Elemento+clase
+   (0,1,1) le gana en especificidad real a clase sola (0,1,0), así que el
+   resultado es determinista sin depender del orden de aparición. */
 @media (min-width: 1024px) {
     .panel {
-        height: 620px;
-        padding: var(--spacing-8) var(--spacing-9);
+        height: 500px;
+        padding: var(--spacing-6) var(--spacing-8);
     }
 
-    .panelIcon {
-        margin-bottom: var(--spacing-6);
+    div.panelIcon {
+        width: 44px;
+        height: 44px;
+        margin-bottom: var(--spacing-3);
     }
 
-    .panelTitle {
+    h2.panelTitle {
+        font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+        margin-bottom: var(--spacing-2);
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
 
-    .panelWho {
-        margin-bottom: var(--spacing-5);
+    p.panelWho {
+        margin-bottom: var(--spacing-3);
     }
 
-    .panelSolution {
+    p.panelSolution {
+        font-size: var(--font-size-base);
+        padding-top: var(--spacing-3);
+        margin-bottom: var(--spacing-4);
         display: -webkit-box;
-        -webkit-line-clamp: 3;
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
 
-    .benefitsList {
-        margin-bottom: var(--spacing-7);
+    ul.benefitsList {
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-5);
+    }
+
+    .panelCta button {
+        height: 2.75rem;
+        padding: 0 var(--spacing-6);
+        font-size: var(--font-size-sm);
     }
 }
 
@@ -357,6 +515,251 @@
     pointer-events: none;
 }
 
+/* ═══════════════════════════════════════════
+   Carrusel de páginas dentro del panel (overview / cómo funciona / FAQ) —
+   independiente de la selección de sector, ver Soluciones.tsx.
+   ═══════════════════════════════════════════ */
+
+/* Envoltorio de la página activa (AnimatePresence). `flex: 1` se come el
+   espacio sobrante entre el icono y `.pageNav`/`.panelCta` — así estos dos
+   quedan siempre pegados al fondo del panel sin depender de `margin-top:auto`
+   (que hoy solo hace falta en `.panelCta` como red de seguridad si
+   `.pageContent` llegara a quedar vacío). `min-height: 0` es necesario para
+   que un hijo flex con `overflow-y: auto` pueda encogerse por debajo de su
+   contenido — sin esto Chrome ignora el overflow y el panel se estira. */
+.pageContent {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+@media (min-width: 1024px) {
+    /* Red de seguridad, no el camino principal: con el alto fijo de 500px
+       (ver `.panel` ≥1024px más abajo) las 3 páginas de los 7 sectores caben
+       sin scroll con el contenido actual (line-clamp en overview, tamaños
+       reducidos en steps/FAQ — ver más abajo). Si el copy creciera en el
+       futuro, esto evita que se recorte contenido en vez de fallar en
+       silencio, a costa de una barra de scroll interna en vez de un layout
+       que se rompe. */
+    .pageContent {
+        overflow-y: auto;
+    }
+}
+
+.pageBody {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.pageHeading {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    letter-spacing: var(--tracking-tight);
+    margin: 0 0 var(--spacing-4);
+}
+
+/* ─── Página "Cómo funciona" — pasos numerados ─── */
+.stepsList {
+    list-style: none;
+    counter-reset: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--spacing-3);
+}
+
+.stepItem {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: var(--spacing-3);
+}
+
+.stepNumber {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    margin-top: 1px;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-mint);
+    background: var(--color-mint-soft);
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+}
+
+.stepTitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    line-height: 1.35;
+    margin: 0 0 2px;
+}
+
+.stepDescription {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    line-height: 1.45;
+    margin: 0;
+}
+
+/* ─── Página "Preguntas frecuentes" ─── */
+.faqList {
+    display: grid;
+    gap: var(--spacing-4);
+    margin: 0;
+}
+
+.faqItem {
+    display: grid;
+    gap: 4px;
+}
+
+.faqQuestion {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    line-height: 1.35;
+}
+
+.faqAnswer {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+@media (min-width: 1024px) {
+    .stepDescription,
+    .faqAnswer {
+        /* Cómo funciona/FAQ del sector más largo (hostelería, revalidado con
+           el copy actual) necesitan este recorte a 2 líneas para caber en el
+           alto fijo del panel sin scroll — mismo criterio que el line-clamp
+           de `.panelSolution`/`.panelTitle` para la página de overview. */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .stepsList,
+    .faqList {
+        gap: var(--spacing-2);
+    }
+}
+
+/* ─── Flechas + dots de paginación ───
+   Sin `border` (criterio borderless del resto del componente): las flechas
+   se distinguen del fondo solo por `background` (mint-soft en reposo, mint
+   sólido en hover) — ningún hairline nuevo. */
+.pageNav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    flex-shrink: 0;
+    margin: var(--spacing-3) 0;
+}
+
+.pageArrow {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    color: var(--color-mint);
+    background: var(--color-mint-soft);
+    border: none;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast),
+        opacity var(--transition-fast);
+}
+
+@media (hover: hover) {
+    .pageArrow:hover:not(:disabled) {
+        background-color: var(--color-mint);
+        color: var(--color-btn-dark);
+    }
+}
+
+.pageArrow:active:not(:disabled) {
+    transform: scale(0.94);
+}
+
+.pageArrow:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+.pageArrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.pageDots {
+    display: flex;
+    align-items: center;
+    /* 24px, no 10px: con solo 3 puntos el hit-area invisible de 24px (ver
+       `.pageDot::before`) necesita más separación visual que `.sectorDots`
+       (7 puntos, gap 14px) para no solaparse con el del vecino — un gap
+       menor aquí producía hit-areas contiguas donde el punto de la DERECHA
+       (más tarde en el DOM, pintado encima) se comía los clics dirigidos al
+       de la izquierda incluso apuntando a su centro exacto. Verificado con
+       Playwright: clicks fallando/reintentando 30s antes del fix. */
+    gap: 24px;
+}
+
+.pageDot {
+    position: relative;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all var(--transition-normal);
+}
+
+/* Área de toque cómoda (24px) sin agrandar el punto visible — mismo truco
+   que `.sectorDot::before`, pero más pequeña que sus 34px: con el gap de
+   24px de arriba, 24px de hit-area es el máximo que cabe entre los 3 puntos
+   sin que sus zonas invisibles se solapen ni en el caso más ajustado (punto
+   activo de 18px junto a uno inactivo de 6px). */
+.pageDot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    transform: translate(-50%, -50%);
+}
+
+.pageDotActive {
+    width: 18px;
+    background: var(--color-mint);
+}
+
+.pageDot:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+/* Sin `border`: el badge se distingue del panel solo por `background`
+   (verde suave) y `box-shadow` (glow mint difuso), no por un hairline. */
 .panelIcon {
     position: relative;
     width: 60px;
@@ -366,7 +769,6 @@
     justify-content: center;
     color: var(--color-mint);
     background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-mint);
     flex-shrink: 0;
@@ -411,6 +813,9 @@
     margin-right: var(--spacing-2);
 }
 
+/* Separación de `.panelWho` solo por `padding-top` (espacio en blanco) — sin
+   `border-top`, que era el último hairline "de tabla" que quedaba dentro
+   del panel. */
 .panelSolution {
     font-family: var(--font-family-display);
     font-size: var(--font-size-lg);
@@ -420,7 +825,6 @@
     letter-spacing: var(--tracking-tight);
     margin: 0 0 var(--spacing-7);
     padding-top: var(--spacing-6);
-    border-top: 1px solid var(--color-border-subtle);
     text-wrap: pretty;
 }
 
@@ -493,7 +897,9 @@
     .row,
     .row::before,
     .rowArrow,
-    .sectorDot {
+    .sectorDot,
+    .pageArrow,
+    .pageDot {
         transition: none;
     }
 
@@ -513,6 +919,12 @@
 @media (max-width: 1023px) {
     .ledger {
         flex-direction: row;
+        /* Sin `border-right` entre pills (ver `.row` más abajo), la
+           separación entre ellas pasa a depender solo de este gap — algo
+           más generoso que el `--spacing-2` vertical de desktop para que
+           las pills sigan leyéndose como elementos discretos sin una línea
+           divisoria. */
+        gap: var(--spacing-3);
         overflow-x: auto;
         scrollbar-width: none;
         border-radius: var(--radius-control);
@@ -541,23 +953,26 @@
         flex: 0 0 auto;
         min-height: 0;
         padding: var(--spacing-3) var(--spacing-5);
-        border-bottom: none;
-        border-right: 1px solid var(--color-border-subtle);
         white-space: nowrap;
     }
 
+    /* Indicador de pill activa — línea corta flotante centrada horizontalmente
+       (no un borde de 3px de extremo a extremo de la pill, que se leería
+       como divisor/borde inferior). */
     .row::before {
         top: auto;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: auto;
+        bottom: var(--spacing-1);
+        left: 50%;
+        right: auto;
+        width: 60%;
         height: 3px;
-        transform: scaleX(0);
+        transform: translateX(-50%) scaleX(0);
+        transform-origin: center;
+        border-radius: var(--radius-full);
     }
 
     .rowActive::before {
-        transform: scaleX(1);
+        transform: translateX(-50%) scaleX(1);
     }
 
     .rowArrow {
@@ -602,7 +1017,8 @@
         scrollbar-width: none;
         cursor: grab;
         /* El contenedor deja de ser una caja única con chrome propio —
-           cada `.row` pasa a ser su propia tarjeta bordeada (ver abajo). */
+           cada `.row` pasa a ser su propia tarjeta (background + box-shadow
+           difuso, sin border — ver abajo). */
         border: none;
         border-radius: 0;
         background: none;
@@ -621,6 +1037,9 @@
         cursor: grabbing;
     }
 
+    /* Sin `border`: cada tarjeta se separa de la siguiente/del fondo solo
+       por `background` + `box-shadow` difuso (glass-inset + shadow-sm),
+       igual criterio que `.ledger`/`.panel` en desktop. */
     .row {
         grid-template-columns: auto 1fr auto;
         gap: var(--spacing-3);
@@ -628,7 +1047,6 @@
         width: 84%;
         min-height: 0;
         padding: var(--spacing-4) var(--spacing-5);
-        border: 1px solid var(--color-border-subtle);
         border-radius: var(--radius-panel);
         background:
             var(--gradient-surface),
@@ -639,21 +1057,25 @@
         scroll-snap-stop: always;
     }
 
-    /* Barra de acento vertical a la izquierda de la tarjeta (como en
-       desktop) — cada tarjeta es de nuevo una unidad independiente. */
+    /* Indicador de tarjeta activa — vuelve al mismo patrón "pill flotante"
+       que la regla base de desktop (barra corta, centrada verticalmente),
+       en vez de una barra de extremo a extremo de la tarjeta: esa versión
+       (top:0/bottom:0) se leía como un border-left, justo lo que el resto
+       del componente dejó de tener. */
     .row::before {
-        top: 0;
-        bottom: 0;
-        left: 0;
+        top: 50%;
+        bottom: auto;
+        left: var(--spacing-2);
         right: auto;
         width: 3px;
-        height: auto;
-        transform: scaleY(0);
-        border-radius: var(--radius-panel) 0 0 var(--radius-panel);
+        height: 60%;
+        transform: translateY(-50%) scaleY(0);
+        transform-origin: center;
+        border-radius: var(--radius-full);
     }
 
     .rowActive::before {
-        transform: scaleY(1);
+        transform: translateY(-50%) scaleY(1);
     }
 
     /* Flecha visible de forma persistente (no solo hover/activo): en
