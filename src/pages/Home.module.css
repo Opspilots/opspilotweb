@@ -1253,21 +1253,27 @@
     }
 
     .heroTitle {
-        /* Suelo alineado a --font-size-2xl (antes 1.6rem, un valor suelto
-           fuera de la escala): en viewports muy estrechos (<360px) el 7vw
-           preferido cae por debajo del techo --font-size-3xl y el clamp
-           usaba ese suelo a medida en vez de un token de la escala. En los
-           ~390-430px del caso reportado el 7vw ya renderiza por encima de
-           ambos sueltos (~27-30px), así que el cambio solo protege el borde
-           inferior sin alterar el tamaño visible en el viewport del bug. */
-        font-size: clamp(var(--font-size-2xl), 7vw, var(--font-size-3xl));
-        margin-bottom: var(--spacing-5);
+        /* Un escalón entero más que el fix anterior (suelo --font-size-2xl /
+           techo --font-size-3xl): con ese clamp el preferido (7vw) caía por
+           debajo del suelo en TODO el rango de teléfono real (360-430px), así
+           que el tamaño renderizado era un --font-size-2xl fijo (28px) — el
+           bloque titular+subtítulo+CTAs quedaba mucho más bajo que el
+           viewport y dejaba aire muerto sobre el widget colapsado. Subiendo
+           suelo a --font-size-3xl (36px) y techo a --font-size-4xl (48px),
+           con 12vw de preferido, el tamaño SÍ escala dentro del rango real:
+           ~43px a 360px, ~48px (techo) desde ~400px. Sin esto, mover solo el
+           techo no cambia nada visible: clamp() usa el techo únicamente
+           cuando el preferido lo supera, y a estos anchos nunca lo hacía. */
+        font-size: clamp(var(--font-size-3xl), 12vw, var(--font-size-4xl));
+        margin-bottom: var(--spacing-6);
         gap: 0.04em;
     }
 
     .heroSubtitle {
-        font-size: var(--font-size-base);
-        margin-bottom: var(--spacing-7);
+        /* Un escalón más que --font-size-base (16px), a juego con el titular
+           más grande de arriba. */
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--spacing-8);
     }
 
     .ctaGroup {

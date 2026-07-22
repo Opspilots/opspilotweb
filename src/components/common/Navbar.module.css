@@ -13,6 +13,28 @@
     z-index: var(--z-index-navbar);
     background: transparent;
     border: 1px solid transparent;
+    /* Solo background/border-color transicionan — NUNCA top/left/right/height/
+       border-radius (ver .navbar.scrolled más abajo y el comentario del
+       commit e260cc7: ese conjunto de propiedades es justo lo que causó el
+       bug de contenido invisible en la antigua "píldora flotante"). */
+    transition: background var(--transition-normal), border-color var(--transition-normal);
+}
+
+/* ─── Scrolled: fondo glass al bajar (versión simple, NO la píldora flotante
+   que se quitó en e260cc7). Mismo full-width bar fijo de siempre — top, left,
+   right, height y border-radius no se tocan aquí, solo el fondo. ─── */
+.navbar.scrolled {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    border-color: var(--glass-border);
+}
+
+/* Fallback sin backdrop-filter: fondo sólido para no perder legibilidad. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .navbar.scrolled {
+        background: var(--color-bg-deep);
+    }
 }
 
 /* ─── Container ─── */
@@ -21,8 +43,8 @@
    encima de 1280px de viewport el logo no se alineaba con nada de lo que
    tenía debajo.
    El gutter ya sube a 40px en DESKTOP desde el token → sin @media aquí.
-   La navbar ya NO cambia de aspecto al hacer scroll (efecto "scrolled"
-   eliminado a propósito): un solo padding fijo, sin transición. */
+   La navbar cambia de fondo al hacer scroll (.scrolled arriba) pero mantiene
+   el mismo padding siempre: un solo padding fijo, sin transición aquí. */
 .container {
     max-width: var(--container-max);
     margin: 0 auto;
