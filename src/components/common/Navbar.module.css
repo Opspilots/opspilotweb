@@ -60,6 +60,17 @@
     }
 }
 
+/* ≤TÁCTIL: el wordmark es prácticamente el único texto de la barra (el resto
+   del menú se oculta tras el hamburger), así que a 22px lee como un detalle
+   menor en vez de la marca. Un escalón más en la misma escala tipográfica
+   (sin inventar un tamaño nuevo) le da la presencia que le falta junto al
+   icono de 50px. */
+@media (max-width: 767px) {
+    .logo {
+        font-size: var(--font-size-2xl);
+    }
+}
+
 /* ─── Desktop nav links ─── */
 .desktopMenu {
     display: none;
@@ -242,6 +253,13 @@
         calc(var(--spacing-5) + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
+    /* El panel es fixed hasta bottom:0 (a propósito, ver arriba), pero eso
+       deja al contenido real (5 links + CTA, ~400px) empaquetado arriba por
+       el flex-start por defecto y todo el resto de la pantalla como aire
+       muerto debajo — en móviles altos, casi la mitad del panel vacío. Centrar
+       el bloque de navegación en el espacio disponible reparte ese aire en
+       vez de acumularlo abajo, sin tocar el fondo full-bleed del overlay. */
+    justify-content: center;
     gap: var(--spacing-1);
     transform: translateX(100%);
     transition: transform var(--transition-normal), top var(--transition-normal);
@@ -253,17 +271,25 @@
     transform: translateX(0);
 }
 
+/* `display: block` + posicionamiento absoluto del punto (en vez de flex+gap
+   con el ::before como flex item condicional) para que TODOS los enlaces
+   arranquen en el mismo borde izquierdo. Antes, al ser flex items, el punto
+   de "activo" (6px) + su gap (--spacing-3 = 12px) empujaban el TEXTO del
+   enlace activo 18px a la derecha respecto a los enlaces inactivos (que no
+   tienen ese primer flex item) — el enlace de la ruta activa quedaba
+   visiblemente desalineado del resto. --spacing-4 aquí reserva el mismo
+   hueco para el punto en todos los estados, activo o no. */
 .mobileNavLink {
+    position: relative;
     font-size: var(--font-size-3xl);
     font-weight: 400;
     font-family: var(--font-family-heading);
     color: var(--color-text-muted);
     padding: var(--spacing-3) 0;
+    padding-left: var(--spacing-4);
     border-bottom: 1px solid var(--color-border-subtle);
     transition: color var(--transition-fast);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
+    display: block;
 }
 
 .mobileNavLink:hover {
@@ -276,11 +302,14 @@
 
 .mobileNavLinkActive::before {
     content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
     width: 6px;
     height: 6px;
     border-radius: var(--radius-full);
     background: var(--color-mint);
-    flex-shrink: 0;
 }
 
 .mobileCta {
