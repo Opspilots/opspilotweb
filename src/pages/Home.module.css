@@ -188,6 +188,22 @@
     align-items: flex-start;
 }
 
+/* TÁCTIL (≤767px, mismo umbral en el que HeroLeadWidget arranca colapsado —
+   ver .mobileToggle en HeroLeadWidget.module.css): en escritorio
+   min-height:100dvh + justify-content:center tiene sentido porque el titular
+   y el dashboard llenan el viewport. En móvil el widget colapsado deja el
+   bloque apilado (titular + CTAs + barra "Configura tu proyecto") mucho más
+   corto que la pantalla — con la altura forzada de .hero ese sobrante queda
+   como aire muerto entre los CTA y el widget (bug real reportado por el
+   usuario). Con min-height:auto el hero vuelve a ocupar solo lo que su
+   contenido necesita; el resto de reglas de .hero (padding, fondo, glow) no
+   se tocan. */
+@media (max-width: 767px) {
+    .hero {
+        min-height: auto;
+    }
+}
+
 /* Hero lead widget (HeroLeadWidget.tsx) — columna derecha en desktop. */
 .heroPanel {
     width: 100%;
@@ -256,8 +272,7 @@
 
 /* .ctaSecondary is now just a layout hook for the shared TextLink
    component (see components/common/TextLink.tsx) — the link/hover
-   styling itself lives in TextLink.module.css. Only the mobile
-   centering override below still applies here. */
+   styling itself lives in TextLink.module.css. */
 
 /* ═══════════════════════════════════════════
    PROBLEMA — editorial numbered list
@@ -1238,7 +1253,14 @@
     }
 
     .heroTitle {
-        font-size: clamp(1.6rem, 7vw, 2.25rem);
+        /* Suelo alineado a --font-size-2xl (antes 1.6rem, un valor suelto
+           fuera de la escala): en viewports muy estrechos (<360px) el 7vw
+           preferido cae por debajo del techo --font-size-3xl y el clamp
+           usaba ese suelo a medida en vez de un token de la escala. En los
+           ~390-430px del caso reportado el 7vw ya renderiza por encima de
+           ambos sueltos (~27-30px), así que el cambio solo protege el borde
+           inferior sin alterar el tamaño visible en el viewport del bug. */
+        font-size: clamp(var(--font-size-2xl), 7vw, var(--font-size-3xl));
         margin-bottom: var(--spacing-5);
         gap: 0.04em;
     }
@@ -1256,8 +1278,14 @@
         max-width: 320px;
     }
 
+    /* .ctaGroup > a se estira a lo ancho (align-items: stretch de arriba)
+       igual que el <Link> del botón primario — TextLink es inline-flex sin
+       justify-content propio, así que sin este flex-start explícito su
+       contenido quedaba centrado dentro del ancho ya estirado del enlace,
+       desalineado respecto al botón de encima (bug real reportado por el
+       usuario: "Ver soluciones" no pegaba al margen izquierdo). */
     .ctaSecondary {
-        justify-content: center;
+        justify-content: flex-start;
     }
 
     .caseCard {
