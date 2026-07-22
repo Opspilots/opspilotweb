@@ -253,13 +253,15 @@
         calc(var(--spacing-5) + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
-    /* El panel es fixed hasta bottom:0 (a propósito, ver arriba), pero eso
-       deja al contenido real (5 links + CTA, ~400px) empaquetado arriba por
-       el flex-start por defecto y todo el resto de la pantalla como aire
-       muerto debajo — en móviles altos, casi la mitad del panel vacío. Centrar
-       el bloque de navegación en el espacio disponible reparte ese aire en
-       vez de acumularlo abajo, sin tocar el fondo full-bleed del overlay. */
-    justify-content: center;
+    /* Los links fluyen normal desde arriba (flex-start, el default) — el CTA
+       final (.mobileCta) es quien se ancla al fondo vía `margin-top: auto`.
+       Antes este panel llevaba `justify-content: center`: con ~400px de
+       contenido real (5 links + CTA) en pantallas de ~600-700px, centrar TODO
+       el bloque hacía que el link del medio ("Soluciones") cayera pegado al
+       centro visual de la pantalla y dejaba un hueco enorme entre los links y
+       el CTA (que además quedaba muy abajo). El patrón de menú móvil esperado
+       es links agrupados arriba + CTA fijo al fondo, alcanzable con el
+       pulgar — no todo centrado en el medio. */
     gap: var(--spacing-1);
     transform: translateX(100%);
     transition: transform var(--transition-normal), top var(--transition-normal);
@@ -281,11 +283,16 @@
    hueco para el punto en todos los estados, activo o no. */
 .mobileNavLink {
     position: relative;
-    font-size: var(--font-size-3xl);
+    /* 3xl (36px) era el tamaño de un h1, excesivo para una lista de 5 enlaces
+       de navegación en móvil. 2xl (28px, el mismo escalón que ya usa el
+       wordmark en ≤767px) da presencia sin gritar. El padding vertical sube
+       de spacing-3 a spacing-4 para compensar la línea más baja y que el
+       bloque completo no se vea más apretado que antes. */
+    font-size: var(--font-size-2xl);
     font-weight: 400;
     font-family: var(--font-family-heading);
     color: var(--color-text-muted);
-    padding: var(--spacing-3) 0;
+    padding: var(--spacing-4) 0;
     padding-left: var(--spacing-4);
     border-bottom: 1px solid var(--color-border-subtle);
     transition: color var(--transition-fast);
@@ -313,7 +320,13 @@
 }
 
 .mobileCta {
-    margin-top: var(--spacing-5);
+    /* Ancla el CTA al fondo del panel sin centrar el resto del bloque: con
+       .mobileMenu en flex-column, `margin-top: auto` empuja este elemento (y
+       solo este) hasta el final del espacio disponible, dejando los links
+       agrupados arriba. Técnica estándar de flexbox para "empujar al final"
+       — ver comentario en .mobileMenu. */
+    margin-top: auto;
+    padding-top: var(--spacing-5);
 }
 
 /* ─── ≥TÁCTIL: menú de escritorio ─── */

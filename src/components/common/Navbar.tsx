@@ -67,7 +67,7 @@ export const Navbar: React.FC = () => {
                         <NavItem to={ROUTES.casos}>Casos de Éxito</NavItem>
                         <NavItem to={ROUTES.recursos}>Recursos</NavItem>
                         <Link to={ROUTES.contacto}>
-                            <Button variant="primary" size="sm">Diagnóstico gratuito</Button>
+                            <Button variant="primary" size="sm">Empieza ahora</Button>
                         </Link>
                     </div>
 
@@ -97,7 +97,7 @@ export const Navbar: React.FC = () => {
                 <div className={styles.mobileCta}>
                     <Link to={ROUTES.contacto} onClick={() => setIsMenuOpen(false)} style={{ width: '100%' }}>
 
-                        <Button variant="primary" fullWidth>Diagnóstico gratuito</Button>
+                        <Button variant="primary" fullWidth>Empieza ahora</Button>
                     </Link>
                 </div>
             </div>
