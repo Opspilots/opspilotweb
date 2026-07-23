@@ -983,28 +983,36 @@
 
 /* ═══════════════════════════════════════════
    ≤767px (móvil/táctil) — CARRUSEL horizontal con snap, un sector "tarjeta"
-   a la vez, con tres señales de affordance simultáneas (nunca una sola,
-   nunca cero):
+   a la vez, SIN peek del siguiente (ancho completo, edge-to-edge dentro del
+   container): la tarjeta activa es la única visible al soltar el swipe, sin
+   ningún borde del siguiente sector asomando. Señal de affordance única:
+   DOTS (`.sectorDots`, ver JSX en Soluciones.tsx, mismo patrón que
+   `.caseDots` del carrusel de Home) — conteo y posición.
 
-   1. PEEK — cada tarjeta ocupa ~84% del ancho: el ~16% del siguiente sector
-      queda visible asomando en el borde derecho. Comunica "hay más" antes
-      de que el usuario toque nada.
-   2. FADE — `.ledger` recorta ese borde con un mask-image degradado, así
-      el peek se lee como "contenido que continúa fuera de pantalla" y no
-      como una tarjeta cortada/rota por error.
-   3. DOTS — `.sectorDots` (ver JSX en Soluciones.tsx, mismo patrón que
-      `.caseDots` del carrusel de Home) muestra cuántos sectores hay en
-      total y cuál está activo — la señal que el peek/fade por sí solos NO
-      dan: conteo y posición.
+   Antes cada tarjeta ocupaba ~84% del ancho (peek del ~16% del siguiente
+   sector) + un mask-image de fade en `.ledger` para que ese borde se leyera
+   como "contenido que continúa" en vez de una tarjeta cortada. Petición
+   explícita: cero peek — se retira tanto el 84%/`width` como el mask-image
+   (ya no hay borde que desvanecer).
+
+   El hero de arriba (`.solHero`, título "Software para {sector}") queda
+   PEGADO a este carrusel al swipear: `.ledger` dispara `onScroll` en
+   Soluciones.tsx, que traduce `scrollLeft` a un índice de tarjeta y llama a
+   `setSelected` — el mismo estado que ya pintaba el hero por clic/tap. Antes
+   solo el tap cambiaba `selected`; el swipe scrolleaba `.ledger` sin tocar
+   ese estado, así que el hero se quedaba mostrando el sector viejo mientras
+   la tarjeta activa (bajo el dedo, en el centro de la pantalla) ya era otra
+   — "dos tracks" desincronizados en la práctica aunque compartieran el mismo
+   store. Con el listener, hero y tarjeta activa avanzan como una sola unidad
+   sin importar si el cambio vino de un tap o de un swipe.
 
    Esto reemplaza un intento anterior de carril horizontal que se abandonó
    tras la auditoría móvil: aquel carril (aún visible en el breakpoint
-   768-1023px de abajo) no tenía NINGUNA de estas tres señales — filas a
-   ancho completo (bug de `width`, ya corregido ahí), sin peek, sin fade,
-   sin dots. El resultado era que sectores quedaban ocultos sin ninguna
-   pista de que existía un gesto de swipe. El fallback de selección por
-   clic/tap (`onClick={() => setSelected(i)}` en Soluciones.tsx) sigue
-   siendo el mismo — aquí solo cambia el layout y las señales visuales. */
+   768-1023px de abajo) no tenía ninguna señal de affordance — filas a ancho
+   completo (bug de `width`, ya corregido ahí), sin dots. El fallback de
+   selección por clic/tap (`onClick={() => setSelected(i)}` en
+   Soluciones.tsx) sigue siendo el mismo — aquí solo cambia el layout y las
+   señales visuales. */
 @media (max-width: 767px) {
     .ledger {
         flex-direction: row;
@@ -1026,8 +1034,6 @@
         box-shadow: none;
         padding: var(--spacing-1) var(--spacing-1) var(--spacing-2);
         margin: 0 calc(-1 * var(--spacing-1));
-        mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
     }
 
     .ledger::-webkit-scrollbar {
@@ -1040,12 +1046,14 @@
 
     /* Sin `border`: cada tarjeta se separa de la siguiente/del fondo solo
        por `background` + `box-shadow` difuso (glass-inset + shadow-sm),
-       igual criterio que `.ledger`/`.panel` en desktop. */
+       igual criterio que `.ledger`/`.panel` en desktop. Ancho 100% (antes
+       84%, con peek): una sola tarjeta ocupa todo el ancho del carril al
+       quedar snapeada, sin ningún borde del siguiente sector visible. */
     .row {
         grid-template-columns: auto 1fr auto;
         gap: var(--spacing-3);
-        flex: 0 0 84%;
-        width: 84%;
+        flex: 0 0 100%;
+        width: 100%;
         min-height: 0;
         padding: var(--spacing-4) var(--spacing-5);
         border-radius: var(--radius-panel);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import gsap from 'gsap';
@@ -162,6 +162,7 @@ export const Soluciones: React.FC = () => {
     const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const ledgerRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
+    const ledgerScrollRaf = useRef(0);
 
     // Cambiar de sector (clic/tap/teclado en las filas O scroll-jack, ambos
     // pasan por `setSelected`) siempre vuelve el panel a su página 1 — nunca
@@ -202,6 +203,37 @@ export const Soluciones: React.FC = () => {
     // carriles horizontales de Home.tsx). Solo actúa sobre puntero tipo
     // mouse — no interfiere con el swipe táctil nativo del carrusel móvil.
     useDragScroll(ledgerRef);
+
+    // Sincroniza `selected` (y por tanto el hero, "Software para X") con la
+    // tarjeta que queda snapeada al centro tras un swipe en el carrusel
+    // ≤767px (ver Soluciones.module.css) — mismo patrón que
+    // `handleCaseScroll`/`getCaseScrollUnit` del carrusel de casos en
+    // Home.tsx. Sin esto, `selected` solo cambiaba por tap (`onClick` de
+    // cada fila) y el hero se quedaba mostrando el sector anterior mientras
+    // el usuario ya había swipeado a otra tarjeta — hero y carrusel se leían
+    // como dos tracks independientes en vez de una sola unidad. Gateado a
+    // ≤767px vía matchMedia: por encima de ese ancho `.ledger` es el carril
+    // de pills de ancho variable (768–1023px) o la lista vertical de
+    // desktop, donde no hay tarjetas de ancho uniforme y este cálculo de
+    // índice por `scrollLeft / unit` no aplicaría.
+    const handleLedgerScroll = useCallback(() => {
+        cancelAnimationFrame(ledgerScrollRaf.current);
+        ledgerScrollRaf.current = requestAnimationFrame(() => {
+            if (!window.matchMedia('(max-width: 767px)').matches) return;
+            const ledger = ledgerRef.current;
+            if (!ledger) return;
+            const card = ledger.children[0] as HTMLElement | null;
+            if (!card) return;
+            const gap = parseFloat(window.getComputedStyle(ledger).gap) || 0;
+            const unit = card.offsetWidth + gap;
+            if (!unit) return;
+            const idx = Math.round(ledger.scrollLeft / unit);
+            const clamped = Math.max(0, Math.min(idx, SECTORS.length - 1));
+            setSelected((prev) => (prev === clamped ? prev : clamped));
+        });
+    }, []);
+
+    useEffect(() => () => cancelAnimationFrame(ledgerScrollRaf.current), []);
 
     // Selección de sector — dos mecanismos que conviven:
     // 1. Clic/tap/teclado en las filas (ver onClick/onKeyDown más abajo) —
@@ -354,6 +386,7 @@ export const Soluciones: React.FC = () => {
                                     aria-label="Sectores"
                                     aria-orientation="vertical"
                                     ref={ledgerRef}
+                                    onScroll={handleLedgerScroll}
                                 >
                                     {SECTORS.map((s, i) => {
                                         const RowIcon = ICONS[s.iconKey];
