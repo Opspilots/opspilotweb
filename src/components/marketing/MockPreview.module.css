@@ -125,6 +125,15 @@
     min-width: 0;
 }
 
+/* Solo el modo con texto necesita más aire: dos secciones de dos palabras a
+   8px se leen como una sola. Las barras grises NO lo necesitan y, sobre todo,
+   NO deben cambiar — es el modo que usa CaseMockPanel en Inicio y en Casos, y
+   ahí cualquier retoque es una regresión gratuita en dos páginas que nadie ha
+   pedido tocar. De ahí el `:has()` en vez de subir el gap y listo. */
+.tplNavLinks:has(span:not(:empty)) {
+    gap: var(--spacing-3);
+}
+
 /* Modo "barras grises" — sin etiquetas de nav (CaseMockPanel). Exactamente
    las mismas medidas que antes de que la maqueta admitiera texto. */
 .tplNavLinks span:empty {
