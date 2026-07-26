@@ -1,16 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import {
-    CalendarCheck2,
-    FileCheck2,
-    FileText,
-    MessageSquare,
-    Receipt,
-    Users,
-} from 'lucide-react';
-import { MockPreview, type MockBlock } from '../marketing/MockPreview';
-import type { CaseShowcase, ShowcaseIconKey } from '../../data';
+import { MockPreview } from '../marketing/MockPreview';
+import { toMockBlock } from '../marketing/toMockBlock';
+import type { CaseShowcase } from '../../data';
 import styles from './CaseMockPanel.module.css';
 
 // Guard SSR — mismo patrón que useScrollReveal.ts.
@@ -18,38 +11,13 @@ if (typeof window !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
 }
 
-const ICONS: Record<ShowcaseIconKey, React.FC<{ size?: number; strokeWidth?: number }>> = {
-    chatMessage: MessageSquare,
-    calendarCheck: CalendarCheck2,
-    fileText: FileText,
-    receipt: Receipt,
-    documentCheck: FileCheck2,
-    users: Users,
-};
-
-// Convierte el `ShowcaseBlock` (dato puro, iconos por clave — ver
-// src/data/types.ts) al `MockBlock` genérico que consume MockPreview, igual
-// que hace HeroLeadWidget.tsx con su propio `toMockBlock`.
-function toMockBlock(block: CaseShowcase['block']): MockBlock {
-    if (block.type === 'sequence') {
-        return {
-            type: 'sequence',
-            beforeIcon: ICONS[block.beforeIcon],
-            afterIcon: ICONS[block.afterIcon],
-            beforeLabel: block.beforeLabel,
-            afterLabel: block.afterLabel,
-        };
-    }
-    return {
-        type: 'modules',
-        items: block.items.map((item) => ({
-            key: item.key,
-            icon: ICONS[item.icon],
-            label: item.label,
-            active: item.active,
-        })),
-    };
-}
+// La tabla de iconos y la conversión ShowcaseBlock → MockBlock vivían aquí
+// dentro cuando este era el único consumidor. Desde que el embudo del hero
+// también describe sus maquetas como dato (src/data/leadFunnel.ts) hay dos, y
+// duplicar la conversión significaba que añadir una variante de bloque
+// compilara aquí y reventara allí. Ambas se movieron a
+// src/components/marketing/ (mockIcons.ts y toMockBlock.ts), junto al
+// componente al que sirven.
 
 /** Detecta cuándo el panel entra en viewport, una sola vez, sin animar bajo
  * prefers-reduced-motion — mismo patrón que usaba el antiguo

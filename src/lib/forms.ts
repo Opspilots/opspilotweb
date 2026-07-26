@@ -7,8 +7,14 @@
 // para código NUEVO; si en el futuro se refactorizan los otros dos, este es
 // el sitio donde centralizar la lógica.
 import { useCallback, useState } from 'react';
+import { FORMSUBMIT_ENDPOINT } from './company';
 
-export const FORM_ENDPOINT = 'https://formsubmit.co/ajax/opspilot.contact@gmail.com';
+// Reexportado, no redeclarado: el endpoint depende de a qué buzón entrega, es
+// decir de un dato de empresa, y ese vive ahora en un solo sitio
+// (src/lib/company.ts). Antes el correo estaba escrito a mano aquí Y en
+// Contact.tsx Y en el @graph de index.html; cambiarlo obligaba a acertar en
+// los tres. Se mantiene el nombre `FORM_ENDPOINT` para no tocar consumidores.
+export const FORM_ENDPOINT = FORMSUBMIT_ENDPOINT;
 
 // Mismo regex que Contact.tsx — validación de email en cliente, no exhaustiva
 // (RFC completo no vale la pena aquí), solo atrapa los typos obvios.

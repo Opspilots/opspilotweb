@@ -93,7 +93,14 @@
     --color-success: #39ce86;
     --color-warning: #e0a64a;
     --color-error: #e15a5a;
-    --color-info: #6189c4;
+    --color-info: #6189c4;           /* Azul de señal. Base RGB: 97, 137, 196 */
+    /* Tinte suave de --color-info, con la MISMA alpha (0.10) que
+       --color-mint-soft y --color-warm-soft. No es un color nuevo: es el que
+       ya existía, en la forma que el sistema usa para rellenos de acento.
+       Hizo falta al dar acento propio a la rama "automatizar" del embudo del
+       hero, que hasta entonces compartía mint con la rama "web" (ver
+       BRANCH_ACCENT en src/data/leadFunnel.ts). */
+    --color-info-soft: rgba(97, 137, 196, 0.10);
 
     /* ═══════════════════════════════════════════
        BACKWARDS-COMPAT TOKENS (DEPRECADOS — alias, no eliminar)

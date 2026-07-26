@@ -8,8 +8,12 @@ import { StructuredData } from '../components/seo/StructuredData';
 import sys from '../styles/page-system.module.css';
 import styles from './Contact.module.css';
 import { Mail, MessageSquare } from 'lucide-react';
+// Datos de empresa desde su fuente única (ver src/lib/company.ts). El endpoint
+// se toma del mismo sitio: lo que lo determina es a qué buzón entrega, y ese
+// buzón es un dato de empresa, no una constante de esta página.
+import { CONTACT_EMAIL, FORMSUBMIT_ENDPOINT, PHONE, WHATSAPP_URL } from '../lib/company';
 
-const FORM_CONTACT_URL = 'https://formsubmit.co/ajax/opspilot.contact@gmail.com';
+const FORM_CONTACT_URL = FORMSUBMIT_ENDPOINT;
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -269,14 +273,14 @@ export const Contact: React.FC = () => {
                                         <span className={styles.methodIcon}><Mail size={20} strokeWidth={1.5} /></span>
                                         <div>
                                             <strong>Email</strong>
-                                            <p><a href="mailto:opspilot.contact@gmail.com" className={styles.emailLink}>opspilot.contact@gmail.com</a></p>
+                                            <p><a href={`mailto:${CONTACT_EMAIL}`} className={styles.emailLink}>{CONTACT_EMAIL}</a></p>
                                         </div>
                                     </div>
                                     <div className={styles.method}>
                                         <span className={styles.methodIcon}><MessageSquare size={20} strokeWidth={1.5} /></span>
                                         <div>
                                             <strong>WhatsApp</strong>
-                                            <p>+34 640 75 61 26</p>
+                                            <p>{PHONE.display}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -286,7 +290,7 @@ export const Contact: React.FC = () => {
                                 <h3 className={styles.infoTitle}>¿Prefieres hablar ahora?</h3>
                                 <p>Escríbenos por WhatsApp y te contestamos en horario laboral. Sin formularios.</p>
                                 <a
-                                    href="https://wa.me/34640756126?text=Hola%2C%20me%20gustar%C3%ADa%20saber%20m%C3%A1s%20sobre%20vuestros%20servicios."
+                                    href={`${WHATSAPP_URL}?text=Hola%2C%20me%20gustar%C3%ADa%20saber%20m%C3%A1s%20sobre%20vuestros%20servicios.`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >

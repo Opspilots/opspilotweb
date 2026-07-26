@@ -2,13 +2,29 @@
    MOCK PREVIEW — mini-maqueta de "web/panel generado" (nav + titular +
    bloque de contenido destacado). Extraída del Paso 4 de HeroLeadWidget
    (mismo lenguaje visual de "web ensamblándose") para reutilizarse también
-   en CaseMockPanel. Acento mint por defecto; `data-accent="warm"` lo
-   cambia a ámbar (ver ACCENT_VARS en el .tsx).
+   en CaseMockPanel. Acento mint por defecto; `data-accent` lo cambia a
+   ámbar (warm) o azul de señal (info) — ver MOCK_ACCENT_VARS en el .tsx.
+
+   ─── DOS MODOS, UN SOLO JSX ───
+   La nav se pinta SIEMPRE con el mismo marcado. Lo que decide si sale como
+   barras grises o como etiquetas de texto es el par de selectores
+   `:empty` / `:not(:empty)`: sin props de nav (CaseMockPanel) las cadenas
+   llegan vacías y salen las barras de siempre, píxel por píxel; con props
+   (embudo del hero) sale el texto real del sector. Se hace así y no con dos
+   ramas de JSX porque dos ramas se desincronizan: la primera vez que
+   alguien toque el layout de la nav, arreglará una y romperá la otra.
+
+   ─── data-layout ───
+   Reordena y re-jerarquiza la MISMA maqueta según el objetivo elegido en el
+   embudo (ver OBJETIVO_LAYOUT en src/data/leadFunnel.ts). Se hace con
+   `order` de flexbox y no cambiando el orden del DOM: el orden de lectura
+   para teclado y lector de pantalla sigue siendo nav → titular → bloque en
+   las cinco disposiciones.
 
    La cascada de entrada (nav → titular → bloque) solo corre cuando el
    contenedor lleva `data-animate="true"` (prop `revealed`, ver .tsx) — así
    un consumidor scroll-revealed puede montar el componente sin gastar la
-   animación fuera de pantalla, y re-disparrarla justo cuando conviene.
+   animación fuera de pantalla, y re-dispararla justo cuando conviene.
    ═══════════════════════════════════════════ */
 
 .templatePreview {
@@ -80,6 +96,13 @@
     );
 }
 
+/* En 220px no caben tres pestañas sin apelotonarse. Ocultar el sobrante es
+   justo lo que hace una interfaz real al estrecharse, así que la maqueta
+   sigue leyéndose como panel en vez de romperse. */
+.templatePreview[data-device='mobile'] .tplTab:nth-child(n + 3) {
+    display: none;
+}
+
 .tplNav {
     display: flex;
     align-items: center;
@@ -97,10 +120,14 @@
 
 .tplNavLinks {
     display: inline-flex;
-    gap: var(--spacing-2);
+    align-items: center;
+    gap: var(--spacing-3);
+    min-width: 0;
 }
 
-.tplNavLinks span {
+/* Modo "barras grises" — sin etiquetas de nav (CaseMockPanel). Exactamente
+   las mismas medidas que antes de que la maqueta admitiera texto. */
+.tplNavLinks span:empty {
     display: block;
     width: 24px;
     height: 5px;
@@ -108,15 +135,97 @@
     background: var(--color-border-strong);
 }
 
+/* Modo "etiquetas reales" — el embudo del hero. Mono y pequeño: es chrome de
+   interfaz, tiene que leerse como una barra de navegación, no como un
+   párrafo. Sin mayúsculas a propósito: en uppercase tres secciones de dos
+   palabras no caben en la columna del hero. */
+.tplNavLinks span:not(:empty) {
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
 .tplNavCta {
+    display: inline-flex;
+    align-items: center;
     margin-left: auto;
-    width: 38px;
-    height: 14px;
     border-radius: var(--radius-full);
     border: 1px solid var(--tpl-accent-border);
     background: var(--tpl-accent-soft);
     flex-shrink: 0;
-    transition: border-color 0.4s var(--ease-out-expo), background-color 0.4s var(--ease-out-expo);
+    transition: border-color 0.4s var(--ease-out-expo), background-color 0.4s var(--ease-out-expo),
+        color 0.4s var(--ease-out-expo);
+}
+
+/* Píldora vacía de siempre (CaseMockPanel). */
+.tplNavCta:empty {
+    width: 38px;
+    height: 14px;
+}
+
+/* Botón con acción real. Es la pieza que hace que la maqueta se lea como
+   "de mi sector": un instalador no pone "Comprar", pone "Pedir presupuesto". */
+.tplNavCta:not(:empty) {
+    padding: 4px 9px;
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: var(--tpl-accent);
+    white-space: nowrap;
+}
+
+/* ── Pestañas (solo data-layout="panel") ──
+   Sustituyen visualmente a los enlaces de la nav, que se ocultan para no
+   decir lo mismo dos veces. El margen negativo recorta el `gap` del
+   contenedor: una barra de pestañas va pegada a su nav, no a 20px. */
+.tplTabs {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-4);
+    margin-top: calc(-1 * var(--spacing-3));
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.tplTab {
+    padding-bottom: var(--spacing-2);
+    margin-bottom: -1px;
+    border-bottom: 1.5px solid transparent;
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.tplTabActive {
+    color: var(--tpl-accent);
+    border-bottom-color: var(--tpl-accent);
+}
+
+/* ── Banda de portada (solo data-layout="portada") ──
+   HUECO de imagen, no imagen. Degradado del acento + trama diagonal fina
+   sobre la superficie elevada: densidad visual suficiente para que se lea
+   como "aquí va la portada" sin inventar una foto de sector que no
+   tenemos. Sin texto dentro, justamente para que nadie lo confunda con
+   contenido. */
+.tplCover {
+    height: 68px;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--tpl-accent-border);
+    background:
+        radial-gradient(130% 150% at 10% 0%, var(--tpl-accent-soft), transparent 62%),
+        repeating-linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.022) 0 2px,
+            transparent 2px 7px
+        ),
+        var(--color-bg-elevated);
+    box-shadow: var(--glass-inset);
 }
 
 .tplHeadline {
@@ -155,6 +264,7 @@
     letter-spacing: var(--tracking-tight);
     margin: 0;
     text-wrap: balance;
+    transition: font-size 0.4s var(--ease-out-expo);
 }
 
 .tplSub {
@@ -169,62 +279,150 @@
     border-top: 1px solid var(--color-border-subtle);
 }
 
-/* ── Bloque testimonial ── */
-.testimonial {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
-}
-
-.stars {
-    display: inline-flex;
-    gap: 2px;
-    color: var(--color-mint);
-}
-
-.quoteBar {
-    display: block;
-    height: 8px;
-    width: 92%;
-    border-radius: var(--radius-full);
-    background: var(--color-border-strong);
-}
-
-.quoteBarShort {
-    width: 64%;
-}
-
-.avatarRow {
+/* ── Barra de acción (solo data-layout="accion") ──
+   La misma etiqueta que el botón de la nav, en grande y a pie de maqueta.
+   Repetir la acción principal arriba y abajo es lo que hace cualquier
+   página que quiere que la pulses; que sean DOS acciones distintas es lo
+   que hace una que no lo tiene claro. */
+.tplAction {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2);
-    margin-top: var(--spacing-1);
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-control);
+    background: var(--tpl-accent-fill);
+    color: var(--color-bg-deep);
+    font-family: var(--font-family-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    box-shadow: var(--tpl-accent-shadow);
 }
 
-.avatarDot {
-    width: 20px;
-    height: 20px;
-    border-radius: var(--radius-full);
-    background: var(--gradient-mint);
-    flex-shrink: 0;
-    transition: box-shadow var(--transition-normal);
-}
-
-/* Micro-interactividad: el mock responde al hover en vez de ser puramente
-   decorativo — glow sutil, sin mover nada del layout. Solo en punteros con
-   hover real, para no dejar un estado "pegado" en touch. */
-@media (hover: hover) {
-    .testimonial:hover .avatarDot {
-        box-shadow: var(--shadow-mint);
-    }
-}
-
-.avatarName {
+/* Flecha dibujada con bordes en vez de importar un icono: MockPreview no
+   depende de lucide (los iconos llegan como props) y no vale la pena
+   romper esa regla por un chevron decorativo. */
+.tplActionArrow {
     display: block;
-    width: 70px;
+    width: 6px;
     height: 6px;
+    border-top: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   DISPOSICIONES — qué mueve cada objetivo del embudo
+   ═══════════════════════════════════════════ */
+
+/* ── accion (objetivo "vender más") ──
+   La llamada a la acción deja de ser un detalle y pasa a ser el elemento
+   dominante: relleno sólido en la nav (no el tinte suave) y barra a pie. */
+.templatePreview[data-layout='accion'] .tplNavCta:not(:empty) {
+    background: var(--tpl-accent-fill);
+    border-color: transparent;
+    color: var(--color-bg-deep);
+}
+
+/* ── flujo (objetivo "ahorrar tiempo") ──
+   El bloque sube por encima del titular: lo primero que se ve es el
+   mecanismo, no el discurso. Como el bloque deja de ir debajo del titular,
+   su separador superior sobra y se lo queda el titular; a cambio el bloque
+   gana un raíl de acento a la izquierda que lo marca como protagonista. */
+.templatePreview[data-layout='flujo'] .tplNav {
+    order: 1;
+}
+
+.templatePreview[data-layout='flujo'] .tplBlock {
+    order: 2;
+    padding-top: 0;
+    padding-left: var(--spacing-4);
+    border-top: none;
+    border-left: 2px solid var(--tpl-accent);
+}
+
+.templatePreview[data-layout='flujo'] .tplHeadline {
+    order: 3;
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ── portada (objetivo "dar mejor imagen") ──
+   Manda el titular: banda de portada arriba y un escalón más de tamaño. La
+   CTA se apaga a contorno — quien busca imagen no quiere un botón gritando
+   en la esquina. */
+.templatePreview[data-layout='portada'] .tplTitle {
+    font-size: var(--font-size-xl);
+}
+
+.templatePreview[data-layout='portada'] .tplNavCta:not(:empty) {
+    background: transparent;
+    color: var(--color-text-muted);
+}
+
+/* ── panel (objetivo "tener todo controlado") ──
+   Los enlaces se convierten en pestañas (ver .tplTabs) y TODOS los módulos
+   se pintan en estado vivo: la idea de "todo controlado" es precisamente
+   que no hay nada apagado esperando a que lo mires. */
+.templatePreview[data-layout='panel'] .tplNavLinks {
+    display: none;
+}
+
+.templatePreview[data-layout='panel'] .moduleTile {
+    border-color: var(--tpl-accent-border);
+    background: var(--tpl-accent-soft);
+    color: var(--tpl-accent);
+}
+
+/* ── Bloque de servicios ──
+   Píldoras con el nombre que el oficio usa de verdad. Forma distinta a
+   propósito de .moduleTile (tile cuadrado, icono arriba): un catálogo de
+   servicios de una web pública y una rejilla de módulos de un panel interno
+   no deben parecer lo mismo. La primera va destacada, como la categoría
+   activa de cualquier listado. */
+.services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+}
+
+.serviceChip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-full);
-    background: var(--color-border-strong);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--color-text-muted);
+    transition: border-color var(--transition-normal), background-color var(--transition-normal),
+        color var(--transition-normal), transform var(--transition-fast) var(--ease-custom),
+        box-shadow var(--transition-fast) var(--ease-custom);
+}
+
+.serviceChip:first-child {
+    border-color: var(--tpl-accent-border);
+    background: var(--tpl-accent-soft);
+    color: var(--tpl-accent);
+}
+
+.serviceLabel {
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+@media (hover: hover) {
+    .serviceChip:hover {
+        border-color: var(--tpl-accent-border);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
 }
 
 /* ── Bloque de módulos ── */
@@ -252,8 +450,7 @@
 
 /* Generalizado a las custom properties de acento (antes hardcodeado a warm):
    así el bloque de módulos puede usarse tanto en warm (rama "sistema" del
-   hero, Asesoría) como en mint (Agencia) sin duplicar la regla. Mismos
-   valores exactos que antes para warm (ver ACCENT_VARS.warm en el .tsx). */
+   hero, Asesoría) como en mint (Agencia) sin duplicar la regla. */
 .moduleTileActive {
     border-color: var(--tpl-accent-border);
     background: var(--tpl-accent-soft);
@@ -265,7 +462,7 @@
    plantilla se siente como algo tocable, no un dibujo estático. */
 @media (hover: hover) {
     .moduleTile:hover {
-        border-color: var(--color-border-mint);
+        border-color: var(--tpl-accent-border);
         transform: translateY(-2px);
         box-shadow: var(--shadow-sm);
     }
@@ -309,11 +506,15 @@
     opacity: 0.65;
 }
 
+/* Generalizado a las custom properties de acento igual que .moduleTileActive.
+   Estaba clavado a mint, así que la rama "automatizar" —la única que usa este
+   bloque en el embudo— seguía pintando el "después" en verde por mucho que su
+   acento pasara a azul: el punto de marca y el tile se contradecían. */
 .seqTileAfter {
-    background: var(--color-mint-soft);
-    border-color: var(--color-border-mint);
-    color: var(--color-mint);
-    box-shadow: var(--shadow-mint);
+    background: var(--tpl-accent-soft);
+    border-color: var(--tpl-accent-border);
+    color: var(--tpl-accent);
+    box-shadow: var(--tpl-accent-shadow);
 }
 
 .seqLabel {
@@ -351,19 +552,26 @@
 @media (prefers-reduced-motion: no-preference) {
     .templatePreview[data-animate='true'] .tplNav { animation: tplBlockDown 0.4s var(--ease-out-expo) both; }
     .templatePreview[data-animate='true'] .tplBrand { animation: tplBrandIn 0.5s var(--ease-out-expo) both; }
+    .templatePreview[data-animate='true'] .tplTabs { animation: tplBlockDown 0.4s var(--ease-out-expo) 0.06s both; }
+    .templatePreview[data-animate='true'] .tplCover { animation: tplFadeUp 0.45s var(--ease-out-expo) 0.08s both; }
     .templatePreview[data-animate='true'] .tplKicker { animation: tplKickerIn 0.35s var(--ease-out-expo) 0.1s both; }
     .templatePreview[data-animate='true'] .tplTitle { animation: tplWipeIn 0.45s var(--ease-out-expo) 0.18s both; }
     .templatePreview[data-animate='true'] .tplSub { animation: tplFadeUp 0.35s var(--ease-out-expo) 0.32s both; }
     .templatePreview[data-animate='true'] .tplBlock { animation: tplFadeUp 0.4s var(--ease-out-expo) 0.42s both; }
+    /* La barra de acción cierra la cascada: es el remate de la maqueta, así
+       que aterriza cuando todo lo demás ya está colocado. */
+    .templatePreview[data-animate='true'] .tplAction { animation: tplFadeUp 0.4s var(--ease-out-expo) 0.62s both; }
 
     .templatePreview[data-animate='true'] .moduleTile,
     .templatePreview[data-animate='true'] .seqTile,
-    .templatePreview[data-animate='true'] .stars {
+    .templatePreview[data-animate='true'] .serviceChip {
         animation: tplPopIn 0.35s var(--ease-out-expo) both;
         animation-delay: 0.48s;
     }
-    .templatePreview[data-animate='true'] .moduleTile:nth-child(2) { animation-delay: 0.54s; }
-    .templatePreview[data-animate='true'] .moduleTile:nth-child(3) { animation-delay: 0.6s; }
+    .templatePreview[data-animate='true'] .moduleTile:nth-child(2),
+    .templatePreview[data-animate='true'] .serviceChip:nth-child(2) { animation-delay: 0.54s; }
+    .templatePreview[data-animate='true'] .moduleTile:nth-child(3),
+    .templatePreview[data-animate='true'] .serviceChip:nth-child(3) { animation-delay: 0.6s; }
     .templatePreview[data-animate='true'] .moduleTile:nth-child(4) { animation-delay: 0.66s; }
     .templatePreview[data-animate='true'] .seqTileAfter { animation-delay: 0.58s; }
 }
@@ -374,7 +582,7 @@
 }
 
 /* Punto de marca: crossfade real de color (gris apagado → acento), no solo
-   opacity — así el cambio mint/warm entre combinaciones se lee como una
+   opacity — así el cambio de acento entre combinaciones se lee como una
    transición, no un salto. */
 @keyframes tplBrandIn {
     from { opacity: 0; transform: translateY(-8px) scale(0.7); background: var(--color-border-strong); box-shadow: none; }
@@ -405,13 +613,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .tplNav, .tplBrand, .tplKicker, .tplTitle, .tplSub, .tplBlock,
-    .moduleTile, .seqTile, .stars {
+    .tplNav, .tplBrand, .tplTabs, .tplCover, .tplKicker, .tplTitle, .tplSub,
+    .tplBlock, .tplAction, .moduleTile, .seqTile, .serviceChip {
         animation: none;
     }
 
     .moduleTile:hover,
-    .seqTile:hover {
+    .seqTile:hover,
+    .serviceChip:hover {
         transform: none;
     }
 }

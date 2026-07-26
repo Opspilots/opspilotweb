@@ -234,6 +234,7 @@
 .chip {
     display: flex;
     align-items: center;
+    gap: var(--spacing-3);
     width: 100%;
     min-height: 44px;
     padding: var(--spacing-3) var(--spacing-5);
@@ -284,24 +285,57 @@
     transform: translateY(-1px) scale(1.01);
 }
 
+/* Elegido: la MEMORIA de lo que se contestó en este paso, que es lo que se ve
+   al pulsar "Volver". Antes el paso anterior aparecía virgen y la decisión
+   parecía perdida. Deliberadamente MÁS TENUE que `data-selected`: aquel es un
+   pulso de 240ms que celebra un click que acaba de ocurrir, este es un estado
+   permanente que tiene que informar sin gritar ni competir con las otras tres
+   opciones, que siguen siendo elegibles. Sin sombra ni transform, por eso
+   mismo: un chip recordado no debe verse "levantado" del resto. */
+.chip[data-chosen='true'] {
+    border-color: var(--color-border-mint);
+    background: var(--color-mint-soft);
+    color: var(--color-text-strong);
+}
+
+/* Marca de verificación al final del chip elegido — el color por sí solo no
+   basta: hay quien no lo distingue. `margin-left: auto` la ancla a la derecha
+   sin depender de que el texto llegue hasta allí. */
+.chipCheck {
+    flex-shrink: 0;
+    margin-left: auto;
+    color: var(--color-mint);
+}
+
 @media (prefers-reduced-motion: reduce) {
     .chip:active { transform: none; }
 }
 
 /* ═══════════════════════════════════════════
-   PASO 4 — plantilla generada (nav + titular + bloque + CTA)
-   Mismo lenguaje visual de "web ensamblándose" que tenía HeroDashboard, pero
-   dirigido por los datos de la combinación resuelta (Pasos 1+2+3) en vez de
-   un guion fijo. Acento mint por defecto; `data-accent="warm"` lo cambia a
-   ámbar para la rama "sistema" (mismo warm ya usado como acento de
-   dato/métrica en el resto de la web).
+   PASO 4 — EL RESULTADO COMPLETO
+   Diagnóstico + maqueta + "qué incluiría" + email. El orden importa y es el
+   cambio de fondo respecto a la versión anterior: antes, contestar tres
+   preguntas solo desembocaba en un campo de email, y el valor quedaba
+   prometido detrás del formulario. Ahora todo lo que se puede entregar sin
+   hablar con la persona está en pantalla ANTES de pedirle nada; el correo
+   solo sirve para llevárselo.
+
+   El acento lo inyecta el .tsx en `.result` como custom properties
+   (MOCK_ACCENT_VARS, la misma tabla que usa MockPreview por dentro), así que
+   todo lo de aquí abajo puede leer `var(--tpl-accent)` y ponerse a juego con
+   la rama elegida sin que este fichero conozca ningún color.
    ═══════════════════════════════════════════ */
 
+.result {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Frase de diagnóstico — el remate del flujo se lee ANTES de ver la
-   plantilla: combina en lenguaje natural qué contestó la persona en los
-   Pasos 1+2+3 (ver getDiagnostic en el .tsx). Tipografía a un escalón del
-   resto del paso (display, no mono) para que se sienta como un titular
-   propio, no una etiqueta más. */
+   maqueta: combina en lenguaje natural qué contestó la persona en los
+   Pasos 1+2+3 (ver buildDiagnostic en src/data/leadFunnel.ts). Tipografía a
+   un escalón del resto del paso (display, no mono) para que se sienta como un
+   titular propio, no una etiqueta más. */
 .diagnostic {
     margin: 0 0 var(--spacing-4);
     font-family: var(--font-family-display);
@@ -363,12 +397,20 @@
     border-radius: var(--radius-full);
 }
 
+/* Medía 26×22px, menos de la mitad del mínimo accesible (44×44, WCAG 2.5.8).
+   Se corrige igual que ya lo hacían `.chip` y el input de este mismo fichero:
+   declarando el mínimo y punto, sin el truco del pseudo-elemento invisible.
+   Aquí sí se puede: son dos botones en una fila con nada encima ni debajo, así
+   que crecer no pisa a ningún otro objetivo — y un conmutador de 96px de ancho
+   es, de hecho, la medida normal de un control segmentado. Lo que hacía que 26
+   pareciera razonable era tratarlo como adorno de una fila de metadatos, no
+   como el control que decide qué está viendo la persona. */
 .deviceBtn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 22px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0;
     background: none;
     border: none;
@@ -383,8 +425,8 @@
 }
 
 .deviceBtn[aria-pressed='true'] {
-    background: var(--color-mint-soft);
-    color: var(--color-mint);
+    background: var(--tpl-accent-soft, var(--color-mint-soft));
+    color: var(--tpl-accent, var(--color-mint));
 }
 
 .deviceBtn:focus-visible {
@@ -392,13 +434,70 @@
     outline-offset: 2px;
 }
 
-/* El bloque de "plantilla generada" (nav + titular + bloque destacado) vive
-   ahora en el componente compartido MockPreview (ver
-   src/components/marketing/MockPreview.tsx + .module.css), reutilizado
-   también por CaseMockPanel — aquí solo queda el margen que reserva
-   HeroLeadWidget alrededor del componente. */
+/* La maqueta (nav + titular + bloque destacado) vive en el componente
+   compartido MockPreview (ver src/components/marketing/MockPreview.tsx +
+   .module.css), reutilizado también por CaseMockPanel — aquí solo queda el
+   margen que reserva HeroLeadWidget alrededor del componente. */
 .mockPreviewSlot {
     margin-bottom: var(--spacing-6);
+}
+
+/* ═══ "Qué incluiría" — el entregable de verdad ═══
+   La maqueta enseña la FORMA; esta lista dice el CONTENIDO, en puntos que
+   salen de las tres respuestas. Es lo que antes solo se prometía a cambio del
+   correo, y por eso va antes del formulario y no después.
+
+   Numeración con `counter` en vez de bullets: los números en mono con cero a
+   la izquierda dicen "esto es un alcance enumerado, hay cuatro cosas y estas
+   son", que es exactamente el registro de un presupuesto. Un punto gordo
+   diría "lista de marketing". */
+.build {
+    padding-top: var(--spacing-5);
+    border-top: 1px solid var(--color-border-subtle);
+    margin-bottom: var(--spacing-6);
+}
+
+.buildTitle {
+    margin: 0 0 var(--spacing-4);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tpl-accent, var(--color-mint));
+}
+
+.buildList {
+    counter-reset: build;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.buildItem {
+    position: relative;
+    /* Sangría fija en ch para que la segunda línea alinee con la primera
+       letra y no con el número: una lista numerada que no cuelga se lee como
+       un párrafo troceado. */
+    padding-left: 2.75ch;
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    color: var(--color-text);
+}
+
+.buildItem::before {
+    counter-increment: build;
+    content: counter(build, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.1em;
+    font-family: var(--font-family-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    color: var(--tpl-accent, var(--color-mint));
 }
 
 /* ─── Email ─── */
@@ -406,6 +505,21 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-4);
+    padding-top: var(--spacing-5);
+    border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Enmarca el campo como una OFERTA, no como una barrera. El texto importa
+   tanto como el estilo: se pregunta si quiere el resumen, no se le exige el
+   correo para desbloquear algo que ya está viendo. */
+.formIntro {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text-strong);
 }
 
 .field {
@@ -439,10 +553,15 @@
     outline: none;
 }
 
+/* Foco al acento de la rama: el resultado entero está teñido del color de lo
+   que la persona eligió (ver `.result`), y un anillo verde sobre una propuesta
+   ámbar o azul sería el único elemento fuera de tono. El fallback cubre el
+   caso de que este input se use algún día fuera del Paso 4, donde no hay
+   `--tpl-accent` definido. */
 .field input:focus {
-    border-color: var(--color-mint);
+    border-color: var(--tpl-accent, var(--color-mint));
     background: rgba(10, 14, 20, 0.55);
-    box-shadow: 0 0 0 3px var(--color-mint-soft);
+    box-shadow: 0 0 0 3px var(--tpl-accent-soft, var(--color-mint-soft));
 }
 
 .field input[aria-invalid='true'] {
@@ -464,6 +583,87 @@
     line-height: 1.4;
     letter-spacing: 0.02em;
     color: var(--color-error);
+}
+
+/* Qué se recibe, en qué formato y cuándo — pegado al campo, no en letra
+   pequeña al pie. Va enlazado por `aria-describedby` desde el propio input,
+   así que un lector de pantalla lo oye al entrar en el campo y no después de
+   haber escrito el correo. */
+.deliveryNote {
+    font-size: var(--font-size-xs);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+/* ─── Consentimiento ───
+   Ya no se puede enviar sin marcarla: el formulario manda datos personales a
+   un tercero (FormSubmit) y hasta ahora no lo decía en ningún sitio.
+   Deliberadamente NO va escondida en letra de 10px: si la cláusula no se
+   puede leer, el consentimiento no es informado, y entonces no vale. */
+.consent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+/* La etiqueta ENVUELVE la casilla, así que toda la cláusula es zona pulsable
+   — no hay que acertar en un cuadradito de 16px. Eso resuelve el tamaño de
+   objetivo sin inflar el control. */
+.consentLabel {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-control);
+    background: rgba(10, 14, 20, 0.25);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.consentLabel:hover {
+    border-color: var(--color-border-strong);
+}
+
+/* `accent-color` en lugar de recrear la casilla con un pseudo-elemento: la
+   casilla nativa ya es accesible, enfocable y anunciable, y sustituirla por
+   un div bonito es la vía rápida a un control que no responde al teclado.
+   Solo se le cambia el color y se le garantiza que no encoja. */
+.consentBox {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--tpl-accent, var(--color-mint));
+    cursor: pointer;
+}
+
+.consentBox:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+.consentLabel:has(.consentBox[aria-invalid='true']) {
+    border-color: var(--color-error);
+}
+
+.consentText {
+    font-size: var(--font-size-xs);
+    line-height: 1.55;
+    color: var(--color-text-muted);
+}
+
+.consentLink {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--color-border-strong);
+    transition: color var(--transition-fast), text-decoration-color var(--transition-fast);
+}
+
+.consentLink:hover {
+    color: var(--tpl-accent, var(--color-mint));
+    text-decoration-color: currentColor;
 }
 
 .formError {

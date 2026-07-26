@@ -1,13 +1,17 @@
 import type { Resource } from './resources';
+import { BRAND_NAME, SITE_URL as COMPANY_SITE_URL } from './company';
 
-/** URL base del sitio (sin barra final, sin www). */
-export const SITE_URL = 'https://opspilot.es';
+/** URL base del sitio (sin barra final, sin www). Reexportada desde
+ *  src/lib/company.ts —misma cadena, un solo sitio donde cambiarla— y no
+ *  redeclarada aquí: el nombre `SITE_URL` tiene ~30 consumidores y renombrarlo
+ *  no aporta nada. */
+export const SITE_URL = COMPANY_SITE_URL;
 
 /** @id de la Organization declarada en el @graph global de index.html. */
 export const ORG_ID = `${SITE_URL}/#organization`;
 
 /** Nombre público de la organización, reutilizable como publisher. */
-export const ORG_NAME = 'OpsPilot';
+export const ORG_NAME = BRAND_NAME;
 
 /** Logo de la organización, reutilizable en publisher.logo. */
 export const ORG_LOGO = `${SITE_URL}/favicon.svg`;

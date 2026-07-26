@@ -4,6 +4,10 @@ import styles from './Footer.module.css';
 import { Logo } from './Logo';
 import { Button } from '../ui/Button';
 import { ROUTES } from '../../lib/routes';
+// Datos de empresa desde su fuente única (ver src/lib/company.ts) — estaban
+// escritos a mano aquí, en Contact.tsx, en lib/forms.ts y en el @graph de
+// index.html, con el teléfono en tres formatos distintos.
+import { ADDRESS, CONTACT_EMAIL, PHONE, WHATSAPP_URL } from '../../lib/company';
 
 // Páginas que ya renderizan su propio panel de cierre (sys.endCtaBlock en
 // page-system.module.css: Home "¿Hablamos?", Soluciones, Casos, Recursos y
@@ -49,7 +53,7 @@ export const Footer: React.FC = () => {
                             y cero humo.
                         </p>
                         <a
-                            href="https://wa.me/34640756126"
+                            href={WHATSAPP_URL}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.whatsappLink}
@@ -74,13 +78,15 @@ export const Footer: React.FC = () => {
                     {/* Contacto */}
                     <div className={styles.links}>
                         <h4 className={styles.heading}>Contacto</h4>
-                        <a href="mailto:opspilot.contact@gmail.com" className={styles.link}>
-                            opspilot.contact@gmail.com
+                        <a href={`mailto:${CONTACT_EMAIL}`} className={styles.link}>
+                            {CONTACT_EMAIL}
                         </a>
-                        <a href="https://wa.me/34640756126" className={styles.link} target="_blank" rel="noopener noreferrer">
-                            WhatsApp · 640 75 61 26
+                        <a href={WHATSAPP_URL} className={styles.link} target="_blank" rel="noopener noreferrer">
+                            WhatsApp · {PHONE.display}
                         </a>
-                        <span className={styles.metaLocation}>Córdoba, España</span>
+                        <span className={styles.metaLocation}>
+                            {ADDRESS.locality}, {ADDRESS.country}
+                        </span>
                     </div>
                 </div>
 
