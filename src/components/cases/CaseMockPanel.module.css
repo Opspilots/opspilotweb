@@ -1,9 +1,8 @@
 /* ═══════════════════════════════════════════
-   CASE MOCK PANEL — mini-interfaz fija por caso (MockPreview compartido)
-   + etiqueta "antes" secundaria.
+   CASE MOCK PANEL — mini-interfaz fija por caso (MockPreview compartido).
    Sustituye al antiguo CaseTransitionPanel (iconos "antes → después"
-   convergiendo): el protagonismo pasa a la mini-interfaz que representa la
-   mejora; el "antes" queda como nota al margen, sin peso visual propio.
+   convergiendo): el protagonismo es de la mini-interfaz que representa la
+   mejora.
    ═══════════════════════════════════════════ */
 
 .wrap {
@@ -28,25 +27,6 @@
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-/* Etiqueta "antes" — deliberadamente con menos peso visual que el mock:
-   mono pequeño, color atenuado, un icono mínimo (guion) en vez de un
-   cluster de iconos o un párrafo. Contexto, no protagonista. */
-.beforeTag {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    margin: 0;
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    letter-spacing: 0.02em;
-    color: var(--color-text-subtle);
-}
-
-.beforeTagIcon {
-    flex-shrink: 0;
-    opacity: 0.7;
 }
 
 @media (prefers-reduced-motion: reduce) {

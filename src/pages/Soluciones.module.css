@@ -17,17 +17,15 @@
    el 4rem de `pageHeroTitle`) se queda fuera de la media query — Soluciones
    sí necesita un titular más grande en desktop que el resto de páginas.
 
-   El titular ahora es parcialmente reactivo (lead-in fijo + `activeSector.label`,
-   ver Soluciones.tsx) — el ≥1024px override de más abajo le añade
-   `-webkit-line-clamp: 1` como red de seguridad: los 7 labels tienen
-   longitud distinta ("Asesorías y despachos" vs "PYMEs con operativa
-   dispersa") y, aunque a día de hoy ninguno fuerza un salto de línea dentro
-   del ancho del contenedor (verificado), el HUECO PINEADO tiene un
-   presupuesto de alto fijo (ver `.solHero`/`.solViewport` más abajo) que
-   asume que el titular mide SIEMPRE una línea — igual que `.panelTitle`/
-   `.panelSolution` ya hacían por el mismo motivo. Sin este clamp, un label
-   futuro más largo que desbordara a 2 líneas cambiaría el alto del hero
-   solo en ESE sector y desincronizaría el resto del cálculo del pin. */
+   El titular es parcialmente reactivo (lead-in fijo + `activeSector.label`,
+   ver Soluciones.tsx) — los 7 labels tienen longitud distinta ("Asesorías y
+   despachos" vs "PYMEs con operativa dispersa"), pero como el hero vive en
+   flujo normal (ver `.solHero` más abajo: ya NO comparte presupuesto de alto
+   con ningún hueco pineado), un label más largo que el resto simplemente
+   empuja el resto de la página unos píxeles — no hace falta un
+   `-webkit-line-clamp` de seguridad como sí necesitan `.panelTitle`/
+   `.panelSolution`, que siguen viviendo dentro del panel de alto fijo del
+   scroll-jack. */
 .heroTitle {
     font-size: clamp(2.5rem, 5vw, 4.5rem);
     line-height: 1.0;
@@ -44,62 +42,29 @@
     z-index: 1;
 }
 
-/* Hero de esta página — ahora vive DENTRO de `.solViewport` (ver
-   Soluciones.tsx), pineado junto al explorador en vez de scrollear fuera de
-   vista antes de que el pin arranque. Esto convierte su alto en parte REAL
-   del presupuesto del hueco pineado (`100vh - navbar`, ver `.solViewport`
-   más abajo) — ya no es "preferencia de densidad heredada", como decía la
-   versión anterior de este comentario: si el hero creciera sin control aquí,
-   se comería directamente el margen que necesita el panel de 500px para
-   caber sin recorte a 1366×768. El recorte de padding/tamaños de este bloque
-   es ahora un requisito del scroll-jack, no solo un gusto visual.
-   Selectores compuestos (elemento+clase — `div.solHero` [antes
-   `section.solHero`: el wrapper pasó de `<section>` a `<div>` al mudarse
-   dentro de `.solViewport`, ver Soluciones.tsx], `h1.heroTitle`,
-   `p.heroSubtitle`) en vez de `.clase` a secas: especificidad (0,1,1) le
-   gana determinísticamente tanto a `sys.pageHero`/`pageHeroTitle`/
-   `pageHeroSubtitle` (una sola clase, otro módulo) como a la propia regla
-   base `.heroTitle` de arriba, sin depender de en qué orden se inyecten los
-   chunks — mismo problema de fondo que documenta el comentario de arriba,
-   resuelto aquí sin apoyarse en el accidente de bundling. No toca
-   `page-system.module.css`, así que Home/Casos/Contacto/Recursos, que
-   comparten esas clases, quedan intactas. Por debajo de 1024px no hay
-   override: ninguno de los breakpoints ≤1023 tenía el problema (no hay
-   scroll-jack ahí, el hero solo necesita seguir reflejando el sector activo,
-   sin recorte de tamaño), y el hero móvil ya era compacto por su propia
-   media query en page-system.module.css. */
-@media (min-width: 1024px) {
-    div.solHero {
-        padding: var(--spacing-4) 0 var(--spacing-3);
-        /* Separación real hero → explorador: antes venía gratis del padding-top
-           de `.explorerSection` (una sección distinta, más abajo en el
-           documento); ahora que ambos son hermanos dentro del mismo
-           `.solViewport` pineado, ese padding ya no llega hasta aquí (se quedó
-           fuera del pin, ver comentario de `.explorerSection` más abajo) y hay
-           que aportar el hueco explícitamente. */
-        margin-bottom: var(--spacing-4);
-    }
+/* Hero de esta página — vive en flujo normal, FUERA de `.solViewport`/
+   `.solTrack` (antes vivía pineado ahí dentro, compartiendo presupuesto de
+   alto con el explorador; ver Soluciones.tsx para el porqué del cambio: el
+   usuario pidió que el scroll-jack afecte solo al explorador, no al hero).
+   Ya no hay ningún presupuesto de `100vh - navbar` que cuidar aquí, así que
+   este bloque vuelve al padding compartido de `sys.pageHero`
+   (spacing-20/24 arriba, spacing-16/20 abajo — ver page-system.module.css)
+   en vez del padding recortado (spacing-4/spacing-3) que tenía cuando debía
+   caber junto al panel de 500px en el hueco pineado. El único ajuste propio
+   que queda es alinear el `margin-bottom` del título/subtítulo — heredados
+   de `sys.pageHeroTitle`/`sys.pageHeroSubtitle`, pensados para un `<p>` de
+   CTAs debajo que aquí no existe — con el resto del ritmo vertical de la
+   página. Selector compuesto `section.solHero` (elemento+clase, especificidad
+   0,1,1) en vez de `.clase` a secas: le gana determinísticamente a
+   `sys.pageHero` (una sola clase, otro módulo) sin depender de en qué orden
+   se inyecten los chunks — no toca `page-system.module.css`, así que
+   Home/Casos/Contacto/Recursos, que comparten esas clases, quedan intactas. */
+section.solHero h1.heroTitle {
+    margin-bottom: var(--spacing-4);
+}
 
-    h1.heroTitle {
-        font-size: clamp(1.75rem, 2.6vw, 2.25rem);
-        line-height: 1.15;
-        margin-bottom: var(--spacing-2);
-        /* Red de seguridad de alto constante — ver comentario de `.heroTitle`
-           más arriba: garantiza que el titular mida SIEMPRE una línea sin
-           importar qué tan largo sea `activeSector.label` en cada uno de los
-           7 sectores, igual criterio que `.panelTitle`/`.panelSolution`. */
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    p.heroSubtitle {
-        font-size: var(--font-size-sm);
-        line-height: 1.45;
-        max-width: 52ch;
-        margin-bottom: 0;
-    }
+section.solHero p.heroSubtitle {
+    margin-bottom: 0;
 }
 
 /* ═══════════════════════════════════════════
@@ -110,7 +75,8 @@
    (cuando `.solViewport` deja de ser sticky al llegar al final del track).
    No forma parte del presupuesto de alto que debe caber en `100vh - navbar`
    mientras está pinned — ese presupuesto es exclusivamente el `padding-top`
-   de `.solViewport` + el hero + `.explorer` (ver ambos más abajo). Selector
+   de `.solViewport` + `.explorer` (el hero ya NO vive dentro del hueco
+   pineado, ver comentario junto a `.solHero` más arriba). Selector
    compuesto `section.explorerSection` (especificidad clase+elemento) en vez
    de tocar `sys.section` directamente: gana determinísticamente a `.section`
    (una sola clase) sin depender del orden de inyección de los chunks — no
@@ -125,27 +91,30 @@
 }
 
 /* ═══════════════════════════════════════════
-   Track + viewport — scroll-jack en desktop. El track (`.solTrack`) aporta
-   la distancia de scroll de página que el useEffect con ScrollTrigger
-   (Soluciones.tsx) traduce a progreso 0→1 y de ahí a un índice de sector
-   (`selected`); el viewport (`.solViewport`) se queda sticky mientras el
-   track recorre esa distancia, así el hero + el explorador permanecen fijos
-   en pantalla mientras el usuario sigue haciendo scroll (antes solo el
-   explorador vivía aquí — el hero era una `<section>` hermana que ya había
-   scrolleado fuera de vista para cuando el pin arrancaba; ver Soluciones.tsx
-   para el porqué del cambio). Gated a `prefers-reduced-motion: no-preference`:
-   con reduced motion (o <1024px, fuera de este `@media`) ambos colapsan a su
-   alto de contenido normal — el track deja de imponer altura extra y el
-   viewport deja de ser sticky — y la única forma de cambiar de sector vuelve
-   a ser clic/tap/teclado en las filas, igual que en el resto de breakpoints. */
+   Track + viewport — scroll-jack en desktop, SOLO sobre el explorador (el
+   hero ya no vive aquí dentro, ver comentario junto a `.solHero` más arriba
+   y Soluciones.tsx). El track (`.solTrack`) aporta la distancia de scroll de
+   página que el useEffect con ScrollTrigger (Soluciones.tsx) traduce a
+   progreso 0→1 y de ahí a un índice de sector (`selected`); el viewport
+   (`.solViewport`) se queda sticky mientras el track recorre esa distancia,
+   así el explorador permanece fijo en pantalla mientras el usuario sigue
+   haciendo scroll — el hero, en flujo normal justo encima, ya ha scrolleado
+   fuera de vista para cuando el pin arranca, que es exactamente el
+   comportamiento pedido (scroll-jack solo en la "tabla", no en el hero).
+   Gated a `prefers-reduced-motion: no-preference`: con reduced motion (o
+   <1024px, fuera de este `@media`) ambos colapsan a su alto de contenido
+   normal — el track deja de imponer altura extra y el viewport deja de ser
+   sticky — y la única forma de cambiar de sector vuelve a ser clic/tap/
+   teclado en las filas, igual que en el resto de breakpoints. */
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
     .solTrack {
         /* 7 sectores × ~34vh de "parada" de lectura + margen de entrada/
-           salida al pin. Recalculado para el panel compacto de 460px (antes
-           320vh, con un panel bien más alto y sin este `padding-top` de
-           `.solViewport`); mantener el 320vh original con contenido más
-           corto habría hecho que cada sector "durara" de más y el
-           scroll-jack se sintiera desconectado del progreso real de lectura. */
+           salida al pin. Ya no comparte presupuesto de alto con el hero (que
+           salió del track), así que el explorador dispone de su budget
+           completo — mismo valor que cuando el hero SÍ vivía aquí dentro
+           (280vh) porque lo que determina la distancia de scroll deseada es
+           cuánto debe "durar" cada sector en pantalla, no cuánto contenido
+           adicional haya que pinear con él. */
         height: 280vh;
     }
 
@@ -157,38 +126,26 @@
         top: var(--navbar-offset);
         min-height: calc(100vh - var(--navbar-offset));
         display: flex;
-        /* column, NO el `row` por defecto de flex: ahora `.solViewport` tiene
-           DOS hijos directos (el hero y el `.container` del explorador, ver
-           Soluciones.tsx) en vez de uno solo como antes de este cambio — sin
-           `flex-direction: column` explícito, ambos habrían quedado lado a
-           lado en vez de apilados. Con un único hijo esto no hacía falta
-           (row/column daban el mismo resultado visual), así que el bug no
-           existía todavía. */
+        /* column: `.solViewport` solo tiene un hijo directo (el `.container`
+           del explorador) desde que el hero salió de aquí, así que row/column
+           dan el mismo resultado visual — se deja explícito de todos modos
+           por si en el futuro vuelve a tener más de un hijo directo. */
         flex-direction: column;
         /* flex-start + padding-top, NUNCA `center` — ese fue el bug real del
-           recorte superior en la versión anterior de este scroll-jack:
-           con `align-items: center`, cualquier vez que el contenido (hero +
-           `.explorer`) fuera más alto que el hueco visible del viewport
-           pineado, la mitad de arriba quedaba posicionada por ENCIMA del
-           borde superior del contenedor sticky — invisible, tapada por lo
-           que hubiera scrolleado antes (navbar), no solo recortada por abajo
-           como parecía a primera vista. flex-start ancla el borde superior
-           real del primer hijo (antes `.explorer`, ahora el hero) al top del
+           recorte superior en una versión anterior de este scroll-jack: con
+           `align-items: center`, cualquier vez que `.explorer` fuera más alto
+           que el hueco visible del viewport pineado, la mitad de arriba
+           quedaba posicionada por ENCIMA del borde superior del contenedor
+           sticky — invisible, tapada por lo que hubiera scrolleado antes
+           (navbar), no solo recortada por abajo como parecía a primera vista.
+           flex-start ancla el borde superior real de `.explorer` al top del
            viewport pineado, así que siempre es lo primero visible, sin
-           importar cuánto mida el contenido ese frame. Revalidado tras mover
-           el hero aquí dentro (ver informe de verificación) — el fix sigue
-           aplicando igual, el riesgo ahora es más alto porque hay más
-           contenido total que debe caber, no porque el mecanismo cambie. */
+           importar cuánto mida el contenido ese frame. */
         align-items: flex-start;
-        /* spacing-6 → spacing-3: con el hero como primer hijo real de
-           `.solViewport`, es SU propio padding (`div.solHero`, ver arriba)
-           el que aporta el aire superior antes del titular — este
-           padding-top del viewport ya no necesita cargar con ese rol él
-           solo (antes era el único responsable del aire por encima de
-           `.explorer`) y se reduce a un margen de seguridad mínimo respecto
-           al borde superior pineado, liberando presupuesto de alto para que
-           hero + explorador quepan juntos en `100vh - navbar`. */
-        padding-top: var(--spacing-3);
+        /* Aire superior antes de la primera fila/panel del explorador —
+           única responsabilidad de este padding-top ahora que el hero (con
+           su propio padding) ya no es hijo de este contenedor. */
+        padding-top: var(--spacing-6);
     }
 }
 
@@ -787,6 +744,16 @@
     justify-content: center;
 }
 
+/* Kicker mobile-only con el nombre del sector — oculto ≥768px (ahí
+   `.panelTitle`, dentro de la página de resumen, ya es la referencia
+   textual y este badge quedaría redundante); pintado solo en ≤767px, ver
+   ese `@media` más abajo, donde `.panelWrap` pasa a ser un carrusel de
+   tarjetas y este kicker es lo único que identifica el sector cuando el
+   usuario está en las páginas "Cómo funciona"/FAQ (sin `.panelTitle`). */
+.panelKicker {
+    display: none;
+}
+
 .panelTitle {
     font-family: var(--font-family-display);
     font-size: clamp(var(--font-size-2xl, 1.8rem), 3.4vw, 2.6rem);
@@ -982,40 +949,47 @@
 }
 
 /* ═══════════════════════════════════════════
-   ≤767px (móvil/táctil) — CARRUSEL horizontal con snap, un sector "tarjeta"
-   a la vez, SIN peek del siguiente (ancho completo, edge-to-edge dentro del
-   container): la tarjeta activa es la única visible al soltar el swipe, sin
-   ningún borde del siguiente sector asomando. Señal de affordance única:
-   DOTS (`.sectorDots`, ver JSX en Soluciones.tsx, mismo patrón que
-   `.caseDots` del carrusel de Home) — conteo y posición.
+   ≤767px (móvil/táctil) — `.ledger` (antes la "tarjeta" compacta con
+   icono+nombre) y `.panelWrap` (antes el detalle completo, apilado debajo)
+   se FUSIONAN en una sola superficie tipo hoja/modal — elevada, redondeada,
+   background+box-shadow propios, claramente una capa distinta del fondo de
+   la página — que ES el carrusel: `.panelWrap` pasa de "panel único con
+   overlay absoluto" a carril horizontal con scroll-snap, un sector-tarjeta
+   a la vez, SIN peek del siguiente (ancho completo, edge-to-edge). Cada
+   tarjeta lleva ya el icono + nombre del sector (`.panelKicker`, persistente
+   en las 3 páginas internas) Y el contenido completo (resumen/cómo
+   funciona/FAQ vía su propio carrusel interno — ver `.pageNav` más arriba,
+   controles explícitos, NO el mismo gesto que el swipe exterior). Petición
+   explícita del usuario: ya no dos bloques separados, sino una sola unidad
+   swipeable que sustituye tanto a la fila compacta como al panel de detalle.
 
-   Antes cada tarjeta ocupaba ~84% del ancho (peek del ~16% del siguiente
-   sector) + un mask-image de fade en `.ledger` para que ese borde se leyera
-   como "contenido que continúa" en vez de una tarjeta cortada. Petición
-   explícita: cero peek — se retira tanto el 84%/`width` como el mask-image
-   (ya no hay borde que desvanecer).
+   `.ledger` queda oculto (`display: none`) a este ancho — su trabajo de
+   "carrusel de sectores" lo hace ahora `.panelWrap` directamente, mismo
+   mecanismo scroll-snap que antes tenía `.ledger` (grab cursor, scrollbar
+   oculta, snap obligatorio), adaptado en Soluciones.tsx vía
+   `panelWrapRef`/`handlePanelWrapScroll` (antes `ledgerRef`/
+   `handleLedgerScroll`) — el hero de arriba (`.solHero`, título "Software
+   para {sector}") sigue quedando PEGADO al carrusel al swipear por el mismo
+   mecanismo, solo que ahora es `.panelWrap` quien dispara el `onScroll`.
+   Señal de affordance: DOTS (`.sectorDots`, ver JSX en Soluciones.tsx,
+   mismo patrón que `.caseDots` del carrusel de Home) — conteo y posición,
+   reposicionados por debajo de `.panelWrap` vía `order` más abajo (en el DOM
+   siguen siendo hermanos intermedios entre `.ledger` y `.panelWrap`, ver
+   Soluciones.tsx).
 
-   El hero de arriba (`.solHero`, título "Software para {sector}") queda
-   PEGADO a este carrusel al swipear: `.ledger` dispara `onScroll` en
-   Soluciones.tsx, que traduce `scrollLeft` a un índice de tarjeta y llama a
-   `setSelected` — el mismo estado que ya pintaba el hero por clic/tap. Antes
-   solo el tap cambiaba `selected`; el swipe scrolleaba `.ledger` sin tocar
-   ese estado, así que el hero se quedaba mostrando el sector viejo mientras
-   la tarjeta activa (bajo el dedo, en el centro de la pantalla) ya era otra
-   — "dos tracks" desincronizados en la práctica aunque compartieran el mismo
-   store. Con el listener, hero y tarjeta activa avanzan como una sola unidad
-   sin importar si el cambio vino de un tap o de un swipe.
-
-   Esto reemplaza un intento anterior de carril horizontal que se abandonó
-   tras la auditoría móvil: aquel carril (aún visible en el breakpoint
-   768-1023px de abajo) no tenía ninguna señal de affordance — filas a ancho
-   completo (bug de `width`, ya corregido ahí), sin dots. El fallback de
-   selección por clic/tap (`onClick={() => setSelected(i)}` en
-   Soluciones.tsx) sigue siendo el mismo — aquí solo cambia el layout y las
-   señales visuales. */
+   Esto reemplaza el carrusel de `.ledger`/`.row` que existía aquí hasta
+   ahora (fila compacta, sin el detalle) — ese layout sigue siendo el de
+   768-1023px (ver bloque de arriba), donde `.ledger`/`.panelWrap` continúan
+   separados, sin cambios. El fallback de selección por clic/tap
+   (`onClick={() => setSelected(i)}` en Soluciones.tsx, sobre `.sectorDots`
+   ya que `.row` no es alcanzable aquí) sigue siendo el mismo mecanismo. */
 @media (max-width: 767px) {
     .ledger {
-        flex-direction: row;
+        display: none;
+    }
+
+    .panelWrap {
+        display: flex;
         align-items: stretch;
         gap: var(--spacing-3);
         overflow-x: auto;
@@ -1025,93 +999,97 @@
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         cursor: grab;
-        /* El contenedor deja de ser una caja única con chrome propio —
-           cada `.row` pasa a ser su propia tarjeta (background + box-shadow
-           difuso, sin border — ver abajo). */
-        border: none;
-        border-radius: 0;
-        background: none;
-        box-shadow: none;
-        padding: var(--spacing-1) var(--spacing-1) var(--spacing-2);
         margin: 0 calc(-1 * var(--spacing-1));
+        padding: var(--spacing-1) var(--spacing-1) 0;
+        /* Antes de `.sectorDots` en el orden VISUAL (ambos son `order`
+           explícito porque en el DOM `.sectorDots` va entre `.ledger` y
+           `.panelWrap`, ver Soluciones.tsx) — los dots deben leerse como el
+           indicador DEBAJO del carrusel, no al revés. */
+        order: 1;
     }
 
-    .ledger::-webkit-scrollbar {
+    .panelWrap::-webkit-scrollbar {
         display: none;
     }
 
-    .ledger:active {
+    .panelWrap:active {
         cursor: grabbing;
     }
 
-    /* Sin `border`: cada tarjeta se separa de la siguiente/del fondo solo
-       por `background` + `box-shadow` difuso (glass-inset + shadow-sm),
-       igual criterio que `.ledger`/`.panel` en desktop. Ancho 100% (antes
-       84%, con peek): una sola tarjeta ocupa todo el ancho del carril al
-       quedar snapeada, sin ningún borde del siguiente sector visible. */
-    .row {
-        grid-template-columns: auto 1fr auto;
-        gap: var(--spacing-3);
+    /* Cada `.panel` (y su gemelo `.panelHidden`, normalmente superpuesto
+       absoluto — ver regla base más arriba) pasa a ser una tarjeta más del
+       carril: ancho completo, snap por tarjeta, sin peek del siguiente —
+       mismo criterio que tenía `.row`. `position: relative` reinicia el
+       `position: absolute` de `.panelHidden` para que los 7 queden en flujo
+       horizontal uno junto a otro en vez de apilados unos sobre otros. */
+    .panel,
+    .panelHidden {
+        position: relative;
+        inset: auto;
         flex: 0 0 100%;
         width: 100%;
-        min-height: 0;
-        padding: var(--spacing-4) var(--spacing-5);
-        border-radius: var(--radius-panel);
-        background:
-            var(--gradient-surface),
-            var(--color-bg-elevated);
-        box-shadow: var(--glass-inset), var(--shadow-sm);
-        white-space: normal;
         scroll-snap-align: start;
         scroll-snap-stop: always;
     }
 
-    /* Indicador de tarjeta activa — vuelve al mismo patrón "pill flotante"
-       que la regla base de desktop (barra corta, centrada verticalmente),
-       en vez de una barra de extremo a extremo de la tarjeta: esa versión
-       (top:0/bottom:0) se leía como un border-left, justo lo que el resto
-       del componente dejó de tener. */
-    .row::before {
-        top: 50%;
-        bottom: auto;
-        left: var(--spacing-2);
-        right: auto;
-        width: 3px;
-        height: 60%;
-        transform: translateY(-50%) scaleY(0);
-        transform-origin: center;
-        border-radius: var(--radius-full);
+    /* El hairline mint de `.panelBar` decoraba UN panel único; con 7
+       tarjetas en fila no hay "un top" al que anclarlo (quedaría fijo sobre
+       la primera tarjeta, desalineado del resto al swipear). Cada tarjeta
+       lleva su propio hairline vía `::before` en su lugar — mismo
+       tratamiento visual (firma de acento mint de la web), por tarjeta en
+       vez de por wrap. */
+    .panelBar {
+        display: none;
     }
 
-    .rowActive::before {
-        transform: translateY(-50%) scaleY(1);
+    .panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: var(--spacing-6);
+        right: var(--spacing-6);
+        height: 2px;
+        z-index: 3;
+        background: var(--gradient-mint);
+        border-radius: 1px;
+        opacity: 0.9;
     }
 
-    /* Flecha visible de forma persistente (no solo hover/activo): en
-       táctil no existe hover, así que es una señal de affordance fija
-       ("tap para ver detalle"), no una revelación. */
-    .rowArrow {
-        display: inline-flex;
-        opacity: 0.4;
-        transform: none;
+    /* El icono ya era persistente en las 3 páginas internas (vive fuera de
+       `.pageContent`); el margen inferior se recorta porque ahora el
+       `.panelKicker` de texto (ver Soluciones.tsx) se apila justo debajo y
+       aporta el resto del aire antes del contenido. */
+    .panelIcon {
+        margin-bottom: var(--spacing-3);
     }
 
-    .rowActive .rowArrow {
-        opacity: 1;
-    }
-
-    .rowDesc {
+    /* Kicker con el nombre del sector — sin él, un usuario que hubiera
+       avanzado a "Cómo funciona"/FAQ (donde no aparece `.panelTitle`, solo
+       en la página de resumen) y luego deslizara al sector siguiente
+       perdería toda referencia textual de qué sector está viendo, quedando
+       solo el icono (mismo badge en los 7 sectores salvo el glifo). */
+    .panelKicker {
         display: block;
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-mint);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 0 0 var(--spacing-4);
     }
 
     /* ─── Dots de posición — mismo patrón visual que .caseDots/.caseDot
-       en Home.module.css (carrusel de casos de éxito). ─── */
+       en Home.module.css (carrusel de casos de éxito). `order: 2`: quedan
+       por debajo de `.panelWrap` visualmente (ver comentario junto a
+       `.panelWrap` arriba). ─── */
     .sectorDots {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 14px;
         margin-top: var(--spacing-4);
+        order: 2;
     }
 
     .sectorDot {

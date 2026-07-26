@@ -12,8 +12,7 @@
 // como en la de Casos — reutiliza MockPreview (el mismo lenguaje visual del
 // Paso 4 de HeroLeadWidget, ver src/components/marketing/MockPreview.tsx)
 // para mostrar una mini-interfaz FIJA por caso que representa la mejora de
-// ese sector. El "antes" queda reducido a `beforeTag`, una nota secundaria
-// de bajo peso visual (ya no un cluster de iconos con protagonismo propio).
+// ese sector.
 import type { Case } from './types';
 
 export const CASES: readonly Case[] = [
@@ -37,7 +36,6 @@ export const CASES: readonly Case[] = [
             kicker: 'Automático',
             title: 'Visita confirmada, sin mover un dedo',
             sub: 'Directo del chat al calendario, sin llamadas de por medio.',
-            beforeTag: 'Antes: agenda por WhatsApp suelto.',
             block: {
                 type: 'sequence',
                 beforeIcon: 'chatMessage',
@@ -70,7 +68,6 @@ export const CASES: readonly Case[] = [
             kicker: 'Cierre al día',
             title: 'El cierre mensual, ya resuelto',
             sub: 'Conciliación, modelos y firma, sin tocarlos a mano.',
-            beforeTag: 'Antes: todo a mano, documento a documento.',
             block: {
                 type: 'modules',
                 items: [
@@ -104,7 +101,6 @@ export const CASES: readonly Case[] = [
             kicker: 'Todo en uno',
             title: 'Cinco herramientas, un solo sistema',
             sub: 'Clientes, facturación, agenda y comunicación, unificados.',
-            beforeTag: 'Antes: cinco herramientas sueltas.',
             block: {
                 type: 'modules',
                 items: [

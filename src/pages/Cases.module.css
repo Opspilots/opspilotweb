@@ -556,11 +556,33 @@
         /* Inherits flex: 0 0 100% — exactly one slide visible on mobile too. */
         padding: var(--spacing-7) var(--spacing-6);
         border-radius: var(--radius-card);
+        /* Reorder children visually only (DOM order unchanged — desktop
+           keeps the original markup order): info-first reading on mobile.
+           .cardHead (sector/index) stays first, then the text info, then
+           the visual mock panel. CaseMockPanel's reveal-on-scroll uses
+           ScrollTrigger against its own viewport position, not DOM order,
+           so this is safe. */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cardHead {
+        order: 0;
+    }
+
+    .cardContent {
+        order: 1;
     }
 
     .cardTransition {
+        order: 2;
         padding: var(--spacing-6) 0;
-        margin-bottom: var(--spacing-6);
+        /* Now the last visual child (info reads first on mobile): the gap
+           moves from margin-bottom to margin-top (same --spacing-6 value)
+           so there's still a gap after .cardContent, without adding a
+           trailing margin before .caseCard's own bottom padding. */
+        margin-top: var(--spacing-6);
+        margin-bottom: 0;
     }
 
     /* La cita del cliente (nombre + cargo) sobra en móvil: el espacio es

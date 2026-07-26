@@ -147,7 +147,22 @@ export const Soluciones: React.FC = () => {
     const ctaRef = useScrollReveal<HTMLDivElement>();
 
     const prefersReducedMotion = usePrefersReducedMotion();
-    const [selected, setSelected] = useState(0);
+    // Deep-link de ENTRADA por sector vía hash de URL (p. ej. `/soluciones#agencias`
+    // desde un cross-link de /recursos) — solo lee el hash al MONTAR, nunca lo
+    // escribe de vuelta cuando el usuario cambia de sector a mano (no es
+    // bidireccional, ver instrucción explícita). `window` no existe en el
+    // prerender SSG (node): ahí el inicializador devuelve 0 sin más, así que el
+    // HTML estático siempre muestra el sector 0 — el ajuste al hash ocurre en
+    // cliente, tras hidratar, igual que cualquier otro `useState` derivado de
+    // `window`. Lazy initializer (función a `useState`, no `useState(getInitial())`)
+    // para no recalcular el hash en cada render, solo en el mount.
+    const [selected, setSelected] = useState(() => {
+        if (typeof window === 'undefined') return 0;
+        const hash = window.location.hash.slice(1);
+        if (!hash) return 0;
+        const idx = SECTORS.findIndex((s) => s.id === hash);
+        return idx === -1 ? 0 : idx;
+    });
     // Sector activo — leído tanto por el hero (titular reactivo, ver más
     // abajo) como por el explorador. Un solo `const` en vez de `SECTORS[selected]`
     // repetido evita desincronías si algún día cambia la fuente de `selected`.
@@ -163,6 +178,27 @@ export const Soluciones: React.FC = () => {
     const ledgerRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
     const ledgerScrollRaf = useRef(0);
+    // ≤767px: `.ledger` (fila compacta) y `.panelWrap` (detalle completo) se
+    // fusionan en UNA sola superficie tipo hoja/modal que ES el carrusel —
+    // ver comentario junto a `.panelWrap` en Soluciones.module.css. `panelRefs`
+    // (uno por sector, igual que `tabRefs`) y `panelWrapScrollRaf` son el
+    // equivalente de `tabRefs`/`ledgerScrollRaf` pero para ese carrusel fusionado.
+    const panelRefs = useRef<Array<HTMLDivElement | null>>([]);
+    const panelWrapRef = useRef<HTMLDivElement>(null);
+    const panelWrapScrollRaf = useRef(0);
+    // Los dos efectos de "scrollIntoView de la fila/tarjeta activa" (uno para
+    // `.ledger`, uno para `.panelWrap`, ver más abajo) no deben ejecutar su
+    // scrollIntoView en el MOUNT inicial — con el hero ahora a tamaño
+    // completo (ver Task A / `.solHero`), el explorador arranca por debajo
+    // del pliegue en mobile, así que un `scrollIntoView` disparado en el
+    // primer render (selected=0, sin interacción del usuario todavía) hacía
+    // que la PÁGINA ENTERA saltara hacia abajo al cargar, saltándose el hero
+    // por completo — regresión real, verificada con Playwright. Cada efecto
+    // usa su propio flag (no uno compartido): comparten el mismo commit de
+    // React, así que un flag único quedaría "consumido" por el primero de
+    // los dos y el segundo igual dispararía el salto.
+    const ledgerSyncMounted = useRef(false);
+    const panelSyncMounted = useRef(false);
 
     // Cambiar de sector (clic/tap/teclado en las filas O scroll-jack, ambos
     // pasan por `setSelected`) siempre vuelve el panel a su página 1 — nunca
@@ -235,6 +271,44 @@ export const Soluciones: React.FC = () => {
 
     useEffect(() => () => cancelAnimationFrame(ledgerScrollRaf.current), []);
 
+    // Mismo mecanismo que `handleLedgerScroll` de arriba, pero para el
+    // carrusel fusionado ≤767px (`.panelWrap` como carril scroll-snap de
+    // sectores, ver Soluciones.module.css) — a esos anchos `.ledger` está
+    // oculto (`display: none`) y es `.panelWrap` quien hace de carril
+    // horizontal, así que necesita su propio listener de scroll→`selected`
+    // en vez de reutilizar `ledgerRef` (que ya no existe visualmente en el
+    // DOM en ese rango). Gateado igual, ≤767px vía matchMedia: por encima de
+    // ese ancho `.panelWrap` vuelve a ser el panel de detalle absoluto de
+    // siempre (768–1023/desktop), donde este cálculo de índice por
+    // `scrollLeft / unit` no aplicaría.
+    //
+    // `panelRefs.current[0]` en vez de `wrap.children[0]` (que sí funciona
+    // en `handleLedgerScroll`): el primer hijo REAL de `.panelWrap` es
+    // `.panelBar` (el `<span>` decorativo del hairline, ver JSX más abajo),
+    // no una tarjeta — con `wrap.children[0]` la unidad de ancho se calculaba
+    // sobre ese span (0px en ≤767px, donde `.panelBar` es `display: none`),
+    // dando un `unit` erróneo (solo el gap) y un índice sistemáticamente mal
+    // calculado. `panelRefs` (uno por sector, ver más arriba) apunta siempre
+    // a una tarjeta real.
+    const handlePanelWrapScroll = useCallback(() => {
+        cancelAnimationFrame(panelWrapScrollRaf.current);
+        panelWrapScrollRaf.current = requestAnimationFrame(() => {
+            if (!window.matchMedia('(max-width: 767px)').matches) return;
+            const wrap = panelWrapRef.current;
+            if (!wrap) return;
+            const card = panelRefs.current[0];
+            if (!card) return;
+            const gap = parseFloat(window.getComputedStyle(wrap).gap) || 0;
+            const unit = card.offsetWidth + gap;
+            if (!unit) return;
+            const idx = Math.round(wrap.scrollLeft / unit);
+            const clamped = Math.max(0, Math.min(idx, SECTORS.length - 1));
+            setSelected((prev) => (prev === clamped ? prev : clamped));
+        });
+    }, []);
+
+    useEffect(() => () => cancelAnimationFrame(panelWrapScrollRaf.current), []);
+
     // Selección de sector — dos mecanismos que conviven:
     // 1. Clic/tap/teclado en las filas (ver onClick/onKeyDown más abajo) —
     //    funciona en TODOS los breakpoints, es el único mecanismo en
@@ -299,9 +373,45 @@ export const Soluciones: React.FC = () => {
 
     // Mantiene la fila activa a la vista dentro del carril de tabs que scrollea
     // en horizontal en <1024px (móvil/tablet). En desktop la lista es vertical y
-    // esto no desplaza nada perceptible.
+    // esto no desplaza nada perceptible. Se salta el MOUNT inicial (ver
+    // `ledgerSyncMounted` más arriba): con el hero a tamaño completo el
+    // carril puede arrancar por debajo del pliegue en mobile/tablet
+    // estrechos, y un `scrollIntoView` en el primer render (sin interacción
+    // del usuario) desplazaría la PÁGINA para traerlo a la vista, saltándose
+    // el hero — el carril ya está correctamente en `scrollLeft: 0` por
+    // defecto, así que en el mount no hace falta ningún ajuste.
     useEffect(() => {
+        if (!ledgerSyncMounted.current) {
+            ledgerSyncMounted.current = true;
+            return;
+        }
         tabRefs.current[selected]?.scrollIntoView({
+            behavior: prefersReducedMotion ? 'auto' : 'smooth',
+            inline: 'center',
+            block: 'nearest',
+        });
+    }, [selected, prefersReducedMotion]);
+
+    // Mismo patrón que el efecto de arriba, pero para el slide activo del
+    // carrusel fusionado ≤767px (`.panelWrap`): cuando `selected` cambia por
+    // un mecanismo que NO es el propio swipe (tap en un `.sectorDot`, p. ej.
+    // — el swipe ya deja el carril en la posición correcta por sí mismo vía
+    // `handlePanelWrapScroll`), hay que desplazar `.panelWrap` para que el
+    // panel del sector nuevo quede snapeado y visible. Gateado a ≤767px:
+    // por encima de ese ancho `.panelWrap` no es un carril con scroll propio
+    // (es el panel de detalle absoluto de siempre) y `scrollIntoView` ahí
+    // podría desplazar la PÁGINA en vez de un contenedor interno. Mismo
+    // salto de MOUNT inicial que el efecto de `.ledger` de arriba, y por el
+    // mismo motivo (regresión verificada con Playwright: sin este guard, la
+    // página cargaba con el hero ya scrolleado fuera de vista).
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        if (!window.matchMedia('(max-width: 767px)').matches) return;
+        if (!panelSyncMounted.current) {
+            panelSyncMounted.current = true;
+            return;
+        }
+        panelRefs.current[selected]?.scrollIntoView({
             behavior: prefersReducedMotion ? 'auto' : 'smooth',
             inline: 'center',
             block: 'nearest',
@@ -317,69 +427,77 @@ export const Soluciones: React.FC = () => {
                     { name: 'Soluciones', url: 'https://opspilot.es/soluciones' },
                 ])}
             />
+            {/* Hero — flujo normal, FUERA de `.solViewport`/`.solTrack`. Antes
+                vivía pineado dentro del scroll-jack junto al explorador (ver
+                decisión archivada en Soluciones.module.css junto a
+                `.solHero`); el usuario pidió explícitamente que el
+                scroll-jack (ver useEffect de ScrollTrigger más abajo) siga
+                aplicando SOLO al explorador de sectores, no al hero. Vuelve a
+                ser un `<section>` propio (era un `<div>` mientras vivía
+                dentro del viewport pineado, sin aportar landmark) — mismo
+                patrón que el hero de Casos/Contacto/Recursos. */}
+            <section className={`${sys.pageHero} ${styles.solHero}`}>
+                <div className={`${sys.container} ${styles.heroContentLayer}`}>
+                    <div className={sys.pageHeroContent} ref={heroRef}>
+                        {/* Titular reactivo al sector activo — el lead-in ("Software
+                            para") queda fijo, solo el nombre del sector (`activeSector.label`)
+                            cambia, con el mismo crossfade+slide (opacity/y, mismo timing/
+                            easing que el crossfade de icono `.rowIconMotion`/
+                            `.panelIconMotion` y la transición de panel) al cambiar
+                            `selected` — por clic o por scroll-jack, da igual, ambos pasan
+                            por el mismo `setSelected`. Gated tras `prefersReducedMotion`
+                            como el resto del componente: con reduced motion el nombre
+                            también cambia, solo que sin animar. */}
+                        <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>
+                            Software para{' '}
+                            {prefersReducedMotion ? (
+                                <em className={sys.pageHeroAccent}>{activeSector.label}</em>
+                            ) : (
+                                <AnimatePresence mode="wait" initial={false}>
+                                    <motion.em
+                                        key={activeSector.id}
+                                        className={sys.pageHeroAccent}
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8 }}
+                                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                    >
+                                        {activeSector.label}
+                                    </motion.em>
+                                </AnimatePresence>
+                            )}
+                        </h1>
+                        <p className={`${sys.pageHeroSubtitle} ${styles.heroSubtitle} reveal`}>
+                            Conocemos de cerca la operativa de estos sectores. Elige el tuyo y
+                            te decimos exactamente qué podemos construir para ti.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
             {/* Sectores — explorador de dos paneles (lista + detalle). Selección
                 por clic/tap/teclado en todos los breakpoints, más scroll-jack
                 en desktop sin reduced-motion (ver comentario junto a
                 `selected`/al useEffect de ScrollTrigger más arriba).
                 `.solTrack`/`.solViewport` son la pareja track alto + sticky
                 que hace posible el scroll-jack (ver Soluciones.module.css);
-                fuera de ese matchMedia (móvil/tablet/reduced-motion) ambos
-                colapsan a su alto de contenido normal, sin efecto visible.
-                El hero vive AHORA dentro de `.solViewport`, antes del
-                explorador — así queda pineado junto a la lista/panel durante
-                todo el scroll-jack en vez de scrollear fuera de vista antes
-                de que el pin arranque (ver comentario en Soluciones.module.css
-                junto a `.solHero`). Sigue siendo un `<div>`, no un `<section>`:
-                ya no aportaba un landmark propio (un `<section>` sin
-                aria-label no se expone como región) y anidarlo dentro de
-                `explorerSection` como `<section>` habría sido una sección
-                dentro de otra sección sin necesidad. */}
+                el hero YA NO vive aquí dentro (ver arriba), así que el pin
+                ahora afecta únicamente al explorador. Fuera de ese matchMedia
+                (móvil/tablet/reduced-motion) ambos colapsan a su alto de
+                contenido normal, sin efecto visible. */}
             <section className={`${sys.section} ${styles.explorerSection}`}>
                 <div className={styles.solTrack} ref={trackRef}>
                     <div className={styles.solViewport}>
-                        <div className={`${sys.pageHero} ${styles.solHero}`}>
-                            <div className={`${sys.container} ${styles.heroContentLayer}`}>
-                                <div className={sys.pageHeroContent} ref={heroRef}>
-                                    {/* Titular reactivo al sector activo — el lead-in ("Software
-                                        para") queda fijo, solo el nombre del sector (`activeSector.label`)
-                                        cambia, con el mismo crossfade+slide (opacity/y, mismo timing/
-                                        easing que el crossfade de icono `.rowIconMotion`/
-                                        `.panelIconMotion` y la transición de panel) al cambiar
-                                        `selected` — por clic o por scroll-jack, da igual, ambos pasan
-                                        por el mismo `setSelected`. Gated tras `prefersReducedMotion`
-                                        como el resto del componente: con reduced motion el nombre
-                                        también cambia, solo que sin animar. */}
-                                    <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>
-                                        Software para{' '}
-                                        {prefersReducedMotion ? (
-                                            <em className={sys.pageHeroAccent}>{activeSector.label}</em>
-                                        ) : (
-                                            <AnimatePresence mode="wait" initial={false}>
-                                                <motion.em
-                                                    key={activeSector.id}
-                                                    className={sys.pageHeroAccent}
-                                                    initial={{ opacity: 0, y: 8 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    exit={{ opacity: 0, y: -8 }}
-                                                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                                                >
-                                                    {activeSector.label}
-                                                </motion.em>
-                                            </AnimatePresence>
-                                        )}
-                                    </h1>
-                                    <p className={`${sys.pageHeroSubtitle} ${styles.heroSubtitle} reveal`}>
-                                        Conocemos de cerca la operativa de estos sectores. Elige el tuyo y
-                                        te decimos exactamente qué podemos construir para ti.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
                         <div className={sys.container}>
                             <div className={styles.explorer} ref={listRef} data-lenis-prevent>
                                 {/* Columna izquierda — lista de sectores seleccionables (nav,
-                                    no tabla: sin fila de cabecera, ver Soluciones.module.css) */}
+                                    no tabla: sin fila de cabecera, ver Soluciones.module.css).
+                                    Oculta (`display: none`) en ≤767px: ahí su trabajo de
+                                    "carrusel de sectores" lo hace `.panelWrap` de más abajo,
+                                    fusionado con el detalle en una sola superficie — ver
+                                    comentario junto a `.panelWrap`. Se deja montada (no
+                                    condicionada en JS) porque sigue siendo la lista/carril real
+                                    en 768–1023px y desktop, sin cambios ahí. */}
                                 <div
                                     className={`${styles.ledger} reveal`}
                                     role="tablist"
@@ -426,9 +544,12 @@ export const Soluciones: React.FC = () => {
                                                         </AnimatePresence>
                                                     )}
                                                 </span>
-                                                {/* rowDesc (s.who) solo se ve en el carrusel de ≤767px
-                                                    (ver Soluciones.module.css) — en desktop/tablet queda
-                                                    oculto vía display:none, sin duplicar markup por breakpoint. */}
+                                                {/* rowDesc (s.who) — hoy no se pinta en ningún breakpoint
+                                                    (queda `display: none` también en ≤767px, ver
+                                                    Soluciones.module.css: ahí ahora manda `.panelWrap`, no
+                                                    `.ledger`). Se deja el markup/dato en vez de borrarlo: es
+                                                    barato de mantener y sirve de fallback textual si `.row`
+                                                    volviera a mostrarse en algún breakpoint futuro. */}
                                                 <span className={styles.rowText}>
                                                     <span className={styles.rowLabel}>{s.label}</span>
                                                     <span className={styles.rowDesc}>{s.who}</span>
@@ -446,10 +567,16 @@ export const Soluciones: React.FC = () => {
                                     horizontal anterior: de un vistazo se ve CUÁNTOS sectores hay
                                     y CUÁL está activo, algo que ni el "peek" del borde ni el fade
                                     comunican por sí solos. Son botones reales (no aria-hidden):
-                                    navegación adicional legítima, no decoración pura — por eso NO
-                                    llevan role="tab"/"tablist" (ya existe uno real en `.ledger`;
-                                    duplicarlo confundiría a lectores de pantalla con dos tablists
-                                    controlando el mismo panel). En desktop/tablet quedan en el DOM
+                                    navegación adicional legítima, no decoración pura. Viven en el
+                                    DOM entre `.ledger` y `.panelWrap` (así son hermanos directos de
+                                    ambos, sin envoltorio extra) pero en ≤767px la posición VISUAL
+                                    queda por debajo del carrusel fusionado vía `order` en CSS (ver
+                                    Soluciones.module.css): ahora que `.ledger` está oculto ahí, ya
+                                    no hace falta un role="tab"/"tablist" propio para no duplicar
+                                    el de `.ledger` — a esos anchos `.ledger` no expone ningún
+                                    tablist (display:none lo saca del árbol de accesibilidad), así
+                                    que estos dots son la única superficie de "ir directo a X sector"
+                                    además del propio swipe. En 768–1023px/desktop quedan en el DOM
                                     pero display:none, así que no ocupan layout ni orden de tab. */}
                                 <div className={styles.sectorDots}>
                                     {SECTORS.map((s, i) => (
@@ -464,19 +591,44 @@ export const Soluciones: React.FC = () => {
                                     ))}
                                 </div>
 
-                                {/* Columna derecha — panel de detalle del sector activo */}
-                                <div className={`${styles.panelWrap} reveal`}>
+                                {/* Columna derecha — panel de detalle del sector activo.
+                                    ≥768px: comportamiento sin cambios — los 7 paneles se
+                                    superponen absolutos (`.panelHidden`), solo el activo en
+                                    flujo, tal como antes.
+                                    ≤767px: `.panelWrap` deja de ser un panel único y pasa a SER
+                                    el carrusel de sectores (fusión pedida de `.ledger` + panel de
+                                    detalle en una sola superficie tipo hoja/modal — ver
+                                    Soluciones.module.css): los 7 `.panel` quedan en flujo,
+                                    unos junto a otros, en un carril horizontal con scroll-snap
+                                    (mismo mecanismo que tenía `.ledger`, adaptado aquí vía
+                                    `panelWrapRef`/`handlePanelWrapScroll` en vez de
+                                    `ledgerRef`/`handleLedgerScroll`). `.ledger` en sí queda oculto
+                                    a ese ancho (ver comentario junto a `.ledger` más arriba); el
+                                    fallback de selección por tap sigue siendo el mismo patrón
+                                    (`onClick`/`.sectorDots`), solo que ahora el swipe actúa
+                                    directamente sobre la tarjeta de detalle en vez de sobre una
+                                    fila compacta separada. */}
+                                <div
+                                    className={`${styles.panelWrap} reveal`}
+                                    ref={panelWrapRef}
+                                    onScroll={handlePanelWrapScroll}
+                                >
                                     <span className={styles.panelBar} aria-hidden="true" />
                                     {/* Los 7 paneles se montan siempre (SEO: el copy de who/solution/
                                         benefits de cada sector debe existir en el HTML prerenderizado,
-                                        no solo el del sector activo). Solo el activo queda en flujo
-                                        normal — determina el alto de `.panelWrap` —; el resto se
+                                        no solo el del sector activo). ≥768px: solo el activo queda en
+                                        flujo normal — determina el alto de `.panelWrap` —; el resto se
                                         superpone absoluto (`.panelHidden`), invisible y con `inert`
                                         para que no sea alcanzable por teclado ni lectores de pantalla.
+                                        ≤767px: los 7 quedan en flujo horizontal (ver comentario de
+                                        `.panelWrap` arriba) pero `inert`/`aria-hidden` en los inactivos
+                                        se mantienen igual — solo la tarjeta centrada/snapeada es
+                                        alcanzable por teclado o lector de pantalla, el resto es
+                                        "visible pero no interactivo" mientras se desliza hacia ella.
                                         La transición opacity/y de abajo cubre TANTO el cambio de
-                                        sector por clic como por scroll-jack — ambos pasan por el
-                                        mismo `setSelected`, así que `isActive` cambia igual en los
-                                        dos casos y motion anima la misma transición en ambos. */}
+                                        sector por clic/dot como por scroll-jack o swipe — todos pasan
+                                        por el mismo `setSelected`, así que `isActive` cambia igual en
+                                        todos los casos y motion anima la misma transición. */}
                                     {SECTORS.map((s, i) => {
                                         const isActive = i === selected;
                                         const PanelIcon = ICONS[s.iconKey];
@@ -484,8 +636,17 @@ export const Soluciones: React.FC = () => {
                                             <motion.div
                                                 key={s.id}
                                                 id={`sector-panel-${i}`}
+                                                ref={(el) => { panelRefs.current[i] = el; }}
                                                 role="tabpanel"
                                                 aria-labelledby={`sector-tab-${i}`}
+                                                // Fallback si `aria-labelledby` no resuelve — en ≤767px
+                                                // `#sector-tab-${i}` vive dentro de `.ledger`, que ahí está
+                                                // `display: none` (fuera del árbol de accesibilidad); según
+                                                // el algoritmo de accessible-name, si la referencia no
+                                                // resuelve se cae a `aria-label`. En ≥768px `aria-labelledby`
+                                                // sigue ganando (el tab SÍ es visible ahí), así que este
+                                                // `aria-label` es puro seguro sin efecto visible/funcional.
+                                                aria-label={s.label}
                                                 aria-hidden={!isActive}
                                                 tabIndex={isActive ? 0 : -1}
                                                 inert={!isActive}
@@ -518,6 +679,17 @@ export const Soluciones: React.FC = () => {
                                                         </AnimatePresence>
                                                     )}
                                                 </div>
+
+                                                {/* Kicker con el nombre del sector — solo pintado ≤767px
+                                                    (ver .panelKicker en Soluciones.module.css). El icono de
+                                                    arriba ya es persistente en las 3 páginas internas, pero
+                                                    no lleva texto: sin este kicker, un usuario que hubiera
+                                                    avanzado a "Cómo funciona"/FAQ y luego deslizara al
+                                                    sector siguiente perdería el nombre del sector hasta
+                                                    volver a "Resumen" (la única página con `panelTitle`).
+                                                    En ≥768px no hace falta — el usuario nunca pierde de
+                                                    vista qué sector está viendo. */}
+                                                <span className={styles.panelKicker}>{s.label}</span>
 
                                                 {/* Páginas del panel (overview / cómo funciona / FAQ) — solo
                                                     se anima con slide en el sector ACTIVO; en los 6 paneles

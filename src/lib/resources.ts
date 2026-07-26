@@ -481,7 +481,7 @@ export const RESOURCES: Resource[] = [
             {
                 type: 'link',
                 text: 'Es nuestro servicio de software a medida para asesorías — descúbrelo en Soluciones',
-                href: '/soluciones',
+                href: '/soluciones#asesorias',
             },
             { type: 'link', text: 'Ver Fiscalidad en acción', href: 'https://fiscalidad.mcpopspilot.org' },
         ],
@@ -546,7 +546,7 @@ export const RESOURCES: Resource[] = [
             {
                 type: 'link',
                 text: 'Es nuestro servicio de software a medida para el sector energético — descúbrelo en Soluciones',
-                href: '/soluciones',
+                href: '/soluciones#energia',
             },
             { type: 'link', text: 'Conocer EnergyDeal', href: 'https://energydeal.es' },
         ],
@@ -615,7 +615,7 @@ export const RESOURCES: Resource[] = [
             {
                 type: 'link',
                 text: 'Es nuestro servicio de software a medida para reformas e instalaciones — descúbrelo en Soluciones',
-                href: '/soluciones',
+                href: '/soluciones#reformas',
             },
             { type: 'link', text: 'Probar Presupuestador', href: 'https://presupuestador.mcpopspilot.org' },
         ],
@@ -680,9 +680,575 @@ export const RESOURCES: Resource[] = [
             {
                 type: 'link',
                 text: 'Es nuestro servicio de software a medida para hostelería — descúbrelo en Soluciones',
-                href: '/soluciones',
+                href: '/soluciones#hosteleria',
             },
             { type: 'link', text: 'Ver ERP Hostelería', href: 'https://erp.mcpopspilot.org' },
+        ],
+    },
+    {
+        slug: 'gestion-leads-agencia-sin-crm',
+        cat: 'Artículo',
+        title: 'Cómo gestionar leads en tu agencia sin perderlos: pipeline visual sin software',
+        desc: 'Por qué se pierden leads en una agencia, los primeros cambios para arreglarlo sin software y en qué momento sí compensa un CRM.',
+        time: '6 min',
+        date: '2026-07-25',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Cuántos leads se pierden realmente por no tener un CRM?',
+                a: 'No hay una cifra universal — depende del volumen y de cuántas personas tocan el mismo lead. El patrón sí es constante: sin un sitio único donde quede registrado quién debe hacer el siguiente contacto, alguien asume que ya llamó otra persona y el lead se enfría sin que nadie lo decida. El problema no es la falta de software, es la falta de un sitio único.',
+            },
+            {
+                q: '¿Qué datos mínimos hay que rastrear por cada lead?',
+                a: 'Con poco alcanza al principio: de dónde vino, quién habló con él primero, qué necesita, cuándo toca el siguiente contacto y en qué fase está. Cinco campos, no cincuenta — añadir más campos de los que realmente se usan es la forma más rápida de que nadie los actualice.',
+            },
+            {
+                q: '¿Puede un Excel bien montado sustituir a un CRM?',
+                a: 'Durante un tiempo, sí, si tiene una fila por lead, columnas fijas y alguien revisándolo cada día. Deja de aguantar en cuanto dos personas lo editan a la vez sin control de versiones, o el volumen de leads supera lo que una persona puede repasar de un vistazo.',
+            },
+        ],
+        blocks: [
+            {
+                type: 'p',
+                text: 'Respuesta rápida: los leads no se pierden por falta de un CRM. Se pierden porque nadie tiene un sitio único donde quede registrado quién debe hacer el siguiente contacto y cuándo. Eso se arregla antes de comprar ningún software — y conviene hacerlo antes.',
+            },
+            {
+                type: 'p',
+                text: 'En una agencia pequeña los leads entran por todas partes: un formulario web, un email suelto, un WhatsApp de un contacto, una recomendación en una comida. Cada canal tiene su propia lógica, y cuando nadie centraliza esa entrada, el seguimiento depende de la memoria de quien atendió primero. Funciona, hasta que esa persona tiene una semana mala o hasta que el volumen crece un poco.',
+            },
+            { type: 'h2', text: '¿Cómo se pierden los leads en una agencia?' },
+            {
+                type: 'p',
+                text: 'El patrón se repite casi siempre igual: alguien contesta al primer contacto y queda en "le escribo la semana que viene". Esa nota vive solo en su cabeza o en un hilo de email que nadie más ve. Llega un lead nuevo, más urgente, y el primero se queda ahí, sin que nadie decida activamente abandonarlo. Nadie lo mató. Simplemente nadie lo siguió sosteniendo.',
+            },
+            {
+                type: 'ul',
+                items: [
+                    'El lead vive en la bandeja de entrada de una sola persona, no en un sitio compartido.',
+                    'No hay fecha de "próximo contacto" en ningún sitio visible para el resto del equipo.',
+                    'Dos personas contactan al mismo lead sin saberlo, o nadie lo contacta y ambas creen que lo hizo la otra.',
+                    'El estado del lead — interesado, en espera, descartado — solo lo sabe quien habló con él la última vez.',
+                ],
+            },
+            { type: 'h2', text: 'La diferencia entre un CRM y una lista de contactos' },
+            {
+                type: 'p',
+                text: 'Una lista de contactos guarda nombres. Un pipeline de verdad guarda estado: en qué fase está cada lead, quién es el responsable de moverlo y cuándo toca el siguiente paso. Esa diferencia no depende de qué herramienta uses. Puedes tenerla en un Excel bien pensado, y puedes no tenerla en un CRM carísimo mal configurado que nadie actualiza.',
+            },
+            {
+                type: 'p',
+                text: 'Lo que hace funcionar un pipeline no es el software: es que cada lead tenga siempre tres cosas claras — quién lo lleva, en qué fase está y cuándo toca volver a tocarlo. Sin esas tres cosas, da igual la herramienta.',
+            },
+            { type: 'h2', text: '5 señales de que tu pipeline está roto' },
+            {
+                type: 'ul',
+                items: [
+                    '"¿Qué pasó con aquel lead de hace tres semanas?" y nadie sabe responder sin rebuscar en el email.',
+                    'Dos comerciales contactan al mismo cliente el mismo día, sin haberlo coordinado.',
+                    'No sabes, sin preguntar a nadie, cuántos leads activos tienes ahora mismo.',
+                    'Los leads calientes de esta semana y los descartados hace seis meses viven en el mismo sitio, sin distinguir.',
+                    'Cuando alguien del equipo se va, su cartera de seguimientos se va con él.',
+                ],
+            },
+            {
+                type: 'note',
+                text: 'Si te reconoces en dos o más señales, el problema no es (todavía) de herramienta. Es de proceso. Arregla el proceso primero.',
+            },
+            { type: 'h2', text: 'Por dónde empezar: primeros cambios sin software' },
+            {
+                type: 'p',
+                text: 'Antes de mirar ningún software, hay cambios que no cuestan nada y arreglan la mayor parte del problema.',
+            },
+            {
+                type: 'ol',
+                items: [
+                    'Un sitio único donde entra todo lead, sea cual sea el canal — aunque al principio sea copiar y pegar a mano en una hoja compartida.',
+                    'Cinco columnas fijas y nada más: origen, responsable, fase, próximo contacto, notas.',
+                    'Una revisión semanal de diez minutos donde el equipo repasa junto qué lead lleva más de una semana sin moverse.',
+                ],
+            },
+            {
+                type: 'p',
+                text: 'Ese ritual semanal pesa más que la herramienta. Un Excel compartido con una revisión semanal disciplinada rinde más que un CRM caro que nadie mira. El software ordena el proceso; no lo sustituye.',
+            },
+            { type: 'h2', text: 'Cuándo sí vale la pena un CRM (y cuándo es prematuro)' },
+            {
+                type: 'p',
+                text: 'Un CRM empieza a compensar cuando la hoja compartida y la revisión semanal ya no dan abasto: cuando hay tantos leads que nadie los repasa enteros de un vistazo, cuando necesitas que los recordatorios salgan solos en lugar de depender de que alguien mire el Excel, o cuando el equipo ya es lo bastante grande como para necesitar reportes automáticos de en qué fase está cada oportunidad.',
+            },
+            {
+                type: 'p',
+                text: 'Es prematuro cuando el volumen todavía cabe en una pantalla y el problema real es que nadie revisa el Excel que ya tienes. Ahí, comprar un CRM no arregla nada — solo cambia el nombre del archivo que nadie mira.',
+            },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para agencias — descúbrelo en Soluciones',
+                href: '/soluciones#agencias',
+            },
+        ],
+    },
+    {
+        slug: 'migrar-de-excel-a-sistema-pyme',
+        cat: 'Guía',
+        title: 'De Excel a sistema: cómo migrar tu PYME sin perder datos ni parar el negocio',
+        desc: 'Plan por fases para migrar tu PYME de Excel a un sistema de gestión sin parar la operativa, sin perder histórico y sin que el equipo se pierda en el cambio.',
+        time: '8 min',
+        date: '2026-07-25',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Hay que parar el negocio durante la migración?',
+                a: 'No, si se hace por fases. El sistema antiguo puede seguir funcionando en paralelo mientras el nuevo se valida con datos reales, y solo se apaga Excel cuando el sistema nuevo ya demostró que funciona con tu operativa real — no antes.',
+            },
+            {
+                q: '¿Cuánto tarda una PYME de 5-10 personas en migrar?',
+                a: 'En rangos razonables, entre 4 y 10 semanas para un caso estándar de facturación, clientes e inventario básico, según cuántos años de histórico haya que limpiar y cuántas hojas distintas convivan hoy. Lo que alarga el plazo son las reglas particulares del proceso, no el tamaño del equipo.',
+            },
+            {
+                q: '¿Se pierden los datos antiguos al cambiar de sistema?',
+                a: 'Solo si la migración de histórico no se trata como una fase propia. Con un audit previo y una prueba con una muestra de datos antes de migrar todo, el histórico se conserva. Lo que sí suele perderse — y conviene aceptarlo — es el detalle de errores que Excel nunca detectó.',
+            },
+        ],
+        blocks: [
+            {
+                type: 'p',
+                text: 'Respuesta directa: se puede migrar de Excel a un sistema de gestión sin parar el negocio ni perder datos, si se hace por fases y con el sistema antiguo funcionando en paralelo hasta que el nuevo esté probado. Lo que rompe negocios es intentar hacerlo todo de golpe.',
+            },
+            {
+                type: 'p',
+                text: 'Cambiar de Excel a un sistema de gestión da miedo por buenas razones. Parar la operativa unos días cuesta dinero real. Perder años de histórico es irrecuperable. Y un equipo que no adopta la herramienta nueva vuelve a Excel en la primera semana difícil. Ninguno de esos tres miedos se resuelve con un salto de fe. Se resuelve con un plan por fases.',
+            },
+            { type: 'h2', text: '¿Realmente necesitas cambiar, o solo organizarte mejor en Excel?' },
+            {
+                type: 'p',
+                text: 'Antes de migrar, vale la pena preguntarse si el problema es Excel o es la disciplina con la que se usa. Si el caos viene de cinco copias del mismo archivo circulando por email, un Excel compartido, bien protegido y con una única versión válida puede aguantar bastante más de lo que parece. La migración empieza a tener sentido cuando el límite ya no es de orden, sino estructural: varias personas editando a la vez sin control de versiones, ningún registro de quién cambió qué, o un volumen de filas que ya nadie repasa entero.',
+            },
+            { type: 'h2', text: 'Cuáles son tus datos hoy: el audit previo' },
+            {
+                type: 'p',
+                text: 'El primer paso real no es elegir el sistema nuevo. Es hacer inventario del caos actual: cuántas hojas de cálculo se usan de verdad (no las que existen "por si acaso"), quién las edita, qué campos se repiten entre ellas con nombres distintos, y qué parte de ese histórico arrastra errores conocidos que no conviene llevar sin más al sistema nuevo. Este ejercicio lleva un par de días y ahorra semanas de sorpresas después.',
+            },
+            { type: 'h2', text: 'Cómo preparar Excel para una migración sin errores' },
+            {
+                type: 'p',
+                text: 'Los datos casi nunca están tan limpios como cree quien los usa a diario. Antes de exportar nada, conviene ordenar lo básico:',
+            },
+            {
+                type: 'ul',
+                items: [
+                    'Unifica formatos de fecha y de campos de texto libre — el mismo cliente escrito de tres formas distintas cuenta como tres clientes para el sistema nuevo.',
+                    'Elimina o marca las filas duplicadas antes de exportar, no después.',
+                    'Decide con el equipo qué histórico merece migrarse completo y qué queda archivado como consulta puntual.',
+                    'Haz una copia de seguridad del Excel original antes de tocar nada. Siempre.',
+                ],
+            },
+            { type: 'h2', text: 'Fases de migración: no todo a la vez' },
+            {
+                type: 'p',
+                text: 'La migración que sale mal casi siempre es la que intenta mover toda la operativa el mismo fin de semana. La que funciona empieza por un solo proceso — facturación, por ejemplo — y lo corre en paralelo con Excel durante unas semanas, comparando resultados entre los dos sistemas. Cuando ese proceso ya es fiable en el sistema nuevo, se apaga esa parte de Excel y se pasa al siguiente proceso. El negocio no se para en ningún momento porque siempre hay un sistema funcionando, viejo o nuevo, mientras el otro se valida.',
+            },
+            { type: 'h2', text: 'Cómo entrenar al equipo sin que todo explote' },
+            {
+                type: 'p',
+                text: 'La formación que falla es la sesión única de dos horas donde se explica todo el sistema de golpe. La que funciona reparte el aprendizaje por fases, igual que la migración: cada persona aprende primero la parte del sistema que usa a diario, no el sistema completo. Y conviene aceptar de entrada que las dos primeras semanas van a ser más lentas que con Excel. Es el coste de aprender algo nuevo, no una señal de que el sistema esté mal elegido.',
+            },
+            {
+                type: 'note',
+                text: 'Nombra a una persona de referencia por equipo durante la transición — alguien a quien preguntar dudas del día a día sin depender de un ticket de soporte. Suele ser la diferencia entre una adopción que cuaja y una que se abandona a la primera semana difícil.',
+            },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para PYMEs — descúbrelo en Soluciones',
+                href: '/soluciones#pymes',
+            },
+        ],
+    },
+    {
+        slug: 'cuando-pedir-software-a-medida-vs-estandar',
+        cat: 'Guía',
+        title: '¿Software a medida o estándar? Cómo decidir sin que te la cuelen',
+        desc: 'Criterios objetivos para elegir entre software estándar y a medida, las preguntas clave antes de pedir presupuesto y las señales de que te están vendiendo de más.',
+        time: '8 min',
+        date: '2026-07-25',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Cuál es la complejidad mínima para que compense el software a medida?',
+                a: 'Cuando tu proceso tiene reglas propias que ningún software estándar del mercado cubre, ni configurándolo, y esas reglas son el motivo real por el que ganas o pierdes dinero. Si un estándar resuelve el 80% con una configuración razonable, ese 20% restante rara vez justifica construir desde cero.',
+            },
+            {
+                q: '¿Cuánto tarda y cuánto cuesta un desarrollo a medida?',
+                a: 'En rangos orientativos: un proceso simple puede resolverse en 6-8 semanas, uno con varias integraciones en 3-4 meses, y un proyecto con múltiples módulos conectados puede llevar más. El coste varía mucho según el alcance real — desconfía de cualquier cifra cerrada antes de que alguien conozca tu proceso.',
+            },
+            {
+                q: '¿Qué pasa si mis procesos cambian después de tener el software a medida?',
+                a: 'Es la pregunta más importante y la que menos se hace. Un desarrollo bien planteado incluye un margen razonable de evolución, no solo la foto del proceso del día de la firma. Pregúntalo antes de firmar, no cuando ya necesites el cambio.',
+            },
+        ],
+        blocks: [
+            {
+                type: 'p',
+                text: 'Respuesta directa: no hay una opción mejor entre software estándar y a medida. Hay una pregunta mejor: ¿tu proceso tiene reglas propias que ningún software genérico resuelve, o solo necesitas configurar bien lo que ya existe? Esa respuesta decide — no la palabra "medida", que suena mejor en una reunión de ventas.',
+            },
+            {
+                type: 'p',
+                text: 'Un proveedor honesto es el que te ayuda a responder esa pregunta, no el que empuja siempre hacia "medida" porque es lo que más factura, ni el que empuja siempre hacia estándar porque es lo único que sabe vender. Puede ser OpsPilot o puede ser cualquier otro proveedor — lo que importa es que el criterio venga antes que el presupuesto.',
+            },
+            { type: 'h2', text: 'La diferencia: qué es estándar, qué es medida, y qué es lo que confunde a todos' },
+            {
+                type: 'p',
+                text: 'Estándar es un software pensado para muchas empresas parecidas a la tuya, con opciones de configuración para ajustarlo a tu caso. A medida es un software construido específicamente para tu proceso, sin más usuarios tirando de esa misma lógica que tú. La confusión más habitual — y la que más dinero cuesta — es la venta de una configuración muy profunda de un estándar disfrazada de "medida", cuando en realidad sigues dentro de las costuras del producto genérico y pagando como si no lo estuvieras.',
+            },
+            { type: 'h2', text: '5 preguntas antes de pedir presupuesto de medida' },
+            {
+                type: 'ul',
+                items: [
+                    '¿Qué parte exacta de mi proceso no resuelve ningún software estándar del mercado, ni configurándolo?',
+                    '¿Esa parte es el motivo real por el que gano o pierdo dinero, o es solo una preferencia?',
+                    '¿Ya he probado a configurar un estándar antes de asumir que necesito medida?',
+                    '¿Qué pasa con el mantenimiento y la evolución del software dentro de dos o tres años?',
+                    '¿El proveedor me ha hecho estas mismas preguntas antes de proponerme "medida"?',
+                ],
+            },
+            { type: 'h2', text: 'Cuándo estándar + configuración es más sabio que medida' },
+            {
+                type: 'p',
+                text: 'La mayoría de procesos de negocio no son tan únicos como parecen desde dentro. Facturar, gestionar clientes, programar tareas, llevar inventario — son procesos que miles de empresas ya resolvieron, y el software estándar de ese sector suele llevar años puliendo justo esos casos. Configurar bien un estándar es casi siempre más barato, más rápido de poner en marcha, y viene con actualizaciones y soporte que un desarrollo a medida tiene que reinventar por su cuenta.',
+            },
+            { type: 'h2', text: 'Las fases donde todo puede salir mal (y cómo evitarlo)' },
+            {
+                type: 'ul',
+                items: [
+                    'Alcance impreciso al empezar — sin un documento claro de qué hace y qué no hace el software, cualquier ambigüedad se resuelve a tu costa.',
+                    'Cambios de alcance sin proceso definido — todo proyecto los tiene; el problema es no saber de antemano cómo se valoran.',
+                    'Entrega sin documentación ni propiedad clara del código — te deja atado a un único proveedor para siempre.',
+                    'Falta de plan de mantenimiento — el software que no se actualiza envejece rápido, sobre todo si depende de integraciones externas.',
+                ],
+            },
+            { type: 'h2', text: 'Cómo hablar con un proveedor sin que te vendan "medida" cuando es mantenimiento' },
+            {
+                type: 'p',
+                text: 'Un proveedor honesto empieza la conversación intentando resolver tu problema con lo más simple posible, no vendiéndote lo más caro que tiene en catálogo. Si la primera propuesta que recibes es "medida" sin que nadie te haya preguntado antes si ya probaste opciones estándar, es una señal a tener en cuenta. Y lo mismo aplica al revés: un proveedor que solo vende estándar y nunca reconoce que tu caso podría necesitar algo distinto tampoco te está ayudando a decidir. Te está vendiendo lo que ya tiene construido.',
+            },
+            {
+                type: 'note',
+                text: 'La pregunta que mejor separa a un proveedor honesto de uno que solo quiere cerrar venta: pídele que te explique por qué NO deberías pedirle software a medida en tu caso. Si no tiene respuesta, sigue buscando.',
+            },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para procesos únicos — descúbrelo en Soluciones',
+                href: '/soluciones#medida',
+            },
+        ],
+    },
+    {
+        slug: 'caso-energydeal-comercializadora-excel',
+        cat: 'Caso práctico',
+        title: 'De hojas de cálculo a snapshots: cómo una pequeña comercializadora energética ganó velocidad y trazabilidad',
+        desc: 'Caso ilustrativo: cómo una comercializadora energética pequeña pasó de Excel y PDFs a comparativas con snapshot y comisiones trazables.',
+        time: '6 min',
+        date: '2026-03-14',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Cómo se digitaliza una comercializadora energética que trabaja con Excel?',
+                a: 'Por fases: primero una base de tarifas actualizada que trae automáticamente las mejores opciones al introducir CUPS y consumo; después snapshots inmutables de cada comparativa para poder reproducirla ante una reclamación; y por último comisiones con estados y log de auditoría.',
+            },
+            {
+                q: '¿Por qué congelar cada comparativa en un snapshot?',
+                a: 'Porque las tarifas de mercado cambian a los pocos días y el cliente puede firmar semanas después. Sin snapshot, nadie puede demostrar qué condiciones se ofrecieron realmente en el momento de la propuesta.',
+            },
+        ],
+        blocks: [
+            {
+                type: 'note',
+                text: 'Caso ilustrativo: describe un patrón real y repetido que vemos en comercializadoras energéticas pequeñas, compuesto a partir de varios proyectos similares — no corresponde a un cliente concreto identificado.',
+            },
+            { type: 'h2', text: 'El punto de partida' },
+            {
+                type: 'p',
+                text: 'Comercializadora pequeña, entre 2 y 3 agentes, con una cartera de 30 a 50 clientes empresa. Cada propuesta de tarifa se montaba en Excel, copiando a mano los datos de los PDFs que enviaban los proveedores. Montar una comparativa completa para un cliente llevaba entre 3 y 4 días, y en ese tiempo las condiciones de mercado ya habían cambiado.',
+            },
+            {
+                type: 'p',
+                text: 'El problema no era solo la lentitud. Las tarifas de mercado se mueven a los pocos días, y un cliente empresa suele tardar semanas en firmar. Cuando por fin firmaba, nadie tenía forma de demostrar con exactitud qué condiciones se le habían ofrecido en la comparativa original — el Excel de entonces ya se había sobrescrito o simplemente no coincidía con las tarifas vigentes en ese momento.',
+            },
+            {
+                type: 'p',
+                text: 'Además, cada agente manejaba su propio criterio para elegir qué proveedor destacar, sin una fuente común de precios actualizados. Dos agentes podían dar comparativas distintas al mismo perfil de cliente el mismo día, simplemente porque cada uno trabajaba con su propia copia de PDFs, más o menos reciente.',
+            },
+            { type: 'h2', text: 'El primer cambio: base de tarifas viva' },
+            {
+                type: 'p',
+                text: 'Se sustituyó la carga manual desde PDF por una base de tarifas actualizada por comercializadora. Al introducir el CUPS y el consumo de un cliente, el sistema trae automáticamente las mejores opciones disponibles para ese perfil, sin que nadie tenga que ir buscando condiciones proveedor por proveedor. Lo que antes era copiar cifras a mano pasó a ser seleccionar un perfil de consumo y dejar que el sistema calcule.',
+            },
+            {
+                type: 'p',
+                text: 'Esto tuvo un efecto secundario que nadie había previsto del todo: los tres agentes empezaron a trabajar sobre la misma fuente de precios, así que dos comparativas del mismo perfil ya no podían divergir por usar datos de fechas distintas.',
+            },
+            { type: 'h2', text: 'El segundo cambio: snapshots inmutables' },
+            {
+                type: 'p',
+                text: 'Cada comparativa generada para un cliente se congela tal y como se creó, con las tarifas, condiciones y fecha exacta de ese momento. Si las tarifas cambian a los pocos días — algo habitual — y el cliente firma semanas después sobre la comparativa original, el snapshot sigue siendo reproducible: se puede volver a mostrar exactamente lo que se le ofreció, sin depender de la memoria de nadie ni de un Excel que ya se sobrescribió.',
+            },
+            {
+                type: 'p',
+                text: 'Para un sector donde las reclamaciones sobre condiciones ofrecidas son habituales, tener ese snapshot a mano cambia por completo la conversación con el cliente: en vez de discutir sobre lo que "se dijo", se enseña exactamente lo que se generó ese día.',
+            },
+            { type: 'h2', text: 'El tercer cambio: comisiones con trazabilidad' },
+            {
+                type: 'p',
+                text: 'La liquidación de comisiones de los agentes, que antes se resolvía a ojo a final de mes comparando notas sueltas, pasó a tener estados explícitos y un log de auditoría: quién cerró la venta, cuándo se activó el contrato, cuánto corresponde y si ya está pagado. La conversación de cierre de mes dejó de depender de quién recordaba mejor y empezó a apoyarse en datos.',
+            },
+            { type: 'h2', text: 'El resultado' },
+            {
+                type: 'p',
+                text: 'Las propuestas de tarifa pasaron de varios días a minutos, lo que permitió a los mismos 2-3 agentes atender bastantes más clientes sin ampliar equipo. Las reclamaciones post-firma por "condiciones que no coinciden" cayeron de forma significativa, porque cada comparativa quedaba respaldada por su snapshot. Y el cierre de mes de comisiones pasó de una negociación informal a una revisión sobre datos concretos, sin discusiones sobre quién dijo qué.',
+            },
+            {
+                type: 'p',
+                text: 'El cambio de fondo fue de cultura, no solo de herramienta: pasar de resolver cada duda con memoria y buena fe a resolverla con un dato reproducible que cualquiera podía consultar, agente o cliente, sin depender de que alguien "se acordara bien".',
+            },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para el sector energético — descúbrelo en Soluciones',
+                href: '/soluciones#energia',
+            },
+            { type: 'link', text: 'Conocer EnergyDeal', href: 'https://energydeal.es' },
+        ],
+    },
+    {
+        slug: 'caso-asesoria-archivo-digital-cliente-web',
+        cat: 'Caso práctico',
+        title: 'De carpetas de papel a portal del cliente: cómo una gestoría dejó de perseguir documentos',
+        desc: 'Caso ilustrativo: cómo una gestoría pequeña pasó de carpetas físicas y WhatsApp a un portal donde el cliente sube y consulta su documentación.',
+        time: '6 min',
+        date: '2026-04-09',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Cómo digitaliza una gestoría el archivo de documentación de sus clientes?',
+                a: 'Con un portal donde el propio cliente sube su documentación, que se clasifica y archiva automáticamente. Se añade búsqueda instantánea con versionado (borrador, final, rectificativa) y visibilidad del estado de cada gestión en tiempo real, sin que el cliente tenga que llamar para preguntar.',
+            },
+            {
+                q: '¿Qué pasa con los documentos que llegan por email o WhatsApp?',
+                a: 'Siguen llegando de vez en cuando, pero dejan de ser el canal principal. El portal se convierte en el punto de entrada por defecto porque es más rápido para el cliente y elimina el trabajo de reordenar documentación desperdigada en la gestoría.',
+            },
+        ],
+        blocks: [
+            {
+                type: 'note',
+                text: 'Caso ilustrativo: describe un patrón real y repetido que vemos en gestorías y asesorías pequeñas, compuesto a partir de varios proyectos similares — no corresponde a un cliente concreto identificado.',
+            },
+            { type: 'h2', text: 'El punto de partida' },
+            {
+                type: 'p',
+                text: 'Gestoría pequeña, 3 gestores, entre 200 y 300 clientes. La documentación fiscal y laboral de cada cliente vivía en carpetas físicas archivadas por año. Cuando un cliente preguntaba "¿tenéis mi declaración de 2024?", alguien tenía que dejar lo que estaba haciendo, ir al archivo, buscar la carpeta y escanearla. La documentación nueva llegaba por email, por WhatsApp o en un USB que alguien traía a la oficina — sin ningún criterio común de dónde debía acabar.',
+            },
+            {
+                type: 'p',
+                text: 'El coste real no era solo el tiempo de búsqueda. Era la fricción constante de reordenar documentación mal etiquetada, y la sensación permanente de estar reaccionando a peticiones en lugar de llevar el ritmo de las gestiones.',
+            },
+            {
+                type: 'p',
+                text: 'En temporada de renta, ese problema se multiplicaba: los tres gestores recibían documentación por tres canales distintos, de cientos de clientes a la vez, y clasificar cada archivo a mano se comía horas que deberían haber ido a revisar las declaraciones en sí.',
+            },
+            { type: 'h2', text: 'El primer cambio: portal de subida y clasificación automática' },
+            {
+                type: 'p',
+                text: 'Se puso en marcha un portal donde cada cliente sube directamente su documentación — nóminas, facturas, contratos. El sistema la clasifica y archiva automáticamente según el tipo de documento y el cliente, sin que un gestor tenga que abrir cada archivo para decidir dónde va. Lo que antes era "recibir, imprimir o guardar, y clasificar a mano" pasó a ser un proceso que ocurre solo en el momento en que el cliente sube el archivo.',
+            },
+            {
+                type: 'p',
+                text: 'El cambio también resolvió un problema práctico: el cliente ya no tiene que esperar al horario de oficina para entregar un documento. Puede subirlo un domingo por la noche y quedará clasificado y listo el lunes por la mañana, sin que nadie tenga que procesarlo manualmente.',
+            },
+            { type: 'h2', text: 'El segundo cambio: búsqueda instantánea con versionado' },
+            {
+                type: 'p',
+                text: 'Encontrar un documento dejó de ser "ir al archivo físico" para convertirse en escribir el nombre del cliente y el año. Además, el sistema distingue versiones de un mismo documento — declaración borrador, declaración final, rectificativa — así que nadie confunde ya cuál es la vigente ni tiene que preguntar "¿esta es la buena?".',
+            },
+            {
+                type: 'p',
+                text: 'Esto importa especialmente en laboral, donde una nómina rectificada puede convivir con la original durante semanas: antes había que fiarse de la memoria de quién la subió; ahora el historial de versiones lo deja claro sin ambigüedad.',
+            },
+            { type: 'h2', text: 'El tercer cambio: estado de la gestión visible para el cliente' },
+            {
+                type: 'p',
+                text: 'El cliente pasó a poder consultar en cualquier momento en qué punto está su gestión — recibida, en proceso, presentada — sin tener que llamar a preguntar "¿cómo vamos?". Esa visibilidad, que parecía un detalle menor, resultó ser uno de los cambios más valorados por los propios clientes.',
+            },
+            { type: 'h2', text: 'El resultado' },
+            {
+                type: 'p',
+                text: 'El tiempo que los gestores dedicaban a buscar y clasificar documentación cayó de forma notable, liberando horas para el trabajo que realmente requiere criterio profesional. Las llamadas de "¿cómo va mi gestión?" bajaron significativamente, porque el cliente ya tenía esa respuesta sin necesidad de descolgar el teléfono. Y con la misma plantilla de 3 gestores, la gestoría ganó margen para asumir más clientes sin que el archivo volviera a convertirse en cuello de botella.',
+            },
+            {
+                type: 'p',
+                text: 'La temporada de renta, que antes era pura supervivencia entre carpetas y llamadas, pasó a ser un pico de volumen gestionable — porque la parte mecánica del proceso, subir, clasificar y localizar, ya no dependía de las manos de nadie.',
+            },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para asesorías y gestorías — descúbrelo en Soluciones',
+                href: '/soluciones#asesorias',
+            },
+        ],
+    },
+    {
+        slug: 'caso-hosteleria-tpv-inteligente-margen',
+        cat: 'Caso práctico',
+        title: 'Del cierre de caja a pie de calculadora a saber el margen por plato',
+        desc: 'Caso ilustrativo: cómo un restaurante de barrio conectó inventario y TPV por recetas para conocer el margen real de cada plato.',
+        time: '6 min',
+        date: '2026-05-19',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Cómo se conecta el inventario de un restaurante con el TPV?',
+                a: 'Definiendo la receta de cada plato — qué ingredientes y en qué cantidad lleva. Cada venta en el TPV descuenta automáticamente esos ingredientes del inventario, sin que nadie tenga que anotar consumo a mano.',
+            },
+            {
+                q: '¿Cómo se calcula el margen real por plato?',
+                a: 'Cruzando el coste de los ingredientes de la receta (actualizado con precios de compra reales) con el precio de venta de cada plato. Eso permite ver qué platos rentan de verdad y cuáles se venden con margen ajustado o negativo, algo que un TPV que solo cobra nunca muestra.',
+            },
+        ],
+        blocks: [
+            {
+                type: 'note',
+                text: 'Caso ilustrativo: describe un patrón real y repetido que vemos en restaurantes y bares de barrio, compuesto a partir de varios proyectos similares — no corresponde a un cliente concreto identificado.',
+            },
+            { type: 'h2', text: 'El punto de partida' },
+            {
+                type: 'p',
+                text: 'Restaurante de barrio, 15-20 mesas. El TPV servía únicamente para cobrar. El inventario y las compras a proveedor se llevaban en un Excel aparte, actualizado cuando había tiempo. Nadie sabía con precisión qué ingredientes se consumían realmente en cada plato — se pedía "a ojo" según la experiencia de cocina — y las mermas o pérdidas solo se detectaban, mal y tarde, en el cierre trimestral de inventario.',
+            },
+            {
+                type: 'p',
+                text: 'El resultado era una sensación constante de trabajar a ciegas sobre el margen: sabían cuánto facturaban cada noche, pero no cuánto de esa facturación era beneficio real plato a plato.',
+            },
+            {
+                type: 'p',
+                text: 'Los pedidos a proveedor se hacían por costumbre más que por dato — "esta semana pedimos lo de siempre" — y cuando un ingrediente subía de precio, nadie lo notaba hasta que el margen ya llevaba semanas erosionado sin que se supiera por qué.',
+            },
+            { type: 'h2', text: 'El primer cambio: inventario conectado al TPV por recetas' },
+            {
+                type: 'p',
+                text: 'Se definió la receta de cada plato del menú — ingredientes y cantidades exactas. A partir de ahí, cada venta registrada en el TPV descuenta automáticamente esos ingredientes del inventario. Lo que antes era una estimación mensual pasó a ser un dato que se actualiza solo, venta a venta, sin que cocina tenga que parar a anotar nada.',
+            },
+            {
+                type: 'p',
+                text: 'Montar el recetario inicial llevó cierto trabajo — sentarse con cocina a definir cada plato con precisión — pero fue una inversión que se hizo una sola vez. A partir de ahí, el sistema mantiene el dato solo.',
+            },
+            { type: 'h2', text: 'El segundo cambio: alertas de stock crítico' },
+            {
+                type: 'p',
+                text: 'Con el consumo real descontándose en tiempo real, el sistema puede avisar antes de que un ingrediente clave se agote — evitando el escenario típico de quedarse sin un producto un viernes o sábado por la noche, justo cuando más se necesita.',
+            },
+            {
+                type: 'p',
+                text: 'Antes, esa alerta llegaba tarde: alguien se daba cuenta a media comanda, con el cliente ya sentado en la mesa. Ahora el aviso llega con margen suficiente para hacer un pedido urgente o ajustar el menú del día.',
+            },
+            { type: 'h2', text: 'El tercer cambio: margen real por plato y por zona' },
+            {
+                type: 'p',
+                text: 'Cruzando el coste real de cada receta con su precio de venta, el restaurante pudo ver por primera vez el margen de cada plato individual, y no solo el total de caja al cierre. Esto reveló platos que llevaban meses vendiéndose con un margen mucho más ajustado de lo que se pensaba — y otros con margen sobrado que podían promocionarse más.',
+            },
+            {
+                type: 'p',
+                text: 'También permitió ver el consumo por zona del local, no solo el total: comparar cómo rinden mesas de terraza frente a sala, o comida frente a cena, con datos reales en lugar de impresión de sala.',
+            },
+            { type: 'h2', text: 'El resultado' },
+            {
+                type: 'p',
+                text: 'Las mermas, antes invisibles hasta el cierre trimestral, empezaron a detectarse mientras aún se podía actuar sobre ellas, y se redujeron de forma notable. Varios platos que no rentaban se ajustaron de precio o de receta en cuanto se identificaron. Y por encima de cualquier cifra concreta, el equipo dejó de operar con la incertidumbre permanente sobre si el margen real acompañaba a la facturación de cada noche.',
+            },
+            {
+                type: 'p',
+                text: 'La decisión de subir el precio de un plato, o de cambiarle un ingrediente por otro más barato sin perder calidad, dejó de tomarse por intuición de cocina y pasó a apoyarse en un número concreto, disponible el mismo día en que se necesita.',
+            },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para hostelería — descúbrelo en Soluciones',
+                href: '/soluciones#hosteleria',
+            },
+            { type: 'link', text: 'Ver ERP Hostelería', href: 'https://erp.mcpopspilot.org' },
+        ],
+    },
+    {
+        slug: 'caso-agencia-servicios-pipeline-automatizado',
+        cat: 'Caso práctico',
+        title: 'De WhatsApp y Excel a pipeline claro: cómo una agencia dejó de perder leads',
+        desc: 'Caso ilustrativo: cómo una agencia de marketing pequeña sustituyó la memoria de cada comercial por un pipeline con seguimientos automáticos.',
+        time: '6 min',
+        date: '2026-07-02',
+        author: 'Equipo OpsPilot',
+        faq: [
+            {
+                q: '¿Cómo organiza una agencia pequeña sus leads sin perder ninguno?',
+                a: 'Con una entrada única de leads (web, llamadas, referencias) que se asigna automáticamente por carga de trabajo de cada comercial, y seguimientos programados por etapa — primer contacto, tras propuesta, tras rechazo, 30 días sin respuesta — con plantillas ya preparadas.',
+            },
+            {
+                q: '¿Qué gana una agencia con un pipeline visual frente a Excel y WhatsApp?',
+                a: 'Conocer por primera vez su tasa de conversión real por etapa, lo que permite negociar comisiones y objetivos con datos en lugar de intuición, y encontrar facturación que ya estaba en la cartera de leads pero antes se perdía por olvido o duplicidad.',
+            },
+        ],
+        blocks: [
+            {
+                type: 'note',
+                text: 'Caso ilustrativo: describe un patrón real y repetido que vemos en agencias de marketing y servicios pequeñas, compuesto a partir de varios proyectos similares — no corresponde a un cliente concreto identificado.',
+            },
+            { type: 'h2', text: 'El punto de partida' },
+            {
+                type: 'p',
+                text: 'Agencia de marketing pequeña, 4 personas. Los leads llegaban por web, llamadas y referencias, y se gestionaban en la cabeza de cada comercial, apoyada en WhatsApp y un Excel que nadie actualizaba con constancia. Cuando un comercial se iba de vacaciones o simplemente se olvidaba, el lead se perdía sin que nadie lo notara. Dos personas contactaban al mismo cliente sin saberlo, y presupuestos enviados con ilusión se quedaban sin seguimiento, olvidados en una conversación de WhatsApp de hace tres semanas.',
+            },
+            {
+                type: 'p',
+                text: 'Nadie tenía una foto clara de cuántos leads entraban al mes, cuántos se convertían, ni en qué punto exacto del proceso se caían la mayoría.',
+            },
+            {
+                type: 'p',
+                text: 'La reunión semanal de comerciales consistía, en la práctica, en que cada uno recitara de memoria en qué punto iba cada cliente. Cuando dos comerciales mencionaban al mismo lead sin saberlo, se descubría ahí mismo — y no siempre a tiempo.',
+            },
+            { type: 'h2', text: 'El primer cambio: entrada única y asignación automática' },
+            {
+                type: 'p',
+                text: 'Todos los leads, vinieran de donde vinieran, empezaron a entrar en un único sistema. La asignación a cada comercial dejó de depender de quién los viera primero en el grupo de WhatsApp y pasó a hacerse automáticamente según la carga de trabajo de cada uno — repartiendo de forma más justa y sin que ningún lead quedara sin dueño.',
+            },
+            {
+                type: 'p',
+                text: 'La duplicidad de leads, uno de los problemas más frecuentes en la agencia, desapareció prácticamente por completo: al entrar todo por el mismo sitio, el sistema detecta si ese contacto ya existe antes de crear una entrada nueva.',
+            },
+            { type: 'h2', text: 'El segundo cambio: seguimientos programados por etapa' },
+            {
+                type: 'p',
+                text: 'Se definieron seguimientos automáticos para cada momento del proceso: primer contacto tras la entrada del lead, seguimiento tras enviar una propuesta, un mensaje concreto tras un rechazo, y un recordatorio a los 30 días sin respuesta. Cada uno con su plantilla ya redactada, para que el comercial no tuviera que improvisar ni acordarse de hacerlo por su cuenta.',
+            },
+            {
+                type: 'p',
+                text: 'El seguimiento a 30 días fue el que más facturación recuperó por sorpresa: clientes que habían dicho "ahora no" meses atrás y que, con un recordatorio bien planteado en el momento justo, sí terminaban contratando.',
+            },
+            { type: 'h2', text: 'El tercer cambio: pipeline visual con reportes reales' },
+            {
+                type: 'p',
+                text: 'La agencia pasó a ver, en cualquier momento, en qué etapa está cada lead y cuántos hay en cada una. Al cierre de mes, un reporte de conversión real por etapa sustituyó a la estimación de memoria que se hacía antes en la reunión de equipo.',
+            },
+            {
+                type: 'p',
+                text: 'Ese reporte también dejó claro, por primera vez, qué comercial cerraba mejor en qué tipo de cliente — un dato que antes era pura percepción y que ahora sirve para repartir mejor los leads entrantes desde el primer cambio.',
+            },
+            { type: 'h2', text: 'El resultado' },
+            {
+                type: 'p',
+                text: 'Los leads perdidos por olvido o vacaciones bajaron de forma clara, simplemente porque ya no dependían de que una persona concreta se acordara. Por primera vez, la agencia conoció su tasa de conversión real por etapa — un dato que les permitió negociar mejor tanto con clientes como con la comisión de sus propios comerciales. Y apareció una facturación que "ya estaba ahí", en presupuestos enviados que antes se perdían en el limbo entre WhatsApp y la memoria de alguien, y que ahora se cerraban gracias al seguimiento programado.',
+            },
+            {
+                type: 'p',
+                text: 'La reunión semanal cambió de naturaleza: de recitar de memoria el estado de cada cliente a revisar un pipeline visible por todos, con los cuellos de botella señalados sin que nadie tuviera que reconstruirlos en voz alta.',
+            },
+            {
+                type: 'link',
+                text: 'Es nuestro servicio de software a medida para agencias — descúbrelo en Soluciones',
+                href: '/soluciones#agencias',
+            },
         ],
     },
 ];

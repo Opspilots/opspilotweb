@@ -97,8 +97,6 @@ export interface CaseShowcase {
     kicker?: string;
     title: string;
     sub?: string;
-    /** Nota secundaria de bajo peso visual — contexto, no protagonista. */
-    beforeTag: string;
     block: ShowcaseBlock;
 }
 

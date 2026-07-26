@@ -185,6 +185,10 @@ export const SECTORS: readonly Sector[] = [
                 answer: 'Plantillas por tipo de lead, se envían automáticas en X horas. Personalización con un clic.',
             },
         ],
+        relatedResource: {
+            label: 'Lee cómo gestionar leads sin perder ninguno',
+            slug: 'gestion-leads-agencia-sin-crm',
+        },
     },
     {
         id: 'pymes',
@@ -227,6 +231,10 @@ export const SECTORS: readonly Sector[] = [
                 answer: 'Ingresos del mes, facturas pendientes, tareas vencidas, stock crítico — dashboard personalizable.',
             },
         ],
+        relatedResource: {
+            label: 'Descubre cómo migrar de Excel a un sistema sin parar el negocio',
+            slug: 'migrar-de-excel-a-sistema-pyme',
+        },
     },
     {
         id: 'medida',
@@ -269,6 +277,10 @@ export const SECTORS: readonly Sector[] = [
                 answer: 'Nosotros. Mantenimiento, backups, actualizaciones incluidas. Soporte en horario acordado.',
             },
         ],
+        relatedResource: {
+            label: '¿Medida o estándar? Aprende a decidir antes de pedir presupuesto',
+            slug: 'cuando-pedir-software-a-medida-vs-estandar',
+        },
     },
     {
         id: 'hosteleria',

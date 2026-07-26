@@ -6,7 +6,6 @@ import {
     FileCheck2,
     FileText,
     MessageSquare,
-    Minus,
     Receipt,
     Users,
 } from 'lucide-react';
@@ -97,9 +96,7 @@ export interface CaseMockPanelProps {
  * después" convergiendo). Reutiliza MockPreview (el mismo lenguaje visual
  * del Paso 4 del hero) para mostrar una mini-interfaz FIJA por caso: sin
  * quiz, sin toggle antes/después — es una plantilla estática elegida a mano
- * por caso, que representa la MEJORA de ese sector concreto. El "antes"
- * pasa a ser una etiqueta pequeña y apagada (nota al margen), no un cluster
- * de iconos con peso visual propio — el protagonismo es de la mini-interfaz.
+ * por caso, que representa la MEJORA de ese sector concreto.
  *
  * La entrada anima al entrar en viewport (fade + rise del conjunto, más la
  * cascada interna de MockPreview sincronizada vía su prop `revealed`), una
@@ -122,10 +119,6 @@ export const CaseMockPanel: React.FC<CaseMockPanelProps> = ({ showcase, classNam
                 block={toMockBlock(showcase.block)}
                 revealed={revealed}
             />
-            <p className={styles.beforeTag}>
-                <Minus size={10} strokeWidth={2.5} className={styles.beforeTagIcon} aria-hidden="true" />
-                {showcase.beforeTag}
-            </p>
         </div>
     );
 };
