@@ -21,6 +21,10 @@ import {
   Search,
   FileCheck,
   Wrench,
+  // Renombrado: en src/data hay un TIPO llamado `ExternalLink` (el enlace a
+  // producción, ver types.ts) y compartir identificador con un componente de
+  // lucide sólo genera dudas al leer. Mismo alias que en Cases.tsx.
+  ExternalLink as ExternalLinkIcon,
 } from "lucide-react";
 import styles from "./Home.module.css";
 import sys from "../styles/page-system.module.css";
@@ -29,7 +33,7 @@ import { SpotlightCard } from "../components/fx/SpotlightCard";
 import { CaseMockPanel } from "../components/cases/CaseMockPanel";
 import { CasesDisclaimer } from "../components/cases/CasesDisclaimer";
 import { TextLink } from "../components/common/TextLink";
-import { CASES } from "../data";
+import { CASES, SERVICE_LINE_LABEL, isLinkable } from "../data";
 import { ICONS } from "../components/icons/registry";
 
 gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin, SplitText);
@@ -450,6 +454,18 @@ export const Home: React.FC = () => {
             >
               {CASES.map((c) => {
                 const CaseIcon = ICONS[c.iconKey];
+                // Lo entregado a ESE cliente, en producción. Mismo criterio
+                // que en /casos: pasa por `isLinkable`, el único punto donde
+                // se decide si un destino externo se pinta — si la tienda de
+                // un cliente se cae, se marca 'down' en el dato y el enlace
+                // desaparece de las dos superficies sin tocar ningún render.
+                // Aquí NO se resuelve `productId` (el enlace al SaaS propio)
+                // como sí hace /casos: la tarjeta de la portada es un resumen
+                // con una sola salida, y esa salida tiene que ser la prueba
+                // del caso, no nuestro catálogo.
+                const ownLink = isLinkable(c.productionLink)
+                  ? c.productionLink
+                  : undefined;
                 return (
                   <SpotlightCard
                     as="article"
@@ -465,6 +481,16 @@ export const Home: React.FC = () => {
                           <CaseIcon size={20} strokeWidth={1.6} />
                         </span>
                         <span className={styles.caseSector}>{c.label}</span>
+                        {/* Línea de servicio (TIENDA / WEB / APP A MEDIDA).
+                            Eje distinto del sector que tiene al lado: aquel
+                            dice de qué ramo es el cliente, esta qué le
+                            construimos. Misma regla que en /casos — sin dato,
+                            sin etiqueta (ver `ServiceLine` en data/types.ts). */}
+                        {c.serviceLine && (
+                          <span className={styles.caseServiceLine}>
+                            {SERVICE_LINE_LABEL[c.serviceLine]}
+                          </span>
+                        )}
                       </div>
                       {/* h3 y no h2: aquí los casos cuelgan del h2 de la
                           sección ("Lo que construimos ya está trabajando.").
@@ -473,6 +499,18 @@ export const Home: React.FC = () => {
                           directos del h1 — el nivel lo fija el documento,
                           no el dato. Ver la nota en Cases.tsx. */}
                       <h3 className={styles.caseCardTitle}>{c.title}</h3>
+                      {/* Nombre del cliente, SÓLO si está declarado como
+                          nombrable. Con `composite` (los 3 casos que resumen
+                          varios proyectos) o sin campo no se pinta nada, y esa
+                          ausencia es la señal que el descargo de más abajo usa
+                          para delimitarse: dice "los casos que no llevan
+                          nombre de cliente...", así que el nombre tiene que
+                          verse aquí para que la frase se pueda comprobar de un
+                          vistazo. Ver CasesDisclaimer.tsx y `ClientDisclosure`
+                          en data/types.ts. */}
+                      {c.client?.kind === "named" && (
+                        <p className={styles.caseClient}>{c.client.name}</p>
+                      )}
                       <p className={styles.caseCardSummary}>{c.summary}</p>
                       <ul className={styles.caseCardBullets}>
                         {c.bullets.map((b, j) => (
@@ -484,6 +522,28 @@ export const Home: React.FC = () => {
                           </li>
                         ))}
                       </ul>
+                      {/* Salida a producción. <a href> real con la URL
+                          absoluta en el atributo: el HTML de la portada lo
+                          genera vite-react-ssg y este enlace tiene que estar
+                          en el prerenderizado, no aparecer tras hidratar. El
+                          `rel="noopener noreferrer"` lo pone TextLink al ver
+                          `target="_blank"` — la protección no depende de que
+                          quien escriba el enlace se acuerde. */}
+                      {ownLink && (
+                        <div className={styles.caseCardLink}>
+                          <TextLink
+                            href={ownLink.url}
+                            target="_blank"
+                            tone="strong"
+                            size="sm"
+                            icon={
+                              <ExternalLinkIcon size={14} strokeWidth={2} />
+                            }
+                          >
+                            {ownLink.label}
+                          </TextLink>
+                        </div>
+                      )}
                     </div>
 
                     <aside className={styles.caseCardPanel}>

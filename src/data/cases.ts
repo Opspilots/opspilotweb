@@ -27,28 +27,140 @@ export const SERVICE_LINE_LABEL: Record<ServiceLine, string> = {
     app: 'APP A MEDIDA',
 };
 
-// TODO(negocio): rellenar `serviceLine`, `client`, `productId` y
-// `productionLink` en los 3 casos de abajo. Los cuatro campos existen ya en
-// el tipo (src/data/types.ts) y las dos superficies que los pintan ya están
-// montadas (/casos), pero se dejan SIN VALOR a propósito porque son datos
-// que nadie ha confirmado:
-//   · `serviceLine` — si cada caso fue TIENDA, WEB o APP A MEDIDA. La
-//     narrativa de los tres habla de "sistema a medida", que sugiere `app`,
-//     pero sugerir no es confirmar.
-//   · `client` — si el cliente se puede nombrar. El copy de CasesDisclaimer
-//     (src/components/cases/) dice que se omiten nombres por privacidad, pero
-//     eso es una frase de página, no un acuerdo registrado por cliente. Si
-//     se confirma que los tres van anonimizados, es `{ kind: 'anonymous' }`.
-//   · `productId` — si el caso se construyó sobre uno de nuestros productos.
-//     Es tentador deducirlo de `sectorId` (reformas → Presupuestador,
-//     asesorías → Fiscalidad), pero sería inventar: que un cliente sea del
-//     sector reformas no demuestra que use Presupuestador, y pintar el
-//     enlace lo estaría AFIRMANDO delante de un visitante.
-//   · `productionLink` — la URL de lo entregado a ese cliente, si es pública.
-// Mientras estén vacíos, esos bloques simplemente no se renderizan: no hay
-// hueco, ni placeholder, ni "próximamente".
+/* ═══════════════════════════════════════════════════════════════════════
+   DOS TIPOS DE CASO CONVIVIENDO AQUÍ, y hay que saber cuál se está leyendo
+   ═══════════════════════════════════════════════════════════════════════
+   Hasta ahora este fichero tenía 3 entradas y las 3 eran lo mismo:
+   COMPOSICIONES. Cada una resume varios proyectos del mismo sector, su
+   protagonista no es una empresa concreta y su testimonio va firmado por un
+   cargo genérico. Eso no es una mentira mientras se diga —y se dice, ver
+   CasesDisclaimer—, pero tampoco es una prueba: un visitante no puede
+   comprobar ni una sola palabra.
+
+   ObraFácil, la primera entrada de abajo, es de la otra clase: un cliente
+   real, con su nombre, con su tienda publicada y con un enlace que se puede
+   pulsar. Todo lo que cuenta su ficha está a un clic de contrastarse.
+
+   Qué marca la diferencia EN EL DATO, y no en la prosa:
+     · `client` — `{ kind: 'composite' }` en los 3 antiguos (no hay un
+       cliente: hay varios proyectos resumidos) frente a `{ kind: 'named' }`
+       en ObraFácil. Este campo es el que decide a quién cubre el descargo de
+       CasesDisclaimer; ver el comentario de `ClientDisclosure` en types.ts.
+     · `productionLink` — solo lo puede tener un caso real. Una composición
+       no tiene URL porque no tiene proyecto único al que apuntar.
+     · `serviceLine` — TIENDA / WEB / APP A MEDIDA.
+
+   REGLA PARA AÑADIR EL SIGUIENTE: si es un cliente real, se nombra y se
+   enlaza; y si no se puede enlazar, no se inventa nada para compensar. Las
+   cifras de resultado (ventas, pedidos, facturación) NO entran aquí mientras
+   no haya un dato de negocio verificado — es la misma regla que ya gobierna
+   las maquetas (`CaseShowcase` en types.ts: ni un porcentaje, ni una
+   gráfica, ni un contador).
+
+   TODO(negocio) que sigue abierto, ahora solo para los 3 compuestos:
+     · `serviceLine` — la narrativa de los tres habla de "sistema a medida",
+       que sugiere `app`, pero sugerir no es confirmar.
+     · `productId` — si el caso se construyó sobre uno de nuestros productos.
+       Es tentador deducirlo de `sectorId` (reformas → Presupuestador,
+       asesorías → Fiscalidad), pero sería inventar: que un cliente sea del
+       sector reformas no demuestra que use Presupuestador, y pintar el
+       enlace lo estaría AFIRMANDO delante de un visitante.
+   Mientras estén vacíos, esos bloques simplemente no se renderizan: no hay
+   hueco, ni placeholder, ni "próximamente". */
 
 export const CASES: readonly Case[] = [
+    /* ─── PRIMERO, y no por orden de llegada ────────────────────────────
+       Los carruseles de la portada y de /casos enseñan UNA tarjeta a la vez
+       (`flex: 0 0 100%`, sin asomo de la siguiente): la primera posición no
+       es "la primera de la lista", es la única que ve quien no desliza. El
+       único caso que un visitante puede verificar por su cuenta tiene que
+       estar ahí. Mover esta entrada más abajo es una línea; que el 01/04 lo
+       ocupe una composición cuando hay un cliente real disponible, no.
+
+       Datos verificados entrando en obrafacil2025.es. La regla de este
+       fichero es la de siempre: si no se ha visto, no se escribe. */
+    {
+        id: 'obrafacil',
+        // FK al sector `reformas` (el de "Reformas, instalaciones y oficios").
+        // Es el encaje honesto: ObraFácil no ejecuta reformas, vende el
+        // material con el que se hacen — y su cliente final es exactamente
+        // quien busca reformar sin obra. `pymes` habría sido el cajón de
+        // sastre y no habría dicho nada.
+        sectorId: 'reformas',
+        // `globe` y no `building`: `building` ya identifica al caso de la
+        // empresa de reformas y aquí el hecho diferencial no es el ladrillo,
+        // es que la venta ocurre en internet.
+        iconKey: 'globe',
+        // `label` es el SECTOR del cliente y `serviceLine` es lo que le
+        // construimos: por eso aquí no pone "Tienda" (eso ya lo dice la
+        // etiqueta TIENDA de al lado) sino de qué vive el negocio.
+        label: 'Material de reforma',
+        title: 'Una tienda que vende placas y te dice cuántas necesitas',
+        summary:
+            'Tienda online de placas decorativas de PVC en Andalucía, con carrito, calculadora y WhatsApp.',
+        text:
+            'ObraFácil vende placas y paneles decorativos de PVC que se colocan sobre el azulejo existente, sin obra, además de palillería y suelo SPC, desde su almacén en la carretera de Puente Genil a Herrera. Vender eso por internet tiene dos frenos concretos: el catálogo es grande —más de cien imágenes de producto— y el particular que mira una placa no sabe cuántas le entran en su pared. Construimos la tienda entera alrededor de esos dos frenos: catálogo con carrito de compra, una calculadora de placas que traduce los metros de la pared a unidades, una galería de «antes y después» que enseña el resultado sobre azulejo real, página de servicios, preguntas frecuentes y un botón de WhatsApp para las dudas que no cierra una ficha de producto. La propia tienda anuncia más de 200 diseños en stock y respuesta por WhatsApp en 24 horas. Está publicada: se puede entrar y comprobarlo entero.',
+        bullets: [
+            'Catálogo con carrito de compra y más de cien imágenes de producto: placas de PVC, palillería y suelo SPC',
+            'Calculadora de placas: el cliente sabe cuántas necesita para su pared sin echar cuentas',
+            'Galería de «antes y después» sobre azulejo real, preguntas frecuentes y WhatsApp para las dudas',
+        ],
+        showcase: {
+            // `warm` con esta entrada en cabeza deja la serie alternando
+            // ámbar / mint / ámbar / mint al deslizar. Dos maquetas seguidas
+            // del mismo acento se leen como la misma maqueta repetida.
+            accent: 'warm',
+            // NO 'Tienda online': la etiqueta TIENDA de la cabecera de la
+            // tarjeta queda a dos centímetros de aquí y repetir la palabra
+            // gasta el único renglón que tiene la maqueta para decir algo que
+            // no se sepa ya. Esto dice de qué va el producto.
+            kicker: 'Comprar sin obra',
+            // Los cuatro tiles son módulos que la tienda TIENE, vistos en su
+            // menú y en su portada. La rejilla de `modules` es de 4 columnas
+            // en escritorio y 2×2 en móvil (MockPreview.module.css), así que
+            // cuatro es el número que cuadra: un quinto se quedaría solo en
+            // una fila. La galería de «antes y después» es el que se queda
+            // fuera y por eso se cuenta en el texto, no se dibuja a medias.
+            title: 'De la placa al pedido, sin salir de la tienda',
+            sub: 'Catálogo, carrito, calculadora y WhatsApp para lo que no cabe en una ficha.',
+            block: {
+                type: 'modules',
+                items: [
+                    { key: 'catalogo', icon: 'layoutGrid', label: 'Catálogo', active: true },
+                    { key: 'carrito', icon: 'shoppingCart', label: 'Carrito', active: true },
+                    { key: 'calculadora', icon: 'calculator', label: 'Calculadora', active: true },
+                    { key: 'whatsapp', icon: 'chatMessage', label: 'WhatsApp', active: true },
+                ],
+            },
+        },
+        // SIN `quote` ni `author`, y es una decisión, no un hueco. Los dos
+        // campos son opcionales en `Case` justamente para esto: el cliente no
+        // nos ha dado ninguna cita y escribirle una en la boca a una empresa
+        // que se puede llamar por teléfono es peor que no tener testimonio.
+        // El render de /casos ya no pinta el bloque cuando faltan (ver
+        // Cases.tsx) — no queda ni el filete superior de la cita.
+        serviceLine: 'tienda',
+        client: { kind: 'named', name: 'ObraFácil' },
+        // `productId` va FUERA: ObraFácil no está construida sobre ninguno de
+        // los 4 SaaS del registro (products.ts), es un desarrollo entregado al
+        // cliente. El campo es opcional en `Case` precisamente para poder
+        // distinguir "es uno de los nuestros" de "es suyo", así que omitirlo
+        // es la respuesta correcta y no una carencia.
+        productionLink: {
+            url: 'https://obrafacil2025.es',
+            // La etiqueta dice a dónde va ANTES de pulsar, misma regla que las
+            // de products.ts: esto es una tienda abierta al público, no una
+            // aplicación con pantalla de acceso.
+            label: 'Entrar en la tienda de ObraFácil',
+            // Verificado en vivo. Si la tienda se cae o se rediseña, esto pasa
+            // a 'down' y el enlace desaparece de las dos superficies sin tocar
+            // ni un render (ver `isLinkable` en products.ts).
+            availability: 'live',
+        },
+        // `screenshots` fuera: no hay ni una captura de la tienda en el repo y
+        // no se fabrican placeholders. Cuando existan, se añaden aquí y el
+        // modelo ya las admite.
+    },
     {
         id: 'reformas',
         sectorId: 'reformas',
@@ -80,6 +192,14 @@ export const CASES: readonly Case[] = [
         quote:
             'Pasamos de perder presupuestos por falta de seguimiento a tener un sistema que trabaja solo.',
         author: 'CEO',
+        // Composición de varios proyectos del sector, no un cliente concreto.
+        // Único campo AÑADIDO a los 3 casos antiguos, y no aporta información
+        // nueva: es exactamente lo que la web ya publicaba en el descargo de
+        // CasesDisclaimer, movido de una frase de página a un dato por caso.
+        // Ese movimiento es todo el arreglo — mientras fuera copy, la frase se
+        // aplicaba a los 4 por igual y le decía a ObraFácil que es una
+        // composición. Ahora el descargo pregunta al dato.
+        client: { kind: 'composite' },
     },
     {
         id: 'asesoria-fiscal',
@@ -113,6 +233,7 @@ export const CASES: readonly Case[] = [
         quote:
             'Antes era imposible escalar sin contratar; ahora podemos crecer sin que el equipo reviente.',
         author: 'Socio director',
+        client: { kind: 'composite' },
     },
     {
         id: 'agencia-servicios',
@@ -147,6 +268,7 @@ export const CASES: readonly Case[] = [
         quote:
             'Dejamos de pagar cinco herramientas y ganamos visibilidad real de cada cliente.',
         author: 'Directora de operaciones',
+        client: { kind: 'composite' },
     },
 ];
 

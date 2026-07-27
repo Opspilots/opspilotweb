@@ -76,6 +76,15 @@ const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
     const productLink = product && isLinkable(product.site) ? product.site : undefined;
     const ownLink = isLinkable(c.productionLink) ? c.productionLink : undefined;
 
+    // `quote`/`author` son opcionales en `Case` y ObraFácil es el primer caso
+    // que los ejerce: es un cliente real al que nadie ha pedido una cita, y
+    // escribirle una en la boca sería fabricar el testimonio que este trabajo
+    // vino a eliminar. Sin la condición, el <blockquote> se renderizaba igual
+    // con dos huecos dentro Y con su `border-top` mint (ver `.cardQuote` en
+    // Cases.module.css): un filete de color colgando de la nada, que se lee
+    // como un fallo de maquetación y no como una ausencia deliberada.
+    const hasQuote = Boolean(c.quote || c.author);
+
     return (
         <article className={styles.caseCard}>
             <div className={styles.cardHead}>
@@ -88,7 +97,9 @@ const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
                     dice de qué ramo es el cliente, esta qué le construimos.
                     Etiqueta y nada más — no enlaza, no filtra, no es una
                     taxonomía navegable (ver `ServiceLine` en data/types.ts).
-                    Sin dato, sin etiqueta: hoy los 3 casos van sin ella. */}
+                    Sin dato, sin etiqueta: hoy sólo la lleva ObraFácil
+                    (TIENDA); los 3 casos compuestos siguen sin línea
+                    confirmada (ver el TODO de src/data/cases.ts). */}
                 {c.serviceLine && (
                     <span className={styles.cardServiceLine}>
                         {SERVICE_LINE_LABEL[c.serviceLine]}
@@ -99,7 +110,15 @@ const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
 
             <CaseMockPanel showcase={c.showcase} className={styles.cardTransition} />
 
-            <div className={styles.cardContent}>
+            {/* La rejilla es 1.3fr (narrativa) + 0.7fr (cita) a partir de
+                640px. Sin cita, esa segunda columna quedaría reservada y
+                vacía: medio ancho de tarjeta en blanco al lado de un párrafo
+                estrecho, que parece contenido que no ha cargado. Con
+                `.cardContentSolo` la narrativa ocupa la fila entera y se
+                limita por medida de línea, no por rejilla. */}
+            <div
+                className={`${styles.cardContent} ${hasQuote ? '' : styles.cardContentSolo}`}
+            >
                 <div className={styles.cardNarrative}>
                     {/* h2 AQUÍ y h3 en el mismo dato en la portada
                         (Home.tsx, `.caseCardTitle`) no es una incoherencia:
@@ -160,10 +179,12 @@ const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
                         </div>
                     )}
                 </div>
-                <blockquote className={styles.cardQuote}>
-                    <p>{c.quote}</p>
-                    <cite>{c.author}</cite>
-                </blockquote>
+                {hasQuote && (
+                    <blockquote className={styles.cardQuote}>
+                        {c.quote && <p>{c.quote}</p>}
+                        {c.author && <cite>{c.author}</cite>}
+                    </blockquote>
+                )}
             </div>
         </article>
     );
@@ -293,8 +314,17 @@ const WhySection: React.FC = () => {
 export const Cases: React.FC = () => {
     const seoProps = {
         title: 'Casos de éxito de software a medida · OpsPilot',
+        // Antes prometía "Casos con cifras, no promesas". Era falso, y encima a
+        // propósito: esta página no publica ni una sola cifra porque las
+        // estadísticas numéricas se retiraron hace tiempo — ni `Case` ni
+        // `CaseShowcase` admiten un número (ver src/data/types.ts). Prometer en
+        // el resultado de búsqueda algo que la página no entrega es la peor
+        // clase de descripción: se gana el clic y se pierde la visita, y Google
+        // aprende que el sitio no cumple lo que anuncia. Ahora promete lo que sí
+        // hay, que además es mejor argumento que una cifra: proyectos
+        // publicados que cualquiera puede abrir y comprobar.
         description:
-            'Resultados reales de pymes que dejaron el Excel: más obra, menos horas perdidas, seguimientos que ya no se escapan. Casos con cifras, no promesas.',
+            'Proyectos reales de pymes que dejaron el Excel: una tienda online, webs de captación y software a medida. Con enlace al resultado para comprobarlo.',
         canonical: 'https://opspilot.es/casos/',
     };
 

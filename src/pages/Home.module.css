@@ -700,6 +700,49 @@
     color: var(--color-mint);
 }
 
+/* Línea de servicio (TIENDA / WEB / APP A MEDIDA). Misma pastilla que en
+   /casos (`.cardServiceLine` en Cases.module.css) y a propósito: es el mismo
+   dato en las dos superficies y tiene que reconocerse igual. En tono
+   `subtle` con borde neutro, NO en mint: el mint de al lado es el sector y
+   dos etiquetas del mismo color en la misma fila se leen como una sola.
+   `margin-left: auto` la empuja al extremo — no compite con el sector, lo
+   complementa desde el otro lado de la cabecera. */
+.caseServiceLine {
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    color: var(--color-text-subtle);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px var(--spacing-2);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+/* Nombre del cliente, sólo en los casos nombrables. Va bajo el titular y
+   ANTES del resumen (que lleva el filete mint y es el bloque más pesado de la
+   tarjeta): así se lee "título → de quién es → qué se hizo", en ese orden.
+   Mono y subtle, el mismo tratamiento que en /casos: es un dato de ficha, no
+   una voz editorial. */
+.caseClient {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: var(--tracking-wide);
+    margin: calc(var(--spacing-2) * -1) 0 var(--spacing-4);
+}
+
+/* Salida a producción. Cierra la columna narrativa, después de los bullets:
+   primero se cuenta qué se construyó y sólo entonces se ofrece comprobarlo.
+   Contenedor propio y no el <a> suelto para que el enlace no herede el ancho
+   completo de la columna y su área de pulsación se ajuste al texto. */
+.caseCardLink {
+    display: flex;
+    align-items: flex-start;
+    margin-top: calc(var(--spacing-5) * -1);
+}
+
 /* Panel de resultados — mismo lenguaje que el widget del hero. Estirado a la
    altura de la narrativa; el contenido (CaseMockPanel, la mini-interfaz fija
    que representa la mejora del sector) se centra verticalmente para que el

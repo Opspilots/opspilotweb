@@ -165,6 +165,23 @@
         gap: var(--spacing-10);
         align-items: start;
     }
+
+    /* Caso SIN cita (ver `hasQuote` en Cases.tsx). `quote`/`author` son
+       opcionales en `Case` y ObraFácil es el primero que los ejerce: no hay
+       testimonio porque nadie lo ha dado, no porque falte por rellenar.
+       Manteniendo la rejilla de dos columnas, la de la cita se quedaría
+       reservada y vacía y la narrativa comprimida a 1.3fr — medio ancho de
+       tarjeta en blanco, que se lee como contenido que no ha cargado. Aquí la
+       narrativa ocupa la fila entera y el límite lo pone la MEDIDA DE LÍNEA,
+       que es lo que gobierna la legibilidad de un párrafo largo; la rejilla no
+       tenía por qué estar haciendo ese trabajo. */
+    .cardContentSolo {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .cardContentSolo .cardNarrative {
+        max-width: 72ch;
+    }
 }
 
 .cardNarrative {

@@ -39,6 +39,7 @@ import {
     ScanLine,
     Settings,
     ShieldCheck,
+    ShoppingCart,
     Truck,
     Users,
     Wrench,
@@ -84,4 +85,8 @@ export const MOCK_ICONS: Record<ShowcaseIconKey, LucideIcon> = {
     landmark: Landmark,
     shieldCheck: ShieldCheck,
     scanLine: ScanLine,
+    // Comercio electrónico. `ShoppingCart` y no `ShoppingBag`: el módulo que
+    // etiqueta se llama "Carrito" en la tienda, y la bolsa es el icono de "mis
+    // compras", que es otra pantalla.
+    shoppingCart: ShoppingCart,
 };

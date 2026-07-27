@@ -46,10 +46,16 @@ export interface FaqItem {
    una torre de alta tensión): portadas de artículo, no producto.
 
    Todo lo que sigue es OPCIONAL en `Sector`/`Case` a propósito: hoy no hay
-   ni una sola captura en el repo y no se van a inventar, así que las 7
-   fichas de sectors.ts y las 3 de cases.ts tienen que seguir siendo válidas
-   sin tocar ni un campo. El modelo abre la puerta; llenarla es trabajo de
-   negocio, no de tipos. */
+   ni una sola captura en el repo y no se van a inventar, así que las fichas
+   de sectors.ts y las de cases.ts tienen que seguir siendo válidas sin tocar
+   ni un campo. El modelo abre la puerta; llenarla es trabajo de negocio, no
+   de tipos.
+
+   ACTUALIZACIÓN: la puerta ya no está entera por abrir. ObraFácil
+   (src/data/cases.ts) es el primer caso que ejerce `serviceLine`, `client` y
+   `productionLink` con datos verificados en vivo — cliente nombrable, tienda
+   publicada y enlace pulsable. `screenshots` sigue vacío en TODAS las fichas
+   por el mismo motivo de siempre: no hay imágenes y no se fabrican. */
 
 /** Identificador estable de cada producto propio de OpsPilot. Es la clave
  *  que une `Sector`/`Case` con el registro de src/data/products.ts — se
@@ -319,7 +325,7 @@ export interface ProductPreview {
  *  consecuencia accidental de este campo. */
 export type ServiceLine = 'tienda' | 'web' | 'app';
 
-/** Si el cliente de un caso se puede nombrar o va anonimizado.
+/** De quién es un caso y cómo se puede nombrar.
  *
  *  Unión discriminada y no un `clientName?: string` suelto: con el string
  *  opcional, "no lo hemos rellenado todavía" y "el cliente pidió no salir"
@@ -329,10 +335,27 @@ export type ServiceLine = 'tienda' | 'web' | 'app';
  *  una DECISIÓN y la ausencia del campo registra un HUECO.
  *
  *  Además hace imposible el estado ilegal "nombrable pero sin nombre": si
- *  `kind` es 'named', `name` es obligatorio. */
+ *  `kind` es 'named', `name` es obligatorio.
+ *
+ *  ─── Por qué existe `composite`, que es la variante importante ───
+ *  Las dos primeras variantes responden a "¿se puede escribir el nombre?".
+ *  `composite` responde a algo anterior y más grave: NO HAY UN CLIENTE. Un
+ *  caso compuesto resume varios proyectos del mismo sector y su protagonista
+ *  no existe como empresa concreta — no es que se calle el nombre, es que no
+ *  hay nombre que callar.
+ *
+ *  Esto vivía escrito SOLO como copy en CasesDisclaimer ("cada caso resume
+ *  varios proyectos..."), o sea como una afirmación de página aplicada a
+ *  todos los casos por igual. En cuanto entra UN caso real, con cliente
+ *  nombrable y enlace a producción, esa frase global pasa de ser una
+ *  advertencia honesta a ser una mentira sobre ese caso: le está diciendo al
+ *  visitante que una tienda que puede abrir en otra pestaña es una
+ *  composición. Registrarlo POR CASO es lo que permite que el descargo cubra
+ *  exactamente a quien le toca (ver CasesDisclaimer.tsx). */
 export type ClientDisclosure =
     | { kind: 'named'; name: string }
-    | { kind: 'anonymous' };
+    | { kind: 'anonymous' }
+    | { kind: 'composite' };
 
 export interface Sector {
     id: SectorId;
@@ -429,7 +452,19 @@ export type ShowcaseIconKey =
     | 'history'
     | 'landmark'
     | 'shieldCheck'
-    | 'scanLine';
+    | 'scanLine'
+    // — Comercio electrónico (caso ObraFácil) —
+    //
+    // Una sola entrada, y entra por la misma regla que el grupo de arriba: el
+    // tile lleva el nombre de un módulo que existe de verdad en una tienda en
+    // producción, así que un icono aproximado convierte la maqueta en
+    // decoración. Para "Carrito" no había NADA en el vocabulario que no
+    // mintiera: `receipt` es un ticket (lo que sale DESPUÉS de pagar),
+    // `banknote` es dinero y `layoutGrid` ya está ocupado etiquetando el
+    // catálogo en la misma maqueta. El carrito de la compra es el único
+    // elemento de una tienda que no tiene equivalente en un panel de gestión,
+    // que es de lo único que hablaba este vocabulario hasta ahora.
+    | 'shoppingCart';
 
 /** Acentos disponibles para el mock. Estructuralmente idéntico a `MockAccent`
  * en MockPreview.tsx y a propósito NO importado de allí: src/data no depende
@@ -489,8 +524,8 @@ export type ShowcaseBlock =
  * ese sector concreto — sustituye a las antiguas stats numéricas y al panel
  * de iconos "antes → después" (CaseTransition) de iteraciones previas. */
 export interface CaseShowcase {
-    /** Deliberadamente MÁS ESTRECHO que `MockAccentKey`: los tres casos de
-     *  éxito llevan acento elegido a mano y ninguno usa el azul `info`, que
+    /** Deliberadamente MÁS ESTRECHO que `MockAccentKey`: los casos de éxito
+     *  llevan acento elegido a mano y ninguno usa el azul `info`, que
      *  entró en el sistema para separar la rama "automatizar" del embudo. Que
      *  el tipo de datos no ofrezca una opción que nadie ha diseñado evita
      *  elegirla por descarte. Si algún día un caso la necesita, se amplía. */
@@ -526,12 +561,16 @@ export interface Case {
      *  `ServiceLine`. Complementa a `label` (que es el SECTOR del cliente),
      *  no lo sustituye: un mismo sector puede llevar tienda o app. */
     serviceLine?: ServiceLine;
-    /** Si el cliente se puede nombrar. Ausente = todavía no se ha decidido;
-     *  `{ kind: 'anonymous' }` = decidido que va anonimizado (ver
-     *  `ClientDisclosure`). Los 3 casos actuales van sin campo porque el
-     *  acuerdo con cada cliente no está registrado en ningún sitio del repo
-     *  — la nota de CasesDisclaimer (src/components/cases/) dice que se
-     *  omiten nombres, pero eso es copy de página, no un dato por caso. */
+    /** De quién es el caso y cómo se nombra (ver `ClientDisclosure`).
+     *  Ausente = todavía no se ha decidido, que es distinto de las tres
+     *  decisiones que el campo sabe registrar.
+     *
+     *  Sigue siendo opcional, pero YA NO es decorativo: es el campo que
+     *  CasesDisclaimer consulta para saber a qué casos les toca el descargo
+     *  de "esto resume varios proyectos". Un caso `composite` lo recibe; uno
+     *  `named` —cliente real, con enlace a producción— no puede recibirlo sin
+     *  que la web mienta sobre su única prueba comprobable. Hoy lo llevan los
+     *  4 casos: `named` en ObraFácil, `composite` en los otros tres. */
     client?: ClientDisclosure;
     /** FK → `Product.id`. Solo si el caso se construyó SOBRE uno de nuestros
      *  productos. NO se deriva de `sectorId`: que un caso sea del sector
