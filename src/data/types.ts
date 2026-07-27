@@ -530,8 +530,8 @@ export interface Case {
      *  `{ kind: 'anonymous' }` = decidido que va anonimizado (ver
      *  `ClientDisclosure`). Los 3 casos actuales van sin campo porque el
      *  acuerdo con cada cliente no está registrado en ningún sitio del repo
-     *  — la nota de `.caseDisclaimer` en Cases.tsx dice que se omiten
-     *  nombres, pero eso es copy de página, no un dato por caso. */
+     *  — la nota de CasesDisclaimer (src/components/cases/) dice que se
+     *  omiten nombres, pero eso es copy de página, no un dato por caso. */
     client?: ClientDisclosure;
     /** FK → `Product.id`. Solo si el caso se construyó SOBRE uno de nuestros
      *  productos. NO se deriva de `sectorId`: que un caso sea del sector

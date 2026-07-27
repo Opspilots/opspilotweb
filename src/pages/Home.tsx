@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -7,6 +7,7 @@ import { SplitText } from "gsap/SplitText";
 import { Button } from "../components/ui/Button";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { useDragScroll } from "../hooks/useDragScroll";
+import { useCarousel } from "../hooks/useCarousel";
 import { PageSEO } from "../hooks/usePageSEO";
 import { useMagnetic } from "../hooks/useMagnetic";
 import { useSpotlight } from "../hooks/useSpotlight";
@@ -26,6 +27,7 @@ import sys from "../styles/page-system.module.css";
 import { HeroLeadWidget } from "../components/home/HeroLeadWidget";
 import { SpotlightCard } from "../components/fx/SpotlightCard";
 import { CaseMockPanel } from "../components/cases/CaseMockPanel";
+import { CasesDisclaimer } from "../components/cases/CasesDisclaimer";
 import { TextLink } from "../components/common/TextLink";
 import { CASES } from "../data";
 import { ICONS } from "../components/icons/registry";
@@ -136,70 +138,26 @@ export const Home: React.FC = () => {
   });
   const heroPanelRef = useSpotlight<HTMLDivElement>();
 
-  // Case carousel — scroll-snap track (same pattern as Cases.tsx' carousel):
-  // native horizontal scroll/drag, dot indicators and prev/next buttons.
-  // No auto-rotation: unlike the previous bespoke implementation, this
-  // carousel only advances on explicit user action, which sidesteps the
-  // WCAG 2.2.2 (pause/stop/hide) concern entirely instead of requiring a
-  // visible pause control.
-  const [activeCase, setActiveCase] = useState(0);
-  const caseTrackRef = useRef<HTMLDivElement>(null);
-  const caseScrollRaf = useRef(0);
+  // Case carousel — scroll-snap track. La mecánica (medida de la unidad de
+  // scroll, índice activo, arrastre con ratón, foco y flechas) vive en
+  // src/hooks/useCarousel.ts y es LA MISMA que consume /casos: antes estaba
+  // reescrita en las dos páginas y sólo esta tenía teclado.
+  // Sin auto-rotación: el carrusel sólo avanza por acción explícita del
+  // usuario, lo que esquiva por completo el criterio WCAG 2.2.2
+  // (pausar/parar/ocultar) en vez de obligar a un botón de pausa visible.
+  const {
+    index: activeCase,
+    scrollTo: scrollToCase,
+    trackProps: caseTrackProps,
+  } = useCarousel<HTMLDivElement>(CASES.length);
 
-  // Mouse drag-to-scroll on every horizontal track that shows cursor:grab
+  // Mouse drag-to-scroll on every horizontal track that shows cursor:grab.
+  // El track de casos NO aparece aquí: useCarousel ya llama a useDragScroll
+  // por dentro, y engancharlo dos veces duplicaría los listeners de puntero.
   const whyTrackRef = useRef<HTMLDivElement>(null);
   const processTrackRef = useRef<HTMLDivElement>(null);
-  useDragScroll(caseTrackRef);
   useDragScroll(whyTrackRef);
   useDragScroll(processTrackRef);
-
-  const getCaseScrollUnit = useCallback((): number => {
-    const track = caseTrackRef.current;
-    if (!track) return 0;
-    const card = track.children[0] as HTMLElement | null;
-    if (!card) return 0;
-    const gap = parseFloat(window.getComputedStyle(track).gap) || 20;
-    return card.offsetWidth + gap;
-  }, []);
-
-  const handleCaseScroll = useCallback(() => {
-    cancelAnimationFrame(caseScrollRaf.current);
-    caseScrollRaf.current = requestAnimationFrame(() => {
-      const track = caseTrackRef.current;
-      const unit = getCaseScrollUnit();
-      if (!track || !unit) return;
-      const idx = Math.round(track.scrollLeft / unit);
-      setActiveCase(Math.max(0, Math.min(idx, CASES.length - 1)));
-    });
-  }, [getCaseScrollUnit]);
-
-  useEffect(() => () => cancelAnimationFrame(caseScrollRaf.current), []);
-
-  const scrollToCase = useCallback(
-    (index: number) => {
-      const track = caseTrackRef.current;
-      const unit = getCaseScrollUnit();
-      const clamped = Math.max(0, Math.min(index, CASES.length - 1));
-      if (track && unit) {
-        track.scrollTo({ left: clamped * unit, behavior: "smooth" });
-      }
-      setActiveCase(clamped);
-    },
-    [getCaseScrollUnit],
-  );
-
-  const handleCaseTrackKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        scrollToCase(activeCase + 1);
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        scrollToCase(activeCase - 1);
-      }
-    },
-    [activeCase, scrollToCase],
-  );
 
   useEffect(() => {
     const reduce = window.matchMedia?.(
@@ -486,11 +444,8 @@ export const Home: React.FC = () => {
           </header>
           <div className={styles.caseCarouselWrapper}>
             <div
-              ref={caseTrackRef}
+              {...caseTrackProps}
               className={styles.caseCarouselTrack}
-              onScroll={handleCaseScroll}
-              onKeyDown={handleCaseTrackKeyDown}
-              tabIndex={0}
               aria-label="Casos de éxito"
             >
               {CASES.map((c) => {
@@ -511,6 +466,12 @@ export const Home: React.FC = () => {
                         </span>
                         <span className={styles.caseSector}>{c.label}</span>
                       </div>
+                      {/* h3 y no h2: aquí los casos cuelgan del h2 de la
+                          sección ("Lo que construimos ya está trabajando.").
+                          En /casos el MISMO dato va como h2 porque allí los
+                          casos son el contenido de la página y cuelgan
+                          directos del h1 — el nivel lo fija el documento,
+                          no el dato. Ver la nota en Cases.tsx. */}
                       <h3 className={styles.caseCardTitle}>{c.title}</h3>
                       <p className={styles.caseCardSummary}>{c.summary}</p>
                       <ul className={styles.caseCardBullets}>
@@ -534,20 +495,29 @@ export const Home: React.FC = () => {
             </div>
 
             <div className={styles.caseCarouselFooter}>
+              {/* Botones simples, mismo patrón que los puntos de /casos.
+                  Esto era un role="tablist" con role="tab" y aria-selected
+                  SIN un solo tabpanel asociado, que es un patrón ARIA mal
+                  formado: un `tab` promete controlar un panel (vía
+                  aria-controls) y aquí no hay panel ninguno, sólo un track
+                  con scroll. Encima obliga al patrón de teclado de las
+                  pestañas (una parada de tabulador para todo el grupo,
+                  flechas para moverse entre ellas), que nadie implementaba.
+                  Un `group` de botones con aria-current dice la verdad: son
+                  atajos a una posición del track. */}
               <div
                 className={styles.caseDots}
-                role="tablist"
+                role="group"
                 aria-label="Navegar entre casos"
               >
                 {CASES.map((_, i) => (
                   <button
                     key={i}
                     type="button"
-                    role="tab"
-                    aria-selected={i === activeCase}
+                    aria-current={i === activeCase}
                     className={`${styles.caseDot} ${i === activeCase ? styles.caseDotActive : ""}`}
                     onClick={() => scrollToCase(i)}
-                    aria-label={`Caso ${i + 1}`}
+                    aria-label={`Ir al caso ${i + 1}`}
                   />
                 ))}
               </div>
@@ -573,11 +543,11 @@ export const Home: React.FC = () => {
               </div>
             </div>
           </div>
-          <p className={styles.caseDisclaimer}>
-            Casos reales, cifras representativas. Cada caso resume varios
-            proyectos del mismo sector. Nombres y testimonios anonimizados por
-            privacidad de cada cliente.
-          </p>
+          {/* Mismo texto que /casos, escrito una sola vez en
+              CasesDisclaimer. Aquí se pinta en sm/muted (ver
+              .caseDisclaimer en Home.module.css) porque en la portada no
+              tiene encima la fila de navegación con la que competir. */}
+          <CasesDisclaimer className={styles.caseDisclaimer} />
         </div>
       </section>
 

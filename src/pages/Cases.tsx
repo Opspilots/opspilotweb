@@ -1,11 +1,12 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { SpotlightCard } from '../components/fx/SpotlightCard';
 import { CaseMockPanel } from '../components/cases/CaseMockPanel';
+import { CasesDisclaimer } from '../components/cases/CasesDisclaimer';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
-import { useDragScroll } from '../hooks/useDragScroll';
+import { useCarousel } from '../hooks/useCarousel';
 import { PageSEO } from '../hooks/usePageSEO';
 import { buildBreadcrumb } from '../lib/seo';
 import { StructuredData } from '../components/seo/StructuredData';
@@ -100,10 +101,23 @@ const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
 
             <div className={styles.cardContent}>
                 <div className={styles.cardNarrative}>
+                    {/* h2 AQUÍ y h3 en el mismo dato en la portada
+                        (Home.tsx, `.caseCardTitle`) no es una incoherencia:
+                        el nivel lo fija el documento, no el dato. En /casos
+                        los casos SON el contenido de la página y cuelgan
+                        directos del h1; en la portada son una sección más y
+                        cuelgan del h2 "Lo que construimos ya está
+                        trabajando.". Igualarlos rompería una de las dos.
+
+                        Que los 3 h2 existan a la vez aunque sólo uno esté en
+                        pantalla es correcto y además deseable: las 3 tarjetas
+                        están en el DOM y son alcanzables scrolleando el
+                        track, así que quien navegue por encabezados llega a
+                        cualquier caso sin depender del carrusel. */}
                     <h2 className={styles.cardTitle}>{c.title}</h2>
                     {/* Nombre del cliente, SOLO si está declarado como
                         nombrable (`{ kind: 'named' }`). Con `anonymous` o sin
-                        campo no se pinta nada: el aviso de `.caseDisclaimer`
+                        campo no se pinta nada: el aviso de CasesDisclaimer
                         de más abajo ya explica que se omiten los nombres, y
                         un "Cliente anónimo" impreso en la tarjeta no aporta
                         información, solo ruido. Ver `ClientDisclosure` en
@@ -156,41 +170,13 @@ const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
 };
 
 const CarouselSection: React.FC = () => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const trackRef = useRef<HTMLDivElement>(null);
-    const rafRef = useRef<number>(0);
-    useDragScroll(trackRef);
-
-    const getScrollUnit = useCallback((): number => {
-        if (!trackRef.current) return 0;
-        const card = trackRef.current.children[0] as HTMLElement | null;
-        if (!card) return 0;
-        const gapStr = window.getComputedStyle(trackRef.current).gap;
-        const gap = parseFloat(gapStr) || 20;
-        return card.offsetWidth + gap;
-    }, []);
-
-    const handleScroll = useCallback(() => {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = requestAnimationFrame(() => {
-            if (!trackRef.current) return;
-            const unit = getScrollUnit();
-            if (!unit) return;
-            const idx = Math.round(trackRef.current.scrollLeft / unit);
-            setCurrentIndex(Math.max(0, Math.min(idx, CASES.length - 1)));
-        });
-    }, [getScrollUnit]);
-
-    useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
-
-    const scrollToIndex = useCallback(
-        (index: number) => {
-            if (!trackRef.current) return;
-            const unit = getScrollUnit();
-            trackRef.current.scrollTo({ left: index * unit, behavior: 'smooth' });
-            setCurrentIndex(Math.max(0, Math.min(index, CASES.length - 1)));
-        },
-        [getScrollUnit],
+    // Mecánica compartida con el carrusel de casos de la portada (medida de
+    // la unidad de scroll, índice activo, arrastre con ratón, foco y flechas)
+    // — ver src/hooks/useCarousel.ts. Lo específico de ESTA página (el
+    // contador 01/03) se queda aquí abajo, que para eso es una decisión de
+    // interfaz de /casos y no de todos los carruseles.
+    const { index: currentIndex, scrollTo, trackProps } = useCarousel<HTMLDivElement>(
+        CASES.length,
     );
 
     return (
@@ -198,9 +184,8 @@ const CarouselSection: React.FC = () => {
             <div className={`${sys.container} ${styles.carouselContentLayer}`}>
                 <div className={styles.carouselWrapper}>
                     <div
-                        ref={trackRef}
+                        {...trackProps}
                         className={styles.carouselTrack}
-                        onScroll={handleScroll}
                         aria-label="Casos de éxito"
                     >
                         {CASES.map((c, i) => (
@@ -218,7 +203,7 @@ const CarouselSection: React.FC = () => {
                                     type="button"
                                     aria-current={i === currentIndex}
                                     className={`${styles.dot} ${i === currentIndex ? styles.dotActive : ''}`}
-                                    onClick={() => scrollToIndex(i)}
+                                    onClick={() => scrollTo(i)}
                                     aria-label={`Ir al caso ${i + 1}`}
                                 />
                             ))}
@@ -233,7 +218,7 @@ const CarouselSection: React.FC = () => {
                             <button
                                 type="button"
                                 className={styles.navBtn}
-                                onClick={() => scrollToIndex(currentIndex - 1)}
+                                onClick={() => scrollTo(currentIndex - 1)}
                                 disabled={currentIndex === 0}
                                 aria-label="Caso anterior"
                             >
@@ -242,7 +227,7 @@ const CarouselSection: React.FC = () => {
                             <button
                                 type="button"
                                 className={styles.navBtn}
-                                onClick={() => scrollToIndex(currentIndex + 1)}
+                                onClick={() => scrollTo(currentIndex + 1)}
                                 disabled={currentIndex === CASES.length - 1}
                                 aria-label="Caso siguiente"
                             >
@@ -251,13 +236,11 @@ const CarouselSection: React.FC = () => {
                         </div>
                     </div>
 
-                    <p className={styles.caseDisclaimer}>
-                        Casos reales, cifras representativas. Cada caso resume varios
-                        proyectos del mismo sector. Omitimos nombres y datos
-                        identificativos por privacidad de cada cliente. Los testimonios
-                        son de cargos reales, anonimizados; las métricas ilustran
-                        resultados típicos, no una auditoría.
-                    </p>
+                    {/* Texto compartido con la portada — ver CasesDisclaimer.
+                        El `className` es lo único que cambia entre las dos
+                        páginas: aquí va en xs/subtle para no competir con la
+                        navegación del carrusel que tiene justo encima. */}
+                    <CasesDisclaimer className={styles.caseDisclaimer} />
                 </div>
             </div>
         </section>

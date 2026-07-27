@@ -592,10 +592,12 @@
 .caseSection::before { top: 0; }
 .caseSection::after { bottom: 0; }
 
-/* ─── Carousel — scroll-snap track (same pattern as Cases.tsx' carousel):
-   native horizontal scroll/drag with one card in view at a time, dot
-   indicators and prev/next buttons. Every control is a real, keyboard
-   focusable element, and the track itself accepts focus + arrow keys. ─── */
+/* ─── Carousel — scroll-snap track. Ya no es "el mismo patrón que el de
+   Cases.tsx" copiado a mano: las dos páginas consumen LA MISMA mecánica
+   (src/hooks/useCarousel.ts) y lo que queda aquí es sólo la piel. Scroll y
+   arrastre horizontales nativos con una tarjeta en pantalla a la vez, puntos
+   y flechas. Todos los controles son elementos reales enfocables con teclado,
+   y el propio track recibe foco y responde a las flechas. ─── */
 .caseCarouselWrapper {
     display: flex;
     flex-direction: column;

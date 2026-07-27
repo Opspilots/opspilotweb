@@ -27,7 +27,7 @@
 /* Exactly ONE slide in view at a time: each `.caseCard` is `flex: 0 0 100%`
    of this track, so the next card never peeks. The `gap` only shows
    mid-transition; snap points stay at i × (cardWidth + gap), matching the
-   scroll-unit math in Cases.tsx. */
+   scroll-unit math in useCarousel.ts. */
 .carouselTrack {
     display: flex;
     gap: var(--spacing-5);
@@ -45,6 +45,17 @@
 
 .carouselTrack:active {
     cursor: grabbing;
+}
+
+/* El track recibe foco y responde a las flechas (tabIndex + onKeyDown, ver
+   useCarousel), pero hasta ahora no lo enseñaba: quien navega con teclado no
+   tenía forma de saber que estaba encima del carrusel. Mismo anillo que el
+   track equivalente de la portada (.caseCarouselTrack en Home.module.css) —
+   el foco tiene que verse igual en los dos sitios. :focus-visible y no
+   :focus para que el anillo no aparezca al arrastrar con el ratón. */
+.carouselTrack:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 4px;
 }
 
 /* ─── Case card ─── */

@@ -35,8 +35,8 @@ export const SERVICE_LINE_LABEL: Record<ServiceLine, string> = {
 //   · `serviceLine` — si cada caso fue TIENDA, WEB o APP A MEDIDA. La
 //     narrativa de los tres habla de "sistema a medida", que sugiere `app`,
 //     pero sugerir no es confirmar.
-//   · `client` — si el cliente se puede nombrar. El copy de `.caseDisclaimer`
-//     (src/pages/Cases.tsx) dice que se omiten nombres por privacidad, pero
+//   · `client` — si el cliente se puede nombrar. El copy de CasesDisclaimer
+//     (src/components/cases/) dice que se omiten nombres por privacidad, pero
 //     eso es una frase de página, no un acuerdo registrado por cliente. Si
 //     se confirma que los tres van anonimizados, es `{ kind: 'anonymous' }`.
 //   · `productId` — si el caso se construyó sobre uno de nuestros productos.
