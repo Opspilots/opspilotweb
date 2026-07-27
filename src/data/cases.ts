@@ -28,45 +28,54 @@ export const SERVICE_LINE_LABEL: Record<ServiceLine, string> = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════════
-   DOS TIPOS DE CASO CONVIVIENDO AQUÍ, y hay que saber cuál se está leyendo
+   TRES CASOS, TRES PROYECTOS REALES, UNA LÍNEA DE SERVICIO CADA UNO
    ═══════════════════════════════════════════════════════════════════════
-   Hasta ahora este fichero tenía 3 entradas y las 3 eran lo mismo:
-   COMPOSICIONES. Cada una resume varios proyectos del mismo sector, su
-   protagonista no es una empresa concreta y su testimonio va firmado por un
-   cargo genérico. Eso no es una mentira mientras se diga —y se dice, ver
-   CasesDisclaimer—, pero tampoco es una prueba: un visitante no puede
-   comprobar ni una sola palabra.
+   Aquí ya no conviven dos clases de caso. Hasta hace nada este fichero
+   tenía cuatro entradas y tres de ellas eran COMPOSICIONES (`reformas`,
+   `asesoria-fiscal`, `agencia-servicios`): resúmenes de varios proyectos
+   del mismo sector, sin empresa concreta detrás, con testimonios firmados
+   por un cargo genérico y con cifras de resultado que nadie había
+   verificado ("triplicaron su capacidad", "el cierre sale al 80% solo",
+   "20 horas cada semana"). Eso no era mentira mientras se dijera —y se
+   decía, ver CasesDisclaimer— pero tampoco era una prueba: el visitante no
+   podía comprobar ni una sola palabra.
 
-   ObraFácil, la primera entrada de abajo, es de la otra clase: un cliente
-   real, con su nombre, con su tienda publicada y con un enlace que se puede
-   pulsar. Todo lo que cuenta su ficha está a un clic de contrastarse.
+   Las tres se han retirado. Lo que queda son tres proyectos que existen,
+   uno por línea de servicio, y por eso esta página funciona además como
+   muestrario:
 
-   Qué marca la diferencia EN EL DATO, y no en la prosa:
-     · `client` — `{ kind: 'composite' }` en los 3 antiguos (no hay un
-       cliente: hay varios proyectos resumidos) frente a `{ kind: 'named' }`
-       en ObraFácil. Este campo es el que decide a quién cubre el descargo de
-       CasesDisclaimer; ver el comentario de `ClientDisclosure` en types.ts.
-     · `productionLink` — solo lo puede tener un caso real. Una composición
-       no tiene URL porque no tiene proyecto único al que apuntar.
+     · ObraFácil          → `tienda`  → obrafacil2025.es
+     · J.R. Rodríguez      → `web`     → rodriguezreformas.es
+     · EnergyDeal         → `app`     → energydeal.es
+
+   Tres y no cuatro a propósito: mejor tres fichas que se pueden abrir en
+   otra pestaña que cuatro donde la última no lleva a ningún sitio.
+
+   QUÉ SOSTIENE CADA FICHA, en el dato y no en la prosa:
+     · `client` — `named` cuando el cliente se puede escribir (los dos
+       primeros lo publican ellos mismos en su propia web) y `anonymous`
+       cuando NO consta que se pueda. `anonymous` registra una decisión, no
+       un hueco; ver `ClientDisclosure` en types.ts. Ya no hay ningún
+       `composite`, y esa es exactamente la condición que apaga sola a
+       CasesDisclaimer — el descargo existía para cubrir composiciones y sin
+       composiciones no tiene a quién cubrir.
+     · `productionLink` — los tres lo tienen, los tres `live`, los tres
+       verificados entrando. Es la diferencia entre contar un caso y
+       enseñarlo.
      · `serviceLine` — TIENDA / WEB / APP A MEDIDA.
 
    REGLA PARA AÑADIR EL SIGUIENTE: si es un cliente real, se nombra y se
    enlaza; y si no se puede enlazar, no se inventa nada para compensar. Las
-   cifras de resultado (ventas, pedidos, facturación) NO entran aquí mientras
-   no haya un dato de negocio verificado — es la misma regla que ya gobierna
-   las maquetas (`CaseShowcase` en types.ts: ni un porcentaje, ni una
-   gráfica, ni un contador).
+   cifras de resultado (ventas, pedidos, facturación, horas ahorradas) NO
+   entran aquí mientras no haya un dato de negocio verificado — es la misma
+   regla que ya gobierna las maquetas (`CaseShowcase` en types.ts: ni un
+   porcentaje, ni una gráfica, ni un contador). Los tres casos de abajo van
+   además SIN `quote` ni `author`: ningún cliente nos ha dado una cita y
+   escribírsela en la boca a empresas a las que se puede llamar por teléfono
+   es peor que no tener testimonio.
 
-   TODO(negocio) que sigue abierto, ahora solo para los 3 compuestos:
-     · `serviceLine` — la narrativa de los tres habla de "sistema a medida",
-       que sugiere `app`, pero sugerir no es confirmar.
-     · `productId` — si el caso se construyó sobre uno de nuestros productos.
-       Es tentador deducirlo de `sectorId` (reformas → Presupuestador,
-       asesorías → Fiscalidad), pero sería inventar: que un cliente sea del
-       sector reformas no demuestra que use Presupuestador, y pintar el
-       enlace lo estaría AFIRMANDO delante de un visitante.
-   Mientras estén vacíos, esos bloques simplemente no se renderizan: no hay
-   hueco, ni placeholder, ni "próximamente". */
+   `productId` sigue vacío en los tres, y en EnergyDeal esa ausencia es
+   deliberada y merece explicación — está escrita en su ficha. */
 
 export const CASES: readonly Case[] = [
     /* ─── PRIMERO, y no por orden de llegada ────────────────────────────
@@ -74,8 +83,11 @@ export const CASES: readonly Case[] = [
        (`flex: 0 0 100%`, sin asomo de la siguiente): la primera posición no
        es "la primera de la lista", es la única que ve quien no desliza. El
        único caso que un visitante puede verificar por su cuenta tiene que
-       estar ahí. Mover esta entrada más abajo es una línea; que el 01/04 lo
-       ocupe una composición cuando hay un cliente real disponible, no.
+       estar ahí. Ahora los tres lo son, así que el criterio cambia de
+       "el único verificable" a "el más rápido de verificar": una tienda
+       abierta al público se comprueba en diez segundos, y por eso sigue
+       primera. El orden de los tres es tienda → web → app, que además es
+       el orden en que crece lo que se construye.
 
        Datos verificados entrando en obrafacil2025.es. La regla de este
        fichero es la de siempre: si no se ha visto, no se escribe. */
@@ -161,116 +173,191 @@ export const CASES: readonly Case[] = [
         // no se fabrican placeholders. Cuando existan, se añaden aquí y el
         // modelo ya las admite.
     },
+    /* ─── SEGUNDO: la línea `web` ────────────────────────────────────────
+       Datos verificados entrando en rodriguezreformas.es y recorriendo el
+       menú, la galería y el formulario. Lo que NO se ha visto no está
+       escrito, y hay dos ausencias que conviene dejar por escrito porque
+       alguien las va a echar de menos:
+
+         · NO hay sistema de reservas ni agenda de citas. El formulario de
+           /formulario-contacto/ pide nombre, teléfono, correo, una
+           descripción de la reforma y el consentimiento de contacto: es una
+           petición de PRESUPUESTO, no una reserva de hueco. No hay
+           calendario, ni franjas, ni confirmación automática. Por eso esta
+           ficha habla de presupuesto y de WhatsApp y no de reservas.
+         · NO se menciona la "calculadora de presupuesto". Los dos botones
+           más visibles de su portada ("Solicita Presupuesto Gratuito" y
+           "Quiero calcular un presupuesto") apuntan a /calculadora-gratuita/,
+           que HOY devuelve 404. Contarla como una función del sitio sería
+           enviar al visitante a comprobar algo que está roto. Ver el
+           TODO(negocio) del final del fichero. */
     {
-        id: 'reformas',
+        id: 'rodriguez-reformas',
+        // Mismo sector que ObraFácil y no es un error de encaje: aquel vende
+        // el material con el que se reforma, este ejecuta la reforma. Son los
+        // dos extremos del mismo ramo y las fichas no se pisan porque lo que
+        // las separa en pantalla es la LÍNEA DE SERVICIO (TIENDA / WEB), que
+        // es el eje que esta página usa como muestrario.
         sectorId: 'reformas',
+        // `building` queda libre al retirarse el antiguo caso compuesto de
+        // reformas, y aquí sí es literal: obra sobre vivienda y local.
         iconKey: 'building',
-        label: 'Reformas',
-        title: 'De la libreta al sistema que trabaja solo',
+        // El SECTOR del cliente, no lo que le construimos (eso ya lo dice la
+        // etiqueta WEB de al lado).
+        label: 'Reformas integrales',
+        title: 'Una página por cada reforma que se busca en Córdoba',
         summary:
-            'Empresa familiar de reformas que triplicó su capacidad sin contratar a nadie más.',
+            'Web de captación para una empresa de reformas de Córdoba: una página por servicio, galería de antes y después y presupuesto por formulario o WhatsApp.',
         text:
-            'Una empresa familiar de reformas lo llevaba todo con Excel y llamadas sueltas. Perdían presupuestos por falta de seguimiento. Les construimos un software a medida: presupuestos asistidos por IA y citas automatizadas por WhatsApp. En tres meses triplicaron su capacidad sin contratar a nadie.',
+            'J.R. Rodríguez e Hijos hace reformas integrales, cocinas, baños y locales comerciales en Córdoba capital y provincia. Un negocio así no compite por «reformas» a secas: compite por «reformas de baños en Córdoba», y esa pelea no la gana una web de una sola página por bonita que sea. La suya tiene una página propia por servicio y ciudad —reformas integrales, locales comerciales, cocinas y baños—, cada una con su título, su texto y su entrada de búsqueda, más una galería de «antes y después» donde se ve el resultado sobre obra real y un apartado de zonas de actuación con los pueblos a los que se desplazan. La captación va directa y sin intermediarios: un formulario que llega con nombre, teléfono, correo y la descripción de la reforma, y un botón de WhatsApp con el mensaje ya escrito para quien prefiere no rellenar nada. Y un bloque de preguntas frecuentes que responde por escrito lo que antes se contestaba una y otra vez por teléfono: plazos, licencias, pagos por hitos y garantía. Está publicada: se puede entrar y recorrerla entera.',
         bullets: [
-            'Marca, identidad y presupuestos con IA generando imágenes realistas de la reforma antes de empezar',
-            'WhatsApp automatizado para citas y visitas — cero llamadas para confirmar',
-            'Sistema a medida que centraliza clientes, obras y facturación en un solo lugar',
+            'Una página propia por servicio y ciudad: reformas integrales, locales comerciales, cocinas y baños en Córdoba',
+            'Galería de «antes y después» sobre obra real y zonas de actuación de la provincia',
+            'Presupuesto por formulario con los datos ya ordenados, o por WhatsApp con el mensaje escrito',
         ],
         showcase: {
+            // `mint` entre dos ámbares: la serie queda ámbar / mint / ámbar al
+            // deslizar y ninguna maqueta se lee como la repetición de la
+            // anterior. Es el mismo criterio que ya justificaba el `warm` de
+            // ObraFácil, solo que ahora aplicado a una serie de tres.
             accent: 'mint',
-            kicker: 'Automático',
-            title: 'Visita confirmada, sin mover un dedo',
-            sub: 'Directo del chat al calendario, sin llamadas de por medio.',
+            kicker: 'Búsqueda local',
+            title: 'Cada servicio, con su propia página',
+            sub: 'Quien busca su reforma concreta aterriza en la página de esa reforma.',
             block: {
-                type: 'sequence',
-                beforeIcon: 'chatMessage',
-                afterIcon: 'calendarCheck',
-                beforeLabel: 'WhatsApp',
-                afterLabel: 'Agenda',
+                // `services` y no `modules`: esto es una WEB pública, no un
+                // panel de gestión, y lo que la hace reconocible a un
+                // profesional del oficio son los nombres de servicio, no una
+                // rejilla de módulos. Los iconos siguen el vocabulario que ya
+                // fijó la rama "reformas" del embudo (src/data/leadFunnel.ts):
+                // `building` para la reforma integral, `hammer` para la obra,
+                // `wrench` para baños y cocinas. Repetirlo aquí no es pereza,
+                // es que el mismo oficio se dibuja igual en las dos
+                // superficies.
+                //
+                // Tres chips para cuatro páginas reales, y es deliberado: el
+                // bloque `services` de este sistema va siempre de tres (ver
+                // las cuatro ramas del embudo) y la maqueta no es un mapa del
+                // sitio. Cocinas y baños comparten chip porque comparten
+                // icono; las cuatro páginas se enumeran donde sí caben, en el
+                // texto y en los bullets.
+                type: 'services',
+                items: [
+                    { key: 'integrales', icon: 'building', label: 'Reformas integrales' },
+                    { key: 'locales', icon: 'hammer', label: 'Locales comerciales' },
+                    { key: 'banos-cocinas', icon: 'wrench', label: 'Cocinas y baños' },
+                ],
             },
         },
-        quote:
-            'Pasamos de perder presupuestos por falta de seguimiento a tener un sistema que trabaja solo.',
-        author: 'CEO',
-        // Composición de varios proyectos del sector, no un cliente concreto.
-        // Único campo AÑADIDO a los 3 casos antiguos, y no aporta información
-        // nueva: es exactamente lo que la web ya publicaba en el descargo de
-        // CasesDisclaimer, movido de una frase de página a un dato por caso.
-        // Ese movimiento es todo el arreglo — mientras fuera copy, la frase se
-        // aplicaba a los 4 por igual y le decía a ObraFácil que es una
-        // composición. Ahora el descargo pregunta al dato.
-        client: { kind: 'composite' },
+        // Sin `quote` ni `author`, misma decisión que en ObraFácil: no nos han
+        // dado ninguna cita. Su web sí publica testimonios firmados por
+        // clientes suyos, pero son SUS testimonios sobre SU obra — traerlos
+        // aquí y presentarlos como prueba de nuestro trabajo sería apropiarse
+        // de un elogio ajeno.
+        serviceLine: 'web',
+        // El nombre lo publican ellos mismos en su propia web, en el título,
+        // en el pie y en la ficha de Google del mapa. No hay nada que
+        // proteger, así que `named`.
+        client: { kind: 'named', name: 'J.R. Rodríguez e Hijos' },
+        productionLink: {
+            url: 'https://rodriguezreformas.es',
+            // "Ver la web" y no "Entrar en la tienda" (ObraFácil): la etiqueta
+            // dice a dónde va ANTES de pulsar y aquí no se compra nada.
+            label: 'Ver la web de J.R. Rodríguez',
+            // Verificado en vivo: portada, las cuatro páginas de servicio, la
+            // galería y el formulario responden 200.
+            availability: 'live',
+        },
     },
+    /* ─── TERCERO: la línea `app` ────────────────────────────────────────
+       Y aquí hay una confusión fácil que hay que cortar de raíz: energydeal.es
+       es HOY una web de producto que se vende a corredurías de seguros, con
+       sus precios y su blog. ESO NO ES EL CASO. El caso es el PROYECTO que
+       lo originó — un desarrollo a medida para un agente comercial del sector
+       energético— y es lo único que se cuenta abajo. Contar el catálogo
+       actual en la ficha de un caso sería vender producto disfrazado de
+       prueba de trabajo.
+
+       Datos verificados entrando en energydeal.es y contrastados con lo que
+       ya describen sus dos artículos de /recursos (`energydeal-crm-energetico`
+       y `caso-energydeal-comercializadora-excel` en src/lib/resources.ts) y
+       con los módulos que su ficha de producto lista tras entrar en la
+       aplicación (`preview` de `energydeal` en src/data/products.ts). */
     {
-        id: 'asesoria-fiscal',
-        sectorId: 'asesorias',
-        iconKey: 'calculator',
-        label: 'Asesoría fiscal',
-        title: 'Una asesoría que cierra cuentas mientras duerme',
+        id: 'energydeal',
+        sectorId: 'energia',
+        iconKey: 'zap',
+        label: 'Comercial de energía',
+        title: 'Un CRM que sabe qué es un CUPS',
         summary:
-            'Despacho con cientos de clientes que automatizó el cierre mensual sin perder calidad.',
+            'Software a medida para un agente comercial de luz y gas: comparador con la comparativa congelada, cartera por CIF y CUPS, y comisiones con estado.',
         text:
-            'Un despacho con cientos de clientes se ahogaba en tareas repetitivas. Digitalizamos el flujo de trabajo con lectura inteligente de documentos, conciliación bancaria automática y un asistente de IA que prepara los modelos antes de la revisión humana. Hoy el cierre mensual sale al 80% solo.',
+            'EnergyDeal nació como desarrollo a medida para un agente comercial del sector energético: alguien que compara y vende tarifas de luz y gas de varias comercializadoras a la vez y a quien ningún CRM del mercado le servía, porque ningún CRM del mercado sabe qué es un CUPS. Los dos problemas que había que resolver eran muy concretos. El primero: una comparativa deja de ser reproducible en cuanto las tarifas se mueven —cosa que pasa en días— mientras que un cliente empresa tarda semanas en firmar, así que cuando llega la reclamación nadie puede demostrar qué condiciones se ofrecieron realmente. Se resolvió congelando cada comparativa en un snapshot inmutable, con sus tarifas, sus condiciones y su fecha exacta. El segundo: la liquidación de comisiones a fin de mes se hacía de memoria, comparando notas sueltas. Se modeló el ciclo entero con estados explícitos —pendiente, validada, pagada, revertida— y un registro de auditoría, para que el cierre sea una consulta y no una discusión. Alrededor de eso, la cartera se organiza por CIF con sus CUPS y puntos de suministro colgando de cada cliente, y las tarifas entran por un proceso de carga masiva desde los PDF de la comercializadora en vez de copiarse a mano. Hoy EnergyDeal tiene web pública propia y se puede entrar a verla.',
         bullets: [
-            'Conciliación bancaria automática y lectura inteligente de documentos',
-            'Asistente IA que prepara los modelos antes de la revisión humana',
-            'Portal de cliente para firmar documentos sin emails de ida y vuelta',
+            'Comparador multi-proveedor que guarda cada comparativa en un snapshot inmutable, reproducible meses después aunque las tarifas hayan cambiado',
+            'Cartera organizada por CIF, con los CUPS y puntos de suministro de cada cliente — vocabulario que un CRM genérico no tiene',
+            'Comisiones con estados explícitos (pendiente, validada, pagada, revertida) y registro de auditoría de toda la actividad',
         ],
         showcase: {
             accent: 'warm',
-            kicker: 'Cierre al día',
-            title: 'El cierre mensual, ya resuelto',
-            sub: 'Conciliación, modelos y firma, sin tocarlos a mano.',
+            kicker: 'Vertical, no genérico',
+            title: 'La comparativa de hace tres semanas, tal cual se hizo',
+            sub: 'Comparador, suministros por CUPS y comisiones con estado.',
             block: {
+                // Los cuatro nombres son de módulos que la aplicación tiene de
+                // verdad: "Comparador" y "Comisiones" son dos de sus tres
+                // secciones de primer nivel y "CUPS" y "Auditoría" dos de sus
+                // módulos (ver `preview` de energydeal en products.ts, leído
+                // con la aplicación delante). Cuatro y no cinco porque la
+                // rejilla de `modules` es de 4 columnas en escritorio y 2×2 en
+                // móvil (MockPreview.module.css).
                 type: 'modules',
                 items: [
-                    { key: 'conciliacion', icon: 'receipt', label: 'Conciliación', active: true },
-                    { key: 'modelos', icon: 'fileText', label: 'Modelos', active: true },
-                    { key: 'firma', icon: 'documentCheck', label: 'Firma', active: true },
+                    { key: 'comparador', icon: 'documentCheck', label: 'Comparador', active: true },
+                    { key: 'cups', icon: 'plug', label: 'CUPS', active: true },
+                    { key: 'comisiones', icon: 'banknote', label: 'Comisiones', active: true },
+                    { key: 'auditoria', icon: 'history', label: 'Auditoría', active: true },
                 ],
             },
         },
-        quote:
-            'Antes era imposible escalar sin contratar; ahora podemos crecer sin que el equipo reviente.',
-        author: 'Socio director',
-        client: { kind: 'composite' },
-    },
-    {
-        id: 'agencia-servicios',
-        sectorId: 'agencias',
-        iconKey: 'target',
-        label: 'Agencia de servicios',
-        title: 'Una agencia que recupera 20 horas a la semana',
-        summary:
-            'Agencia que reemplazó cinco herramientas distintas por un solo sistema hecho a medida.',
-        text:
-            'Una agencia de marketing usaba cinco herramientas que no se hablaban entre sí. Lo unificamos todo en un solo software a medida: CRM, gestión, facturación y comunicación interna, con reporting en tiempo real para dirección y un asistente de IA para dudas del equipo. Recuperaron 20 horas cada semana.',
-        bullets: [
-            'Sistema único que sustituyó CRM, gestión, facturación y comunicación interna',
-            'Reporting en tiempo real para dirección, sin tener que pedir nada',
-            'Asistente IA que responde dudas internas de proceso al instante',
-        ],
-        showcase: {
-            accent: 'mint',
-            kicker: 'Todo en uno',
-            title: 'Cinco herramientas, un solo sistema',
-            sub: 'Clientes, facturación, agenda y comunicación, unificados.',
-            block: {
-                type: 'modules',
-                items: [
-                    { key: 'clientes', icon: 'users', label: 'Clientes', active: true },
-                    { key: 'facturacion', icon: 'receipt', label: 'Facturas', active: true },
-                    { key: 'agenda', icon: 'calendarCheck', label: 'Agenda', active: true },
-                    { key: 'comunicacion', icon: 'chatMessage', label: 'Mensajes', active: true },
-                ],
-            },
+        serviceLine: 'app',
+        // `anonymous` y NO `named`: nadie ha confirmado que el agente comercial
+        // para el que se construyó esto se pueda nombrar públicamente. El campo
+        // registra esa DECISIÓN (ver `ClientDisclosure` en types.ts); dejarlo
+        // fuera habría registrado un olvido, que es otra cosa. Si mañana consta
+        // el permiso, se cambia una línea.
+        client: { kind: 'anonymous' },
+        // `productId: 'energydeal'` NO va, y no por descuido. Ese campo
+        // significa "el caso se construyó SOBRE uno de nuestros productos", y
+        // aquí el producto no es el cimiento: es el resultado. Además tiene una
+        // consecuencia de render que lo confirma — /casos pinta `productId` y
+        // `productionLink` uno al lado del otro (ver `cardLinks` en Cases.tsx)
+        // y ambos resolverían a la MISMA url, energydeal.es, o sea dos enlaces
+        // gemelos en la misma tarjeta; y la portada no pinta `productId` en
+        // absoluto, así que el caso se quedaría allí sin salida a producción.
+        productionLink: {
+            url: 'https://energydeal.es',
+            // Misma etiqueta que usa la ficha de producto para esta URL (ver
+            // `site` de energydeal en products.ts): es el mismo destino y
+            // llamarlo de dos maneras distintas en el mismo sitio solo confunde.
+            label: 'Ver la web de EnergyDeal',
+            availability: 'live',
         },
-        quote:
-            'Dejamos de pagar cinco herramientas y ganamos visibilidad real de cada cliente.',
-        author: 'Directora de operaciones',
-        client: { kind: 'composite' },
     },
 ];
+
+/* TODO(negocio), lo único que queda abierto y no lo decide el código:
+
+   · rodriguezreformas.es sirve un 404 en /calculadora-gratuita/, y ahí es
+     donde apuntan los DOS botones principales de su portada ("Solicita
+     Presupuesto Gratuito" en el hero y "Quiero calcular un presupuesto" en
+     el cierre). Es un problema del sitio del cliente, no de esta ficha —que
+     por eso no menciona la calculadora—, pero conviene avisarles: hoy su
+     llamada a la acción más visible lleva a una página que no existe.
+
+   · Si el agente comercial de EnergyDeal autoriza que se le nombre, su
+     `client` pasa de `anonymous` a `{ kind: 'named', name: '…' }` y la
+     tarjeta empieza a pintar el nombre sola, en las dos superficies. */
 
 export function getCase(id: string): Case | undefined {
     return CASES.find((c) => c.id === id);

@@ -63,10 +63,12 @@ const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
     // Producto propio sobre el que se construyó el caso. Requiere que
     // `Case.productId` esté DECLARADO: no se deduce de `c.sectorId`. Pintar
     // "este cliente usa Presupuestador" porque su sector es reformas sería
-    // afirmar delante de un visitante algo que nadie ha confirmado — ver el
-    // TODO(negocio) al principio de src/data/cases.ts. Hoy los 3 casos van
-    // sin `productId`, así que este bloque no renderiza nada; el día que se
-    // rellene el dato aparece solo.
+    // afirmar delante de un visitante algo que nadie ha confirmado. Hoy los 3
+    // casos van sin `productId`, así que este bloque no renderiza nada; el día
+    // que se rellene el dato aparece solo. Ojo con EnergyDeal, que es el que
+    // más tienta a rellenarlo: ahí la omisión está razonada en su propia ficha
+    // (src/data/cases.ts) y pintarlo produciría dos enlaces gemelos a
+    // energydeal.es en esta misma tarjeta.
     const product = c.productId ? getProduct(c.productId) : undefined;
 
     // Los dos destinos externos del caso, ya resueltos a "pintable o nada".
@@ -97,9 +99,9 @@ const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
                     dice de qué ramo es el cliente, esta qué le construimos.
                     Etiqueta y nada más — no enlaza, no filtra, no es una
                     taxonomía navegable (ver `ServiceLine` en data/types.ts).
-                    Sin dato, sin etiqueta: hoy sólo la lleva ObraFácil
-                    (TIENDA); los 3 casos compuestos siguen sin línea
-                    confirmada (ver el TODO de src/data/cases.ts). */}
+                    Sin dato, sin etiqueta; hoy la llevan los tres casos, uno
+                    por línea (TIENDA / WEB / APP A MEDIDA), que es lo que
+                    convierte esta página en muestrario además de en prueba. */}
                 {c.serviceLine && (
                     <span className={styles.cardServiceLine}>
                         {SERVICE_LINE_LABEL[c.serviceLine]}
@@ -323,8 +325,13 @@ export const Cases: React.FC = () => {
         // aprende que el sitio no cumple lo que anuncia. Ahora promete lo que sí
         // hay, que además es mejor argumento que una cifra: proyectos
         // publicados que cualquiera puede abrir y comprobar.
+        // "una web" en singular y no "webs": la página enseña exactamente un
+        // proyecto por línea de servicio y el plural prometía un muestrario
+        // más grande del que hay. Misma regla que tumbó el "Casos con cifras"
+        // de antes — lo que anuncia el resultado de búsqueda tiene que ser lo
+        // que el visitante encuentra al llegar.
         description:
-            'Proyectos reales de pymes que dejaron el Excel: una tienda online, webs de captación y software a medida. Con enlace al resultado para comprobarlo.',
+            'Proyectos reales de pymes que dejaron el Excel: una tienda online, una web de captación y software a medida. Con enlace al resultado para comprobarlo.',
         canonical: 'https://opspilot.es/casos/',
     };
 

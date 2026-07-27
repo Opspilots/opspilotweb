@@ -569,8 +569,16 @@ export interface Case {
      *  CasesDisclaimer consulta para saber a qué casos les toca el descargo
      *  de "esto resume varios proyectos". Un caso `composite` lo recibe; uno
      *  `named` —cliente real, con enlace a producción— no puede recibirlo sin
-     *  que la web mienta sobre su única prueba comprobable. Hoy lo llevan los
-     *  4 casos: `named` en ObraFácil, `composite` en los otros tres. */
+     *  que la web mienta sobre su única prueba comprobable.
+     *
+     *  Hoy lo llevan los 3 casos y NINGUNO es `composite`: `named` en
+     *  ObraFácil y en J.R. Rodríguez, `anonymous` en EnergyDeal. Consecuencia
+     *  directa y buscada: CasesDisclaimer no renderiza nada. El descargo se ha
+     *  apagado solo porque se quedó sin nadie a quien cubrir, que es
+     *  exactamente el comportamiento para el que se escribió. La variante
+     *  `composite` se conserva en la unión —no se borra— porque sigue siendo
+     *  el registro correcto si algún día vuelve a entrar un caso compuesto, y
+     *  porque es lo que mantiene vivo el interruptor. */
     client?: ClientDisclosure;
     /** FK → `Product.id`. Solo si el caso se construyó SOBRE uno de nuestros
      *  productos. NO se deriva de `sectorId`: que un caso sea del sector

@@ -500,14 +500,12 @@ export const Home: React.FC = () => {
                           no el dato. Ver la nota en Cases.tsx. */}
                       <h3 className={styles.caseCardTitle}>{c.title}</h3>
                       {/* Nombre del cliente, SÓLO si está declarado como
-                          nombrable. Con `composite` (los 3 casos que resumen
-                          varios proyectos) o sin campo no se pinta nada, y esa
-                          ausencia es la señal que el descargo de más abajo usa
-                          para delimitarse: dice "los casos que no llevan
-                          nombre de cliente...", así que el nombre tiene que
-                          verse aquí para que la frase se pueda comprobar de un
-                          vistazo. Ver CasesDisclaimer.tsx y `ClientDisclosure`
-                          en data/types.ts. */}
+                          nombrable. Con `anonymous` (hoy, EnergyDeal: no
+                          consta autorización para nombrar al comercial para
+                          el que se construyó) o sin campo no se pinta nada —
+                          un "Cliente anónimo" impreso ahí no aportaría
+                          información, sólo ruido. Ver `ClientDisclosure` en
+                          data/types.ts. */}
                       {c.client?.kind === "named" && (
                         <p className={styles.caseClient}>{c.client.name}</p>
                       )}

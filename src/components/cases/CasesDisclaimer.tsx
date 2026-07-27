@@ -31,10 +31,10 @@ import { CASES } from '../../data';
  * así que vive en el caso: `client: { kind: 'composite' }` (ver
  * `ClientDisclosure` en src/data/types.ts). Este componente lee CASES y:
  *
- *   · si NINGÚN caso es compuesto, no renderiza nada — el día que los cuatro
- *     sean clientes reales, el descargo se apaga solo, sin que nadie tenga
- *     que acordarse de venir a borrarlo. Un aviso que sobrevive a su motivo
- *     es ruido que enseña a ignorar la letra pequeña;
+ *   · si NINGÚN caso es compuesto, no renderiza nada — el día que todos sean
+ *     clientes reales, el descargo se apaga solo, sin que nadie tenga que
+ *     acordarse de venir a borrarlo. Un aviso que sobrevive a su motivo es
+ *     ruido que enseña a ignorar la letra pequeña;
  *   · si alguno lo es, delimita el alcance por una señal que el lector TIENE
  *     DELANTE: el nombre del cliente en la tarjeta. "Los casos que no llevan
  *     nombre" es verificable de un vistazo, mientras que "algunos de estos
@@ -56,6 +56,21 @@ import { CASES } from '../../data';
  * pintan con tipografía y color distintos (`--font-size-xs` /
  * `--color-text-subtle` en /casos, `--font-size-sm` / `--color-text-muted`
  * en la portada): se unifica el TEXTO, no el aspecto.
+ *
+ * ── ESTADO HOY: ESTE COMPONENTE NO PINTA NADA, Y ESTÁ BIEN ──
+ * Al retirarse los tres casos compuestos, `CASES` se quedó con ObraFácil,
+ * J.R. Rodríguez y EnergyDeal — dos `named` y un `anonymous`, cero
+ * `composite`. Así que `hasComposite` es `false` y el descargo desaparece de
+ * la portada y de /casos. No es una regresión: es el interruptor haciendo su
+ * trabajo. El componente se queda en el árbol porque el día que vuelva a
+ * entrar un caso compuesto tiene que reaparecer solo, y borrarlo hoy
+ * significaría que ese día nadie se acuerda de volver a escribirlo.
+ *
+ * Lo que este componente NO cubre y conviene no confundir: el caso
+ * `anonymous`. Su tarjeta simplemente no imprime nombre, sin frase que lo
+ * explique. Si negocio quiere que se explique ("omitimos el nombre por
+ * acuerdo con el cliente"), eso es un texto DISTINTO con una condición
+ * distinta (`kind === 'anonymous'`), no un retoque de este.
  */
 export const CasesDisclaimer: React.FC<{ className?: string }> = ({ className }) => {
     const hasComposite = CASES.some((c) => c.client?.kind === 'composite');
