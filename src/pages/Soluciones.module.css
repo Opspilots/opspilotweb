@@ -37,6 +37,62 @@
     }
 }
 
+/* ─── Indicador de sector activo ───
+   Antes el nombre del sector vivía DENTRO del `<h1>` ("Software para
+   {sector}"). Se sacó por SEO y por accesibilidad — el porqué está argumentado
+   en Soluciones.tsx, junto al marcado. Aquí solo interesa que visualmente se
+   conserve la idea: titular grande y nombre de sector en acento justo debajo.
+
+   `min-height` NO es cosmético y no se puede quitar. `AnimatePresence` con
+   `mode="wait"` desmonta el nombre saliente ANTES de montar el entrante, así
+   que durante ~0,3s este contenedor se queda literalmente vacío. Sin altura
+   reservada, todo lo que hay debajo —subtítulo y explorador entero— pegaría un
+   salto en cada cambio de sector; y como en desktop el scroll-jack dispara
+   cambios de sector con el propio scroll, el salto sería constante. El valor
+   se calcula sobre la línea de `.heroSectorName` (2xl x 1.2 de interlineado) y
+   NO sobre el contenido, precisamente para que no dependa de qué sector esté
+   activo: los 7 labels tienen longitudes muy distintas. */
+.heroSector {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-3);
+    flex-wrap: wrap;
+    margin-top: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+    min-height: calc(var(--font-size-2xl) * 1.2);
+}
+
+/* Etiqueta fija que da contexto al anuncio del lector de pantalla: sin ella,
+   `aria-live` soltaria "Asesorias y despachos" a secas, sin decir de que va
+   eso. Registro mono/versalita, el mismo de los eyebrow del resto de la web. */
+.heroSectorLabel {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.heroSectorName {
+    display: inline-flex;
+    align-items: baseline;
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-2xl);
+    line-height: 1.2;
+    min-width: 0;
+}
+
+@media (max-width: 639px) {
+    .heroSectorName {
+        font-size: var(--font-size-xl);
+    }
+
+    .heroSector {
+        min-height: calc(var(--font-size-xl) * 1.2);
+    }
+}
+
 .heroContentLayer {
     position: relative;
     z-index: 1;

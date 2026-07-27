@@ -594,34 +594,63 @@ export const Soluciones: React.FC = () => {
             <section className={`${sys.pageHero} ${styles.solHero}`}>
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
                     <div className={sys.pageHeroContent} ref={heroRef}>
-                        {/* Titular reactivo al sector activo — el lead-in ("Software
-                            para") queda fijo, solo el nombre del sector (`activeSector.label`)
-                            cambia, con el mismo crossfade+slide (opacity/y, mismo timing/
-                            easing que el crossfade de icono `.rowIconMotion`/
-                            `.panelIconMotion` y la transición de panel) al cambiar
-                            `selected` — por clic o por scroll-jack, da igual, ambos pasan
-                            por el mismo `setSelected`. Gated tras `prefersReducedMotion`
-                            como el resto del componente: con reduced motion el nombre
-                            también cambia, solo que sin animar. */}
+                        {/* H1 ESTABLE. Antes el titular era "Software para
+                            {activeSector.label}", con el nombre del sector rotando dentro
+                            del propio `<h1>`. Se ha separado por dos motivos distintos, y
+                            los dos son de fondo:
+
+                            1. SEO. El H1 es una de las señales on-page más fuertes, y en
+                               el HTML prerenderizado `selected` SIEMPRE vale 0 (ver el
+                               guard de `typeof window === 'undefined'` más arriba). O sea
+                               que el único H1 que Google llegaba a ver de esta página era
+                               "Software para Asesorías y despachos" — la página se
+                               declaraba a sí misma como si tratara de un solo sector,
+                               mientras los otros seis competían desde el body copy. Con un
+                               H1 estable, los 7 sectores parten en igualdad y cada uno
+                               conserva su `<h2>` propio en su panel.
+
+                            2. Accesibilidad. Un `<h1>` que muta bajo los pies es hostil:
+                               quien navega por encabezados vuelve al titular y se lo
+                               encuentra distinto sin que nadie se lo haya anunciado. Ahora
+                               el H1 no se mueve y el sector activo vive en su propia
+                               región `aria-live`, que SÍ se anuncia al cambiar.
+
+                            Visualmente se conserva la idea: titular grande + nombre de
+                            sector en acento justo debajo, con el mismo crossfade
+                            (opacity/y, mismo timing y easing que `.rowIconMotion`,
+                            `.panelIconMotion` y la transición de panel). */}
                         <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>
-                            Software para{' '}
-                            {prefersReducedMotion ? (
-                                <em className={sys.pageHeroAccent}>{activeSector.label}</em>
-                            ) : (
-                                <AnimatePresence mode="wait" initial={false}>
-                                    <motion.em
-                                        key={activeSector.id}
-                                        className={sys.pageHeroAccent}
-                                        initial={{ opacity: 0, y: 8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -8 }}
-                                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                                    >
-                                        {activeSector.label}
-                                    </motion.em>
-                                </AnimatePresence>
-                            )}
+                            Software para tu sector
                         </h1>
+
+                        {/* Sector activo. Ya no es un encabezado: es un indicador de
+                            "dónde estás" dentro del explorador, que es lo que de verdad
+                            hace. `aria-live="polite"` lo anuncia al cambiar — por clic,
+                            teclado, swipe o scroll-jack, que todos pasan por el mismo
+                            `setSelected`. El `<span>` de etiqueta da contexto al anuncio:
+                            sin él, un lector de pantalla soltaría "Asesorías y despachos"
+                            a secas, sin decir de qué. */}
+                        <p className={`${styles.heroSector} reveal`}>
+                            <span className={styles.heroSectorLabel}>Viendo</span>
+                            <span className={styles.heroSectorName} aria-live="polite">
+                                {prefersReducedMotion ? (
+                                    <em className={sys.pageHeroAccent}>{activeSector.label}</em>
+                                ) : (
+                                    <AnimatePresence mode="wait" initial={false}>
+                                        <motion.em
+                                            key={activeSector.id}
+                                            className={sys.pageHeroAccent}
+                                            initial={{ opacity: 0, y: 8 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -8 }}
+                                            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                        >
+                                            {activeSector.label}
+                                        </motion.em>
+                                    </AnimatePresence>
+                                )}
+                            </span>
+                        </p>
                         <p className={`${sys.pageHeroSubtitle} ${styles.heroSubtitle} reveal`}>
                             Conocemos de cerca la operativa de estos sectores. Elige el tuyo y
                             te decimos exactamente qué podemos construir para ti.
