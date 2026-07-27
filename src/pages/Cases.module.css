@@ -78,6 +78,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* Sin efecto con los 2 hijos de siempre (sector + índice, que quedan en
+       los extremos por el space-between); es el separador mínimo cuando
+       aparece la etiqueta de línea de servicio en medio. */
+    gap: var(--spacing-3);
     margin-bottom: var(--spacing-8);
 }
 
@@ -99,6 +103,26 @@
     border-radius: var(--radius-full);
     background: var(--color-mint);
     flex-shrink: 0;
+}
+
+/* Línea de servicio (TIENDA / WEB / APP A MEDIDA) — ver `ServiceLine` en
+   src/data/types.ts. Comparte la voz mono/versalita de `.cardSector` porque
+   son hermanas conceptualmente (dos etiquetas de clasificación del caso),
+   pero lleva contorno propio: sin él las dos se leen como una sola frase
+   partida, y son ejes distintos — a la izquierda el ramo del cliente, aquí
+   lo que le construimos. `margin-right: auto` empuja el índice al extremo
+   derecho, que es donde estaba antes de que esta etiqueta existiera. */
+.cardServiceLine {
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    color: var(--color-text-subtle);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px var(--spacing-2);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+    margin-right: auto;
 }
 
 .cardIndex {
@@ -147,6 +171,33 @@
     letter-spacing: var(--tracking-display);
     margin: 0;
     text-wrap: balance;
+}
+
+/* Nombre del cliente cuando el caso es nombrable (`ClientDisclosure` con
+   `kind: 'named'`). Discreto y bajo el titular: es una credencial, no el
+   titular en sí — quien lee la tarjeta viene por el problema resuelto, y
+   saber de quién es refuerza, no encabeza. Con clientes anonimizados no
+   existe este elemento (no hay hueco reservado). */
+.cardClient {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: var(--tracking-wide);
+    margin: 0;
+}
+
+/* Salidas a producción del caso (producto propio y/o lo entregado a ese
+   cliente). Columna y no fila: son enlaces de texto largo — la etiqueta
+   nombra el destino para que se sepa a dónde va antes de pulsar — y en la
+   columna estrecha de `.cardContent` (1.3fr en ≥640px) puestos en fila se
+   partirían en dos líneas cada uno, que es peor que dos filas limpias.
+   `align-items: flex-start` para que la zona pulsable acabe donde acaba el
+   texto y no ocupe todo el ancho de la tarjeta. */
+.cardLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
 }
 
 .cardText {

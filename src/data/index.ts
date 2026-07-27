@@ -9,9 +9,23 @@ export type {
     ShowcaseModuleItem,
     ShowcaseServiceItem,
     ShowcaseIconKey,
+    // — Productos, capturas y enlaces a producción —
+    ClientDisclosure,
+    ExternalLink,
+    LinkAvailability,
+    ProductId,
+    Screenshot,
+    ScreenshotFrame,
+    ServiceLine,
 } from './types';
 export { SECTORS, getSector } from './sectors';
-export { CASES, getCase } from './cases';
+export { CASES, SERVICE_LINE_LABEL, getCase } from './cases';
+
+// Registro de los 4 productos propios en producción. `isLinkable` es el
+// único punto donde se decide si un destino externo se pinta o no — ver
+// src/data/products.ts.
+export type { Product } from './products';
+export { PRODUCTS, getProduct, getProductByUrl, isLinkable } from './products';
 
 // Contenido editorial del embudo de diagnóstico del hero. Se expone por el
 // barril igual que SECTORS y CASES, por coherencia, aunque su único consumidor

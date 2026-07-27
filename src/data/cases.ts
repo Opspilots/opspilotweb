@@ -13,7 +13,40 @@
 // Paso 4 de HeroLeadWidget, ver src/components/marketing/MockPreview.tsx)
 // para mostrar una mini-interfaz FIJA por caso que representa la mejora de
 // ese sector.
-import type { Case } from './types';
+import type { Case, ServiceLine } from './types';
+
+/** Cómo se pinta cada línea de servicio en la tarjeta de un caso. Vive junto
+ *  a los datos (mismo patrón que `NECESIDAD_LABEL`/`OBJETIVO_LABEL` en
+ *  leadFunnel.ts) y no en types.ts, que es solo tipos: es una tabla de
+ *  PRESENTACIÓN de 3 entradas atada 1:1 a la unión `ServiceLine`. `Record`
+ *  y no un objeto suelto para que añadir una línea de servicio a la unión
+ *  sin darle etiqueta no compile. */
+export const SERVICE_LINE_LABEL: Record<ServiceLine, string> = {
+    tienda: 'TIENDA',
+    web: 'WEB',
+    app: 'APP A MEDIDA',
+};
+
+// TODO(negocio): rellenar `serviceLine`, `client`, `productId` y
+// `productionLink` en los 3 casos de abajo. Los cuatro campos existen ya en
+// el tipo (src/data/types.ts) y las dos superficies que los pintan ya están
+// montadas (/casos), pero se dejan SIN VALOR a propósito porque son datos
+// que nadie ha confirmado:
+//   · `serviceLine` — si cada caso fue TIENDA, WEB o APP A MEDIDA. La
+//     narrativa de los tres habla de "sistema a medida", que sugiere `app`,
+//     pero sugerir no es confirmar.
+//   · `client` — si el cliente se puede nombrar. El copy de `.caseDisclaimer`
+//     (src/pages/Cases.tsx) dice que se omiten nombres por privacidad, pero
+//     eso es una frase de página, no un acuerdo registrado por cliente. Si
+//     se confirma que los tres van anonimizados, es `{ kind: 'anonymous' }`.
+//   · `productId` — si el caso se construyó sobre uno de nuestros productos.
+//     Es tentador deducirlo de `sectorId` (reformas → Presupuestador,
+//     asesorías → Fiscalidad), pero sería inventar: que un cliente sea del
+//     sector reformas no demuestra que use Presupuestador, y pintar el
+//     enlace lo estaría AFIRMANDO delante de un visitante.
+//   · `productionLink` — la URL de lo entregado a ese cliente, si es pública.
+// Mientras estén vacíos, esos bloques simplemente no se renderizan: no hay
+// hueco, ni placeholder, ni "próximamente".
 
 export const CASES: readonly Case[] = [
     {

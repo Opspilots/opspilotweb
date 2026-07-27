@@ -907,6 +907,23 @@ section.solHero p.heroSubtitle {
     margin-bottom: var(--spacing-6);
 }
 
+/* Enlace al producto propio EN PRODUCCIÓN (URL externa, ver
+   src/data/products.ts). Solo aparece en los 4 sectores que tienen producto
+   y solo si ese producto está `live` — el sector `asesorias` tiene ficha de
+   Fiscalidad pero hoy no pinta nada aquí, y esta hoja de estilos no sabe ni
+   tiene que saber por qué.
+
+   Vive pegado a `.panelRelated` y con su propio hueco antes del `.panelCta`
+   a propósito: son tres destinos con intenciones distintas — leer sobre el
+   producto (interno), entrar en el producto (externo) y hablar con nosotros
+   (conversión). Amontonarlos los convierte en una lista de enlaces que no
+   se lee. Mismo espaciado y mismo `.textLink` compartido que `.panelRelated`
+   para que la única diferencia perceptible sea el icono de salida. */
+.panelProduct {
+    margin-top: calc(-1 * var(--spacing-4));
+    margin-bottom: var(--spacing-6);
+}
+
 .panelCta {
     margin-top: auto;
 }

@@ -51,6 +51,11 @@ export const SECTORS: readonly Sector[] = [
             label: 'Prueba Fiscalidad, nuestra plataforma de facturación y contabilidad',
             slug: 'fiscalidad-plataforma-fiscal-contable',
         },
+        // El enlace a producción de Fiscalidad está apagado hoy
+        // (`availability: 'down'` en products.ts, con el motivo escrito
+        // allí). El `productId` se declara igualmente: la relación
+        // sector↔producto sigue siendo cierta aunque el enlace no se pinte.
+        productId: 'fiscalidad',
     },
     {
         id: 'energia',
@@ -97,6 +102,7 @@ export const SECTORS: readonly Sector[] = [
             label: 'Descubre EnergyDeal, nuestro CRM especializado para el sector',
             slug: 'energydeal-crm-energetico',
         },
+        productId: 'energydeal',
     },
     {
         id: 'reformas',
@@ -143,6 +149,12 @@ export const SECTORS: readonly Sector[] = [
             label: 'Conoce Presupuestador, nuestro software de presupuestos de obra',
             slug: 'presupuestador-obra-bc3',
         },
+        // Ojo con el nombre: aquí y en el artículo se le llama
+        // "Presupuestador", pero el producto real se presenta como
+        // "PresupuesYa". El nombre público canónico vive en products.ts con
+        // su TODO(negocio) — este `label` es copy editorial y se cambia a
+        // mano el día que negocio decida cuál de los dos gana.
+        productId: 'presupuestador',
     },
     {
         id: 'agencias',
@@ -331,6 +343,7 @@ export const SECTORS: readonly Sector[] = [
             label: 'Descubre nuestro ERP de hostelería completo',
             slug: 'erp-hosteleria-tpv-restaurantes',
         },
+        productId: 'erp-hosteleria',
     },
 ];
 

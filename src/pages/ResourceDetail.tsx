@@ -6,6 +6,7 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import { PageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
 import { RESOURCES, getResourceBySlug, type ResourceBlock } from '../lib/resources';
+import { getProductByUrl, isLinkable } from '../data';
 import { StructuredData } from '../components/seo/StructuredData';
 import { buildArticle, buildBreadcrumb, buildFAQ, SITE_URL } from '../lib/seo';
 import sys from '../styles/page-system.module.css';
@@ -51,6 +52,25 @@ function Block({ block }: { block: ResourceBlock }) {
                     </p>
                 );
             }
+            // Interruptor de disponibilidad. Los enlaces a producción de los
+            // artículos de producto están escritos a mano como bloques
+            // `type: 'link'` con la URL a pelo (src/lib/resources.ts): ese
+            // copy editorial no se toca, pero tampoco puede saltarse la
+            // decisión de si ese destino se puede enlazar HOY. Se resuelve la
+            // URL contra el registro de productos (src/data/products.ts) y,
+            // si el producto está marcado como no enlazable, el bloque
+            // sencillamente no se pinta — ni enlace muerto, ni "próximamente",
+            // ni hueco.
+            //
+            // Es GENÉRICO: no hay ningún nombre de producto aquí dentro.
+            // Cualquier producto que se marque `down` en products.ts
+            // desaparece de su artículo sin tocar este fichero, y vuelve
+            // igual de fácil. Una URL externa que NO esté en el registro
+            // (enlaces a terceros, si algún día los hay) no se ve afectada:
+            // `getProductByUrl` devuelve `undefined` y se pinta como siempre.
+            const product = getProductByUrl(block.href);
+            if (product && !isLinkable(product.site)) return null;
+
             return (
                 <p className={styles.blockLinkWrap}>
                     <a

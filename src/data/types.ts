@@ -32,6 +32,114 @@ export interface FaqItem {
     answer: string;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   Pruebas de producto: capturas, enlaces a producción y línea de servicio
+   ═══════════════════════════════════════════════════════════════════════
+   Contexto de por qué esto entra ahora. Hasta hoy ni `Sector` ni `Case`
+   tenían UN SOLO campo capaz de referenciar una imagen o una URL externa:
+   el único enlace que existía era `Sector.relatedResource.slug`, que apunta
+   a una ruta interna de /recursos. O sea que un caso de éxito era
+   FÍSICAMENTE INCAPAZ de enseñar una captura del software o de enlazar al
+   producto en producción — no era una decisión editorial, era una carencia
+   del modelo. Las 5 imágenes que hay en public/images/resources/ son
+   ilustraciones vectoriales abstractas (una sección de edificio estilo CAD,
+   una torre de alta tensión): portadas de artículo, no producto.
+
+   Todo lo que sigue es OPCIONAL en `Sector`/`Case` a propósito: hoy no hay
+   ni una sola captura en el repo y no se van a inventar, así que las 7
+   fichas de sectors.ts y las 3 de cases.ts tienen que seguir siendo válidas
+   sin tocar ni un campo. El modelo abre la puerta; llenarla es trabajo de
+   negocio, no de tipos. */
+
+/** Identificador estable de cada producto propio de OpsPilot. Es la clave
+ *  que une `Sector`/`Case` con el registro de src/data/products.ts — se
+ *  referencian POR ID y nunca copiando nombre ni URL, que es justo lo que
+ *  hoy pasa (el enlace vive en lib/resources.ts, el nombre en el @graph de
+ *  index.html, la relación con el sector en sectors.ts: tres sitios, cero
+ *  fuente única).
+ *
+ *  Unión cerrada y no `string`: son 4 productos contados. Con un `string`,
+ *  un typo en un `productId` sería un enlace que simplemente no aparece y
+ *  nadie se entera; con la unión, no compila. */
+export type ProductId = 'fiscalidad' | 'energydeal' | 'presupuestador' | 'erp-hosteleria';
+
+/** Estado de un destino externo. `down` NO significa "borrado": significa
+ *  "existe, tiene ficha y artículo, pero HOY no se puede enlazar sin quemar
+ *  al visitante". Es un interruptor, no una amputación (ver el caso de
+ *  Fiscalidad en products.ts).
+ *
+ *  Dos estados y no más porque hoy solo hay dos situaciones reales
+ *  observadas. Si mañana hace falta `private` (existe pero aún no es
+ *  público) o `soon`, se amplía la unión y el compilador señala los sitios
+ *  donde hay que decidir qué hacer con el estado nuevo. */
+export type LinkAvailability = 'live' | 'down';
+
+/** Enlace a una URL FUERA de opspilot.es (producto en producción, web de
+ *  marketing propia de un producto, proyecto entregado a un cliente). */
+export interface ExternalLink {
+    /** URL ABSOLUTA, con esquema. No admite rutas internas: para eso ya
+     *  está `relatedResource.slug` / ROUTES, que navegan con el router. */
+    url: string;
+    /** Texto visible del enlace. Va aquí y no en el componente porque cambia
+     *  por destino ("Conocer X" vs "Entrar en X") y porque quien decide cómo
+     *  se llama públicamente un producto es negocio, no el render. */
+    label: string;
+    /** OBLIGATORIO, no opcional con default `live`. Un default silencioso
+     *  significa que quien añada un enlace roto y se olvide del campo lo
+     *  publica igual; forzarlo obliga a decir "sí, lo he mirado y funciona".
+     *  Son 4 URLs en todo el sitio: el coste de escribirlo es cero. */
+    availability: LinkAvailability;
+}
+
+/** Encuadre con el que se pinta una captura. NO es CSS ni un componente:
+ *  es una pista de qué es la imagen, para que el marco lo elija el render.
+ *  Se deja como campo opcional y con solo dos valores porque hoy no existe
+ *  NINGUNA captura en el repo — inventar aquí un sistema de encuadres
+ *  completo sería diseñar contra cero casos reales. Cuando lleguen las
+ *  primeras imágenes se verá si hace falta más. */
+export type ScreenshotFrame = 'browser' | 'phone';
+
+/** Una captura real de producto. */
+export interface Screenshot {
+    /** Ruta pública servida desde /public (p. ej. '/images/product/...webp'),
+     *  igual que `Resource.cover` en lib/resources.ts. */
+    src: string;
+    /** Texto alternativo descriptivo. OBLIGATORIO por tipo, no opcional:
+     *  una captura de una interfaz sin `alt` es una imagen ilegible para
+     *  lector de pantalla Y para el rastreador — y "opcional" en la práctica
+     *  significa "vacío". Que no compile es la única forma fiable de que se
+     *  escriba. Describe QUÉ SE VE en la pantalla, no repitas el título. */
+    alt: string;
+    frame?: ScreenshotFrame;
+}
+
+/** Línea de servicio con la que se etiqueta un caso: TIENDA / WEB /
+ *  APP A MEDIDA. Hoy el modelo solo conocía los 7 sectores verticales
+ *  (`SectorId`), que responden a "de qué sector es el cliente"; esto
+ *  responde a algo distinto, "qué le construimos", y por eso es un eje
+ *  aparte y no un `SectorId` más.
+ *
+ *  Es SOLO una etiqueta de presentación: no genera rutas, no filtra, no es
+ *  una taxonomía navegable. Decisión de arquitectura tomada — si algún día
+ *  hace falta /tienda o /web, será otro trabajo con su propio SEO, no una
+ *  consecuencia accidental de este campo. */
+export type ServiceLine = 'tienda' | 'web' | 'app';
+
+/** Si el cliente de un caso se puede nombrar o va anonimizado.
+ *
+ *  Unión discriminada y no un `clientName?: string` suelto: con el string
+ *  opcional, "no lo hemos rellenado todavía" y "el cliente pidió no salir"
+ *  son el mismo `undefined`, y esa diferencia importa — la primera es una
+ *  tarea pendiente, la segunda es un acuerdo con un cliente que nadie debe
+ *  revertir sin preguntar. Con la unión, `{ kind: 'anonymous' }` registra
+ *  una DECISIÓN y la ausencia del campo registra un HUECO.
+ *
+ *  Además hace imposible el estado ilegal "nombrable pero sin nombre": si
+ *  `kind` es 'named', `name` es obligatorio. */
+export type ClientDisclosure =
+    | { kind: 'named'; name: string }
+    | { kind: 'anonymous' };
+
 export interface Sector {
     id: SectorId;
     iconKey: IconKey;
@@ -46,6 +154,22 @@ export interface Sector {
      *  sectores que tienen uno: energía, reformas, asesorías, hostelería). El
      *  resto de sectores no llevan producto propio, así que se omite. */
     relatedResource?: { label: string; slug: string };
+    /** FK → `Product.id` (src/data/products.ts). Solo los 4 sectores con
+     *  producto propio. Es un ID y NO una copia del nombre o de la URL: el
+     *  render resuelve el producto en products.ts, que es quien sabe si hoy
+     *  se puede enlazar (ver `LinkAvailability`).
+     *
+     *  Convive con `relatedResource` sin solaparse: aquel dice "qué artículo
+     *  de /recursos debe leer quien mira ESTE SECTOR" (lo tienen los 7,
+     *  incluidos los 3 que no enlazan a ningún producto), esto dice "qué
+     *  producto en producción es el de este sector". Que en los 4 sectores
+     *  con producto ambos acaben apuntando al mismo artículo es una
+     *  coincidencia de dos relaciones distintas, no un dato duplicado. */
+    productId?: ProductId;
+    /** Capturas reales del producto de este sector. Hoy VACÍO en los 7:
+     *  no existe ni una sola captura en el repo (ver el bloque de contexto
+     *  más arriba) y no se fabrican placeholders. */
+    screenshots?: readonly Screenshot[];
 }
 
 // Iconos de la mini-interfaz de CaseMockPanel (mismo componente compartido
@@ -182,4 +306,30 @@ export interface Case {
     showcase: CaseShowcase;
     quote?: string;
     author?: string;
+    /** Etiqueta de línea de servicio (TIENDA / WEB / APP A MEDIDA) — ver
+     *  `ServiceLine`. Complementa a `label` (que es el SECTOR del cliente),
+     *  no lo sustituye: un mismo sector puede llevar tienda o app. */
+    serviceLine?: ServiceLine;
+    /** Si el cliente se puede nombrar. Ausente = todavía no se ha decidido;
+     *  `{ kind: 'anonymous' }` = decidido que va anonimizado (ver
+     *  `ClientDisclosure`). Los 3 casos actuales van sin campo porque el
+     *  acuerdo con cada cliente no está registrado en ningún sitio del repo
+     *  — la nota de `.caseDisclaimer` en Cases.tsx dice que se omiten
+     *  nombres, pero eso es copy de página, no un dato por caso. */
+    client?: ClientDisclosure;
+    /** FK → `Product.id`. Solo si el caso se construyó SOBRE uno de nuestros
+     *  productos. NO se deriva de `sectorId`: que un caso sea del sector
+     *  "reformas" no demuestra que ese cliente use Presupuestador, y pintar
+     *  ese enlace sería afirmarlo. Afirmación explícita o nada. */
+    productId?: ProductId;
+    /** Enlace a lo entregado a ESTE cliente en producción (su tienda, su web,
+     *  su app), para los casos que no son un producto nuestro. Separado de
+     *  `productId` porque son cosas distintas: uno apunta a un SaaS que
+     *  mantenemos y que tiene su propia ficha, el otro a algo que ya no es
+     *  nuestro. Lleva su propio `availability` (ver `ExternalLink`): la web
+     *  de un cliente puede caerse o rediseñarse sin avisarnos. */
+    productionLink?: ExternalLink;
+    /** Capturas del sistema entregado. Mismo estado que en `Sector`: hoy no
+     *  hay ninguna imagen de producto en el repo. */
+    screenshots?: readonly Screenshot[];
 }

@@ -17,10 +17,15 @@ import {
     Clock,
     BadgeCheck,
     Cpu,
+    // Renombrado: en src/data hay un TIPO llamado `ExternalLink` (el enlace a
+    // producción, ver types.ts) y compartir identificador con un componente
+    // de lucide solo genera dudas al leer.
+    ExternalLink as ExternalLinkIcon,
 } from 'lucide-react';
+import { TextLink } from '../components/common/TextLink';
 import sys from '../styles/page-system.module.css';
 import styles from './Cases.module.css';
-import { CASES } from '../data';
+import { CASES, SERVICE_LINE_LABEL, getProduct, isLinkable } from '../data';
 import type { Case } from '../data';
 
 interface DiffItem {
@@ -53,30 +58,102 @@ const DIFFERENTIATORS: DiffItem[] = [
 ];
 
 // Pure card — no hooks
-const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => (
-    <article className={styles.caseCard}>
-        <div className={styles.cardHead}>
-            <span className={styles.cardSector}>
-                <span className={styles.sectorDot} aria-hidden="true" />
-                {c.label}
-            </span>
-            <span className={styles.cardIndex}>{String(index + 1).padStart(2, '0')}</span>
-        </div>
+const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
+    // Producto propio sobre el que se construyó el caso. Requiere que
+    // `Case.productId` esté DECLARADO: no se deduce de `c.sectorId`. Pintar
+    // "este cliente usa Presupuestador" porque su sector es reformas sería
+    // afirmar delante de un visitante algo que nadie ha confirmado — ver el
+    // TODO(negocio) al principio de src/data/cases.ts. Hoy los 3 casos van
+    // sin `productId`, así que este bloque no renderiza nada; el día que se
+    // rellene el dato aparece solo.
+    const product = c.productId ? getProduct(c.productId) : undefined;
 
-        <CaseMockPanel showcase={c.showcase} className={styles.cardTransition} />
+    // Los dos destinos externos del caso, ya resueltos a "pintable o nada".
+    // Se filtran AQUÍ y no en el JSX para que el contenedor `.cardLinks` no
+    // llegue a existir cuando el caso declara un producto que hoy está caído
+    // (`down`): un div vacío con su margen es un hueco visible sin motivo.
+    const productLink = product && isLinkable(product.site) ? product.site : undefined;
+    const ownLink = isLinkable(c.productionLink) ? c.productionLink : undefined;
 
-        <div className={styles.cardContent}>
-            <div className={styles.cardNarrative}>
-                <h2 className={styles.cardTitle}>{c.title}</h2>
-                <p className={styles.cardText}>{c.text}</p>
+    return (
+        <article className={styles.caseCard}>
+            <div className={styles.cardHead}>
+                <span className={styles.cardSector}>
+                    <span className={styles.sectorDot} aria-hidden="true" />
+                    {c.label}
+                </span>
+                {/* Línea de servicio (TIENDA / WEB / APP A MEDIDA). Es un eje
+                    distinto del sector que ya se pinta a la izquierda: aquel
+                    dice de qué ramo es el cliente, esta qué le construimos.
+                    Etiqueta y nada más — no enlaza, no filtra, no es una
+                    taxonomía navegable (ver `ServiceLine` en data/types.ts).
+                    Sin dato, sin etiqueta: hoy los 3 casos van sin ella. */}
+                {c.serviceLine && (
+                    <span className={styles.cardServiceLine}>
+                        {SERVICE_LINE_LABEL[c.serviceLine]}
+                    </span>
+                )}
+                <span className={styles.cardIndex}>{String(index + 1).padStart(2, '0')}</span>
             </div>
-            <blockquote className={styles.cardQuote}>
-                <p>{c.quote}</p>
-                <cite>{c.author}</cite>
-            </blockquote>
-        </div>
-    </article>
-);
+
+            <CaseMockPanel showcase={c.showcase} className={styles.cardTransition} />
+
+            <div className={styles.cardContent}>
+                <div className={styles.cardNarrative}>
+                    <h2 className={styles.cardTitle}>{c.title}</h2>
+                    {/* Nombre del cliente, SOLO si está declarado como
+                        nombrable (`{ kind: 'named' }`). Con `anonymous` o sin
+                        campo no se pinta nada: el aviso de `.caseDisclaimer`
+                        de más abajo ya explica que se omiten los nombres, y
+                        un "Cliente anónimo" impreso en la tarjeta no aporta
+                        información, solo ruido. Ver `ClientDisclosure` en
+                        src/data/types.ts. */}
+                    {c.client?.kind === 'named' && (
+                        <p className={styles.cardClient}>{c.client.name}</p>
+                    )}
+                    <p className={styles.cardText}>{c.text}</p>
+
+                    {/* Salidas a producción del caso. Dos destinos posibles y
+                        no excluyentes: el producto propio sobre el que se
+                        montó (`productId` → registro de products.ts) y lo
+                        entregado a ESE cliente (`productionLink`, su tienda o
+                        su web). Ambos pasan por `isLinkable`, el único sitio
+                        donde se decide si un destino externo se pinta — un
+                        producto marcado `down` desaparece de aquí sin tocar
+                        este fichero.
+
+                        <a href> reales con la URL absoluta en el atributo:
+                        el HTML de /casos lo genera vite-react-ssg y estos
+                        enlaces tienen que ser rastreables ahí, no aparecer
+                        tras hidratar. El `rel="noopener noreferrer"` lo pone
+                        TextLink al ver `target="_blank"`. */}
+                    {(productLink || ownLink) && (
+                        <div className={styles.cardLinks}>
+                            {[productLink, ownLink].map((link) =>
+                                link ? (
+                                    <TextLink
+                                        key={link.url}
+                                        href={link.url}
+                                        target="_blank"
+                                        tone="strong"
+                                        size="sm"
+                                        icon={<ExternalLinkIcon size={14} strokeWidth={2} />}
+                                    >
+                                        {link.label}
+                                    </TextLink>
+                                ) : null,
+                            )}
+                        </div>
+                    )}
+                </div>
+                <blockquote className={styles.cardQuote}>
+                    <p>{c.quote}</p>
+                    <cite>{c.author}</cite>
+                </blockquote>
+            </div>
+        </article>
+    );
+};
 
 const CarouselSection: React.FC = () => {
     const [currentIndex, setCurrentIndex] = useState(0);

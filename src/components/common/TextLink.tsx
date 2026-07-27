@@ -27,6 +27,22 @@ interface TextLinkProps {
      *  link pattern but have no destination (e.g. "coming soon"). */
     interactive?: boolean;
     className?: string;
+    /* ── Enlaces externos (`href` a otro dominio) ──
+       Solo aplican a la rama `<a>`: un <Link> del router, un <button> o un
+       <span> los ignoran, porque ahí no significan nada.
+
+       Se añaden cuando /soluciones y /casos empiezan a enlazar a los
+       productos en producción (energydeal.es, *.mcpopspilot.org). Hasta
+       entonces TextLink solo se usaba para destinos internos y no le hacía
+       falta ni `target` ni `rel`; ResourceDetail, que sí tenía enlaces
+       externos, se los montaba con un <a> a mano. Son props opcionales y
+       aditivas: los 3 consumidores previos no cambian ni una línea. */
+    /** `'_blank'` para abrir en pestaña nueva. */
+    target?: '_blank';
+    /** Sobrescribe el `rel`. Si se omite y `target` es `'_blank'`, se aplica
+     *  `noopener noreferrer` automáticamente — la protección no puede
+     *  depender de que quien escriba el enlace se acuerde. */
+    rel?: string;
 }
 
 export const TextLink: React.FC<TextLinkProps> = ({
@@ -39,6 +55,8 @@ export const TextLink: React.FC<TextLinkProps> = ({
     size = 'sm',
     interactive = true,
     className = '',
+    target,
+    rel,
 }) => {
     const classes = [
         styles.textLink,
@@ -65,7 +83,13 @@ export const TextLink: React.FC<TextLinkProps> = ({
 
     if (interactive && href) {
         return (
-            <a href={href} className={classes} onClick={onClick}>
+            <a
+                href={href}
+                className={classes}
+                onClick={onClick}
+                target={target}
+                rel={rel ?? (target === '_blank' ? 'noopener noreferrer' : undefined)}
+            >
                 {content}
             </a>
         );

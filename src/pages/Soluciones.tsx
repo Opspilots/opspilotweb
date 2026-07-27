@@ -3,7 +3,11 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+// `ExternalLink` de lucide se renombra a `ExternalLinkIcon`: en src/data hay
+// un tipo con ese mismo nombre (el enlace a producción, ver types.ts) y
+// tener ambos en el mismo fichero con el mismo identificador es pedir una
+// confusión gratuita al leer.
+import { ArrowRight, ChevronLeft, ChevronRight, Check, ExternalLink as ExternalLinkIcon } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { TextLink } from '../components/common/TextLink';
 import { useScrollReveal } from '../hooks/useScrollReveal';
@@ -18,7 +22,7 @@ import sys from '../styles/page-system.module.css';
 import styles from './Soluciones.module.css';
 
 import type { Sector } from '../data';
-import { SECTORS } from '../data';
+import { SECTORS, getProduct, isLinkable } from '../data';
 import { ICONS } from '../components/icons/registry';
 
 // Guard SSR: en build (node) no hay `window`; registrar el plugin a nivel de
@@ -102,6 +106,22 @@ const SectorPageContent: React.FC<{ sector: Sector; page: number }> = ({ sector,
         );
     }
 
+    // ── Página 0 (Resumen) ──
+    // El producto propio del sector, si lo tiene (4 de los 7) Y si hoy se
+    // puede enlazar. `isLinkable` es el único sitio donde se decide eso (ver
+    // src/data/products.ts): aquí no hay ningún nombre de producto escrito a
+    // mano ni ningún caso especial — un producto marcado `down` desaparece
+    // de esta página sin tocar este fichero.
+    //
+    // Va en la página 0 A PROPÓSITO y no en la 1 o la 2. Solo la 0 es la que
+    // el visitante ve al aterrizar: las tres se montan siempre (para que su
+    // copy exista en el HTML prerenderizado, ver el comentario del
+    // `.pageDeck` más abajo), pero las inactivas van `aria-hidden` + `inert`
+    // y hay que navegar con las flechas para llegar. Un enlace al producto
+    // enterrado dos páginas adentro repetiría exactamente el problema que
+    // esto viene a arreglar: existir en el HTML sin que nadie lo encuentre.
+    const product = sector.productId ? getProduct(sector.productId) : undefined;
+
     return (
         <div className={styles.pageBody}>
             <h2 className={styles.panelTitle}>{sector.title}</h2>
@@ -131,6 +151,33 @@ const SectorPageContent: React.FC<{ sector: Sector; page: number }> = ({ sector,
                     className={styles.panelRelated}
                 >
                     {sector.relatedResource.label}
+                </TextLink>
+            )}
+
+            {/* Enlace al producto EN PRODUCCIÓN. Es un <a href> real con la
+                URL absoluta en el atributo (no un onClick ni un router
+                Link): tiene que ser rastreable en el HTML estático que
+                genera vite-react-ssg, que es medio motivo de que este bloque
+                exista. `target="_blank"` porque sale del sitio, y el `rel`
+                lo pone TextLink solo al ver `_blank` (noopener noreferrer,
+                ver TextLink.tsx) — no depende de que nadie se acuerde.
+
+                Que se va fuera se comunica por dos vías redundantes: el
+                icono de salida sustituyendo a la flecha habitual de
+                TextLink, y la propia etiqueta, que nombra el destino
+                ("Ver la web de EnergyDeal", "Entrar en la aplicación de…").
+                La etiqueta viene del dato (products.ts), no de aquí: quien
+                decide cómo se anuncia un producto es negocio. */}
+            {product && isLinkable(product.site) && (
+                <TextLink
+                    href={product.site.url}
+                    target="_blank"
+                    tone="strong"
+                    size="sm"
+                    icon={<ExternalLinkIcon size={14} strokeWidth={2} />}
+                    className={styles.panelProduct}
+                >
+                    {product.site.label}
                 </TextLink>
             )}
         </div>
