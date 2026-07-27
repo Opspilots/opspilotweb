@@ -65,9 +65,27 @@ export const Footer: React.FC = () => {
                         </a>
                     </div>
 
-                    {/* Navegación */}
+                    {/* Navegación.
+
+                        Los dos rótulos del pie ("Navegación" y "Contacto") eran `<h4>`, y
+                        eso metía un SALTO DE NIVEL en todas y cada una de las páginas del
+                        sitio: el último encabezado del contenido es un `<h2>`, así que la
+                        secuencia quedaba h2 → h4. Quien navega por encabezados con un
+                        lector de pantalla lo lee como "aquí falta un nivel, ¿me he perdido
+                        una sección?".
+
+                        No se arregla subiéndolos a `<h2>`: serían dos encabezados de
+                        página más, en TODAS las rutas, compitiendo con los de contenido
+                        real y sin aportar nada al esquema del documento. Un rótulo de
+                        columna de pie no es una sección del documento.
+
+                        La solución correcta es que dejen de ser encabezados. Sin heading no
+                        hay salto que arreglar, y no se pierde nada de navegación: el pie ya
+                        es un landmark `contentinfo` y cada grupo tiene su propio nombre
+                        accesible — este por el `aria-label` del `<nav>`, y el de contacto
+                        por el `role="group"` + `aria-labelledby` de más abajo. */}
                     <nav className={styles.links} aria-label="Navegación del pie de página">
-                        <h4 className={styles.heading}>Navegación</h4>
+                        <p className={styles.heading}>Navegación</p>
                         <Link to={ROUTES.home} className={styles.link}>Inicio</Link>
                         <Link to={ROUTES.soluciones} className={styles.link}>Soluciones</Link>
                         <Link to={ROUTES.casos} className={styles.link}>Casos de éxito</Link>
@@ -75,9 +93,14 @@ export const Footer: React.FC = () => {
                         <Link to={ROUTES.contacto} className={styles.link}>Contacto</Link>
                     </nav>
 
-                    {/* Contacto */}
-                    <div className={styles.links}>
-                        <h4 className={styles.heading}>Contacto</h4>
+                    {/* Contacto — mismo criterio que el bloque de navegación de arriba:
+                        el rótulo deja de ser `<h4>` para no meter un salto de nivel. Como
+                        este grupo no es un `<nav>` y por tanto no tiene landmark propio que
+                        lo nombre, se le da nombre accesible explícito con `role="group"` +
+                        `aria-labelledby` apuntando al propio rótulo. Así un lector de
+                        pantalla sigue anunciando "grupo Contacto" al entrar. */}
+                    <div className={styles.links} role="group" aria-labelledby="footer-contacto">
+                        <p className={styles.heading} id="footer-contacto">Contacto</p>
                         <a href={`mailto:${CONTACT_EMAIL}`} className={styles.link}>
                             {CONTACT_EMAIL}
                         </a>
