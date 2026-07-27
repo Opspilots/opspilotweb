@@ -106,7 +106,16 @@ server {
   # sí las cubría (`^services/?$`). Las regex se evalúan ANTES que el prefijo `/`.
   location ~ ^/(services|servicios|contact|demo|diagnostico|pricing|precios)/?$ { return 301 /contacto/; }
   location ~ ^/cases/?$                                                        { return 301 /casos/; }
-  location ~ ^/(resources|product|productos)/?$                                { return 301 /recursos/; }
+  location ~ ^/resources/?$                                                    { return 301 /recursos/; }
+
+  # /product (EN) apunta al hub de productos, NO al blog.
+  # ⚠️ NO añadas aquí `productos`. Hasta 2026-07-27 esta regla mandaba también
+  # /productos a /recursos/, porque los productos vivían como artículos del
+  # blog. Ya no: /productos/ es una página real. Como esta redirección es de
+  # servidor y corre ANTES que React, dejarla puesta hace que el hub sea
+  # inalcanzable en producción — y no se detecta en local, porque el servidor
+  # de desarrollo de Vite no aplica ni este bloque ni el .htaccess.
+  location ~ ^/product/?$                                                      { return 301 /productos/; }
 
   # ── Rutas estáticas + 404 REAL ──
   # La web es SSG (vite-react-ssg, dirStyle 'nested'): TODA ruta real existe como

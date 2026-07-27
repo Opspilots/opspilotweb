@@ -59,9 +59,23 @@
   #    3c. Recursos (EN) -> /recursos/
   RewriteRule ^resources/?$       /recursos/ [R=301,L]
 
-  #    3d. Producto/productos -> /recursos/
-  RewriteRule ^product/?$         /recursos/ [R=301,L]
-  RewriteRule ^productos/?$       /recursos/ [R=301,L]
+  #    3d. Producto (EN) -> /productos/
+  #
+  #    OJO: hasta 2026-07-27 estas dos reglas mandaban /product Y /productos a
+  #    /recursos/, porque los productos vivian como articulos del blog y no
+  #    existia ninguna pagina de producto. Eso ha cambiado: /productos/ es
+  #    AHORA una pagina real (el hub, ver src/pages/Products.tsx).
+  #
+  #    La regla de /productos habia que quitarla si o si. Es de SERVIDOR, o sea
+  #    que se ejecuta ANTES de que React exista: con ella puesta, el hub nuevo
+  #    era literalmente inalcanzable en produccion — cualquiera que pidiera
+  #    /productos se comia un 301 hacia /recursos/ sin llegar a verlo nunca.
+  #    Un fallo que en local no se nota, porque el servidor de desarrollo de
+  #    Vite no aplica este fichero.
+  #
+  #    /product (en ingles) si se conserva, pero cambia de destino: ahora
+  #    apunta al hub, que es su equivalente real, en vez de al blog.
+  RewriteRule ^product/?$         /productos/ [R=301,L]
 </IfModule>
 
 # -------------------------------------------------------------

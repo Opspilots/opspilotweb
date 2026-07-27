@@ -1,0 +1,295 @@
+/* ═══════════════════════════════════════════
+   Página de producto — /productos/<slug>/
+   ═══════════════════════════════════════════
+   El hero, el CTA de cierre y el ritmo de secciones salen del sistema
+   compartido (src/styles/page-system.module.css). Aquí solo viven las piezas
+   propias de esta página: el marco de la vista previa y la prosa compuesta
+   desde /recursos.
+
+   Los estilos de prosa (.blockH2, .blockP, .blockList, .blockNote) son
+   equivalentes a los de ResourceDetail.module.css y están repetidos, no
+   importados: los módulos CSS no comparten clases entre ficheros y sacar la
+   prosa a un global para dos consumidores habría sido un sistema de tipografía
+   nuevo a mitad de un bloque de SEO. Si aparece un tercer consumidor, ese es el
+   momento de extraerlo — no antes. */
+
+/* ─── Hero ─── */
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    margin-bottom: var(--spacing-8);
+    transition: color var(--transition-fast);
+}
+
+.backLink:hover {
+    color: var(--color-mint);
+}
+
+/* Eyebrow mono con punto mint — misma firma que la categoría de un artículo,
+   para que "Hostelería y restauración" aquí y "Producto" en /recursos se lean
+   como la misma clase de etiqueta. */
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    width: fit-content;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 var(--spacing-5);
+}
+
+.eyebrow::before {
+    content: '';
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+}
+
+/* Enlace a la aplicación en producción. Relleno claro (voz primaria), nunca
+   relleno mint: mismo tratamiento que el CTA externo de un artículo
+   (.blockLink en ResourceDetail.module.css), porque es exactamente el mismo
+   gesto — salir de la web hacia el producto. */
+.siteLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-card-light-text);
+    background: var(--color-btn-light);
+    padding: var(--spacing-4) var(--spacing-7);
+    border-radius: var(--radius-control);
+    text-decoration: none;
+    min-height: 48px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    transition: background var(--transition-fast);
+}
+
+.siteLink:hover {
+    background: var(--color-btn-light-hover);
+}
+
+.siteLink:active {
+    transform: translateY(1px);
+}
+
+/* ─── Vista previa ─── */
+
+.previewSection {
+    padding: var(--space-section-tight) 0 0;
+}
+
+.previewHeader {
+    margin-bottom: var(--spacing-8);
+}
+
+.sectionH2 {
+    font-family: var(--font-family-display);
+    font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-strong);
+    line-height: 1.1;
+    letter-spacing: var(--tracking-display);
+    text-wrap: balance;
+    margin: 0;
+}
+
+/* El marco donde ProductPreview tiene sitio de verdad.
+   En /soluciones la maqueta vive en un panel de 288px de alto; aquí no compite
+   con nada, así que se le da la medida del cover de un artículo (960px) para
+   que el esquema se lea sin forzar la vista. El componente no cambia: solo
+   cambia la caja que lo contiene. */
+.previewFrame {
+    max-width: 960px;
+}
+
+/* ─── Cuerpo ─── */
+
+.bodySection {
+    padding: var(--spacing-14) 0 var(--space-section-default);
+}
+
+.bodyContainer {
+    display: flex;
+    justify-content: center;
+}
+
+/* Medida de lectura 64ch, la misma que un artículo de /recursos: es
+   literalmente el mismo texto, así que se lee igual de bien con las mismas
+   líneas. */
+.article {
+    max-width: 64ch;
+    width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.blockH2 {
+    font-family: var(--font-family-base);
+    font-size: clamp(1.25rem, 2vw, 1.625rem);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    letter-spacing: var(--tracking-tight);
+    line-height: 1.25;
+    margin: var(--spacing-11) 0 var(--spacing-4);
+    scroll-margin-top: calc(var(--navbar-offset) + var(--spacing-6));
+}
+
+.article > .blockH2:first-child {
+    margin-top: 0;
+}
+
+.blockP {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    line-height: 1.75;
+    margin: 0 0 var(--spacing-5);
+}
+
+.blockList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin: 0 0 var(--spacing-6);
+    padding-left: var(--spacing-6);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-base);
+    line-height: 1.65;
+}
+
+.blockList li::marker {
+    color: var(--color-mint);
+}
+
+.blockNote {
+    position: relative;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    line-height: 1.6;
+    margin: 0 0 var(--spacing-6);
+    padding: var(--spacing-5) var(--spacing-6) var(--spacing-5) var(--spacing-9);
+    background: transparent;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card);
+}
+
+.blockNote::before {
+    content: '';
+    position: absolute;
+    left: var(--spacing-5);
+    top: calc(var(--spacing-5) + 0.55em);
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-mint);
+}
+
+/* ─── Caso práctico ───
+   Separado con una hairline superior, no con una tarjeta: es la MISMA lectura
+   continuada (producto → cómo se ve en un negocio real), no un bloque aparte
+   que se pueda saltar. La regla marca el cambio de tema sin romper el hilo. */
+
+.caseSection {
+    margin-top: var(--spacing-16);
+    padding-top: var(--spacing-12);
+    border-top: 1px solid var(--color-border-subtle);
+}
+
+.caseTitle {
+    font-family: var(--font-family-base);
+    font-size: clamp(1.375rem, 2.4vw, 1.875rem);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-tight);
+    text-wrap: balance;
+    margin: 0 0 var(--spacing-8);
+}
+
+/* Los h3 del caso (h2 del recurso, degradados — ver `HeadingLevel` en
+   ProductDetail.tsx) van un escalón por debajo de un h2 de cuerpo. */
+.caseSection .blockH2 {
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+    margin: var(--spacing-9) 0 var(--spacing-3);
+}
+
+/* ─── FAQ ─── */
+
+.faqSection {
+    margin-top: var(--spacing-16);
+    padding-top: var(--spacing-12);
+    border-top: 1px solid var(--color-border-subtle);
+}
+
+.faqSection > .blockH2 {
+    margin-top: 0;
+}
+
+/* Pregunta con acento "+" mint, igual que en un artículo: el peso no puede
+   diferenciar (la marca topa en 500), así que lo hacen el tamaño y el acento. */
+.faqQ {
+    display: flex;
+    gap: var(--spacing-3);
+    font-family: var(--font-family-base);
+    font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-strong);
+    letter-spacing: var(--tracking-tight);
+    line-height: 1.4;
+    margin: var(--spacing-8) 0 var(--spacing-3);
+    scroll-margin-top: 6rem;
+}
+
+.faqQ::before {
+    content: '+';
+    flex: none;
+    color: var(--color-mint);
+    font-family: var(--font-family-mono);
+    font-weight: var(--font-weight-regular);
+    line-height: inherit;
+}
+
+/* ─── Enlaces de salida ─── */
+
+.exitLinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-6) var(--spacing-10);
+    align-items: center;
+}
+
+/* ─── Móvil ─── */
+@media (max-width: 639px) {
+    .backLink {
+        min-height: 44px;
+    }
+
+    .blockH2 {
+        margin: var(--spacing-9) 0 var(--spacing-3);
+    }
+
+    .caseSection,
+    .faqSection {
+        margin-top: var(--spacing-12);
+        padding-top: var(--spacing-9);
+    }
+
+    .exitLinks {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-4);
+    }
+}

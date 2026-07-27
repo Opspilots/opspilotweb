@@ -34,6 +34,18 @@ export { CASES, SERVICE_LINE_LABEL, getCase } from './cases';
 export type { Product } from './products';
 export { PRODUCTS, getProduct, getProductByUrl, isLinkable } from './products';
 
+// Qué productos tienen HOY página propia en /productos/<slug>/, con los
+// metadatos de .seo/01-rutas-y-metadatos.md. Eje distinto de PRODUCTS (que
+// dice qué productos existen): ver la cabecera de productPages.ts.
+export type { ProductPage } from './productPages';
+export {
+    PRODUCT_PAGES,
+    getPageProduct,
+    getProductPage,
+    getProductPageByProductId,
+    productPagePath,
+} from './productPages';
+
 // Contenido editorial del embudo de diagnóstico del hero. Se expone por el
 // barril igual que SECTORS y CASES, por coherencia, aunque su único consumidor
 // (HeroLeadWidget) importe hoy directamente de './leadFunnel': el barril es lo
