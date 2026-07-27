@@ -16,7 +16,156 @@
 // apunta o si hoy se puede enlazar, mira AQUÍ. `Sector.productId` y
 // `Case.productId` referencian por identificador (ver src/data/types.ts):
 // ningún otro fichero vuelve a escribir una URL de producto.
-import type { ExternalLink, ProductId, ProductPreview, SectorId } from './types';
+import type { ExternalLink, ProductId, ProductPreview, ProductTheme, SectorId } from './types';
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LAS PALETAS DE LAS APLICACIONES — leídas de cada `:root` en producción
+   ═══════════════════════════════════════════════════════════════════════
+   Contexto de por qué esto entra. La primera versión de la vista previa
+   pintaba los cuatro productos con los tokens de OpsPilot (mint/ámbar/azul
+   de variables.css). El resultado fue el que tenía que ser y así se
+   describió: "son bastante básicas y similares entre ellas". Y con razón —
+   eran el mismo componente cuatro veces.
+
+   Un producto no se reconoce por su icono. Se reconoce por su temperatura:
+   el ERP de hostelería es verde casi neón sobre azul marino porque se mira
+   a las once de la noche con la cocina encendida; PresupuesYa es ámbar
+   sobre un negro CÁLIDO, no neutro; EnergyDeal es azul sobre blanco, tema
+   CLARO, porque es el único de los cuatro con web de marketing propia y
+   vive a plena luz. Esas tres decisiones no las tomamos nosotros: ya están
+   tomadas, en producción, y esto solo las copia.
+
+   DE DÓNDE SALEN: se entró en cada aplicación y se leyeron sus variables
+   CSS. Los valores van en `hsl()` tal cual estaban escritos —sin
+   normalizar a hex— para que un `grep` del valor encuentre lo mismo aquí y
+   en el `:root` del producto.
+
+   QUÉ NO SALE DE AHÍ: `muted`, `line`, `accentInk`, `accentSoft` y `glow`.
+   Las aplicaciones declaran `--muted` como una SUPERFICIE, no como un color
+   de texto, y ninguna publica un token de "gris secundario legible". Esos
+   cinco son derivados nuestros, elegidos dentro de la familia de cada
+   producto y medidos: `muted` cumple 4.5:1 sobre `surface` en las cuatro.
+   Están marcados uno a uno más abajo.
+
+   Ver `ProductTheme` en types.ts para qué significa cada campo y, sobre
+   todo, para qué hace `source`. */
+
+/** ERP Hostelería — erp.mcpopspilot.org. Tema OSCURO.
+ *  Verde casi neón sobre azul marino: el contraste más agresivo de los
+ *  cuatro, y es exactamente lo que pide una pantalla que se mira de reojo
+ *  entre dos comandas. */
+const THEME_ERP: ProductTheme = {
+    source: 'app',
+    scheme: 'dark',
+    bg: 'hsl(216 35% 8%)', //         --background
+    surface: 'hsl(215 32% 12%)', //   --card
+    raised: 'hsl(215 28% 16%)', //    --muted (superficie, no texto)
+    line: 'hsl(215 25% 22%)', //      derivado — un escalón por encima de raised
+    text: 'hsl(215 15% 92%)', //      --foreground
+    muted: 'hsl(215 14% 68%)', //     derivado — medido sobre `surface`
+    accent: 'hsl(145 100% 50%)', //   --accent / --secondary / --ring
+    // Tinta OSCURA sobre el verde: con 50% de luminosidad y saturación
+    // máxima, el blanco encima de este verde no llega ni a 2:1. El azul
+    // marino del propio producto sí, y de paso es suyo.
+    accentInk: 'hsl(216 35% 8%)',
+    accentSoft: 'hsla(145 100% 50% / 0.12)',
+    glow: '0 10px 30px -14px hsla(145 100% 50% / 0.45)',
+};
+
+/** PresupuesYa — presupuestador.mcpopspilot.org. Tema OSCURO CÁLIDO.
+ *  El detalle que lo separa del ERP no es el ámbar, es el FONDO: hsl(30 8% 7%)
+ *  es un negro con temperatura, no el gris azulado de todo el resto de la
+ *  web. Puestos uno al lado del otro se nota antes que el acento. */
+const THEME_PRESUPUESTADOR: ProductTheme = {
+    source: 'app',
+    scheme: 'dark',
+    bg: 'hsl(30 8% 7%)', //           --background
+    surface: 'hsl(30 8% 10%)', //     --card
+    raised: 'hsl(30 8% 16%)', //      --secondary
+    line: 'hsl(30 8% 21%)', //        derivado
+    text: 'hsl(40 20% 96%)', //       --foreground
+    muted: 'hsl(38 12% 66%)', //      derivado — medido sobre `surface`
+    accent: 'hsl(38 82% 55%)', //     --primary / --ring
+    accentInk: 'hsl(30 8% 7%)',
+    accentSoft: 'hsl(38 55% 18%)', // --accent (el ámbar apagado del producto)
+    glow: '0 10px 30px -14px hsla(38 82% 55% / 0.42)',
+};
+
+/** EnergyDeal — energydeal.es. Tema CLARO.
+ *  El único, y por eso el que más trabaja: pasar de PresupuesYa a EnergyDeal
+ *  en el carrusel es pasar de un negro cálido a un blanco frío. Ninguna
+ *  etiqueta hace ese trabajo tan rápido como el fondo. */
+const THEME_ENERGYDEAL: ProductTheme = {
+    source: 'app',
+    scheme: 'light',
+    bg: 'hsl(210 20% 98%)', //        --background
+    surface: 'hsl(0 0% 100%)', //     --card
+    raised: 'hsl(210 40% 96%)', //    --secondary / --accent
+    line: 'hsl(214 30% 88%)', //      derivado
+    text: 'hsl(222 47% 11%)', //      --foreground
+    muted: 'hsl(215 20% 40%)', //     derivado — medido sobre `surface` (blanco)
+    accent: 'hsl(221 83% 53%)', //    --primary / --ring (#2563EB)
+    accentInk: 'hsl(0 0% 100%)',
+    accentSoft: 'hsl(221 90% 96%)',
+    // Sombra GRIS y no tintada: en tema claro un halo de color no se lee como
+    // brillo, se lee como suciedad alrededor de la caja.
+    glow: '0 8px 22px -12px hsla(222 40% 25% / 0.22)',
+};
+
+/** Fiscalidad — PALETA PROVISIONAL, y esto hay que leerlo entero.
+ *
+ *  A las otras tres se les leyó el `:root` con la aplicación abierta
+ *  delante. A esta NO SE PUDO: fiscalidad.mcpopspilot.org sirve una pantalla
+ *  en blanco porque le faltan las variables de entorno de Supabase (ver el
+ *  bloque del enlace desactivado más abajo). La aplicación nunca monta, así
+ *  que nunca llega a declarar sus variables. No hay nada que copiar.
+ *
+ *  Dos salidas y por qué se eligió esta:
+ *
+ *  (a) Dejarla con la paleta de OpsPilot. Es la opción de "no inventamos
+ *      nada"... y reintroduce el problema entero: mint sobre azul marino
+ *      queda a un paso del verde neón sobre azul marino del ERP, o sea que
+ *      dos de los cuatro paneles volverían a parecer el mismo. Arreglar la
+ *      similitud en tres productos y recrearla en el cuarto no es arreglarla.
+ *
+ *  (b) Darle una identidad propia y DECIRLO. Es lo que está aquí. Tinta
+ *      oscura fría + rojo lacre + una hoja de papel como protagonista: el
+ *      mundo del registro, el sello y el modelo presentado, que es el
+ *      dominio de la aplicación. No imita a la AEAT ni a ningún organismo
+ *      —eso sería suplantar una marca ajena, otro problema distinto y peor—:
+ *      evoca el oficio, no la institución.
+ *
+ *  Lo que hace honesta a (b) no es el gusto, es `source: 'provisional'`: el
+ *  render lo lee y CAMBIA LA NOTA VISIBLE bajo el esquema para decir que el
+ *  color todavía no es el suyo (ver ProductPreview.tsx). Un color inventado
+ *  presentado como el del producto sería una captura falsa en miniatura; un
+ *  color inventado que se anuncia como provisional no afirma nada.
+ *
+ *  CÓMO CERRARLO: cuando el despliegue arranque, se entra, se lee el `:root`
+ *  igual que en los otros tres, se sustituyen estos valores y se cambia
+ *  `source` a 'app'. La nota se apaga sola. */
+const THEME_FISCALIDAD: ProductTheme = {
+    source: 'provisional',
+    scheme: 'dark',
+    bg: 'hsl(230 28% 8%)',
+    surface: 'hsl(230 24% 12%)',
+    raised: 'hsl(230 20% 17%)',
+    line: 'hsl(230 20% 22%)',
+    // Blanco CÁLIDO, y no por capricho: es el mismo valor que usa la hoja del
+    // esquema como fondo (ver `sheet` en ProductPreview.module.css). Un
+    // blanco azulado ahí no parece papel, parece un cuadro de diálogo.
+    text: 'hsl(38 20% 94%)',
+    muted: 'hsl(230 12% 64%)',
+    accent: 'hsl(4 72% 60%)', //      rojo lacre
+    // Tinta OSCURA sobre el rojo, y esto se midió antes de escribirlo: blanco
+    // sobre este rojo da 3.6:1 y las etiquetas del esquema son de 10px, o sea
+    // por debajo del mínimo. El mismo ink del fondo da 5.2:1. Bajar el rojo
+    // para que el blanco cumpliera lo habría dejado por debajo de 4.5 contra
+    // la superficie, que es donde más se usa. Gana el ink oscuro.
+    accentInk: 'hsl(230 28% 8%)',
+    accentSoft: 'hsla(4 72% 60% / 0.14)',
+    glow: '0 10px 30px -14px hsla(4 72% 60% / 0.40)',
+};
 
 export interface Product {
     id: ProductId;
@@ -105,10 +254,8 @@ export const PRODUCTS: readonly Product[] = [
         // tres sectores enseñando enlace y este no, el silencio se leería como
         // "esto todavía no existe", que es justo lo falso.
         preview: {
-            // Ámbar: el registro del papeleo. Y queda a seis posiciones del
-            // otro warm (hostelería) en el carrusel de sectores, así que dos
-            // paneles del mismo acento nunca se ven seguidos.
-            accent: 'warm',
+            theme: THEME_FISCALIDAD,
+            nav: 'secciones',
             tabs: ['Modelos', 'Conciliación', 'Facturas'],
             title: 'Los modelos de la AEAT y las facturas, en el mismo sitio',
             // De los ocho modelos que la aplicación presenta (303, 111, 115,
@@ -121,15 +268,19 @@ export const PRODUCTS: readonly Product[] = [
             // a cambiar de software ahora mismo —el motivo de la llamada—; y
             // el OCR de tickets es la hora muerta que se recupera. Presentar,
             // cumplir, y dejar de teclear.
-            block: {
-                type: 'modules',
-                items: [
-                    { key: 'm303', icon: 'landmark', label: 'Modelo 303', active: true },
-                    { key: 'sii', icon: 'documentCheck', label: 'SII' },
-                    { key: 'verifactu', icon: 'shieldCheck', label: 'VeriFactu' },
-                    { key: 'ocr', icon: 'scanLine', label: 'OCR tickets' },
-                ],
-            },
+            //
+            // El 303 sube a protagonista y se dibuja como lo que es: una HOJA
+            // con casillas. Es la única composición clara-sobre-oscura de los
+            // cuatro productos, y se reconoce sin leer una palabra — un modelo
+            // oficial es papel, no una tarjeta de dashboard. Las casillas van
+            // VACÍAS, obviamente: rellenarlas sería inventar la declaración de
+            // alguien.
+            stage: { kind: 'sheet', module: 'Modelo 303', icon: 'landmark', rows: 4 },
+            modules: [
+                { key: 'sii', icon: 'documentCheck', label: 'SII' },
+                { key: 'verifactu', icon: 'shieldCheck', label: 'VeriFactu' },
+                { key: 'ocr', icon: 'scanLine', label: 'OCR tickets' },
+            ],
         },
     },
     {
@@ -156,11 +307,11 @@ export const PRODUCTS: readonly Product[] = [
         // los módulos de abajo son los de la aplicación, contrastados con lo
         // que describe su propio artículo en src/lib/resources.ts.
         preview: {
-            // Azul de señal: es el acento que entró en el sistema para separar
-            // ramas que compartían mint, y energía es el sector que mejor lo
-            // lleva. Además evita que EnergyDeal y Presupuestador —vecinos en
-            // el carrusel— se vean como el mismo producto en verde.
-            accent: 'info',
+            // El ÚNICO tema claro de los cuatro, y su mejor argumento visual:
+            // deslizar de PresupuesYa (negro cálido) a EnergyDeal (blanco
+            // frío) no se puede confundir con "la misma maqueta otra vez".
+            theme: THEME_ENERGYDEAL,
+            nav: 'secciones',
             tabs: ['Comparador', 'Clientes', 'Comisiones'],
             title: 'Comparar tarifas, guardar la comparativa y cobrar la comisión',
             // Los cuatro que un CRM genérico NO tiene, que es exactamente el
@@ -171,16 +322,20 @@ export const PRODUCTS: readonly Product[] = [
             // sabe qué se ofreció"); y Auditoría es lo que convierte la
             // liquidación de fin de mes en una consulta y no en una discusión.
             // "Comparador" y "Comisiones" ya viven arriba como pestañas: los
-            // tiles no repiten, profundizan.
-            block: {
-                type: 'modules',
-                items: [
-                    { key: 'tarifas', icon: 'zap', label: 'Tarifas', active: true },
-                    { key: 'cups', icon: 'plug', label: 'CUPS' },
-                    { key: 'snapshots', icon: 'documentCheck', label: 'Comparativas' },
-                    { key: 'auditoria', icon: 'history', label: 'Auditoría' },
-                ],
-            },
+            // módulos no repiten, profundizan.
+            //
+            // Sube a protagonista Comparativas y NO Tarifas, aunque Tarifas
+            // fuera el que estaba marcado activo antes. Motivo: la figura que
+            // le toca a este producto es un comparador —columnas enfrentadas—
+            // y eso es literalmente lo que es una comparativa guardada. Una
+            // lista de tarifas se dibujaría como una lista cualquiera, o sea
+            // como el ERP. La forma tiene que decir algo o sobra.
+            stage: { kind: 'compare', module: 'Comparativas', icon: 'documentCheck', rows: 3 },
+            modules: [
+                { key: 'tarifas', icon: 'zap', label: 'Tarifas' },
+                { key: 'cups', icon: 'plug', label: 'CUPS' },
+                { key: 'auditoria', icon: 'history', label: 'Auditoría' },
+            ],
         },
     },
     {
@@ -206,7 +361,13 @@ export const PRODUCTS: readonly Product[] = [
             availability: 'live',
         },
         preview: {
-            accent: 'mint',
+            theme: THEME_PRESUPUESTADOR,
+            // `cadena` y no `secciones`: las tres pestañas de aquí abajo son
+            // un recorrido en orden, no tres sitios independientes, y hasta
+            // ahora se pintaban como tres pestañas sueltas — o sea que el
+            // argumento entero del producto se perdía en la maqueta. Ver
+            // `PreviewNav` en types.ts.
+            nav: 'cadena',
             // Las tres pestañas NO son las tres secciones más grandes de la
             // aplicación (que serían Panel y Estadísticas primero): son la
             // CADENA, y en su orden real. Presupuesto → obra → factura es el
@@ -222,15 +383,18 @@ export const PRODUCTS: readonly Product[] = [
             // final— y proveedores es de dónde salen esos precios. Es el
             // motivo por el que el segundo presupuesto cuesta un rato y no una
             // tarde, y no se puede contar con "Panel" y "Estadísticas".
-            block: {
-                type: 'modules',
-                items: [
-                    { key: 'partidas', icon: 'clipboard', label: 'Partidas', active: true },
-                    { key: 'recursos', icon: 'wrench', label: 'Recursos' },
-                    { key: 'packs', icon: 'layoutGrid', label: 'Packs' },
-                    { key: 'proveedores', icon: 'truck', label: 'Proveedores' },
-                ],
-            },
+            //
+            // Partidas es el protagonista y se dibuja como un ÁRBOL CON
+            // SANGRÍA. Esa sangría es el producto: un presupuesto de obra es
+            // capítulo → partida → recurso, y eso es exactamente lo que un
+            // Word con un total al final no tiene. Sin cifras: las columnas de
+            // precio son huecos, no números.
+            stage: { kind: 'tree', module: 'Partidas', icon: 'clipboard', rows: 5 },
+            modules: [
+                { key: 'recursos', icon: 'wrench', label: 'Recursos' },
+                { key: 'packs', icon: 'layoutGrid', label: 'Packs' },
+                { key: 'proveedores', icon: 'truck', label: 'Proveedores' },
+            ],
         },
     },
     {
@@ -245,7 +409,11 @@ export const PRODUCTS: readonly Product[] = [
             availability: 'live',
         },
         preview: {
-            accent: 'warm',
+            theme: THEME_ERP,
+            // `rail` —barra lateral— y no pestañas: es la forma que toma una
+            // aplicación con DIECISÉIS módulos, y aquí la barra lateral no es
+            // un adorno, es la prueba de que hay más de lo que cabe arriba.
+            nav: 'rail',
             // De los DIECISÉIS módulos del ERP (Inicio, Inventario, Ventas,
             // Gastos, Vendedores, Catálogo, Caja, Estadísticas, Calendario,
             // Staff, Clientes, Facturas, Citas, Notificaciones, Cierre de Caja
@@ -262,15 +430,24 @@ export const PRODUCTS: readonly Product[] = [
             // atiende. Gastos, Facturas y Clientes son contabilidad: existen y
             // son útiles, pero cualquier gestor genérico las tiene y por tanto
             // no explican por qué este ERP y no otro.
-            block: {
-                type: 'modules',
-                items: [
-                    { key: 'caja', icon: 'banknote', label: 'Caja', active: true },
-                    { key: 'cierre', icon: 'badgeCheck', label: 'Cierre de caja' },
-                    { key: 'catalogo', icon: 'bookOpen', label: 'Catálogo' },
-                    { key: 'staff', icon: 'users', label: 'Staff' },
-                ],
-            },
+            //
+            // Caja abierta como protagonista, dibujada como LISTA DE LÍNEAS:
+            // es la pantalla en la que un hostelero pasa el turno entero. Las
+            // líneas van sin texto y sin importes —forma, no dato— y la última
+            // es el total, marcada con el acento pero igual de vacía. Ni un
+            // euro en toda la figura.
+            // Tres líneas y el total, no cuatro y el total: es el único
+            // producto con barra lateral, así que sus módulos secundarios
+            // bajan al pie y a la figura le quedan ~63px medidos. Con cinco
+            // filas ahí dentro cada una caía a 9.4px —por debajo de la marca
+            // de 9px que llevan a la izquierda— y la lista se leía como una
+            // trama, no como líneas. Con cuatro respiran a 12.8px.
+            stage: { kind: 'ledger', module: 'Caja', icon: 'banknote', rows: 3 },
+            modules: [
+                { key: 'cierre', icon: 'badgeCheck', label: 'Cierre de caja' },
+                { key: 'catalogo', icon: 'bookOpen', label: 'Catálogo' },
+                { key: 'staff', icon: 'users', label: 'Staff' },
+            ],
         },
     },
 ];

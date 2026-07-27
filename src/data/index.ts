@@ -15,6 +15,12 @@ export type {
     LinkAvailability,
     ProductId,
     ProductPreview,
+    // Paleta real de cada aplicación + forma del módulo protagonista: es lo
+    // que hace que las 4 vistas previas se vean como 4 aplicaciones y no como
+    // 4 copias de la nuestra. Ver `ProductTheme` en types.ts.
+    ProductTheme,
+    PreviewNav,
+    PreviewStage,
     Screenshot,
     ScreenshotFrame,
     ServiceLine,

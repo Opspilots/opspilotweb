@@ -136,20 +136,137 @@ export interface Screenshot {
    no existe para ese sector — que es la respuesta correcta a "todavía no lo
    he mirado", y el motivo real de que el número de páginas del panel dependa
    del sector y no sea una constante. */
+/* ─── La paleta de CADA aplicación, no la nuestra ───────────────────────
+   Por qué existe este tipo. La primera versión de esta vista previa pintaba
+   los cuatro productos con los tokens de OpsPilot (mint/ámbar/azul de
+   variables.css) y el resultado fue exactamente el que tenía que ser: cuatro
+   veces el mismo componente con etiquetas distintas. Deslizabas entre
+   sectores y no cambiaba nada. Un producto no se reconoce por su icono, se
+   reconoce por su TEMPERATURA — el ERP es verde neón sobre azul marino y
+   EnergyDeal es azul sobre blanco, y esa diferencia es toda la información.
+
+   Los valores viven AQUÍ, en el dato, y no incrustados en el CSS: son un
+   hecho sobre una aplicación en producción (igual que sus nombres de módulo),
+   no una decisión de maquetación. El componente solo los publica como custom
+   properties en su contenedor. Un producto nuevo entra sin tocar una línea
+   de estilos.
+
+   FORMATO: cadena CSS completa, tal cual se copió de la aplicación (`hsl(...)`
+   en los tres casos verificados). No se normalizan a hex a propósito — así un
+   `grep` del valor encuentra lo mismo aquí que en el `:root` del producto. */
+export interface ProductTheme {
+    /** DE DÓNDE SALE ESTA PALETA. Es el campo que sostiene la honestidad del
+     *  color igual que `Screenshot.alt` sostiene la de las imágenes:
+     *
+     *   · `app`         — leída del `:root` de la aplicación en producción,
+     *                     con la aplicación abierta delante.
+     *   · `provisional` — NO se pudo leer (la aplicación no monta) y es una
+     *                     identidad nuestra hasta que se pueda confirmar.
+     *
+     *  No es documentación interna: el render lo PINTA (ver la nota bajo el
+     *  esquema en ProductPreview.tsx). Un color inventado y presentado como
+     *  el del producto sería el mismo tipo de mentira que una captura falsa,
+     *  a menor escala; un color inventado que se anuncia como provisional no
+     *  afirma nada. */
+    source: 'app' | 'provisional';
+    /** Claro u oscuro. Se declara aparte de los colores porque hay decisiones
+     *  que dependen del MODO y no de los valores: el peso de las sombras (en
+     *  claro son grises finas, en oscuro son pozos), la fuerza de los bordes y
+     *  si el brillo del acento suma o ensucia. Y porque es el mayor golpe de
+     *  diferenciación que tiene esta pantalla: con tres oscuros y un claro, el
+     *  claro se lee como "otra aplicación" antes de leer una sola palabra. */
+    scheme: 'dark' | 'light';
+    /** Fondo de la aplicación (`--background`). */
+    bg: string;
+    /** Superficie de tarjeta/panel (`--card`). */
+    surface: string;
+    /** Un escalón por encima de `surface` — filas, cabeceras, chips
+     *  (`--muted`/`--secondary` según la aplicación). */
+    raised: string;
+    /** Borde/hairline. */
+    line: string;
+    /** Texto principal (`--foreground`). */
+    text: string;
+    /** Texto secundario. Tiene que cumplir 4.5:1 sobre `surface`: aquí no
+     *  vale "un gris más flojo", los ratios están medidos. */
+    muted: string;
+    /** El color de marca (`--accent`/`--primary`/`--ring`). */
+    accent: string;
+    /** Texto SOBRE `accent`. Va explícito y no calculado porque el verde neón
+     *  del ERP pide tinta oscura y el azul de EnergyDeal pide blanca —
+     *  adivinarlo con una fórmula de luminancia es cómo se acaba con texto
+     *  gris sobre fondo gris en el único producto que no miraste. */
+    accentInk: string;
+    /** Relleno tenue del acento (mismo papel que `--color-mint-soft`). */
+    accentSoft: string;
+    /** Sombra/halo tintado del acento. En `scheme: 'light'` es una sombra
+     *  gris normal: un halo de color sobre blanco se ve sucio. */
+    glow: string;
+}
+
+/** Cómo navega la aplicación, que es una propiedad SUYA y no del diseño de
+ *  esta página:
+ *
+ *   · `rail`      — barra lateral. La eligen las aplicaciones con muchos más
+ *                   módulos de los que caben en una fila (el ERP tiene 16).
+ *   · `secciones` — pestañas independientes entre sí.
+ *   · `cadena`    — pestañas EN ORDEN, cada una detrás de la anterior. Solo
+ *                   la lleva Presupuestador, y no es un adorno: presupuesto →
+ *                   obra → factura es el recorrido literal de un trabajo de
+ *                   reforma (ver el comentario de sus `tabs` en products.ts).
+ *                   Pintarlas como tres pestañas sueltas perdía justo eso. */
+export type PreviewNav = 'rail' | 'secciones' | 'cadena';
+
+/** El elemento PROTAGONISTA del esquema: el módulo que está abierto y la
+ *  forma que tiene por dentro.
+ *
+ *  Existe para arreglar la segunda mitad de la queja ("bastante básicas"). La
+ *  versión anterior pintaba cuatro fichas iguales con un icono cada una, o
+ *  sea un diagrama; una aplicación de verdad tiene UNA cosa grande delante y
+ *  el resto alrededor. Esto es esa cosa grande.
+ *
+ *  DÓNDE SIGUE ESTANDO LA LÍNEA: la figura es FORMA SIN VALORES. Filas,
+ *  columnas, casillas y sangrías — ni una cifra, ni un euro, ni un
+ *  porcentaje, ni una barra cuya longitud signifique algo. El único texto que
+ *  entra es `module`, que es un nombre de módulo real. Todo lo demás va
+ *  `aria-hidden` porque no dice nada y no debe fingir que sí. */
+export interface PreviewStage {
+    /** Qué forma tiene el módulo abierto por dentro:
+     *   · `ledger`  — lista de líneas (una caja abierta, un turno).
+     *   · `tree`    — desglose jerárquico con sangría (capítulo → partida).
+     *   · `compare` — columnas enfrentadas (un comparador).
+     *   · `sheet`   — una hoja con casillas (un modelo oficial).
+     *  La disposición ENTERA del esquema es consecuencia de esto: no hay un
+     *  campo aparte de "layout" porque no hay ninguna decisión que tomar dos
+     *  veces — un comparador se dibuja como un comparador. */
+    kind: 'ledger' | 'tree' | 'compare' | 'sheet';
+    /** Nombre REAL del módulo que está abierto. Sale de la misma regla de oro
+     *  que el resto: si no se ha visto en pantalla, no se escribe. */
+    module: string;
+    icon: ShowcaseIconKey;
+    /** Cuántas filas/columnas dibuja la figura. Es densidad, no cantidad: no
+     *  significa "la aplicación tiene 5 de algo". Se declara en el dato y no
+     *  en el CSS porque una caja de hostelería y un modelo de la AEAT no
+     *  tienen la misma pinta de lleno. */
+    rows: number;
+}
+
 export interface ProductPreview {
-    /** Acento del mock. Mismo vocabulario que `CaseShowcase.accent`, pero
-     *  abierto a los tres (`MockAccentKey`) y no solo a mint/warm: el azul
-     *  `info` es el que le corresponde a EnergyDeal, y descartarlo por
-     *  herencia de otro tipo habría sido elegir color por accidente. */
-    accent: MockAccentKey;
+    /** La paleta de la aplicación (ver `ProductTheme`). Sustituye al antiguo
+     *  `accent: MockAccentKey`, que solo podía elegir entre los tres acentos
+     *  de OpsPilot y por eso los cuatro productos salían con la cara de
+     *  OpsPilot. */
+    theme: ProductTheme;
+    /** Cómo navega la aplicación (ver `PreviewNav`). */
+    nav: PreviewNav;
     /** Las secciones de primer nivel de la aplicación, tal y como se llaman
-     *  dentro. Se pintan como PESTAÑAS (el mock va en `layout: 'panel'`), que
-     *  es lo que las distingue de una barra de navegación de web pública.
+     *  dentro. Se pintan como la NAVEGACIÓN del esquema, que es lo que las
+     *  distingue de una barra de navegación de web pública.
      *
      *  Tres, no las dieciséis que tiene el ERP: la vista previa no es un mapa
-     *  del sitio, es la respuesta a "¿esto es lo mío?" en dos segundos. En
-     *  ≤220px de ancho (vista móvil del mock) la tercera se oculta sola por
-     *  CSS, así que el orden importa: la más reconocible, primero. */
+     *  del sitio, es la respuesta a "¿esto es lo mío?" en dos segundos. En la
+     *  vista móvil del esquema la tercera se oculta sola por CSS, así que el
+     *  orden importa: la más reconocible, primero. */
     tabs: readonly [string, string, string];
     /** Qué hace la aplicación, en UNA frase. Describe; no promete resultados
      *  ni mide nada.
@@ -170,12 +287,24 @@ export interface ProductPreview {
      *  Presupuestador/PresupuesYa en products.ts — si se decide cambiar, esta
      *  vista previa se entera sola). */
     title: string;
-    /** Los módulos destacados. `ShowcaseBlock` completo y no solo la variante
-     *  `modules` para no cerrar la puerta: hoy los cuatro productos se cuentan
-     *  mejor como rejilla de módulos, pero un producto cuyo valor sea una
-     *  cadena de dos pasos tendría en `sequence` una representación más
-     *  honesta que cuatro tiles inconexos. */
-    block: ShowcaseBlock;
+    /** El módulo abierto y su forma por dentro (ver `PreviewStage`). */
+    stage: PreviewStage;
+    /** Los OTROS módulos: los que están ahí al lado, no el que se está
+     *  mirando. Antes esto era un `ShowcaseBlock` de cuatro tiles con uno
+     *  marcado `active`, y esa rejilla de cuatro iguales es literalmente lo
+     *  que el usuario llamó "bastante básicas": cuatro fichas del mismo
+     *  tamaño no tienen jerarquía, así que no tienen protagonista, así que no
+     *  se parecen a ninguna aplicación.
+     *
+     *  Ahora el que estaba `active` sube a `stage.module` y estos tres se
+     *  quedan como lo que son: el resto del menú. Mismos cuatro nombres
+     *  reales de siempre, repartidos en dos niveles en vez de en uno.
+     *
+     *  Sigue siendo el tipo compartido `ShowcaseModuleItem` (con su icono por
+     *  clave, resuelto en mockIcons.ts) y no uno propio: el vocabulario de
+     *  iconos es el mismo y duplicarlo solo garantizaba desincronizarlo. Lo
+     *  que ya NO se comparte es el RENDER — ver ProductPreview.tsx. */
+    modules: readonly ShowcaseModuleItem[];
 }
 
 /** Línea de servicio con la que se etiqueta un caso: TIENDA / WEB /

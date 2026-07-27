@@ -1,30 +1,67 @@
 /* ═══════════════════════════════════════════
    PRODUCT PREVIEW — cuarta página del panel de sector de /soluciones.
 
-   Solo tres cosas viven aquí: el marco de la captura (cuando exista), la fila
-   de contexto de debajo (nota + conmutador + botón de ampliar) y el ampliador
-   a pantalla completa. La maqueta esquemática NO se estiliza aquí: es
-   MockPreview con `layout="producto"`, y sus medidas están en
-   MockPreview.module.css junto al resto de disposiciones — repartir el estilo
-   de la maqueta entre dos ficheros es exactamente cómo se desincronizan.
+   Aquí vive TODO lo de esta página: el esquema de la aplicación, el marco de
+   la captura (cuando exista), la fila de contexto de debajo (nota +
+   conmutador + botón de ampliar) y el ampliador a pantalla completa.
 
-   LA RESTRICCIÓN QUE MANDA SOBRE TODO LO DEMÁS: a partir de 1024px el panel
-   que contiene esta página mide 500px CLAVADOS (ver `.panel` en
-   Soluciones.module.css: el alto es fijo porque con el scroll-jack activo un
-   panel que cambiara de alto por sector haría saltar el documento entero en
-   mitad del scroll). De esos 500 quedan del orden de 290 para el deck de
-   páginas, una vez descontados el icono del sector, la fila de paginación y el
-   botón de CTA. Todo lo de este fichero está medido contra ese hueco: la fila
-   de contexto es UNA sola fila (nota a la izquierda, controles a la derecha) y
-   no dos apiladas justamente por eso.
+   ─── POR QUÉ EL ESQUEMA YA NO ESTÁ EN MockPreview.module.css ───
+
+   Antes esta página pintaba su maqueta con MockPreview (`layout="producto"`) y
+   por eso su estilo vivía allí. Se trajo aquí junto con el marcado, y el
+   motivo no es de organización sino de PALETA: MockPreview es la maqueta
+   genérica de OpsPilot y todo su color sale de variables.css. Aquí se enseñan
+   cuatro aplicaciones AJENAS, cada una con la suya (ver `ProductTheme` en
+   src/data/types.ts), y forzarlas a nuestros tres acentos daba lo que dio —
+   cuatro paneles indistinguibles. MockPreview y sus tres consumidores
+   (HeroLeadWidget, y CaseMockPanel desde Home y Casos) se quedan exactamente
+   como estaban.
+
+   ─── EL CONTRATO DE COLOR ───
+
+   Ni un solo color de esta hoja sale de variables.css DENTRO del esquema. Todo
+   se lee de las custom properties `--pv-*` que el componente publica en
+   `.app` desde el dato (ver `themeVars` en el .tsx). Consecuencia práctica:
+   añadir un quinto producto con su paleta es tocar products.ts y nada más.
+   Fuera del esquema —fila de contexto, botones, ampliador— manda la paleta de
+   la web, porque eso es voz nuestra y tiene que verse que lo es.
+
+   ─── LA RESTRICCIÓN QUE MANDA SOBRE TODO LO DEMÁS ───
+
+   A partir de 1024px el panel que contiene esta página mide 500px CLAVADOS
+   (ver `.panel` en Soluciones.module.css: el alto es fijo porque con el
+   scroll-jack activo un panel que cambiara de alto por sector haría saltar el
+   documento entero en mitad del scroll). De esos 500 quedan 288 MEDIDOS para
+   el deck de páginas, una vez descontados el icono del sector, la fila de
+   paginación y el botón de CTA.
+
+   El reparto de esos 288 en el caso PEOR, que está medido y es Fiscalidad a
+   1024px de viewport (ahí la columna de texto es la más estrecha de todo el
+   rango, 321px, así que es donde más líneas parte una misma frase; y es el
+   único producto que suma las dos frases extra: la nota larga del color
+   provisional, que parte en dos, y la de "no accesible desde fuera"):
+
+       esquema (alto fijo)              184
+       hueco (.wrap gap)                  8
+       fila de contexto (medida)       91.4
+       ─────────────────────────────────────
+       total                          283.4   →  4.6px de margen sobre 288
+
+   Con la nota corta —los otros tres productos— la fila de contexto mide 57.2 y
+   sobra un dedo. El número que manda es el de arriba.
+
+   Por eso el alto es un número y no `flex: 1`: el alto del esquema tiene que
+   ser una constante conocida, no el resto de una resta que depende de cuántas
+   líneas parta un copy que alguien escriba mañana. Si tocas ese valor, mide
+   otra vez `scrollHeight` vs `clientHeight` del deck en los cuatro sectores.
    ═══════════════════════════════════════════ */
 
 .wrap {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-2);
-    /* Sin esto, un nombre de módulo largo dentro de la maqueta puede empujar
-       el ancho del hijo flex por encima del contenedor y provocar scroll
+    /* Sin esto, un nombre de módulo largo dentro del esquema puede empujar el
+       ancho del hijo flex por encima del contenedor y provocar scroll
        horizontal — el mismo eje que `.pageDeck` tiene que recortar con
        `overflow-x: clip` (ver Soluciones.module.css). Vale más no generarlo. */
     min-width: 0;
@@ -44,6 +81,778 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+/* ═══════════════════════════════════════════
+   EL ESQUEMA DE LA APLICACIÓN
+   ═══════════════════════════════════════════
+   Rejilla de dos columnas: contenido a la izquierda, resto de módulos a la
+   derecha. Con `nav: 'rail'` (el ERP) pasa a tres filas y los módulos bajan al
+   pie — un ERP con barra lateral no tiene sitio para una tercera columna, y
+   que la disposición cambie con la aplicación es justo lo que se busca.
+
+   `overflow: hidden` es una GARANTÍA, no un adorno: el deck de /soluciones
+   recorta el eje horizontal con `overflow-x: clip` y no debe tener que hacerlo
+   por culpa de esta página. Nada de aquí dentro se sale nunca. */
+.app {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--spacing-2) var(--spacing-3);
+    /* Por debajo de 1024px no hay alto clavado, pero tampoco barra libre: en
+       768–1023px el panel hereda su alto del `.ledger` de al lado (`.explorer`
+       estira a ambos, ver Soluciones.module.css) y al deck le quedan 297.6px
+       MEDIDOS, con `.panel { overflow: hidden }` esperando debajo. Con 240 el
+       caso peor —Fiscalidad, que suma la línea de "no accesible desde
+       fuera"— se iba a 305 y perdía 7.5px por abajo. 224 lo deja en 289.
+       El valor clavado de ≥1024px entra en la media query del final. */
+    min-height: 224px;
+    padding: 10px;
+    border-radius: var(--radius-card);
+    /* Halo del acento en la esquina superior derecha + fondo de la aplicación.
+       Mismo idioma que `.panel` en Soluciones.module.css, con la diferencia de
+       que aquí ambos colores son del producto y no nuestros: es lo que hace
+       que el ERP se lea como una pantalla encendida y EnergyDeal como una hoja
+       de papel iluminada. */
+    background:
+        radial-gradient(130% 95% at 100% 0%, var(--pv-accent-soft), transparent 58%),
+        var(--pv-bg);
+    border: 1px solid var(--pv-line);
+    /* La sombra EXTERIOR sí es nuestra (`--shadow-md`, tintada al navy
+       profundo): el esquema es un objeto apoyado sobre NUESTRO panel, así que
+       la luz de la escena es la de esta web. Lo que es del producto es lo de
+       dentro. */
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    color: var(--pv-text);
+    transition: max-width 0.4s var(--ease-out-expo);
+}
+
+/* Tema claro (hoy solo EnergyDeal). Dos ajustes y ninguno es cosmético:
+   el borde interior blanco de arriba es lo que hace que una superficie clara
+   parezca elevada —sobre oscuro ese mismo truco se hace con luz, sobre claro
+   con un filo—, y el borde exterior se refuerza porque un hairline al 7% de
+   blanco, que es lo que usa el resto de la web, sobre casi-blanco no existe. */
+.app[data-scheme='light'] {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), var(--shadow-md);
+}
+
+.app[data-scheme='dark'] {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), var(--shadow-md);
+}
+
+/* Con barra lateral: tres filas (barra superior / cuerpo / módulos al pie) y
+   una sola columna. */
+.app[data-nav='rail'] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+/* Vista "móvil" — contenedor angosto centrado, NO un bisel de teléfono
+   dibujado (mismo criterio de siempre en esta web: nada de cromo falso). */
+.app[data-device='mobile'] {
+    /* Ancho FIJO y no `max-width`: con un tope la rejilla se encoge hasta el
+       contenido y cada producto salía con un ancho distinto (170 a 209px,
+       medidos) según lo largos que fueran sus nombres de módulo. Un teléfono
+       mide lo que mide; que el conmutador devuelva cuatro anchos distintos
+       delata que no es un dispositivo, es una caja. */
+    width: min(100%, 232px);
+    margin-inline: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+/* ─── Barra de la aplicación ─── */
+.appBar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    min-width: 0;
+}
+
+/* El punto de marca. Cuadrado con radio pequeño y no un círculo: un círculo de
+   color en una cabecera se lee como "estado", y esto es un logotipo. */
+.appDot {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    background: var(--pv-accent);
+    box-shadow: var(--pv-glow);
+}
+
+/* El nombre del producto — lo que una aplicación pone en su propia cabecera.
+   Mono porque en todo este esquema el mono es la voz de la INTERFAZ; el texto
+   de la web (la frase de debajo del marco) va en la tipografía del cuerpo, y
+   esa diferencia de registro es la que separa las dos voces sin necesidad de
+   explicarlo. */
+.appName {
+    font-family: var(--font-family-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.01em;
+    color: var(--pv-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+/* Menú "hamburguesa" — tres rayas hechas con un degradado repetido en vez de
+   tres elementos. Solo existe en la vista móvil, donde sustituye a las
+   pestañas/barra lateral, que es lo que hace una aplicación real al
+   estrecharse. */
+.appMenu {
+    display: none;
+    width: 14px;
+    height: 10px;
+    margin-left: auto;
+    flex-shrink: 0;
+    background: repeating-linear-gradient(
+        180deg,
+        var(--pv-muted) 0 2px,
+        transparent 2px 4px
+    );
+    opacity: 0.75;
+}
+
+.app[data-device='mobile'] .appMenu {
+    display: block;
+}
+
+/* ─── Pestañas (nav: 'secciones' | 'cadena') ─── */
+.tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    min-width: 0;
+}
+
+.app[data-device='mobile'] .tabs {
+    display: none;
+}
+
+.tab {
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    color: var(--pv-muted);
+    white-space: nowrap;
+}
+
+.tabActive {
+    background: var(--pv-accent);
+    color: var(--pv-accent-ink);
+}
+
+/* `cadena` — las tres pestañas de Presupuestador son un RECORRIDO en orden
+   (presupuesto → obra → factura), no tres sitios sueltos. Se dibujan como
+   pasos encadenados: esquina viva en vez de píldora, contorno propio y un
+   conector entre medias. Es la diferencia entre enseñar un menú y enseñar el
+   argumento del producto. */
+.tabs[data-chain='true'] .tab {
+    border: 1px solid var(--pv-line);
+    border-radius: var(--radius-control);
+    padding: 2px 7px;
+}
+
+.tabs[data-chain='true'] .tabActive {
+    border-color: var(--pv-accent);
+}
+
+.tabLink {
+    width: 9px;
+    height: 1px;
+    flex-shrink: 0;
+    background: var(--pv-line);
+}
+
+/* ─── Cuerpo: barra lateral (opcional) + escenario ─── */
+.appBody {
+    grid-column: 1;
+    display: flex;
+    gap: var(--spacing-3);
+    min-height: 0;
+    min-width: 0;
+}
+
+/* ─── Barra lateral — solo el ERP (16 módulos) ─── */
+.rail {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 94px;
+    flex-shrink: 0;
+    padding-right: var(--spacing-2);
+    border-right: 1px solid var(--pv-line);
+}
+
+.app[data-device='mobile'] .rail {
+    display: none;
+}
+
+.railItem {
+    padding: 3px 6px;
+    border-radius: var(--radius-control);
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    line-height: 1.5;
+    color: var(--pv-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.railItemActive {
+    background: var(--pv-accent-soft);
+    color: var(--pv-accent);
+    box-shadow: inset 2px 0 0 var(--pv-accent);
+}
+
+/* Tres filas SIN NOMBRE al pie de la barra. El ERP tiene dieciséis módulos y
+   esta es la forma honesta de decir "hay más": ni se escriben dieciséis
+   nombres que nadie va a leer, ni se inventa ninguno. Decorativo puro, va
+   `aria-hidden` desde el marcado. */
+.railRest {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: auto;
+    padding: 6px;
+}
+
+.railRest span {
+    height: 3px;
+    border-radius: var(--radius-full);
+    background: var(--pv-line);
+}
+
+.railRest span:nth-child(1) { width: 78%; }
+.railRest span:nth-child(2) { width: 56%; }
+.railRest span:nth-child(3) { width: 66%; }
+
+/* ─── El escenario: el módulo abierto ─── */
+.stage {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    padding: var(--spacing-2);
+    border-radius: var(--radius-control);
+    background: var(--pv-surface);
+    border: 1px solid var(--pv-line);
+}
+
+/* La hoja de Fiscalidad se apoya directamente sobre el fondo de la
+   aplicación: un papel dentro de una tarjeta dentro de otra tarjeta es una
+   caja de más, y aquí no sobra ni un píxel. */
+.app[data-stage='sheet'] .stage {
+    background: transparent;
+    border-color: transparent;
+    padding: 0;
+}
+
+.stageHead {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    color: var(--pv-accent);
+}
+
+/* El ÚNICO texto de todo el escenario, y es un nombre de módulo real. */
+.stageName {
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--pv-accent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.figure {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+}
+
+/* ─── Piezas comunes de las figuras ───
+   `.bar` y `.slot` son FORMA SIN VALORES: ninguna longitud significa nada (los
+   anchos salen de una tabla fija, ver BAR_WIDTHS en el .tsx) y el hueco del
+   importe está VACÍO a propósito. Es la línea entre ilustrar y mentir aplicada
+   al píxel: se dibuja que ahí va un número, no el número. */
+.bar {
+    height: 5px;
+    border-radius: var(--radius-full);
+    background: var(--pv-line);
+    /* SÍ encoge, y esto se probó al revés: con `flex-shrink: 0` el ancho en
+       porcentaje de la barra más el hueco fijo del importe se salían 5px de la
+       caja en el panel de 271px de ≤639px. Como el porcentaje no significa
+       nada (ver BAR_WIDTHS en el .tsx), dejar que ceda no pierde información
+       — no hay ninguna. */
+    min-width: 0;
+}
+
+.slot {
+    width: 32px;
+    height: 9px;
+    margin-left: auto;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background: var(--pv-raised);
+    border: 1px solid var(--pv-line);
+}
+
+.slotStrong {
+    background: var(--pv-accent-soft);
+    border-color: var(--pv-accent);
+}
+
+/* ─── Figura `ledger` — la Caja del ERP ───
+   Filas con `flex: 1 1 0`: reparten EXACTAMENTE el alto disponible sea cual
+   sea `stage.rows` y sea cual sea el alto del escenario. Sin esto, cambiar el
+   número de filas en el dato sería una apuesta contra el alto fijo del panel. */
+.ledger {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    height: 100%;
+}
+
+.ledgerRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+}
+
+.ledgerMark {
+    width: 9px;
+    height: 9px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background: var(--pv-raised);
+    border: 1px solid var(--pv-line);
+}
+
+/* La última línea es el total: se separa con un filo y se marca con el acento.
+   Sigue sin llevar cifra — un total vacío es una forma, un total con un número
+   inventado es una mentira barata. */
+.ledgerTotal {
+    margin-top: 1px;
+    padding-top: 4px;
+    border-top: 1px solid var(--pv-line);
+}
+
+.ledgerTotal .bar {
+    background: var(--pv-muted);
+    opacity: 0.55;
+}
+
+/* ─── Figura `tree` — las Partidas de Presupuestador ───
+   La sangría ES el producto: capítulo → partida → recurso es lo que separa un
+   presupuesto de obra de un documento con un total al final. El nivel se
+   pinta además con peso: la raíz lleva su marcador en ámbar y barra gruesa,
+   las hojas adelgazan. */
+.tree {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    height: 100%;
+}
+
+.treeRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+}
+
+/* Triángulo de "capítulo desplegado", hecho con bordes: cero SVG para una
+   forma de 5px. */
+.treeCaret {
+    width: 0;
+    height: 0;
+    flex-shrink: 0;
+    border-left: 4px solid var(--pv-accent);
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+}
+
+.treeRow[data-depth='0'] .bar {
+    height: 6px;
+    background: var(--pv-muted);
+    opacity: 0.6;
+}
+
+.treeRow[data-depth='2'] .bar {
+    height: 4px;
+    opacity: 0.75;
+}
+
+.treeRow[data-depth='2'] .slot {
+    width: 24px;
+}
+
+/* ─── Figura `compare` — las Comparativas de EnergyDeal ───
+   Columnas enfrentadas. La destacada NO es "la mejor oferta" (eso sería un
+   dato): es la columna sobre la que estarías, y por eso solo lleva el acento y
+   una cinta arriba. */
+.compare {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    height: 100%;
+}
+
+.compareCol {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+    padding: var(--spacing-2) 7px;
+    border-radius: var(--radius-control);
+    background: var(--pv-raised);
+    border: 1px solid transparent;
+    overflow: hidden;
+}
+
+.compareColPick {
+    background: var(--pv-surface);
+    border-color: var(--pv-accent);
+    box-shadow: var(--pv-glow);
+}
+
+.compareColPick::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--pv-accent);
+}
+
+.compareHead {
+    height: 9px;
+    width: 100%;
+    border-radius: 2px;
+    background: var(--pv-line);
+    flex-shrink: 0;
+}
+
+.compareColPick .compareHead {
+    background: var(--pv-accent-soft);
+}
+
+/* En el comparador las barras son hijas de una columna, así que aquí
+   `flex-shrink` actuaría sobre el ALTO y las aplastaría a nada. Se bloquea. */
+.compare .bar {
+    height: 4px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* ─── Figura `sheet` — el Modelo 303 de Fiscalidad ───
+   La única composición CLARA sobre oscuro de los cuatro productos, y ese
+   contraste hace todo el trabajo: un modelo oficial es papel, no una tarjeta
+   de dashboard, y se reconoce antes de leer el nombre del módulo.
+
+   El papel usa `--pv-text` como fondo (un blanco cálido, elegido justamente
+   para esto en products.ts) y `--pv-bg` como tinta vía `color` — así todas las
+   marcas de dentro heredan la tinta con `currentColor` y no hay ni un color
+   suelto que se pueda desincronizar. Las casillas van VACÍAS: rellenarlas
+   sería inventar la declaración de alguien. */
+.sheet {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    height: 100%;
+    padding: 9px 11px 9px 14px;
+    border-radius: 3px;
+    background: var(--pv-text);
+    color: var(--pv-bg);
+    box-shadow: var(--pv-glow), var(--shadow-sm);
+    overflow: hidden;
+}
+
+/* El filo de color del lomo. Es lo único del papel que lleva el acento, y con
+   eso basta para que la hoja pertenezca a ESTA aplicación y no a cualquiera. */
+.sheetSpine {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--pv-accent);
+}
+
+.sheetHead {
+    width: 42%;
+    height: 6px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background: currentColor;
+    opacity: 0.5;
+}
+
+.sheetGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 12px;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.sheetField {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+.sheetLabel {
+    height: 4px;
+    border-radius: 2px;
+    background: currentColor;
+    opacity: 0.32;
+}
+
+/* Casilla vacía: contorno y nada dentro. */
+.sheetBox {
+    height: 15px;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    opacity: 0.24;
+}
+
+/* ─── Los OTROS módulos ───
+   Columna a la derecha del escenario (o fila al pie con barra lateral). Son
+   secundarios y se ven secundarios: fondo tenue, texto en el gris del producto
+   y solo el icono en color. Antes eran cuatro fichas iguales a la del módulo
+   abierto — o sea, sin jerarquía y sin protagonista. */
+.tray {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 116px;
+    min-width: 0;
+}
+
+.app[data-nav='rail'] .tray,
+.app[data-device='mobile'] .tray {
+    grid-column: 1;
+    grid-row: 3;
+    flex-direction: row;
+    width: auto;
+}
+
+.chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 6px 8px;
+    border-radius: var(--radius-control);
+    background: var(--pv-raised);
+    border: 1px solid var(--pv-line);
+    color: var(--pv-accent);
+}
+
+.app[data-nav='rail'] .chip,
+.app[data-device='mobile'] .chip {
+    flex: 1 1 0;
+}
+
+.chipLabel {
+    font-family: var(--font-family-mono);
+    font-size: 0.625rem;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+    color: var(--pv-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+/* En la vista móvil no caben tres etiquetas en una fila de 232px, así que el
+   chip se apila —icono arriba, nombre debajo— y el nombre puede partir en dos
+   líneas. Se recorta el CONTENEDOR, nunca el nombre: un módulo se llama como
+   se llama, y "Cierre de ca…" no es información, es ruido. */
+.app[data-device='mobile'] .chip {
+    flex-direction: column;
+    gap: 3px;
+    padding: 5px 4px;
+    text-align: center;
+}
+
+.app[data-device='mobile'] .chipLabel {
+    white-space: normal;
+    font-size: 0.5625rem;
+    line-height: 1.2;
+}
+
+/* En 232px los módulos bajan al pie en dos líneas y a la figura le queda menos
+   de la mitad del alto (41px medidos en el ERP), así que se recortan filas. Se
+   recortan FILAS SIN TEXTO, que no dicen nada, nunca nombres de módulo — la
+   diferencia entre estrechar una interfaz y esconder producto.
+
+   El ledger se queda en dos líneas y el total, y el árbol en tres: el ledger
+   paga además el `border-top` y el aire del total, así que con el mismo hueco
+   le caben menos. */
+.app[data-device='mobile'] .ledgerRow:nth-child(n + 3):not(.ledgerTotal),
+.app[data-device='mobile'] .treeRow:nth-child(n + 4) {
+    display: none;
+}
+
+/* ═══════════════════════════════════════════
+   ≤TÁCTIL (767px) — el esquema se estrecha aunque el conmutador diga
+   "escritorio"
+   ═══════════════════════════════════════════
+   Aquí los 7 paneles forman un carril horizontal con scroll-snap y cada uno
+   mide poco más del ancho de la pantalla: a 375px de viewport el esquema se
+   queda en 271px. Medido antes de escribir esto, la disposición de escritorio
+   ahí dentro se recortaba por dentro entre 41 y 66px — la columna de módulos
+   de la derecha y la fila de pestañas no caben, y `overflow: hidden` lo tapaba
+   en silencio, que es la peor forma de romperse.
+
+   La respuesta no es un tercer modo inventado: es lo que hace cualquier
+   aplicación real al estrecharse. Las pestañas se pliegan en el menú y los
+   módulos se van al pie. La barra lateral del ERP SÍ se queda —94px de 271 se
+   los puede permitir— porque es su seña de identidad y no estorba.
+
+   Ojo: esto NO depende del conmutador. Es el ancho disponible el que manda, y
+   por eso va en @media y no en `[data-device]`. */
+@media (max-width: 767px) {
+    .app {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    .tabs {
+        display: none;
+    }
+
+    .appMenu {
+        display: block;
+    }
+
+    .tray {
+        grid-column: 1;
+        grid-row: 3;
+        flex-direction: row;
+        width: auto;
+    }
+
+    .chip {
+        flex: 1 1 0;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   ≥1024px — el alto clavado. Ver la cabecera de este fichero para el reparto
+   de los 288px del deck. Todo lo de arriba está dimensionado contra esto.
+   ═══════════════════════════════════════════ */
+@media (min-width: 1024px) {
+    .app {
+        min-height: 0;
+        height: 184px;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   Cascada de entrada — el esquema se ENSAMBLA
+   ═══════════════════════════════════════════
+   Gateada tras `data-animate="true"` (prop `revealed`, ver el .tsx): las 4
+   páginas del deck se montan siempre, así que sin esto la animación se gastaba
+   con la página escondida y al abrirla ya había terminado.
+
+   Y tras `prefers-reduced-motion: no-preference` en CSS y no con el hook de
+   JS: la consulta de medios se evalúa también durante el prerender SSG, sin
+   esperar a que hidrate. Mismo criterio que el ampliador de más abajo.
+
+   Tres tiempos y no doce: barra → cuerpo → módulos. Dentro del cuerpo, las
+   filas de la figura entran escalonadas, que es lo que da la sensación de
+   "esto se está cargando delante de mí" en vez de "esto ya estaba". */
+@media (prefers-reduced-motion: no-preference) {
+    .app[data-animate='true'] .appBar {
+        animation: pvRise 0.44s var(--ease-out-expo) both;
+    }
+
+    .app[data-animate='true'] .appBody {
+        animation: pvRise 0.5s var(--ease-out-expo) 0.08s both;
+    }
+
+    .app[data-animate='true'] .tray {
+        animation: pvRise 0.5s var(--ease-out-expo) 0.16s both;
+    }
+
+    .app[data-animate='true'] .ledgerRow,
+    .app[data-animate='true'] .treeRow,
+    .app[data-animate='true'] .compareCol,
+    .app[data-animate='true'] .sheetField {
+        animation: pvFade 0.4s var(--ease-custom) both;
+    }
+
+    .app[data-animate='true'] .ledgerRow:nth-child(1),
+    .app[data-animate='true'] .treeRow:nth-child(1),
+    .app[data-animate='true'] .compareCol:nth-child(1),
+    .app[data-animate='true'] .sheetField:nth-child(1) { animation-delay: 0.20s; }
+
+    .app[data-animate='true'] .ledgerRow:nth-child(2),
+    .app[data-animate='true'] .treeRow:nth-child(2),
+    .app[data-animate='true'] .compareCol:nth-child(2),
+    .app[data-animate='true'] .sheetField:nth-child(2) { animation-delay: 0.26s; }
+
+    .app[data-animate='true'] .ledgerRow:nth-child(3),
+    .app[data-animate='true'] .treeRow:nth-child(3),
+    .app[data-animate='true'] .compareCol:nth-child(3),
+    .app[data-animate='true'] .sheetField:nth-child(3) { animation-delay: 0.32s; }
+
+    .app[data-animate='true'] .ledgerRow:nth-child(4),
+    .app[data-animate='true'] .treeRow:nth-child(4),
+    .app[data-animate='true'] .sheetField:nth-child(4) { animation-delay: 0.38s; }
+
+    .app[data-animate='true'] .ledgerRow:nth-child(5),
+    .app[data-animate='true'] .treeRow:nth-child(5) { animation-delay: 0.44s; }
+}
+
+@keyframes pvRise {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pvFade {
+    from {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* ─── Marco de captura (rama "hay imagen", hoy sin ningún caso) ───
@@ -89,18 +898,16 @@
     object-fit: contain;
 }
 
-/* ≥1024px: el panel mide 500px fijos y al deck le quedan 288 (ver la cabecera
-   de este fichero). Descontando la fila de contexto —unos 57px, o 74 si el
-   producto lleva la nota de disponibilidad— y el hueco entre ambos, a la
-   imagen le quedan 200. */
+/* ≥1024px: el mismo presupuesto de alto que el esquema (ver la cabecera). Una
+   captura no puede permitirse más píxeles que el esquema al que sustituye. */
 @media (min-width: 1024px) {
     .shotImg {
-        max-height: 200px;
+        max-height: 184px;
     }
 }
 
-/* Marco de teléfono: mismo criterio de contención que la vista `mobile` de la
-   maqueta (contenedor angosto centrado, no un bisel dibujado) y el radio más
+/* Marco de teléfono: mismo criterio de contención que la vista `mobile` del
+   esquema (contenedor angosto centrado, no un bisel dibujado) y el radio más
    generoso que es lo único que un móvil aporta como forma. */
 .shotFigure[data-frame='phone'] {
     max-width: 260px;
@@ -124,7 +931,8 @@
 
 /* Columna de texto de la fila: TODO lo que aquí se dice lo decimos nosotros,
    nunca la aplicación. De ahí que vaya fuera del marco y con tipografía de la
-   web —no de maqueta— para que no haya forma de confundir las dos voces.
+   web —y con los colores de la web, no los del producto— para que no haya
+   forma de confundir las dos voces.
 
    Un raíl fino a la izquierda en vez de un icono de aviso: esto no es una
    advertencia, es un pie de foto. El raíl lo separa del ruido sin darle un
@@ -139,8 +947,8 @@
     border-left: 1px solid var(--color-border-subtle);
 }
 
-/* Qué hace el producto, en una línea. Es lo que antes iba dentro del marco
-   como titular de la maqueta. */
+/* Qué hace el producto, en una línea. Es nuestra descripción, y por eso NO
+   entra dentro del esquema. */
 .claim {
     margin: 0;
     font-size: var(--font-size-sm);
@@ -153,7 +961,12 @@
 /* La frase que separa ilustrar de mentir. Va en mono y no en la tipografía del
    cuerpo a propósito: el mono es en toda esta web el registro de "esto es un
    apunte técnico sobre lo que estás viendo", no una frase de venta más. Y va
-   pegada a la maqueta, no en un pie de página lejano. */
+   pegada al esquema, no en un pie de página lejano.
+
+   Tiene dos redacciones (ver `schematicNote` en el .tsx): la larga, con la
+   coletilla del color provisional, es la que hoy pinta Fiscalidad y la que
+   manda en el presupuesto de alto de esta fila — parte en dos líneas a
+   1024px. */
 .note {
     margin: 0;
     margin-top: 2px;
@@ -172,9 +985,9 @@
     margin: 0;
     /* Tipografía de cuerpo y NO mono, al revés que la nota de encima. No es
        coquetería: el mono es aquí el registro de "apunte técnico sobre lo que
-       ves", y esto no habla de la maqueta sino del estado del producto — dos
+       ves", y esto no habla del esquema sino del estado del producto — dos
        cosas distintas merecen dos voces distintas. Además el cuerpo ocupa
-       bastante menos ancho por carácter, y en la columna de 320px del panel a
+       bastante menos ancho por carácter, y en la columna estrecha del panel a
        1024px eso es exactamente la diferencia entre una línea y dos. */
     font-size: var(--font-size-xs);
     line-height: 1.4;
@@ -184,8 +997,8 @@
 /* ≥1024px es el ÚNICO rango donde el panel tiene el alto clavado a 500px, y
    por tanto el único donde una línea de más en un texto se convierte en una
    barra de scroll. Se acota lo que se puede acotar sin perder información
-   —nuestra descripción del producto, que es redundante con lo que ya dicen la
-   maqueta y la página de resumen— y NO se acota la nota: es la frase que dice
+   —nuestra descripción del producto, que es redundante con lo que ya dicen el
+   esquema y la página de resumen— y NO se acota la nota: es la frase que dice
    qué es exactamente lo que se está viendo, y recortarla a mitad de palabra
    sería quitar justo lo que sostiene la página.
 
@@ -252,12 +1065,11 @@
    descuido, no una decisión. Los 44×44 vienen de allí y de su motivo: medía
    26×22 y era la mitad del objetivo táctil accesible.
 
-   Lee `--tpl-accent-*` con respaldo a mint: cuando la maqueta de al lado va en
-   ámbar o en azul, el botón pulsado se pone a juego, porque MockPreview
-   publica esas variables desde su propio contenedor... salvo que aquí NO las
-   hereda (el conmutador es hermano de la maqueta, no hijo). El respaldo mint
-   es entonces el camino normal y no el de emergencia — a propósito: el control
-   pertenece a la página, no al producto, y el verde de casa es lo correcto. */
+   Va en VERDE MINT y no en el acento del producto, y ahora que el esquema de
+   al lado sí lleva la paleta ajena esa decisión pesa más que antes: el
+   conmutador pertenece a esta web, no a la aplicación. Si se tiñera del color
+   del producto se leería como parte de su interfaz, que es exactamente la
+   confusión que toda esta página trabaja para evitar. */
 .deviceToggle {
     display: inline-flex;
     gap: 2px;
@@ -379,7 +1191,7 @@
    `usePrefersReducedMotion`, que es lo que usa el resto de esta página: aquí
    no hay ninguna animación conducida por JS que apagar —son dos `animation` de
    CSS— y la consulta de medios se evalúa también durante el prerender SSG, sin
-   esperar a que hidrate. Mismo criterio que la cascada de MockPreview.module.css. */
+   esperar a que hidrate. Mismo criterio que la cascada del esquema. */
 @media (prefers-reduced-motion: no-preference) {
     .zoomDialog[open] {
         animation: zoomDialogIn 0.28s var(--ease-out-expo) both;
