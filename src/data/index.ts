@@ -14,6 +14,7 @@ export type {
     ExternalLink,
     LinkAvailability,
     ProductId,
+    ProductPreview,
     Screenshot,
     ScreenshotFrame,
     ServiceLine,

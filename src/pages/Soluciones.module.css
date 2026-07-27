@@ -513,20 +513,25 @@ section.solHero p.heroSubtitle {
         /* `overflow-x: clip` NO es redundante, es obligatorio. Declarar solo
            `overflow-y: auto` haría que `overflow-x` computara de `visible` a
            `auto` (CSS Overflow 3: si un eje no es `visible`, el otro tampoco
-           puede serlo), y las 2 páginas inactivas están desplazadas con
-           `translateX` de +24px y +48px respecto a la activa — desplazamiento
-           que SÍ cuenta como scrollable overflow. Resultado sin esto: barra de
-           scroll horizontal dentro del panel en `page=0` (48px sobrantes) y en
-           `page=1` (24px), que desaparece en `page=2` porque el overflow
+           puede serlo), y las páginas inactivas están desplazadas con
+           `translateX` de +24px, +48px (y ahora +72px, con la cuarta página)
+           respecto a la activa — desplazamiento que SÍ cuenta como scrollable
+           overflow. Resultado sin esto: barra de scroll horizontal dentro del
+           panel en `page=0` (72px sobrantes en un sector con vista previa) y en
+           `page=1` (48px), que desaparece en la última porque el overflow
            negativo no cuenta. Es decir, una barra que aparece y desaparece al
            paginar y que en Windows se come ~15px del alto útil de los 500px.
            `clip` en vez de `hidden` para no crear un contenedor de scroll en
-           ese eje. */
+           ese eje.
+
+           La cuarta página no cambia el diagnóstico, lo AGRAVA: el
+           desbordamiento máximo pasa de 48 a 72px. Si algún día se añade una
+           quinta, esta regla sigue siendo lo único que hay que no tocar. */
         overflow-x: clip;
     }
 }
 
-/* Las 2 páginas inactivas del deck — misma receta que `.panelHidden` un nivel
+/* Las páginas inactivas del deck (2 o 3 según el sector) — misma receta que `.panelHidden` un nivel
    más arriba: fuera de flujo, superpuestas sobre la activa (que es la que
    sigue determinando el alto, y con él el del panel en los breakpoints donde
    `.panel` no tiene alto fijo) y sin capturar puntero. La página ACTIVA no
@@ -558,6 +563,22 @@ section.solHero p.heroSubtitle {
     display: flex;
     flex-direction: column;
     min-width: 0;
+}
+
+/* Encabezado de la página de vista previa: existe en el documento (jerarquía
+   h2 → h3 completa, y contenido indexable) pero no ocupa un píxel. Es la única
+   página del deck que lo lleva así, y el motivo es el alto fijo de 500px del
+   panel: ver el comentario junto al `<h3>` en Soluciones.tsx. */
+.srOnlyHeading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .pageHeading {

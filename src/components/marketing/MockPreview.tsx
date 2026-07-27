@@ -51,10 +51,27 @@ export type MockDevice = 'desktop' | 'mobile';
 /**
  * Disposición de la maqueta. `estandar` es el comportamiento histórico
  * (nav → titular → bloque, sin adornos) y es el valor por defecto justo para
- * que CaseMockPanel no cambie sin pedirlo. Las otras cuatro las usa el embudo
- * del hero, una por objetivo (ver OBJETIVO_LAYOUT en src/data/leadFunnel.ts).
+ * que CaseMockPanel no cambie sin pedirlo. Las cuatro siguientes las usa el
+ * embudo del hero, una por objetivo (ver OBJETIVO_LAYOUT en
+ * src/data/leadFunnel.ts).
+ *
+ * `producto` es la última en llegar y sirve a un consumidor distinto: la
+ * vista previa de producto de /soluciones (ver ProductPreview.tsx). Se añade
+ * como VALOR NUEVO de esta unión en vez de reutilizar `panel`, que a primera
+ * vista hacía lo mismo (pestañas en lugar de enlaces), por una diferencia que
+ * importa: `panel` pinta TODOS los módulos en estado vivo a propósito —su
+ * objetivo es "tener todo controlado"— y eso deja la rejilla sin foco y sin
+ * poder marcar en qué módulo estás. La vista previa de producto necesita lo
+ * contrario: un módulo activo y el resto en reposo, como cualquier aplicación
+ * de verdad. Tocar la regla de `panel` para conseguirlo habría sido una
+ * regresión gratuita en el embudo del hero, que no ha pedido nada.
+ *
+ * Ampliar la unión es aditivo y no toca a nadie: los tres consumidores
+ * actuales pasan `layout` explícito o se quedan con el defecto, y ninguno
+ * hace un `Record<MockLayout, …>` exhaustivo (OBJETIVO_LAYOUT mapea DESDE los
+ * objetivos del embudo HACIA aquí, no al revés).
  */
-export type MockLayout = 'estandar' | 'accion' | 'flujo' | 'portada' | 'panel';
+export type MockLayout = 'estandar' | 'accion' | 'flujo' | 'portada' | 'panel' | 'producto';
 
 type IconComponent = React.FC<{ size?: number; strokeWidth?: number }>;
 
@@ -229,7 +246,10 @@ export const MockPreview: React.FC<MockPreviewProps> = ({
     const links = hasNavText ? navLinks : BLANK_NAV_LINKS;
     // Las pestañas solo tienen sentido si hay etiquetas que poner en ellas:
     // una fila de tres rectángulos grises no comunica "esto es un panel".
-    const showTabs = layout === 'panel' && hasNavText;
+    // Dos disposiciones las quieren: `panel` (embudo del hero) y `producto`
+    // (vista previa de /soluciones). Comparten el marcado y el CSS de
+    // `.tplTabs`; se diferencian en lo de dentro (ver el tipo `MockLayout`).
+    const showTabs = (layout === 'panel' || layout === 'producto') && hasNavText;
     // La barra de acción reutiliza la MISMA etiqueta que el botón de la nav a
     // propósito: en una interfaz real la acción principal es una, repetida
     // arriba y a pie de página, no dos acciones distintas compitiendo.

@@ -113,6 +113,71 @@ export interface Screenshot {
     frame?: ScreenshotFrame;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   Vista previa esquemática de un producto
+   ═══════════════════════════════════════════════════════════════════════
+   La cuarta página del panel de /soluciones enseña el producto del sector.
+   Cuando haya capturas (`Sector.screenshots`) enseña la captura; mientras
+   no las haya, enseña ESTO: los módulos que la aplicación tiene de verdad,
+   dibujados con el mismo lenguaje de maqueta que ya usan el embudo del hero
+   y las tarjetas de casos (MockPreview).
+
+   DÓNDE ESTÁ LA LÍNEA entre ilustrar y mentir, que es la pregunta que
+   gobierna todo este fichero: una ilustración no finge ser una fotografía
+   —la maqueta no se parece en nada a una captura y la página lo dice con
+   todas las letras— y NO LLEVA CIFRAS. Ni un porcentaje, ni una gráfica,
+   ni un contador, ni un "+37% de margen". Los únicos textos que entran aquí
+   son nombres de módulo verificados entrando en la aplicación. Si algo no
+   se ha visto en pantalla, no se escribe.
+
+   Por eso `Product.preview` es OPCIONAL y no obligatorio: obligar a
+   rellenarlo empujaría a quien añada el quinto producto a inventarse los
+   módulos para que compile. Sin `preview`, la cuarta página sencillamente
+   no existe para ese sector — que es la respuesta correcta a "todavía no lo
+   he mirado", y el motivo real de que el número de páginas del panel dependa
+   del sector y no sea una constante. */
+export interface ProductPreview {
+    /** Acento del mock. Mismo vocabulario que `CaseShowcase.accent`, pero
+     *  abierto a los tres (`MockAccentKey`) y no solo a mint/warm: el azul
+     *  `info` es el que le corresponde a EnergyDeal, y descartarlo por
+     *  herencia de otro tipo habría sido elegir color por accidente. */
+    accent: MockAccentKey;
+    /** Las secciones de primer nivel de la aplicación, tal y como se llaman
+     *  dentro. Se pintan como PESTAÑAS (el mock va en `layout: 'panel'`), que
+     *  es lo que las distingue de una barra de navegación de web pública.
+     *
+     *  Tres, no las dieciséis que tiene el ERP: la vista previa no es un mapa
+     *  del sitio, es la respuesta a "¿esto es lo mío?" en dos segundos. En
+     *  ≤220px de ancho (vista móvil del mock) la tercera se oculta sola por
+     *  CSS, así que el orden importa: la más reconocible, primero. */
+    tabs: readonly [string, string, string];
+    /** Qué hace la aplicación, en UNA frase. Describe; no promete resultados
+     *  ni mide nada.
+     *
+     *  Se pinta FUERA del marco de la maqueta, y esa es la parte importante:
+     *  dentro del marco solo entra lo que la aplicación tiene de verdad (sus
+     *  pestañas, sus módulos y su nombre), porque cualquier texto puesto ahí
+     *  dentro se lee como texto DE la interfaz. Esta frase es nuestra, así que
+     *  va donde se ve que es nuestra. Ver ProductPreview.tsx.
+     *
+     *  UNA sola frase, sin segunda línea, y no por gusto: el panel que la
+     *  contiene tiene el alto clavado (500px a partir de 1024px) y cada línea
+     *  de texto de más es alto que la maqueta pierde. Si hace falta contar más,
+     *  el sitio es la página de Resumen, que para eso existe.
+     *
+     *  El nombre del producto NO va aquí: lo pone el render desde
+     *  `Product.name`, su única fuente (ver el TODO del nombre de
+     *  Presupuestador/PresupuesYa en products.ts — si se decide cambiar, esta
+     *  vista previa se entera sola). */
+    title: string;
+    /** Los módulos destacados. `ShowcaseBlock` completo y no solo la variante
+     *  `modules` para no cerrar la puerta: hoy los cuatro productos se cuentan
+     *  mejor como rejilla de módulos, pero un producto cuyo valor sea una
+     *  cadena de dos pasos tendría en `sequence` una representación más
+     *  honesta que cuatro tiles inconexos. */
+    block: ShowcaseBlock;
+}
+
 /** Línea de servicio con la que se etiqueta un caso: TIENDA / WEB /
  *  APP A MEDIDA. Hoy el modelo solo conocía los 7 sectores verticales
  *  (`SectorId`), que responden a "de qué sector es el cliente"; esto
@@ -213,7 +278,29 @@ export type ShowcaseIconKey =
     | 'badgeCheck'
     // — Automatización (rama "automatizar") —
     | 'keyboard'
-    | 'messages';
+    | 'messages'
+    // — Vista previa de producto (cuarta página de /soluciones) —
+    //
+    // Grupo nuevo por el mismo motivo que existieron los dos anteriores: un
+    // consumidor nuevo (`Product.preview`, ver products.ts) necesita nombrar
+    // cosas que ninguno de los anteriores nombraba. Y aquí el vocabulario
+    // importa MÁS que en el embudo, porque estos tiles llevan el nombre real
+    // de un módulo que existe en una aplicación en producción: un icono
+    // aproximado ("un papel" para VeriFactu) convierte la ilustración en
+    // decoración, que es justo lo contrario de lo que esta página promete.
+    //
+    // OJO con `zap`: existe una clave homónima en `IconKey` (el icono de
+    // IDENTIDAD del sector energía). No colisionan —son dos uniones y dos
+    // registros distintos, ver el comentario de arriba— pero si algún día se
+    // fusionan los registros, esta es la pareja que hay que mirar primero.
+    | 'banknote'
+    | 'bookOpen'
+    | 'zap'
+    | 'plug'
+    | 'history'
+    | 'landmark'
+    | 'shieldCheck'
+    | 'scanLine';
 
 /** Acentos disponibles para el mock. Estructuralmente idéntico a `MockAccent`
  * en MockPreview.tsx y a propósito NO importado de allí: src/data no depende

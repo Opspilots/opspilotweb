@@ -392,6 +392,97 @@
    servicios de una web pública y una rejilla de módulos de un panel interno
    no deben parecer lo mismo. La primera va destacada, como la categoría
    activa de cualquier listado. */
+
+/* ── producto (vista previa de producto en /soluciones) ──
+   Ver el comentario del tipo `MockLayout` en el .tsx para por qué esto NO es
+   `panel` reutilizado. La diferencia funcional está justo abajo: aquí NO se
+   repinta `.moduleTile` en bloque, así que `.moduleTileActive` vuelve a
+   significar algo y la rejilla tiene un foco —el módulo en el que estarías—
+   como cualquier aplicación de verdad.
+
+   La otra diferencia es de medidas, y responde a una restricción concreta del
+   sitio donde vive: el panel de sector de /soluciones mide 500px CLAVADOS a
+   partir de 1024px (ver `.panel` en Soluciones.module.css y el porqué del alto
+   fijo), y de esos 500 el deck de páginas se queda con 288 MEDIDOS —una vez
+   descontados el icono del sector, la fila de paginación y el botón de CTA—,
+   de los que la maqueta dispone de unos 230. Con el relleno de 28px, los
+   saltos de 20 y el titular en `--font-size-lg` de la maqueta estándar, esta
+   maqueta medía 263px y el deck tenía que sacar su barra de scroll interna de
+   emergencia. Con estas medidas se queda en 176. No es "una versión pequeña
+   por gusto": es lo que la hace caber donde tiene que caber. */
+.templatePreview[data-layout='producto'] {
+    padding: var(--spacing-4);
+    gap: var(--spacing-3);
+}
+
+/* Los enlaces ya se están pintando como pestañas: repetirlos en la barra
+   diría dos veces lo mismo. Mismo criterio que `panel`. */
+.templatePreview[data-layout='producto'] .tplNavLinks {
+    display: none;
+}
+
+/* El titular baja un escalón (lg → base). Aquí NO lleva una frase de venta
+   —eso vive FUERA del marco, ver ProductPreview.tsx— sino el nombre del
+   producto, que es lo que una aplicación pone en su propia cabecera. Un nombre
+   propio en el tamaño de un titular de portada se leería como un eslogan. */
+.templatePreview[data-layout='producto'] .tplTitle {
+    font-size: var(--font-size-base);
+}
+
+.templatePreview[data-layout='producto'] .tplBlock {
+    padding-top: var(--spacing-3);
+}
+
+/* Tiles algo más bajos. Es donde mejor se recorta alto sin perder nada: el
+   icono y la etiqueta no cambian de tamaño, solo el aire de alrededor. */
+.templatePreview[data-layout='producto'] .moduleTile {
+    padding: var(--spacing-2);
+}
+
+/* En la vista de móvil los módulos pasan de rejilla de tiles a FILAS con el
+   icono al lado de la etiqueta. Dos motivos, y el primero no es el sitio:
+   a 220px de ancho ninguna aplicación real apila icono sobre texto en dos
+   columnas —lo que hace es una lista— así que la maqueta se lee más como una
+   app y no menos. Y de paso resuelve el problema de alto: la rejilla de 4
+   columnas se parte en 2×2 en móvil (regla base de `.modules`) y con tiles en
+   columna la maqueta pasaba de 184px a 250 y desbordaba el deck de 288 del
+   panel de /soluciones. En filas se queda en torno a 196.
+
+   Lo que NO se hace: esconder módulos. Con las pestañas sí (`.tplTab:nth-child
+   (n+3)`, más arriba) porque una barra de pestañas se recorta de verdad al
+   estrecharse; los módulos son EL contenido de esta vista previa y enseñar la
+   mitad según el botón que hayas pulsado sería enseñar menos producto del que
+   hay. */
+.templatePreview[data-layout='producto'][data-device='mobile'] .moduleTile {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: var(--spacing-1) var(--spacing-2);
+}
+
+/* `minmax(0, 1fr)` y no el `1fr` de la regla base: `1fr` es en realidad
+   `minmax(auto, 1fr)`, así que una etiqueta larga ("OCR TICKETS") empuja su
+   columna por encima del reparto y las dos columnas salen de anchos distintos
+   —97 y 85px, medido—, que en una rejilla de 2×2 se ve como un fallo de
+   maqueta. Con `minmax(0, …)` la columna puede encogerse por debajo de su
+   contenido y el reparto vuelve a ser mitad y mitad; la etiqueta parte en dos
+   líneas, que es lo que hace cualquier lista de una app estrecha. */
+.templatePreview[data-layout='producto'][data-device='mobile'] .modules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.templatePreview[data-layout='producto'][data-device='mobile'] .moduleLabel {
+    line-height: 1.2;
+}
+
+/* Un único foco en la rejilla. El acento ya lo pone `.moduleTileActive`; lo
+   que se añade aquí es la sombra tintada, que es la que lo separa del plano y
+   lo hace leer como "estás aquí" en vez de como "este está coloreado". */
+.templatePreview[data-layout='producto'] .moduleTileActive {
+    box-shadow: var(--tpl-accent-shadow);
+}
+
 .services {
     display: flex;
     flex-wrap: wrap;

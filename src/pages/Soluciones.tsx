@@ -21,8 +21,9 @@ import { StructuredData } from '../components/seo/StructuredData';
 import sys from '../styles/page-system.module.css';
 import styles from './Soluciones.module.css';
 
-import type { Sector } from '../data';
+import type { Sector, SectorId } from '../data';
 import { SECTORS, getProduct, isLinkable } from '../data';
+import { ProductPreview, hasProductPreview } from '../components/marketing/ProductPreview';
 import { ICONS } from '../components/icons/registry';
 
 // Guard SSR: en build (node) no hay `window`; registrar el plugin a nivel de
@@ -39,10 +40,56 @@ const SECTOR_CTA_LABEL = 'Cuéntanos tu caso';
 
 // Carrusel de páginas DENTRO del panel de detalle — independiente de la
 // selección de sector (ver comentario junto a `page`/`selected` más abajo).
-// 3 páginas fijas por sector: overview (ya existía) + processSteps + faq,
-// ambos nuevos en el dato (ver src/data/types.ts, Sector.processSteps/faq).
-const PANEL_PAGE_COUNT = 3;
-const PANEL_PAGE_LABELS = ['Resumen', 'Cómo funciona', 'Preguntas frecuentes'] as const;
+//
+// Estas tres las tienen los 7 sectores: overview + processSteps + faq, los tres
+// del dato (ver src/data/types.ts).
+const PANEL_BASE_PAGE_LABELS = ['Resumen', 'Cómo funciona', 'Preguntas frecuentes'] as const;
+// Y esta CUARTA la tienen solo los sectores con producto propio Y con algo real
+// que enseñar de él (ver `hasProductPreview`: una captura en el dato, o el
+// esquema de módulos de products.ts). Hoy son 4 de los 7; agencias, pymes y
+// medida no tienen producto y por tanto tienen 3 páginas, no 4.
+const PANEL_PREVIEW_PAGE_LABEL = 'Vista previa';
+
+/**
+ * Etiquetas de página POR SECTOR. Aquí está el cambio de fondo de esta
+ * iteración: el panel deja de tener un número fijo de páginas.
+ *
+ * Y el sitio donde eso duele es que `page` es UNO SOLO para los 7 paneles (ver
+ * el `useState` más abajo): los 7 se montan siempre —el copy tiene que existir
+ * en el HTML prerenderizado— y todos leen el mismo índice. Con la cuarta
+ * página, un `page = 3` es válido para hostelería y NO EXISTE para agencias.
+ * Si cada panel se limita a comparar `idx === page`, el panel de agencias se
+ * queda sin ninguna página activa: las tres con `aria-hidden` + `inert`, el
+ * deck en blanco y ningún dot marcado. Y no es un caso teórico ni un fotograma
+ * suelto — en ≤767px los 7 paneles están EN FLUJO, uno al lado del otro, y se
+ * ven de verdad mientras deslizas de un sector a otro.
+ *
+ * La solución está repartida en dos sitios, a propósito:
+ *   · Aquí y en el render: cada panel acota el índice compartido a SU propio
+ *     número de páginas (`Math.min(page, pages.length - 1)`). Es una operación
+ *     sobre un dato geométrico, sin estado nuevo y sin efecto que espere al
+ *     siguiente commit, así que NO EXISTE el fotograma en blanco: un panel de 3
+ *     páginas nunca puede renderizarse mostrando la cuarta.
+ *   · El `useEffect` que ya devolvía `page` a 0 al cambiar de sector: sigue
+ *     haciendo su trabajo de siempre (aterrizar en Resumen y no en la FAQ de un
+ *     sector que acabas de abrir), que también resuelve el caso del usuario.
+ * Se necesitan LOS DOS: el efecto corre después del render, y el render de en
+ * medio es justo el que había que salvar.
+ *
+ * Precalculado a nivel de módulo por el mismo motivo que `SECTOR_FAQ_SCHEMA`
+ * de más abajo: se deriva EXCLUSIVAMENTE de `SECTORS`, que es dato estático e
+ * inmutable. Recalcularlo en cada render (7 paneles × cada cambio de sector o
+ * de página) sería trabajo puro a cambio de nada, y además daría un array nuevo
+ * cada vez.
+ */
+const PANEL_PAGE_LABELS: Record<SectorId, readonly string[]> = Object.fromEntries(
+    SECTORS.map((s) => [
+        s.id,
+        hasProductPreview(s)
+            ? [...PANEL_BASE_PAGE_LABELS, PANEL_PREVIEW_PAGE_LABEL]
+            : PANEL_BASE_PAGE_LABELS,
+    ]),
+) as Record<SectorId, readonly string[]>;
 
 // FAQPage único para /soluciones, agregando los 21 pares (7 sectores × 3) de
 // `Sector.faq`. Vive a nivel de módulo, no dentro del componente: se deriva
@@ -67,10 +114,45 @@ const SECTOR_FAQ_SCHEMA = buildFAQ(
     SECTORS.flatMap((s) => s.faq.map(({ question, answer }) => ({ q: question, a: answer }))),
 );
 
-/** Contenido de una de las 3 páginas del panel — extraído a parte para que el
+/** Contenido de una de las páginas del panel — extraído a parte para que el
  * `SECTORS.map` de más abajo no crezca un nivel más de anidación. Recibe el
- * sector activo y el índice de página (0 overview / 1 cómo funciona / 2 FAQ). */
-const SectorPageContent: React.FC<{ sector: Sector; page: number }> = ({ sector, page }) => {
+ * sector activo y el índice de página (0 resumen / 1 cómo funciona / 2 FAQ /
+ * 3 vista previa del producto, esta última solo en los sectores que la tienen,
+ * ver `PANEL_PAGE_LABELS`). */
+const SectorPageContent: React.FC<{ sector: Sector; page: number; active: boolean }> = ({
+    sector,
+    page,
+    active,
+}) => {
+    if (page === 3) {
+        return (
+            <div className={styles.pageBody}>
+                {/* Encabezado SOLO para lectores de pantalla, y es la única
+                    página del deck que lo lleva así. Motivo: el `<h3>` visible
+                    de las otras dos cuesta unos 40px entre tamaño y margen, y
+                    en el hueco de ~290px que deja el panel de 500px fijos
+                    (≥1024px) esos 40px son la diferencia entre que la maqueta
+                    quepa y que el deck tenga que sacar su barra de scroll de
+                    emergencia. Quitarlo del todo no era opción: dejaría un
+                    agujero en la jerarquía de encabezados justo en la página
+                    que más contenido nuevo aporta. Visualmente no falta nada —
+                    el nombre del producto lo pinta la propia maqueta. */}
+                <h3 className={styles.srOnlyHeading}>Vista previa de {sector.label}</h3>
+                {/* `revealed` = "el usuario está mirando esto AHORA". Es lo que
+                    hace que la maqueta se ensamble delante de él en vez de
+                    haberlo hecho al cargar la página, con la cuarta pestaña aún
+                    escondida — ver el comentario de la prop en
+                    ProductPreview.tsx. Lo decide `active`, que combina los DOS
+                    ejes (esta página dentro de su panel Y ese panel siendo el
+                    sector seleccionado), porque en ≤767px los 7 paneles están
+                    en flujo y se ven de verdad mientras deslizas: sin el
+                    segundo eje, siete cascadas arrancarían a la vez al pasar de
+                    largo por delante de ellas. */}
+                <ProductPreview sector={sector} revealed={active} />
+            </div>
+        );
+    }
+
     if (page === 1) {
         return (
             <div className={styles.pageBody}>
@@ -216,9 +298,12 @@ export const Soluciones: React.FC = () => {
     // abajo) como por el explorador. Un solo `const` en vez de `SECTORS[selected]`
     // repetido evita desincronías si algún día cambia la fuente de `selected`.
     const activeSector = SECTORS[selected];
-    // Página activa DENTRO del panel del sector seleccionado (0 overview / 1
-    // cómo funciona / 2 FAQ) — completamente independiente de `selected`
-    // salvo por el reset de abajo.
+    // Página activa DENTRO del panel del sector seleccionado (0 resumen / 1
+    // cómo funciona / 2 FAQ / 3 vista previa, esta última solo en los sectores
+    // que la tienen) — completamente independiente de `selected` salvo por el
+    // reset de abajo. Es UNO para los 7 paneles y por eso cada panel acota este
+    // índice al suyo antes de usarlo; ver el comentario largo de
+    // `PANEL_PAGE_LABELS` arriba, que es donde está argumentado el problema.
     //
     // Aquí vivía también un `pageDirection` (1 avanza / -1 retrocede / 0
     // sentinel "sin slide") que alimentaba las variants de AnimatePresence:
@@ -264,10 +349,22 @@ export const Soluciones: React.FC = () => {
         setPage(0);
     }, [selected]);
 
-    // Navegación entre páginas del panel — clamp a [0, N-1], no-op si ya
-    // estás en el destino (evita un re-render inútil).
+    // Páginas del sector ACTIVO. Es lo que gobierna las flechas, los dots y el
+    // teclado: antes se acotaba contra `PANEL_PAGE_COUNT`, una constante, y con
+    // la cuarta página eso pasaría a ser mentira en tres de los siete sectores
+    // (flecha "siguiente" habilitada hacia una página que no existe).
+    const activePages = PANEL_PAGE_LABELS[activeSector.id];
+    // El mismo acotado que hace cada panel, pero para el activo: es el índice
+    // desde el que se cuentan los saltos relativos del teclado. Sin él, un
+    // ArrowRight en el fotograma que va entre "cambio de sector" y el efecto
+    // que devuelve `page` a 0 se calcularía sobre un índice que ese sector no
+    // tiene.
+    const activePage = Math.min(page, activePages.length - 1);
+
+    // Navegación entre páginas del panel — clamp a [0, N-1] del SECTOR ACTIVO,
+    // no-op si ya estás en el destino (evita un re-render inútil).
     const goToPage = (target: number) => {
-        const next = Math.max(0, Math.min(PANEL_PAGE_COUNT - 1, target));
+        const next = Math.max(0, Math.min(activePages.length - 1, target));
         if (next === page) return;
         setPage(next);
     };
@@ -280,10 +377,10 @@ export const Soluciones: React.FC = () => {
     const handlePanelKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'ArrowRight') {
             e.preventDefault();
-            goToPage(page + 1);
+            goToPage(activePage + 1);
         } else if (e.key === 'ArrowLeft') {
             e.preventDefault();
-            goToPage(page - 1);
+            goToPage(activePage - 1);
         }
     };
 
@@ -690,6 +787,16 @@ export const Soluciones: React.FC = () => {
                                     {SECTORS.map((s, i) => {
                                         const isActive = i === selected;
                                         const PanelIcon = ICONS[s.iconKey];
+                                        // Páginas de ESTE panel, y el índice
+                                        // compartido acotado a ellas. Ver el
+                                        // comentario de `PANEL_PAGE_LABELS`:
+                                        // sin este `Math.min`, un sector de 3
+                                        // páginas con `page = 3` se pintaría
+                                        // sin ninguna página activa —y en
+                                        // ≤767px eso se ve, porque ahí los 7
+                                        // paneles están en flujo a la vez.
+                                        const pages = PANEL_PAGE_LABELS[s.id];
+                                        const panelPage = Math.min(page, pages.length - 1);
                                         return (
                                             <motion.div
                                                 key={s.id}
@@ -749,11 +856,15 @@ export const Soluciones: React.FC = () => {
                                                     vista qué sector está viendo. */}
                                                 <span className={styles.panelKicker}>{s.label}</span>
 
-                                                {/* Deck de las 3 páginas del panel (resumen / cómo funciona /
-                                                    FAQ). Las TRES se montan siempre, exactamente por el mismo
-                                                    motivo que los 7 paneles de sector de arriba y un nivel más
+                                                {/* Deck de las páginas del panel (resumen / cómo funciona /
+                                                    FAQ, más "vista previa" en los sectores con producto).
+                                                    TODAS se montan siempre, exactamente por el mismo motivo
+                                                    que los 7 paneles de sector de arriba y un nivel más
                                                     adentro: el copy tiene que existir en el HTML
-                                                    prerenderizado.
+                                                    prerenderizado. La cuarta entra por este MISMO camino y no
+                                                    por uno propio — es una entrada más de `pages`, con su
+                                                    `aria-hidden` + `inert` y su dot, ni un render condicional
+                                                    aparte ni un montaje diferido.
 
                                                     Contexto histórico — esto antes era un `AnimatePresence
                                                     mode="wait"` que montaba ÚNICAMENTE la página `page`. En
@@ -780,11 +891,18 @@ export const Soluciones: React.FC = () => {
                                                     `.pageNav` de más abajo, que es el patrón de pestañas que
                                                     Google soporta explícitamente. */}
                                                 <div className={styles.pageDeck}>
-                                                    {PANEL_PAGE_LABELS.map((label, idx) => {
-                                                        const isPageActive = idx === page;
+                                                    {pages.map((label, idx) => {
+                                                        const isPageActive = idx === panelPage;
                                                         // Negativo si la página queda a la izquierda de la
                                                         // activa, positivo si a la derecha, 0 la activa.
-                                                        const offset = idx - page;
+                                                        // Con la cuarta página el desplazamiento máximo
+                                                        // sube de 48px a 72px, y eso hace MÁS necesario el
+                                                        // `overflow-x: clip` de `.pageDeck` (ver
+                                                        // Soluciones.module.css): es desbordamiento
+                                                        // scrolleable de verdad, y sin ese `clip` sale una
+                                                        // barra horizontal dentro del panel que aparece y
+                                                        // desaparece según la página.
+                                                        const offset = idx - panelPage;
                                                         return (
                                                             <motion.div
                                                                 key={label}
@@ -801,33 +919,49 @@ export const Soluciones: React.FC = () => {
                                                                     ease: [0.16, 1, 0.3, 1],
                                                                 }}
                                                             >
-                                                                <SectorPageContent sector={s} page={idx} />
+                                                                <SectorPageContent
+                                                                    sector={s}
+                                                                    page={idx}
+                                                                    // "Activa" aquí es solo dentro de ESTE
+                                                                    // panel; que el panel a su vez esté
+                                                                    // seleccionado o no es otro eje y lo
+                                                                    // gobierna `isActive` más arriba.
+                                                                    active={isPageActive && isActive}
+                                                                />
                                                             </motion.div>
                                                         );
                                                     })}
                                                 </div>
 
-                                                {/* Flechas + dots — navegan `page` (0-2) dentro del sector
-                                                    activo, foco/teclado gestionados en `handlePanelKeyDown`
-                                                    (arriba, en el propio `motion.div` del panel). */}
+                                                {/* Flechas + dots. Cuentan las páginas de ESTE sector (3 o
+                                                    4, ver `pages` arriba) y no una constante: los dots son
+                                                    lo único que dice cuántas páginas hay, así que pintar
+                                                    cuatro en un sector que solo tiene tres sería prometer
+                                                    una que no existe, y pintar tres donde hay cuatro
+                                                    escondería la vista previa. Todo se compara contra
+                                                    `panelPage` (el índice ya acotado) y no contra `page`, o
+                                                    la flecha "siguiente" quedaría habilitada al final de un
+                                                    sector de 3 páginas mientras el índice compartido vale 3.
+                                                    Foco/teclado, en `handlePanelKeyDown` (arriba, en el
+                                                    propio `motion.div` del panel). */}
                                                 <div className={styles.pageNav}>
                                                     <button
                                                         type="button"
                                                         className={styles.pageArrow}
                                                         aria-label="Página anterior"
-                                                        disabled={page === 0}
-                                                        onClick={() => goToPage(page - 1)}
+                                                        disabled={panelPage === 0}
+                                                        onClick={() => goToPage(panelPage - 1)}
                                                     >
                                                         <ChevronLeft size={18} strokeWidth={2} />
                                                     </button>
                                                     <div className={styles.pageDots}>
-                                                        {PANEL_PAGE_LABELS.map((label, idx) => (
+                                                        {pages.map((label, idx) => (
                                                             <button
                                                                 key={label}
                                                                 type="button"
-                                                                className={`${styles.pageDot} ${idx === page ? styles.pageDotActive : ''}`}
+                                                                className={`${styles.pageDot} ${idx === panelPage ? styles.pageDotActive : ''}`}
                                                                 aria-label={`Ir a ${label}`}
-                                                                aria-current={idx === page ? 'true' : undefined}
+                                                                aria-current={idx === panelPage ? 'true' : undefined}
                                                                 onClick={() => goToPage(idx)}
                                                             />
                                                         ))}
@@ -836,8 +970,8 @@ export const Soluciones: React.FC = () => {
                                                         type="button"
                                                         className={styles.pageArrow}
                                                         aria-label="Página siguiente"
-                                                        disabled={page === PANEL_PAGE_COUNT - 1}
-                                                        onClick={() => goToPage(page + 1)}
+                                                        disabled={panelPage === pages.length - 1}
+                                                        onClick={() => goToPage(panelPage + 1)}
                                                     >
                                                         <ChevronRight size={18} strokeWidth={2} />
                                                     </button>

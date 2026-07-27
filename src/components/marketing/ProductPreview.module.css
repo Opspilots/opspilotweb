@@ -1,0 +1,411 @@
+/* ═══════════════════════════════════════════
+   PRODUCT PREVIEW — cuarta página del panel de sector de /soluciones.
+
+   Solo tres cosas viven aquí: el marco de la captura (cuando exista), la fila
+   de contexto de debajo (nota + conmutador + botón de ampliar) y el ampliador
+   a pantalla completa. La maqueta esquemática NO se estiliza aquí: es
+   MockPreview con `layout="producto"`, y sus medidas están en
+   MockPreview.module.css junto al resto de disposiciones — repartir el estilo
+   de la maqueta entre dos ficheros es exactamente cómo se desincronizan.
+
+   LA RESTRICCIÓN QUE MANDA SOBRE TODO LO DEMÁS: a partir de 1024px el panel
+   que contiene esta página mide 500px CLAVADOS (ver `.panel` en
+   Soluciones.module.css: el alto es fijo porque con el scroll-jack activo un
+   panel que cambiara de alto por sector haría saltar el documento entero en
+   mitad del scroll). De esos 500 quedan del orden de 290 para el deck de
+   páginas, una vez descontados el icono del sector, la fila de paginación y el
+   botón de CTA. Todo lo de este fichero está medido contra ese hueco: la fila
+   de contexto es UNA sola fila (nota a la izquierda, controles a la derecha) y
+   no dos apiladas justamente por eso.
+   ═══════════════════════════════════════════ */
+
+.wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    /* Sin esto, un nombre de módulo largo dentro de la maqueta puede empujar
+       el ancho del hijo flex por encima del contenedor y provocar scroll
+       horizontal — el mismo eje que `.pageDeck` tiene que recortar con
+       `overflow-x: clip` (ver Soluciones.module.css). Vale más no generarlo. */
+    min-width: 0;
+}
+
+/* Utilidad de texto solo para lectores de pantalla. Duplicada del patrón que
+   ya usa HeroLeadWidget.module.css: los módulos CSS no comparten clases entre
+   ficheros, y sacar nueve líneas a un global para dos usos sería peor negocio
+   que repetirlas. */
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ─── Marco de captura (rama "hay imagen", hoy sin ningún caso) ───
+   Superficie elevada y punto. NADA de chrome de navegador falso: barra de
+   título con tres puntitos, campo de URL de mentira o bisel de portátil son
+   justo el tipo de adorno que este proyecto ha ido quitando (ver la nota de
+   HeroLeadWidget sobre por qué se le quitó la suya). Si hay una captura, lo
+   que tiene que verse es la captura.
+
+   EL TOPE DE ALTO VA EN PÍXELES Y NO EN `max-height: 100%`, y esto se probó:
+   un porcentaje se resuelve contra la altura del contenedor, y aquí ese
+   contenedor no tiene altura definida (es un hijo en flujo normal dentro del
+   deck), así que el porcentaje queda indefinido y no acota NADA. Con una
+   captura real de 1376px de ancho inyectada de prueba, la imagen se pintaba a
+   343px de alto dentro de un deck de 288 y lo desbordaba. Un tope en píxeles
+   sí es definido, y `object-fit: contain` se encarga de que la imagen quepa
+   dentro sin deformarse sea cual sea su proporción — que es el punto: la
+   primera captura llegará con las dimensiones que tenga, no con las que este
+   CSS esperaba. */
+.shotFigure {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border-radius: var(--radius-card);
+    background: var(--color-bg-deep);
+    box-shadow: var(--glass-inset), var(--shadow-md);
+    overflow: hidden;
+}
+
+.shotImg {
+    display: block;
+    max-width: 100%;
+    /* Por debajo de 1024px el panel crece con su contenido, así que aquí el
+       tope solo evita que una captura enorme empuje la tarjeta a un scroll
+       eterno. El tope duro es el de la media query de abajo. */
+    max-height: 320px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+/* ≥1024px: el panel mide 500px fijos y al deck le quedan 288 (ver la cabecera
+   de este fichero). Descontando la fila de contexto —unos 57px, o 74 si el
+   producto lleva la nota de disponibilidad— y el hueco entre ambos, a la
+   imagen le quedan 200. */
+@media (min-width: 1024px) {
+    .shotImg {
+        max-height: 200px;
+    }
+}
+
+/* Marco de teléfono: mismo criterio de contención que la vista `mobile` de la
+   maqueta (contenedor angosto centrado, no un bisel dibujado) y el radio más
+   generoso que es lo único que un móvil aporta como forma. */
+.shotFigure[data-frame='phone'] {
+    max-width: 260px;
+    margin-inline: auto;
+    border-radius: var(--radius-panel);
+}
+
+/* ─── Fila de contexto ─── */
+.meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    /* Se permite envolver: en el panel estrecho de 768–1023px la nota y los
+       controles no caben en una línea, y partir es infinitamente mejor que
+       recortar la nota — que es precisamente la frase que sostiene la
+       honestidad de toda la página. */
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+/* Columna de texto de la fila: TODO lo que aquí se dice lo decimos nosotros,
+   nunca la aplicación. De ahí que vaya fuera del marco y con tipografía de la
+   web —no de maqueta— para que no haya forma de confundir las dos voces.
+
+   Un raíl fino a la izquierda en vez de un icono de aviso: esto no es una
+   advertencia, es un pie de foto. El raíl lo separa del ruido sin darle un
+   tono de alarma que no le corresponde. */
+.copy {
+    flex: 1 1 16rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: var(--spacing-3);
+    border-left: 1px solid var(--color-border-subtle);
+}
+
+/* Qué hace el producto, en una línea. Es lo que antes iba dentro del marco
+   como titular de la maqueta. */
+.claim {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.35;
+    color: var(--color-text-strong);
+    text-wrap: balance;
+}
+
+/* La frase que separa ilustrar de mentir. Va en mono y no en la tipografía del
+   cuerpo a propósito: el mono es en toda esta web el registro de "esto es un
+   apunte técnico sobre lo que estás viendo", no una frase de venta más. Y va
+   pegada a la maqueta, no en un pie de página lejano. */
+.note {
+    margin: 0;
+    margin-top: 2px;
+    font-family: var(--font-family-mono);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    color: var(--color-text-subtle);
+}
+
+/* La única frase de esta página que NO es un pie de foto neutro: dice que la
+   aplicación no está accesible hoy. Ámbar (`--color-warm`, el acento de estado
+   del sistema) y en su propia línea — no es un matiz de la nota anterior, es
+   información distinta. */
+.noteWarn {
+    margin: 0;
+    /* Tipografía de cuerpo y NO mono, al revés que la nota de encima. No es
+       coquetería: el mono es aquí el registro de "apunte técnico sobre lo que
+       ves", y esto no habla de la maqueta sino del estado del producto — dos
+       cosas distintas merecen dos voces distintas. Además el cuerpo ocupa
+       bastante menos ancho por carácter, y en la columna de 320px del panel a
+       1024px eso es exactamente la diferencia entre una línea y dos. */
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    color: var(--color-warm);
+}
+
+/* ≥1024px es el ÚNICO rango donde el panel tiene el alto clavado a 500px, y
+   por tanto el único donde una línea de más en un texto se convierte en una
+   barra de scroll. Se acota lo que se puede acotar sin perder información
+   —nuestra descripción del producto, que es redundante con lo que ya dicen la
+   maqueta y la página de resumen— y NO se acota la nota: es la frase que dice
+   qué es exactamente lo que se está viendo, y recortarla a mitad de palabra
+   sería quitar justo lo que sostiene la página.
+
+   Mismo mecanismo que ya usan `.panelSolution`, `.stepDescription` y
+   `.faqAnswer` en Soluciones.module.css, y por el mismo motivo: con el alto
+   fijo, el número de líneas tiene que ser una constante y no algo que dependa
+   de lo largo que sea el copy que alguien escriba mañana. Medido a 1024px de
+   viewport, que es el caso PEOR: el panel sigue midiendo 500px pero la columna
+   de texto es la más estrecha de todo el rango, así que es donde más líneas
+   parte una misma frase. */
+@media (min-width: 1024px) {
+    .claim {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex-shrink: 0;
+}
+
+/* ─── Botón de ampliar (solo con captura) ───
+   Con texto y no solo icono: es la acción que el usuario pidió por su nombre
+   ("un botón que te agranda la imagen"), y una lupa suelta sobre una imagen se
+   confunde con un zoom de mapa. 44px de alto, igual que el conmutador. */
+.zoomBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    min-height: 44px;
+    padding: 0 var(--spacing-4);
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--color-mint-soft);
+    color: var(--color-mint);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+@media (hover: hover) {
+    .zoomBtn:hover {
+        background: var(--color-mint);
+        color: var(--color-bg-deep);
+    }
+}
+
+.zoomBtn:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+/* ─── Conmutador escritorio/móvil ───
+   Mismas medidas y misma gramática que el conmutador del embudo del hero
+   (HeroLeadWidget.module.css): es literalmente el mismo control sobre el mismo
+   componente, y que se vea distinto en dos páginas del mismo sitio sería un
+   descuido, no una decisión. Los 44×44 vienen de allí y de su motivo: medía
+   26×22 y era la mitad del objetivo táctil accesible.
+
+   Lee `--tpl-accent-*` con respaldo a mint: cuando la maqueta de al lado va en
+   ámbar o en azul, el botón pulsado se pone a juego, porque MockPreview
+   publica esas variables desde su propio contenedor... salvo que aquí NO las
+   hereda (el conmutador es hermano de la maqueta, no hijo). El respaldo mint
+   es entonces el camino normal y no el de emergencia — a propósito: el control
+   pertenece a la página, no al producto, y el verde de casa es lo correcto. */
+.deviceToggle {
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    background: var(--color-bg-deep);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+}
+
+.deviceBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+@media (hover: hover) {
+    .deviceBtn:hover {
+        color: var(--color-text-strong);
+    }
+}
+
+.deviceBtn[aria-pressed='true'] {
+    background: var(--color-mint-soft);
+    color: var(--color-mint);
+}
+
+.deviceBtn:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════
+   Ampliador — `<dialog>` nativo en capa superior
+   ═══════════════════════════════════════════
+   El `<dialog>` modal se pinta en el TOP LAYER del navegador, por encima de
+   cualquier `z-index` del documento. Eso resuelve de un plumazo el problema
+   que tendría un modal hecho a mano en esta página concreta: vive DENTRO de
+   `.panel`, que tiene `overflow: hidden` e `isolation: isolate` (ver
+   Soluciones.module.css) — o sea, dentro de una caja que recorta a sus hijos y
+   crea contexto de apilamiento propio. Un overlay con `position: fixed` ahí
+   dentro se habría quedado recortado dentro del panel. El top layer se escapa
+   de ambos por definición.
+
+   Por eso tampoco hay `position`, ni `z-index`, ni `inset` en estas reglas: el
+   centrado del diálogo modal lo hacen los `margin: auto` que trae el UA. */
+.zoomDialog {
+    max-width: min(94vw, 1180px);
+    max-height: 92vh;
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: visible;
+}
+
+.zoomDialog::backdrop {
+    background: rgba(3, 7, 12, 0.82);
+}
+
+.zoomInner {
+    position: relative;
+    border-radius: var(--radius-panel);
+    background: var(--color-bg-elevated);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.zoomImg {
+    display: block;
+    max-width: 100%;
+    /* 92vh del diálogo menos el aire de la sombra/el radio: la imagen manda el
+       tamaño, pero nunca por encima de la ventana. */
+    max-height: 88vh;
+    width: auto;
+    height: auto;
+}
+
+.zoomClose {
+    position: absolute;
+    top: var(--spacing-3);
+    right: var(--spacing-3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: var(--radius-full);
+    /* Sobre la captura, así que fondo propio y opaco: un botón translúcido
+       encima de una interfaz clara desaparece. */
+    background: var(--color-bg-deep);
+    box-shadow: var(--shadow-md);
+    color: var(--color-text-strong);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+@media (hover: hover) {
+    .zoomClose:hover {
+        background: var(--color-mint);
+        color: var(--color-bg-deep);
+    }
+}
+
+.zoomClose:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+}
+
+/* Entrada del ampliador. Gateada tras `no-preference` en CSS y no con el hook
+   `usePrefersReducedMotion`, que es lo que usa el resto de esta página: aquí
+   no hay ninguna animación conducida por JS que apagar —son dos `animation` de
+   CSS— y la consulta de medios se evalúa también durante el prerender SSG, sin
+   esperar a que hidrate. Mismo criterio que la cascada de MockPreview.module.css. */
+@media (prefers-reduced-motion: no-preference) {
+    .zoomDialog[open] {
+        animation: zoomDialogIn 0.28s var(--ease-out-expo) both;
+    }
+
+    .zoomDialog[open]::backdrop {
+        animation: zoomBackdropIn 0.28s ease both;
+    }
+}
+
+@keyframes zoomDialogIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes zoomBackdropIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

@@ -17,7 +17,9 @@
 import type { LucideIcon } from 'lucide-react';
 import {
     BadgeCheck,
+    Banknote,
     Bell,
+    BookOpen,
     Building2,
     Calculator,
     CalendarCheck2,
@@ -26,15 +28,21 @@ import {
     FileCheck2,
     FileText,
     Hammer,
+    History,
     Keyboard,
+    Landmark,
     LayoutGrid,
     MessageSquare,
     MessagesSquare,
+    Plug,
     Receipt,
+    ScanLine,
     Settings,
+    ShieldCheck,
     Truck,
     Users,
     Wrench,
+    Zap,
 } from 'lucide-react';
 import type { ShowcaseIconKey } from '../../data/types';
 
@@ -62,4 +70,18 @@ export const MOCK_ICONS: Record<ShowcaseIconKey, LucideIcon> = {
     // Automatización
     keyboard: Keyboard,
     messages: MessagesSquare,
+    // Vista previa de producto (/soluciones, cuarta página). Cada uno se
+    // eligió contra el módulo CONCRETO que va a etiquetar, no por parecido
+    // temático: `Plug` es el punto de suministro (CUPS) y no "algo eléctrico",
+    // `Landmark` es la Administración y no "un edificio", `History` es el log
+    // de auditoría y no "el tiempo". Ver el comentario del grupo en
+    // src/data/types.ts sobre por qué aquí un icono aproximado hace daño.
+    banknote: Banknote,
+    bookOpen: BookOpen,
+    zap: Zap,
+    plug: Plug,
+    history: History,
+    landmark: Landmark,
+    shieldCheck: ShieldCheck,
+    scanLine: ScanLine,
 };
