@@ -83,7 +83,16 @@ const PANEL_PREVIEW_PAGE_LABEL = 'Vista previa';
  * cada vez.
  */
 const PANEL_PAGE_LABELS: Record<SectorId, readonly string[]> = Object.fromEntries(
-    SECTORS.map((s) => [
+    // El tipo de retorno del callback va ANOTADO a propósito, y no es adorno:
+    // `Object.fromEntries` espera `Iterable<readonly [PropertyKey, T]>`, o sea
+    // TUPLAS de dos. Sin la anotación, TypeScript infiere el literal de abajo
+    // como `(SectorId | readonly string[])[]` — un array normal de tipo unión,
+    // no una tupla — y el argumento deja de ser asignable. Eso NO lo arregla el
+    // `as` del final: la aserción se aplica al resultado, cuando el error ya se
+    // ha producido en el argumento. Falla `tsc` y, como `npm run build` empieza
+    // por `tsc`, tumba el despliegue entero sin que el servidor de desarrollo
+    // haya chistado (Vite transpila sin comprobar tipos).
+    SECTORS.map((s): [SectorId, readonly string[]] => [
         s.id,
         hasProductPreview(s)
             ? [...PANEL_BASE_PAGE_LABELS, PANEL_PREVIEW_PAGE_LABEL]

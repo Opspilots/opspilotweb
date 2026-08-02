@@ -667,14 +667,19 @@
     text-overflow: ellipsis;
 }
 
+/* PARTE, no se recorta. Medido: `/reformas-locales-comerciales-cordoba/` pide
+   182px y la columna de rutas da 196 a 1038px de maqueta pero solo 157 cuando
+   la tarjeta baja a 625px (viewport de 768). Con puntos suspensivos, la ruta
+   más larga —la que mejor demuestra el argumento del caso, servicio + ciudad—
+   se quedaba en "/reformas-locales-comercia…", que no es una ruta y no lleva a
+   ninguna parte. Una ruta partida en dos líneas se sigue pudiendo escribir en
+   la barra del navegador; una recortada, no. */
 .routePath {
     font-family: var(--font-family-mono);
     font-size: 0.5rem;
     line-height: 1.35;
     color: var(--cm-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
 }
 
 /* La barra muda de cada ruta: dice "esta página también tiene contenido" sin
@@ -1102,8 +1107,12 @@
     }
 
     /* ─── MAPA DE PÁGINAS: página abierta | rutas | formulario ─── */
+    /* La columna de rutas es la más ancha de las tres, y no por estética: las
+       rutas son el argumento del caso y la más larga pide 182px. Con el
+       reparto anterior (1.35 / 1 / 1) se quedaba en 157 a 625px de maqueta y
+       partía en dos líneas sin necesidad. */
     .frame[data-kind='sitemap'] .body {
-        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.35fr) minmax(0, 1fr);
         grid-template-rows: minmax(0, 1fr) auto;
         grid-template-areas:
             'page routes form'
@@ -1162,14 +1171,19 @@
    hueco de hero) se quedaba 40px por debajo de la tienda, y en el carrusel eso
    es un salto del carril al deslizar de una tarjeta a otra. Son MÍNIMOS y no
    alturas fijas: si un día un nombre de categoría parte en dos líneas, la
-   maqueta crece en vez de recortarlo. */
+   maqueta crece en vez de recortarlo.
+
+   Los dos números están MEDIDOS contra la escena más alta de cada rango, no
+   elegidos a ojo: en ancho manda la tienda (la columna de fichas pequeñas es
+   lo que más estira) y en estrecho manda el mapa de páginas (cuatro rutas más
+   el formulario). Si tocas una escena, vuelve a medir las tres. */
 .frame {
-    min-height: 268px;
+    min-height: 368px;
 }
 
 @container casemock (min-width: 520px) {
     .frame {
-        min-height: 236px;
+        min-height: 264px;
     }
 }
 

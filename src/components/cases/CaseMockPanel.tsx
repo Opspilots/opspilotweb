@@ -157,6 +157,13 @@ const BAR_WIDTHS = [72, 54, 66, 45, 78, 58, 62, 49] as const;
 function Bar({ i, className }: { i: number; className?: string }) {
     return (
         <span
+            // `aria-hidden` AQUÍ DENTRO y no en cada sitio donde se usa, y eso
+            // es lo importante: la regla "lo mudo no entra en el árbol de
+            // accesibilidad" deja de depender de que quien añada la próxima
+            // figura se acuerde de envolverla. Se comprobó al revés — dos
+            // huecos colgados directamente de su tarjeta se habían quedado
+            // expuestos justo por no tener un contenedor marcado encima.
+            aria-hidden="true"
             className={`${styles.bar}${className ? ` ${className}` : ''}`}
             style={{ width: `${BAR_WIDTHS[i % BAR_WIDTHS.length]}%` }}
         />
@@ -168,7 +175,10 @@ function Bar({ i, className }: { i: number; className?: string }) {
  *  no como una tarjeta vacía. No hay ni una foto de estos tres proyectos en el
  *  repo y no se van a inventar — mismo criterio que el `tplCover` del embudo. */
 function Well({ className }: { className?: string }) {
-    return <span className={`${styles.well}${className ? ` ${className}` : ''}`} />;
+    // Mismo criterio que `Bar`: se marca en el componente, no en cada uso.
+    return (
+        <span aria-hidden="true" className={`${styles.well}${className ? ` ${className}` : ''}`} />
+    );
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
