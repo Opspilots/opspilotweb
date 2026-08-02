@@ -9,11 +9,11 @@
 //
 // `showcase` alimenta CaseMockPanel (componente compartido en
 // src/components/cases/CaseMockPanel.tsx), usado tanto en la tarjeta de Home
-// como en la de Casos — reutiliza MockPreview (el mismo lenguaje visual del
-// Paso 4 de HeroLeadWidget, ver src/components/marketing/MockPreview.tsx)
-// para mostrar una mini-interfaz FIJA por caso que representa la mejora de
-// ese sector.
-import type { Case, ServiceLine } from './types';
+// como en la de Casos: una mini-interfaz FIJA por caso que representa la web
+// ENTREGADA a ese cliente, con SU paleta y con la forma de lo que es. Ya no
+// pasa por MockPreview (la maqueta genérica de OpsPilot) — ver el bloque de
+// contexto de `CaseShowcase` en types.ts.
+import type { Case, CaseSiteTheme, ServiceLine } from './types';
 
 /** Cómo se pinta cada línea de servicio en la tarjeta de un caso. Vive junto
  *  a los datos (mismo patrón que `NECESIDAD_LABEL`/`OBJETIVO_LABEL` en
@@ -25,6 +25,135 @@ export const SERVICE_LINE_LABEL: Record<ServiceLine, string> = {
     tienda: 'TIENDA',
     web: 'WEB',
     app: 'APP A MEDIDA',
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LAS TRES PALETAS, LEÍDAS DE LAS TRES WEBS
+   ═══════════════════════════════════════════════════════════════════════
+   Valores tomados entrando en cada sitio. Son un HECHO sobre una web en
+   producción, igual que sus nombres de sección, y por eso viven aquí y no
+   incrustados en el CSS: una maqueta nueva entra sin tocar una línea de
+   estilos (ver `CaseSiteTheme` en types.ts y el contrato de color en la
+   cabecera de CaseMockPanel.module.css).
+
+   RATIOS. Cada tema anota los pares que el render usa para TEXTO, y todos
+   cumplen 4.5:1 (AA, texto normal). Las figuras mudas —barras, celdas,
+   huecos— van `aria-hidden` y no dicen nada, así que no se les exige
+   contraste de texto; el criterio es el mismo que ya gobierna las figuras de
+   ProductPreview. */
+
+/** ObraFácil — obrafacil2025.es. Tienda online.
+ *
+ *  El amarillo de señalización es toda su identidad, y trae una trampa que
+ *  hay que decir en voz alta: `#F5D800` sobre blanco da 1.43:1. NO CUMPLE ni
+ *  para texto ni para elemento no textual, así que el amarillo aquí no toca
+ *  jamás el fondo claro por su cuenta — va SIEMPRE relleno con tinta casi
+ *  negra encima (13.6:1) o pegado a la cabecera negra. Es lo mismo que hace
+ *  la tienda: su amarillo vive en botones y sobre el hero oscuro.
+ *
+ *  Medidos:
+ *    · texto #0D0D0D sobre blanco .................. 19.4:1
+ *    · muted #57534E sobre blanco ...................  7.6:1
+ *    · muted #57534E sobre raised #F1F0EA ...........  6.7:1
+ *    · chromeInk #FAFAF8 sobre chrome #0D0D0D ....... 18.6:1
+ *    · actionInk #0D0D0D sobre action #F5D800 ....... 13.6:1 */
+const THEME_OBRAFACIL: CaseSiteTheme = {
+    source: 'site',
+    scheme: 'light',
+    bg: 'rgb(250, 250, 248)',
+    surface: '#ffffff',
+    raised: '#f1f0ea',
+    line: 'rgba(13, 13, 13, 0.13)',
+    text: '#0d0d0d',
+    // Derivado: gris CÁLIDO y no neutro. Un gris azulado al lado de este
+    // amarillo se ve verdoso, y el sitio es cálido de arriba abajo.
+    muted: '#57534e',
+    accent: 'rgb(245, 216, 0)',
+    accentSoft: 'rgba(245, 216, 0, 0.24)',
+    // El botón real de la tienda: amarillo con tinta casi negra.
+    action: 'rgb(245, 216, 0)',
+    actionInk: '#0d0d0d',
+    // Su hero es casi negro, y esa banda es lo primero que identifica a la
+    // tienda: es la única de las tres maquetas con cabecera oscura.
+    chrome: '#0d0d0d',
+    chromeInk: 'rgb(250, 250, 248)',
+    glow: '0 8px 22px -12px rgba(13, 13, 13, 0.28)',
+};
+
+/** J.R. Rodríguez e Hijos — rodriguezreformas.es. Web de captación local.
+ *
+ *  Verde oliva natural sobre blanco y crema: una paleta cálida y apagada que
+ *  no se confunde ni con el amarillo saturado de ObraFácil ni con el azul
+ *  frío de EnergyDeal, que era justo lo que fallaba antes.
+ *
+ *  EL PAR DE ACCIÓN NO ES EL OLIVA, y merece explicación porque es una
+ *  desviación consciente respecto a su web: sus botones son oliva con texto
+ *  blanco, o sea 3.86:1, por debajo de AA. Copiar ese par sería importar un
+ *  defecto de accesibilidad ajeno a una web nuestra; oscurecer el oliva sería
+ *  inventarle un color que no tiene. Así que el botón usa OTRO par suyo —el
+ *  carbón del cuerpo con la crema de su titular, 10.6:1— y el oliva se queda
+ *  donde sí cumple: filos, marcadores, tintes e iconos (3.86:1 sobre blanco,
+ *  por encima del 3:1 de elementos no textuales).
+ *
+ *  Medidos:
+ *    · texto #2F3130 sobre blanco ................... 13.6:1
+ *    · muted #4F4F4C sobre blanco ...................  8.2:1
+ *    · muted #4F4F4C sobre crema #E9E7E0 ............  6.6:1
+ *    · actionInk #E9E7E0 sobre action #2F3130 ....... 10.6:1
+ *    · accent #7D865D sobre blanco (solo gráfico) ...  3.9:1 */
+const THEME_RODRIGUEZ: CaseSiteTheme = {
+    source: 'site',
+    scheme: 'light',
+    bg: '#ffffff',
+    surface: '#ffffff',
+    // Su crema, la del titular sobre el hero. Aquí hace de banda: es lo que
+    // da el aire cálido y bajo en contraste de toda la web.
+    raised: '#e9e7e0',
+    line: 'rgba(47, 49, 48, 0.16)',
+    text: '#2f3130',
+    // Derivado a partir de su gris de cuerpo (#5A5A5A). Se oscurece porque el
+    // #5A5A5A sobre su propia crema se queda en 4.2:1 y aquí sí hay texto
+    // secundario apoyado en la banda crema.
+    muted: '#4f4f4c',
+    accent: 'rgb(125, 134, 93)',
+    accentSoft: 'rgba(125, 134, 93, 0.16)',
+    action: '#2f3130',
+    actionInk: '#e9e7e0',
+    chrome: '#ffffff',
+    chromeInk: '#2f3130',
+    glow: '0 8px 22px -12px rgba(47, 49, 48, 0.22)',
+};
+
+/** EnergyDeal — energydeal.es. CRM vertical, tema claro y frío.
+ *
+ *  Estos son los MISMOS valores que `THEME_ENERGYDEAL` en products.ts, y la
+ *  duplicación es deliberada, no un descuido. Aquel describe la APLICACIÓN
+ *  (lo que se ve tras entrar) y este el SITIO PÚBLICO; hoy comparten sistema
+ *  de diseño y por eso coinciden. Con un solo objeto compartido, el día que
+ *  se rediseñe uno de los dos sin tocar el otro habría que mentir en alguno —
+ *  y el campo `source` de ambos afirma justo que se han mirado por separado.
+ *
+ *  Medidos:
+ *    · texto hsl(222 47% 11%) sobre blanco .......... 17.9:1
+ *    · muted hsl(215 20% 40%) sobre blanco ..........  6.2:1
+ *    · muted hsl(215 20% 40%) sobre raised ..........  5.6:1
+ *    · actionInk blanco sobre action #2563EB ........  5.2:1 */
+const THEME_ENERGYDEAL: CaseSiteTheme = {
+    source: 'site',
+    scheme: 'light',
+    bg: 'hsl(210 20% 98%)',
+    surface: 'hsl(0 0% 100%)',
+    raised: 'hsl(210 40% 96%)',
+    line: 'hsl(214 30% 88%)',
+    text: 'hsl(222 47% 11%)',
+    muted: 'hsl(215 20% 40%)',
+    accent: 'hsl(221 83% 53%)',
+    accentSoft: 'hsl(221 90% 96%)',
+    action: 'hsl(221 83% 53%)',
+    actionInk: 'hsl(0 0% 100%)',
+    chrome: 'hsl(0 0% 100%)',
+    chromeInk: 'hsl(222 47% 11%)',
+    glow: '0 8px 22px -12px hsla(222 40% 25% / 0.22)',
 };
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -117,32 +246,51 @@ export const CASES: readonly Case[] = [
             'Calculadora de placas: el cliente sabe cuántas necesita para su pared sin echar cuentas',
             'Galería de «antes y después» sobre azulejo real, preguntas frecuentes y WhatsApp para las dudas',
         ],
+        /* La maqueta se dibuja como lo que es: UNA TIENDA. Rejilla de
+           producto con una ficha grande delante, las categorías de su propio
+           catálogo al lado y la fila de destacados debajo — no cuatro fichas
+           con icono, que es lo que había y lo que no distinguía este caso de
+           los otros dos.
+
+           SIN PRECIO, y aquí es donde más aprieta la regla: esta tienda está
+           abierta, cualquiera puede entrar y comprobar lo que cuesta una
+           placa. Donde iría el importe va un hueco vacío (ver `.priceSlot` en
+           CaseMockPanel.module.css), igual que en las figuras de
+           ProductPreview. Un precio inventado en la maqueta de un cliente
+           verificable es exactamente la mentira que esta web vino a quitar. */
         showcase: {
-            // `warm` con esta entrada en cabeza deja la serie alternando
-            // ámbar / mint / ámbar / mint al deslizar. Dos maquetas seguidas
-            // del mismo acento se leen como la misma maqueta repetida.
-            accent: 'warm',
-            // NO 'Tienda online': la etiqueta TIENDA de la cabecera de la
-            // tarjeta queda a dos centímetros de aquí y repetir la palabra
-            // gasta el único renglón que tiene la maqueta para decir algo que
-            // no se sepa ya. Esto dice de qué va el producto.
-            kicker: 'Comprar sin obra',
-            // Los cuatro tiles son módulos que la tienda TIENE, vistos en su
-            // menú y en su portada. La rejilla de `modules` es de 4 columnas
-            // en escritorio y 2×2 en móvil (MockPreview.module.css), así que
-            // cuatro es el número que cuadra: un quinto se quedaría solo en
-            // una fila. La galería de «antes y después» es el que se queda
-            // fuera y por eso se cuenta en el texto, no se dibuja a medias.
+            theme: THEME_OBRAFACIL,
+            siteName: 'ObraFácil',
+            // Tres de sus secciones de primer nivel. "Catálogo" primero
+            // porque es lo que la tienda ES; en contenedor estrecho la
+            // tercera se pliega sola.
+            nav: ['Catálogo', 'Antes y después', 'FAQ'],
+            // Su llamada a la acción, con su texto.
+            cta: 'Ver catálogo',
             title: 'De la placa al pedido, sin salir de la tienda',
-            sub: 'Catálogo, carrito, calculadora y WhatsApp para lo que no cabe en una ficha.',
-            block: {
-                type: 'modules',
-                items: [
-                    { key: 'catalogo', icon: 'layoutGrid', label: 'Catálogo', active: true },
-                    { key: 'carrito', icon: 'shoppingCart', label: 'Carrito', active: true },
-                    { key: 'calculadora', icon: 'calculator', label: 'Calculadora', active: true },
-                    { key: 'whatsapp', icon: 'chatMessage', label: 'WhatsApp', active: true },
+            sub: 'Catálogo con carrito, calculadora de placas y WhatsApp para lo que no cabe en una ficha.',
+            stage: {
+                kind: 'storefront',
+                // Categorías REALES de su catálogo. Cuatro de las siete que
+                // tiene: las que caben con su nombre entero. Las otras tres
+                // no se recortan ni se inventan — se cuentan en
+                // `moreCategories` como filas mudas.
+                categories: [
+                    'Placas Decorativas PVC',
+                    'Palillería Interior',
+                    'Suelos SPC',
+                    'Jardines Verticales',
                 ],
+                moreCategories: 3,
+                // Producto real de su catálogo, con su nombre y su ficha.
+                product: { name: 'Calacatta Oro 260×122cm', spec: 'PVC alto brillo' },
+                siblings: 3,
+                // Su sección destacada de portada, en sus versalitas.
+                featured: 'LO MÁS VENDIDO',
+                // La pieza que esta tienda tiene y una tienda cualquiera no.
+                // Dos huecos de entrada, vacíos: los metros de la pared son
+                // del cliente, no nuestros.
+                tool: { label: 'Calculadora de placas', fields: 2 },
             },
         },
         // SIN `quote` ni `author`, y es una decisión, no un hueco. Los dos
@@ -215,38 +363,50 @@ export const CASES: readonly Case[] = [
             'Galería de «antes y después» sobre obra real y zonas de actuación de la provincia',
             'Presupuesto por formulario con los datos ya ordenados, o por WhatsApp con el mensaje escrito',
         ],
+        /* La maqueta NO es una rejilla de servicios: es un MAPA DE PÁGINAS.
+           Aquí la arquitectura del sitio es literalmente el argumento del
+           caso —una página por servicio y ciudad— y dibujarlo como tres
+           chips con icono, que es lo que había, tiraba a la basura lo único
+           que hay que contar. Ahora se ven las CUATRO rutas reales, con sus
+           barras, y una de ellas abierta por dentro: hueco de imagen del
+           hero, texto, la pareja «antes / después» y el formulario.
+
+           Las cuatro rutas responden 200, verificado. La ruta es el dato:
+           escribirla mal sería enviar a comprobar algo que no existe. Y falta
+           a propósito /calculadora-gratuita/, que hoy devuelve 404 — ver el
+           TODO(negocio) del final del fichero. */
         showcase: {
-            // `mint` entre dos ámbares: la serie queda ámbar / mint / ámbar al
-            // deslizar y ninguna maqueta se lee como la repetición de la
-            // anterior. Es el mismo criterio que ya justificaba el `warm` de
-            // ObraFácil, solo que ahora aplicado a una serie de tres.
-            accent: 'mint',
-            kicker: 'Búsqueda local',
+            theme: THEME_RODRIGUEZ,
+            siteName: 'J.R. Rodríguez e Hijos',
+            nav: ['Servicios', 'Antes y después', 'Contacto'],
+            // NO "Solicita Presupuesto Gratuito", que es su botón más visible:
+            // ese apunta a /calculadora-gratuita/ y hoy da 404. Dibujarlo aquí
+            // sería pintar como logro un enlace roto. WhatsApp sí funciona y
+            // además con el mensaje ya escrito.
+            cta: 'WhatsApp',
             title: 'Cada servicio, con su propia página',
-            sub: 'Quien busca su reforma concreta aterriza en la página de esa reforma.',
-            block: {
-                // `services` y no `modules`: esto es una WEB pública, no un
-                // panel de gestión, y lo que la hace reconocible a un
-                // profesional del oficio son los nombres de servicio, no una
-                // rejilla de módulos. Los iconos siguen el vocabulario que ya
-                // fijó la rama "reformas" del embudo (src/data/leadFunnel.ts):
-                // `building` para la reforma integral, `hammer` para la obra,
-                // `wrench` para baños y cocinas. Repetirlo aquí no es pereza,
-                // es que el mismo oficio se dibuja igual en las dos
-                // superficies.
-                //
-                // Tres chips para cuatro páginas reales, y es deliberado: el
-                // bloque `services` de este sistema va siempre de tres (ver
-                // las cuatro ramas del embudo) y la maqueta no es un mapa del
-                // sitio. Cocinas y baños comparten chip porque comparten
-                // icono; las cuatro páginas se enumeran donde sí caben, en el
-                // texto y en los bullets.
-                type: 'services',
-                items: [
-                    { key: 'integrales', icon: 'building', label: 'Reformas integrales' },
-                    { key: 'locales', icon: 'hammer', label: 'Locales comerciales' },
-                    { key: 'banos-cocinas', icon: 'wrench', label: 'Cocinas y baños' },
+            sub: 'Quien busca su reforma concreta aterriza en la página de esa reforma, no en una portada genérica.',
+            stage: {
+                kind: 'sitemap',
+                routes: [
+                    { path: '/reformas-banos-cordoba/', label: 'Baños y aseos' },
+                    { path: '/reformas-cocinas-cordoba/', label: 'Cocinas a medida' },
+                    { path: '/reformas-integrales-cordoba/', label: 'Reformas integrales' },
+                    {
+                        path: '/reformas-locales-comerciales-cordoba/',
+                        label: 'Locales comerciales',
+                    },
                 ],
+                // Los campos que su formulario pide de verdad, por su nombre.
+                // Se dibujan como huecos VACÍOS: rellenarlos sería inventar
+                // el teléfono de alguien.
+                form: ['Nombre', 'Teléfono', 'Correo', 'Tu reforma'],
+                direct: 'WhatsApp',
+                // Secciones suyas, de cierre. "Testimonios" es una sección
+                // real de su web y se queda FUERA a propósito: nombrarla
+                // dentro de nuestra prueba de trabajo la convierte en prueba
+                // social nuestra, que es de lo que esta web ya se deshizo.
+                sections: ['¿Cómo trabajamos?', 'Zonas de actuación', 'Preguntas frecuentes'],
             },
         },
         // Sin `quote` ni `author`, misma decisión que en ObraFácil: no nos han
@@ -298,26 +458,38 @@ export const CASES: readonly Case[] = [
             'Cartera organizada por CIF, con los CUPS y puntos de suministro de cada cliente — vocabulario que un CRM genérico no tiene',
             'Comisiones con estados explícitos (pendiente, validada, pagada, revertida) y registro de auditoría de toda la actividad',
         ],
+        /* La tercera maqueta es la CONSOLA, y su forma es la densidad: tabla
+           comparativa delante, la cartera jerárquica al lado y el ciclo de
+           estados al pie. Puestas en fila las tres, se lee sola la
+           progresión: escaparate → web de captación → herramienta de
+           trabajo. Ninguna se parece a las otras dos ni en color ni en
+           cantidad de información por centímetro.
+
+           Cero cifras, como siempre: las celdas de la comparativa van vacías
+           (son condiciones de tarifas de terceros que cambian en días — ver
+           el propio texto del caso) y los estados son PALABRAS, no recuentos.
+           Ningún CRM genérico tiene un estado llamado "revertida", así que
+           las cuatro palabras hacen más trabajo de reconocimiento que
+           cualquier número inventado. */
         showcase: {
-            accent: 'warm',
-            kicker: 'Vertical, no genérico',
+            theme: THEME_ENERGYDEAL,
+            siteName: 'EnergyDeal',
+            // Sus tres secciones de primer nivel, tal y como se llaman dentro
+            // (mismas que `preview.tabs` de energydeal en products.ts, leídas
+            // con la aplicación delante).
+            nav: ['Comparador', 'Clientes', 'Comisiones'],
+            // Una aplicación no tiene "llamada a la acción" de portada: tiene
+            // la acción del módulo abierto. La de un comparador es guardar la
+            // comparativa, que es justo lo que este producto hace distinto.
+            cta: 'Guardar comparativa',
             title: 'La comparativa de hace tres semanas, tal cual se hizo',
-            sub: 'Comparador, suministros por CUPS y comisiones con estado.',
-            block: {
-                // Los cuatro nombres son de módulos que la aplicación tiene de
-                // verdad: "Comparador" y "Comisiones" son dos de sus tres
-                // secciones de primer nivel y "CUPS" y "Auditoría" dos de sus
-                // módulos (ver `preview` de energydeal en products.ts, leído
-                // con la aplicación delante). Cuatro y no cinco porque la
-                // rejilla de `modules` es de 4 columnas en escritorio y 2×2 en
-                // móvil (MockPreview.module.css).
-                type: 'modules',
-                items: [
-                    { key: 'comparador', icon: 'documentCheck', label: 'Comparador', active: true },
-                    { key: 'cups', icon: 'plug', label: 'CUPS', active: true },
-                    { key: 'comisiones', icon: 'banknote', label: 'Comisiones', active: true },
-                    { key: 'auditoria', icon: 'history', label: 'Auditoría', active: true },
-                ],
+            sub: 'Comparador con la comparativa congelada, cartera por CIF y CUPS, y comisiones con estado.',
+            stage: {
+                kind: 'console',
+                rail: { root: 'CIF', child: 'CUPS', children: 2 },
+                compare: { columns: 3, rows: 4 },
+                badge: 'Snapshot inmutable',
+                states: ['pendiente', 'validada', 'pagada', 'revertida'],
             },
         },
         serviceLine: 'app',

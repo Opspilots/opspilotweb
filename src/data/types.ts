@@ -520,21 +520,254 @@ export type ShowcaseBlock =
     | { type: 'modules'; items: readonly ShowcaseModuleItem[] }
     | { type: 'services'; items: readonly ShowcaseServiceItem[] };
 
-/** Mini-interfaz FIJA por caso (CaseMockPanel), que representa la mejora de
- * ese sector concreto — sustituye a las antiguas stats numéricas y al panel
- * de iconos "antes → después" (CaseTransition) de iteraciones previas. */
+/* ═══════════════════════════════════════════════════════════════════════
+   LA MAQUETA DE UN CASO — la identidad del DESTINO, no la nuestra
+   ═══════════════════════════════════════════════════════════════════════
+   Contexto de por qué este modelo se reescribió entero. Hasta hoy
+   `CaseShowcase` era `{ accent: 'mint' | 'warm'; kicker; title; sub; block }`
+   y se lo comía MockPreview: los tres casos salían como la MISMA maqueta
+   —barra de navegación gris, titular, cuatro fichas con icono— pintada con
+   NUESTROS dos acentos. O sea, tres proyectos de tres negocios distintos con
+   la cara de OpsPilot y sin más diferencia entre ellos que las etiquetas.
+
+   Es exactamente la queja que ya se resolvió una vez, en la vista previa de
+   producto de /soluciones, y la solución fue la misma que se aplica aquí (ver
+   la cabecera de ProductPreview.tsx):
+
+     1. LA PALETA ES SUYA. `CaseSiteTheme` trae los valores leídos de la web de
+        destino. Un negocio no se reconoce por su icono, se reconoce por su
+        temperatura: el amarillo de señalización de una tienda de material, el
+        verde oliva de una empresa de reformas y el azul de un CRM no se
+        confunden ni de reojo.
+     2. LA FORMA CUENTA DE QUÉ VA. `CaseStage` es una unión de tres, una por
+        proyecto, porque una tienda, una web de captación y un CRM NO tienen la
+        misma forma. Forzarlos al mismo dibujo con distintos colores es lo que
+        hacía la versión anterior.
+     3. HAY UN PROTAGONISTA. Cada variante tiene una cosa grande delante y el
+        resto apoyando. Cuatro fichas del mismo tamaño no son una interfaz, son
+        un diagrama.
+
+   DÓNDE SIGUE ESTANDO LA LÍNEA entre ilustrar y mentir, que aquí aprieta más
+   que en /soluciones porque los tres destinos se pueden ABRIR EN OTRA PESTAÑA
+   y comprobar:
+
+     · CERO CIFRAS. Ni un precio, ni un euro, ni un porcentaje, ni un contador,
+       ni una gráfica con datos. Ojo con la tienda, que es donde más tira la
+       mano: un precio inventado en la maqueta de un cliente al que se puede
+       entrar a comprar es la mentira exacta que este proyecto vino a quitar.
+       Donde iría un importe va un HUECO vacío, igual que en ProductPreview.
+     · LOS NOMBRES SON SUYOS. Categorías, secciones, rutas, campos de
+       formulario y estados salen de la web de destino, vistos entrando. Si no
+       se ha visto, no se escribe.
+     · NO SE IMITA UNA CAPTURA. Ni cromo de navegador, ni barra de URL, ni
+       bisel de portátil, ni fotos fingidas: donde va una imagen va el HUECO de
+       la imagen. Y el render lo dice con todas las letras debajo del marco
+       (ver `schematicNote` en CaseMockPanel.tsx).
+     · TODO LO DECORATIVO VA `aria-hidden`. Barras, celdas y huecos no dicen
+       nada y no deben fingir que sí. */
+
+/** La paleta de la web de destino de un caso.
+ *
+ *  Hermano de `ProductTheme` y a propósito NO el mismo tipo, aunque compartan
+ *  diez campos. La diferencia no es cosmética: `ProductTheme` describe una
+ *  APLICACIÓN (una pantalla tras un login, cuya barra superior es una
+ *  superficie más), y esto describe un SITIO PÚBLICO, que tiene una CABECERA
+ *  con color propio —`chrome`— y que en dos de los tres casos es lo primero
+ *  que lo identifica. Fusionarlos habría obligado a meter `chrome` opcional en
+ *  las cuatro vistas previas de producto, que no lo tienen ni lo quieren.
+ *
+ *  FORMATO: cadena CSS completa, tal cual se leyó del sitio. No se normalizan
+ *  a hex para que un `grep` del valor encuentre lo mismo aquí que allí. */
+export interface CaseSiteTheme {
+    /** DE DÓNDE SALE ESTA PALETA, con el mismo papel que `ProductTheme.source`:
+     *   · `site`        — leída de la web de destino, con la web delante.
+     *   · `provisional` — no se pudo leer y es una identidad nuestra hasta
+     *                     poder confirmarla. El render LO DICE (ver
+     *                     `schematicNote` en CaseMockPanel.tsx).
+     *  Hoy los tres son `site`. */
+    source: 'site' | 'provisional';
+    /** Claro u oscuro. Los tres destinos de hoy son claros —son webs de venta,
+     *  no paneles— y por eso la diferenciación tiene que venir del acento, de
+     *  la cabecera y sobre todo de la FORMA. Se declara igual porque el peso de
+     *  sombras y filos depende del modo, no de los valores. */
+    scheme: 'light' | 'dark';
+    /** Fondo de página. */
+    bg: string;
+    /** Superficie de tarjeta/ficha. */
+    surface: string;
+    /** Un escalón por encima de `surface` — bandas, cabeceras de tabla,
+     *  huecos de imagen. */
+    raised: string;
+    /** Borde/hairline. */
+    line: string;
+    /** Texto principal. */
+    text: string;
+    /** Texto secundario. Tiene que cumplir 4.5:1 sobre `surface` Y sobre
+     *  `raised`: aquí no vale "un gris más flojo". Los ratios están medidos y
+     *  anotados en cada tema (ver src/data/cases.ts). */
+    muted: string;
+    /** El color de marca, para uso GRÁFICO: filos, marcadores, tintes,
+     *  iconos. Deliberadamente separado del par de acción de abajo, y ese
+     *  divorcio es lo que arregla un problema real de contraste — ver
+     *  `action`. */
+    accent: string;
+    /** Relleno tenue del acento (mismo papel que `--color-mint-soft`). Sobre
+     *  él SÍ puede ir texto, porque es un tinte: lo que manda es que el texto
+     *  cumpla contra el color resultante. */
+    accentSoft: string;
+    /** Relleno del botón principal, y `actionInk` su texto.
+     *
+     *  ¿POR QUÉ NO ES SIEMPRE `accent`? Porque en uno de los tres casos el
+     *  botón real del cliente NO CUMPLE: el verde oliva de J.R. Rodríguez con
+     *  texto blanco encima da 3.86:1, por debajo del 4.5:1 de AA. Reproducir
+     *  ese par aquí sería copiar un defecto de accesibilidad ajeno a nuestra
+     *  web; inventarle un oliva más oscuro que no usa sería inventarle un
+     *  color. La salida es la tercera: usar OTRO color suyo que sí cumple (su
+     *  carbón con su crema, 10.6:1) y dejar el oliva para lo gráfico, que es
+     *  donde el 3:1 de elementos no textuales sí se cumple.
+     *
+     *  En los otros dos coincide con el botón real: amarillo con tinta casi
+     *  negra (13.6:1) y azul con blanco (5.2:1). */
+    action: string;
+    /** Texto SOBRE `action`. Va explícito y no calculado: adivinarlo con una
+     *  fórmula de luminancia es cómo se acaba con blanco sobre amarillo. */
+    actionInk: string;
+    /** Color de la CABECERA del sitio, que es lo que un tema de aplicación no
+     *  necesita. La de ObraFácil es casi negra y la de las otras dos blanca, y
+     *  esa sola banda ya separa una tienda de una web de servicios antes de
+     *  leer una palabra. */
+    chrome: string;
+    /** Texto sobre `chrome`. Mismo criterio que `actionInk`. */
+    chromeInk: string;
+    /** Sombra/halo del objeto. En `scheme: 'light'` es una sombra gris: un halo
+     *  de color sobre blanco se lee como suciedad, no como brillo. */
+    glow: string;
+}
+
+/** Una página real del sitio, con su ruta. La ruta es el argumento entero del
+ *  caso de J.R. Rodríguez —una página por servicio y ciudad— así que se
+ *  escribe tal cual responde el servidor, verificada con un 200. */
+export interface CaseRoute {
+    /** Ruta ABSOLUTA dentro del sitio, con las barras que tenga de verdad
+     *  ('/reformas-banos-cordoba/'). No es un enlace: la maqueta no navega a
+     *  ninguna parte, es texto de la ilustración. */
+    path: string;
+    /** Cómo se llama esa página en el menú del sitio. */
+    label: string;
+}
+
+/**
+ * QUÉ SE DIBUJA. Una variante por proyecto, y ese es justo el punto: la forma
+ * es la mitad del reconocimiento.
+ *
+ * No hay un campo aparte de "layout" porque no habría ninguna decisión que
+ * tomar dos veces — una tienda se dibuja como una tienda. La disposición
+ * ENTERA del esquema es consecuencia de `kind` (ver `data-kind` en
+ * CaseMockPanel.module.css).
+ *
+ * Los números (`moreCategories`, `siblings`, `rows`…) son DENSIDAD, no
+ * inventario: dicen cuántas figuras mudas dibujar para que el esquema no
+ * parezca vacío, no cuántas cosas tiene el negocio.
+ */
+export type CaseStage =
+    /* ─── TIENDA ────────────────────────────────────────────────────────
+       Rejilla de producto con carrito y la herramienta propia de la casa.
+       Lo que delata a una tienda no es un icono de carro: es que hay un
+       PRODUCTO grande delante, categorías al lado y una fila de destacados
+       debajo. */
+    | {
+          kind: 'storefront';
+          /** Categorías REALES del catálogo. La primera es la que está
+           *  abierta. Se pintan por su nombre porque el nombre es el dato. */
+          categories: readonly string[];
+          /** Cuántas categorías MÁS hay, dibujadas como filas sin nombre. Es
+           *  la forma honesta de decir "hay más" sin escribir siete nombres
+           *  que no caben ni inventarse ninguno — mismo recurso que el
+           *  `railRest` de ProductPreview. */
+          moreCategories: number;
+          /** La ficha grande. Nombre y especificación TAL CUAL los escribe la
+           *  tienda. Sin precio, y no por olvido: ver el bloque de arriba. */
+          product: { name: string; spec: string };
+          /** Cuántas fichas pequeñas acompañan a la grande. Densidad. */
+          siblings: number;
+          /** La sección destacada de su portada, con su nombre y en sus
+           *  versalitas. */
+          featured: string;
+          /** La herramienta que esta tienda tiene y otra no: la calculadora de
+           *  placas. `fields` es cuántos huecos de entrada se dibujan — huecos
+           *  VACÍOS, que rellenarlos sería inventar la pared de alguien. */
+          tool: { label: string; fields: number };
+      }
+    /* ─── WEB DE CAPTACIÓN ───────────────────────────────────────────────
+       Mapa de páginas. Aquí la arquitectura ES el argumento: una página por
+       servicio y ciudad. Dibujarlo como una rejilla de módulos habría tirado
+       a la basura lo único que hay que contar. */
+    | {
+          kind: 'sitemap';
+          /** Las rutas reales. La primera es la que está abierta y se dibuja
+           *  por dentro; el resto quedan como el mapa alrededor. */
+          routes: readonly CaseRoute[];
+          /** Los campos del formulario de captación, por su nombre real. Se
+           *  dibujan como huecos vacíos con su etiqueta. */
+          form: readonly string[];
+          /** El canal directo que la web ofrece al lado del formulario. */
+          direct: string;
+          /** Otras secciones reales del sitio, como cierre. Nombres de
+           *  SECCIÓN, nunca su contenido: "Testimonios" queda fuera a
+           *  propósito — nombrar una sección de opiniones ajenas dentro de
+           *  nuestra prueba de trabajo se lee como prueba social nuestra, que
+           *  es de lo que esta web ya se deshizo una vez. */
+          sections: readonly string[];
+      }
+    /* ─── APP A MEDIDA ───────────────────────────────────────────────────
+       Consola densa: tabla comparativa delante, cartera jerárquica al lado y
+       el ciclo de estados al pie. Es lo contrario de las otras dos —mucha
+       información en poco sitio— y esa densidad ya dice "esto es una
+       herramienta de trabajo, no un escaparate". */
+    | {
+          kind: 'console';
+          /** Cómo se organiza la cartera, en SU vocabulario: un CIF con sus
+           *  CUPS colgando. `children` es densidad. */
+          rail: { root: string; child: string; children: number };
+          /** El comparador: columnas enfrentadas y filas de condiciones. La
+           *  primera columna va marcada, y NO significa "la mejor oferta"
+           *  —eso sería un dato— sino la columna sobre la que estarías. */
+          compare: { columns: number; rows: number };
+          /** Lo que hace único a ese comparador, con su nombre. */
+          badge: string;
+          /** Los estados REALES del ciclo de comisión, en orden. El primero va
+           *  marcado. Son cuatro palabras y son la pieza más reconocible del
+           *  producto: ningún CRM genérico tiene "revertida". */
+          states: readonly string[];
+      };
+
+/** Mini-interfaz FIJA por caso (CaseMockPanel): la web de destino, con su
+ *  paleta y con la forma de lo que es. Sustituye a las antiguas stats
+ *  numéricas, al panel "antes → después" y a la maqueta genérica de MockPreview
+ *  que gastaron las iteraciones anteriores. */
 export interface CaseShowcase {
-    /** Deliberadamente MÁS ESTRECHO que `MockAccentKey`: los casos de éxito
-     *  llevan acento elegido a mano y ninguno usa el azul `info`, que
-     *  entró en el sistema para separar la rama "automatizar" del embudo. Que
-     *  el tipo de datos no ofrezca una opción que nadie ha diseñado evita
-     *  elegirla por descarte. Si algún día un caso la necesita, se amplía. */
-    accent: 'mint' | 'warm';
-    /** Etiqueta mono sobre el titular del mock (ver MockPreview `kicker`). */
-    kicker?: string;
+    /** La paleta del destino (ver `CaseSiteTheme`). Sustituye al antiguo
+     *  `accent: 'mint' | 'warm'`, que solo sabía elegir entre dos colores
+     *  NUESTROS y por eso los tres casos salían con nuestra cara. */
+    theme: CaseSiteTheme;
+    /** El nombre del sitio tal y como aparece en SU propia cabecera. Va dentro
+     *  del marco, que es donde solo entra lo que el sitio tiene de verdad. */
+    siteName: string;
+    /** Sus secciones de primer nivel, con sus nombres. Tres: la maqueta no es
+     *  un mapa del sitio, es la respuesta a "¿qué es esto?" en dos segundos.
+     *  En contenedor estrecho la última se pliega sola, así que el orden
+     *  importa — la más reconocible, primero. */
+    nav: readonly [string, string, string];
+    /** La llamada a la acción REAL de su cabecera, con su texto. */
+    cta: string;
+    /** Qué se dibuja y con qué piezas (ver `CaseStage`). */
+    stage: CaseStage;
+    /** Qué se construyó, en UNA frase NUESTRA. Se pinta FUERA del marco y esa
+     *  es la parte importante: cualquier texto puesto dentro se lee como texto
+     *  DE la interfaz del cliente. Mismo criterio que `ProductPreview.title`. */
     title: string;
+    /** Segunda línea opcional, también fuera del marco. */
     sub?: string;
-    block: ShowcaseBlock;
 }
 
 export interface Case {
@@ -551,9 +784,11 @@ export interface Case {
     text: string;
     /** Bullets de highlights — usados en la tarjeta del carrusel de Home */
     bullets: readonly string[];
-    /** Mini-interfaz fija que representa la mejora del sector, usada por
-     * CaseMockPanel (compartido entre Home y Casos, reutiliza MockPreview —
-     * el mismo componente del Paso 4 del hero). */
+    /** Mini-interfaz fija que representa la web ENTREGADA a este cliente, con
+     * su paleta y con la forma de lo que es (ver `CaseShowcase`). La pinta
+     * CaseMockPanel, compartido entre Home y Casos. Ya NO pasa por MockPreview:
+     * aquel es la maqueta genérica de OpsPilot, con nuestros acentos, y por eso
+     * los tres casos salían indistinguibles. */
     showcase: CaseShowcase;
     quote?: string;
     author?: string;

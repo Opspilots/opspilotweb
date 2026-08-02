@@ -4,6 +4,13 @@ export type {
     Sector,
     Case,
     CaseShowcase,
+    // Paleta real de la web de destino + forma de lo que se construyó: es lo
+    // que hace que las 3 maquetas de casos se vean como 3 proyectos de 3
+    // negocios y no como 3 copias de la nuestra. Ver `CaseSiteTheme` y
+    // `CaseStage` en types.ts.
+    CaseSiteTheme,
+    CaseStage,
+    CaseRoute,
     MockAccentKey,
     ShowcaseBlock,
     ShowcaseModuleItem,

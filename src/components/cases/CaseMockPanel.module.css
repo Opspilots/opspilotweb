@@ -1,21 +1,71 @@
 /* ═══════════════════════════════════════════
-   CASE MOCK PANEL — mini-interfaz fija por caso (MockPreview compartido).
-   Sustituye al antiguo CaseTransitionPanel (iconos "antes → después"
-   convergiendo): el protagonismo es de la mini-interfaz que representa la
-   mejora.
+   CASE MOCK PANEL — la maqueta que va encima del texto de cada caso.
+
+   Aquí vive TODO: el marco del sitio, las tres escenas (tienda / mapa de
+   páginas / consola) y el pie con nuestra voz. Ya no queda nada de
+   MockPreview, y el porqué está escrito en la cabecera del .tsx: aquel es la
+   maqueta genérica de OpsPilot, con UN tema —el nuestro— y UNA forma, y por
+   eso los tres casos salían indistinguibles.
+
+   ─── EL CONTRATO DE COLOR ───
+
+   Ni un solo color de variables.css entra DENTRO de `.frame`. Todo sale de las
+   custom properties `--cm-*` que el componente publica desde el dato (ver
+   `themeVars` en el .tsx y los tres temas en src/data/cases.ts). Consecuencia
+   práctica: un cuarto caso con su paleta es tocar cases.ts y nada más. FUERA
+   del marco —el pie— manda la paleta de la web, porque eso es voz nuestra y
+   tiene que verse que lo es.
+
+   ─── POR QUÉ @container Y NO @media ───
+
+   Esta pieza vive en dos sitios con anchos que NO se parecen, y —esto es lo
+   importante— al MISMO viewport:
+
+       /casos, 1280px de ventana ....... 1038px de maqueta
+       portada, 1280px de ventana ......  323-372px de maqueta
+       /casos, 375px de ventana ........  269px de maqueta
+
+   O sea que a 1280px de ancho de ventana hay que pintar dos cosas distintas.
+   Con `@media` es IMPOSIBLE decirlo: la consulta no sabe nada del hueco en el
+   que está la maqueta. Es el caso de libro de las consultas de contenedor, y
+   es el primer sitio del repo que las usa — a propósito y no por moda: la
+   alternativa era una prop `variant` pasada a mano desde Home y desde Casos,
+   o sea el ancho del contenedor escrito dos veces en dos ficheros que no se
+   hablan y que se desincronizan en cuanto alguien toque un padding.
+
+   UN SOLO CORTE, en 520px de CONTENEDOR:
+     · por debajo → columna única (portada en escritorio, y /casos en móvil).
+     · por encima → composición ancha de varias columnas (/casos desde 768px).
+
+   ─── LA ALTURA ───
+
+   No hay alto clavado, y no hace falta: ninguna de las dos superficies lo
+   exige (la tarjeta de /casos crece con su contenido y el panel de la portada
+   estira a la altura de la narrativa, que es más alta). Lo que sí hay son
+   mínimos por escena para que las tres midan parecido — tres tarjetas del
+   carrusel con maquetas de alturas dispares hacen saltar el carril al
+   deslizar.
    ═══════════════════════════════════════════ */
 
 .wrap {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-4);
+    /* El contenedor de consulta. Ver el bloque de arriba. `inline-size` y no
+       `size`: solo se consulta el ancho, y `size` obligaría además a acotar el
+       alto, que aquí lo pone el contenido. */
+    container-type: inline-size;
+    container-name: casemock;
+    /* Sin esto, un nombre de categoría largo puede empujar el ancho del hijo
+       por encima del contenedor y provocar scroll horizontal en la página. */
+    min-width: 0;
 }
 
 /* Reveal de entrada — fade + rise, disparado una sola vez al entrar en
-   viewport (ver useRevealOnce en el .tsx). El mismo estado `revealed` se
-   pasa a MockPreview (prop `revealed`) para que su propia cascada interna
-   (nav → titular → bloque) arranque en el mismo instante, no antes de que
-   el propio panel sea visible ni gastada fuera de pantalla. */
+   viewport (ver useRevealOnce en el .tsx). El mismo estado `revealed` llega
+   además al marco como `data-animate` para que su cascada interna (cabecera →
+   escena) arranque en el mismo instante, ni antes ni gastada fuera de
+   pantalla. */
 @media (prefers-reduced-motion: no-preference) {
     .wrap {
         opacity: 0;
@@ -34,4 +84,1219 @@
         opacity: 1;
         transform: none;
     }
+}
+
+/* ═══════════════════════════════════════════
+   EL MARCO — la web de destino
+   ═══════════════════════════════════════════
+   `overflow: hidden` es una GARANTÍA, no un adorno: nada de aquí dentro se
+   sale nunca, ni con el nombre de categoría más largo ni con la ruta más
+   larga. La tarjeta que lo contiene no debería tener que recortar por culpa
+   de esta pieza. */
+.frame {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--spacing-3);
+    padding: 11px;
+    border-radius: var(--radius-card);
+    /* Halo del acento arriba a la derecha + fondo de página del sitio. Los dos
+       colores son SUYOS; lo único nuestro es la sombra exterior, porque el
+       objeto está apoyado sobre NUESTRA tarjeta y la luz de la escena es la de
+       esta web. */
+    background:
+        radial-gradient(120% 90% at 100% 0%, var(--cm-accent-soft), transparent 62%),
+        var(--cm-bg);
+    border: 1px solid var(--cm-line);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    color: var(--cm-text);
+}
+
+/* Los tres destinos de hoy son claros —son webs de venta, no paneles— así que
+   la elevación se hace con un filo blanco arriba: sobre oscuro se haría con
+   luz, sobre claro con un canto. La rama `dark` está escrita para el día que
+   entre un caso oscuro, no por simetría: sin ella ese caso saldría con un
+   brillo blanco encima que no le pega. */
+.frame[data-scheme='light'] {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), var(--shadow-md);
+}
+
+.frame[data-scheme='dark'] {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-md);
+}
+
+/* ─── Cabecera del sitio ───
+   La banda de color propio que un tema de aplicación no tiene. La de ObraFácil
+   es casi negra y las otras dos blancas, y esa sola diferencia ya separa una
+   tienda de una web de servicios antes de leer nada. Se saca a los bordes con
+   márgenes negativos porque una cabecera es una banda de lado a lado, no una
+   tarjeta más flotando dentro de otra. */
+.chrome {
+    display: flex;
+    align-items: center;
+    /* Envuelve, y esa es la decisión de contenido de toda la cabecera: en
+       contenedor estrecho las secciones caen a una segunda línea EN LUGAR DE
+       plegarse en una hamburguesa. Un menú hamburguesa habría sido más fiel a
+       lo que hace un móvil, pero se come tres nombres reales —y la portada,
+       que es la superficie más vista, va SIEMPRE en estrecho—. Entre dibujar
+       bien el gesto y enseñar el dato, gana el dato. */
+    flex-wrap: wrap;
+    gap: 5px var(--spacing-2);
+    min-width: 0;
+    margin: -11px -11px 0;
+    padding: 8px 11px;
+    background: var(--cm-chrome);
+    color: var(--cm-chrome-ink);
+    border-bottom: 1px solid var(--cm-line);
+}
+
+/* El punto de marca. Cuadrado con radio pequeño y no un círculo: un círculo de
+   color en una cabecera se lee como "estado", y esto es un logotipo. */
+.brand {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    background: var(--cm-accent);
+}
+
+.siteName {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--tracking-tight);
+    color: var(--cm-chrome-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: auto;
+    min-width: 0;
+}
+
+.navItem {
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+    font-size: 0.625rem;
+    line-height: 1.5;
+    /* La cabecera tiene su propia tinta y su propio fondo, así que el
+       secundario se saca de la MISMA tinta con opacidad en vez de meter aquí
+       `--cm-muted`, que está medido contra `surface` y no contra `chrome`. Con
+       0.72 sobre las tres cabeceras de hoy el peor par (blanco sobre negro
+       casi puro) sigue muy por encima de 4.5:1. */
+    color: color-mix(in srgb, var(--cm-chrome-ink) 72%, transparent);
+    white-space: nowrap;
+}
+
+/* La sección en la que estás. En la consola esto son PESTAÑAS de aplicación
+   (ver el override de `[data-kind='console']` más abajo); en las dos webs es
+   un enlace activo, subrayado con su acento y nada más — que es lo que hace
+   una web y no un panel. */
+.navItemActive {
+    color: var(--cm-chrome-ink);
+    box-shadow: inset 0 -2px 0 var(--cm-accent);
+    border-radius: 0;
+}
+
+/* El botón real de su cabecera, con su texto. El par relleno/tinta viene del
+   dato (`action`/`actionInk`) y NO del acento: ver la explicación de por qué
+   se divorciaron en `CaseSiteTheme` (src/data/types.ts) — el oliva de J.R.
+   Rodríguez con blanco encima no llega a AA y no se reproduce un fallo de
+   contraste ajeno dentro de una web nuestra. */
+.cta {
+    flex-shrink: 0;
+    padding: 3px 9px;
+    border-radius: var(--radius-full);
+    background: var(--cm-action);
+    color: var(--cm-action-ink);
+    font-family: var(--font-family-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+/* La consola no es una web: su cabecera lleva pestañas y su acción principal
+   es la del módulo abierto, no un reclamo de portada. */
+.frame[data-kind='console'] .navItemActive {
+    border-radius: var(--radius-full);
+    background: var(--cm-accent-soft);
+    color: var(--cm-accent);
+    box-shadow: none;
+}
+
+/* ═══════════════════════════════════════════
+   EL CUERPO — una rejilla por escena
+   ═══════════════════════════════════════════
+   No hay un "layout" configurable en el dato porque no habría ninguna
+   decisión que tomar dos veces: una tienda se dibuja como una tienda. Manda
+   `data-kind`. */
+.body {
+    display: grid;
+    gap: var(--spacing-2);
+    min-height: 0;
+    min-width: 0;
+}
+
+/* ─── Piezas comunes ───
+   `.bar`, `.well`, `.priceSlot` y `.fieldSlot` son FORMA SIN VALORES: ninguna
+   longitud significa nada (los anchos salen de una tabla fija, ver BAR_WIDTHS
+   en el .tsx) y los huecos están VACÍOS a propósito. Es la línea entre
+   ilustrar y mentir aplicada al píxel: se dibuja que ahí va un número, no el
+   número. */
+.bar {
+    height: 5px;
+    border-radius: var(--radius-full);
+    background: var(--cm-line);
+    /* SÍ encoge: como el porcentaje no significa nada, dejar que ceda no
+       pierde información — no hay ninguna. */
+    min-width: 0;
+}
+
+/* Hueco de imagen. La trama diagonal es lo que lo separa de "una tarjeta que
+   no ha cargado": dice "aquí va una foto" sin fingir ninguna. No hay ni una
+   imagen de estos tres proyectos en el repo y no se fabrican. */
+.well {
+    display: block;
+    min-height: 22px;
+    border-radius: 3px;
+    border: 1px solid var(--cm-line);
+    background:
+        repeating-linear-gradient(
+            -45deg,
+            transparent 0 5px,
+            var(--cm-line) 5px 6px
+        ),
+        var(--cm-raised);
+    opacity: 0.9;
+}
+
+/* Hueco de dato: contorno y nada dentro. Es el mismo objeto que el `.slot` de
+   ProductPreview y cumple el mismo trabajo — el precio, los metros de la
+   pared, el teléfono de quien pide presupuesto. */
+.fieldSlot {
+    display: block;
+    height: 13px;
+    border-radius: 2px;
+    background: var(--cm-surface);
+    border: 1px solid var(--cm-line);
+}
+
+.fieldSlotTall {
+    height: 22px;
+}
+
+/* ═══════════════════════════════════════════
+   ESCENA 1 — TIENDA (ObraFácil)
+   ═══════════════════════════════════════════
+   Rejilla de producto: la ficha grande delante, el catálogo al lado, la
+   calculadora de la casa y los destacados al pie. Lo que delata a una tienda
+   no es un icono de carro — es que hay un PRODUCTO ocupando el centro. */
+.frame[data-kind='storefront'] .body {
+    grid-template-areas:
+        'rail'
+        'grid'
+        'tool'
+        'strip';
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+}
+
+/* ─── Catálogo (también la cartera de la consola) ─── */
+.rail {
+    grid-area: rail;
+    display: flex;
+    gap: 3px;
+    min-width: 0;
+}
+
+.railItem {
+    padding: 3px 7px;
+    border-radius: var(--radius-control);
+    font-family: var(--font-family-mono);
+    font-size: 0.5625rem;
+    line-height: 1.5;
+    color: var(--cm-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.railItemActive {
+    background: var(--cm-accent-soft);
+    /* La categoría abierta se marca con un filo del acento y NUNCA con el
+       acento como texto: el amarillo de ObraFácil sobre claro se queda en
+       1.4:1. El texto se queda en la tinta principal, que sí cumple. */
+    color: var(--cm-text);
+    box-shadow: inset 2px 0 0 var(--cm-accent);
+}
+
+/* Las categorías que no caben, sin nombre. La forma honesta de decir "hay
+   más" sin recortar un nombre a mitad ni inventarse ninguno. */
+.railRest {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    min-width: 0;
+    padding-inline: 5px;
+}
+
+.railRest .bar {
+    width: 22px !important;
+    flex-shrink: 0;
+}
+
+/* ─── La rejilla de producto ─── */
+/* El protagonista a la izquierda y las fichas de al lado a su derecha. Una
+   rejilla de tienda es exactamente eso —una cosa grande y varias pequeñas— y
+   se sostiene igual en 248px que en 700px, así que la proporción no cambia con
+   el contenedor: lo que cambia es todo lo de alrededor. */
+.grid {
+    grid-area: grid;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: var(--spacing-2);
+    min-width: 0;
+    min-height: 0;
+}
+
+/* EL PROTAGONISTA. Fondo de tarjeta, hueco de foto arriba, nombre y ficha
+   reales, y abajo el hueco del precio con el botón de compra. */
+.pCard {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto auto;
+    gap: 5px;
+    min-width: 0;
+    min-height: 0;
+    padding: 7px;
+    border-radius: var(--radius-control);
+    background: var(--cm-surface);
+    border: 1px solid var(--cm-line);
+    box-shadow: var(--cm-glow);
+}
+
+.pWell {
+    min-height: 40px;
+    height: 100%;
+}
+
+/* En tipografía de CUERPO y no mono, al revés que casi todo lo de dentro del
+   marco: una tienda escribe el nombre de sus productos como texto de venta, no
+   como un identificador de sistema. Es una de las tres decisiones que hacen
+   que las tres maquetas no se lean igual (la web de captación usa mono solo
+   para las rutas; la consola, mono para todo). */
+.pName {
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.25;
+    letter-spacing: var(--tracking-tight);
+    color: var(--cm-text);
+    /* PARTE EN DOS LÍNEAS, no se recorta con puntos suspensivos: en la ficha
+       de 133px del contenedor estrecho "Calacatta Oro 260×122cm" no cabe de
+       una, y "Calacatta Oro 260…" no es el nombre de nada. Una tienda de
+       verdad hace justo esto. El clamp acota a dos por si mañana entra un
+       nombre más largo. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pSpec {
+    font-family: var(--font-family-mono);
+    font-size: 0.5rem;
+    line-height: 1.3;
+    color: var(--cm-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pBuy {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 1px;
+}
+
+/* EL HUECO DEL PRECIO. Vacío, y es lo más importante de todo el fichero:
+   ObraFácil es una tienda abierta al público y cualquiera puede entrar a ver
+   lo que cuesta una placa. Un número aquí sería la mentira exacta que este
+   proyecto vino a eliminar; el contorno dice "aquí va el importe" sin
+   afirmar cuál. */
+.priceSlot {
+    flex: 1 1 auto;
+    height: 14px;
+    min-width: 0;
+    border-radius: 2px;
+    background: var(--cm-raised);
+    border: 1px dashed var(--cm-line);
+}
+
+.buyBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    background: var(--cm-action);
+    color: var(--cm-action-ink);
+    /* Anillo oscuro: el amarillo contra el blanco de la ficha no se distingue
+       solo (1.4:1), así que el borde del control lo pone la línea del tema y
+       no el propio relleno. */
+    border: 1px solid var(--cm-line);
+}
+
+.siblings {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: minmax(0, 1fr);
+    gap: 5px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.sCard {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+    padding: 5px;
+    border-radius: var(--radius-control);
+    background: var(--cm-surface);
+    border: 1px solid var(--cm-line);
+}
+
+.sCard .well {
+    flex: 1 1 auto;
+    min-height: 26px;
+}
+
+/* ─── La calculadora de placas ─── */
+.tool {
+    grid-area: tool;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    min-width: 0;
+    padding: 6px 8px;
+    border-radius: var(--radius-control);
+    background: var(--cm-surface);
+    border: 1px solid var(--cm-line);
+}
+
+.toolHead {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    color: var(--cm-text);
+}
+
+.toolLabel {
+    font-family: var(--font-family-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.02em;
+    color: var(--cm-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.toolFields {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: auto;
+}
+
+.toolFields .fieldSlot {
+    flex: 1 1 0;
+    min-width: 18px;
+    height: 15px;
+}
+
+.toolGo {
+    width: 20px;
+    height: 15px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background: var(--cm-action);
+    border: 1px solid var(--cm-line);
+}
+
+/* ═══════════════════════════════════════════
+   ESCENA 2 — MAPA DE PÁGINAS (J.R. Rodríguez)
+   ═══════════════════════════════════════════
+   Aquí la arquitectura ES el argumento: una página por servicio y ciudad. Se
+   dibuja la página abierta por dentro y las otras tres alrededor con sus
+   rutas. La versión anterior pintaba tres chips con icono, o sea justo lo
+   único que no había que contar. */
+.frame[data-kind='sitemap'] .body {
+    grid-template-areas:
+        'page'
+        'routes'
+        'form'
+        'strip';
+    grid-template-rows: minmax(0, 1fr) auto auto auto;
+}
+
+.page {
+    grid-area: page;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 6px;
+    min-width: 0;
+    min-height: 0;
+    padding: 8px;
+    border-radius: var(--radius-control);
+    background: var(--cm-surface);
+    border: 1px solid var(--cm-line);
+    box-shadow: var(--cm-glow);
+}
+
+/* La ruta como ETIQUETA, no como barra de navegador: sin campo, sin candado,
+   sin flechas de atrás. Cromo de navegador falso es justo el adorno que esta
+   web ha ido quitando. Mono porque una ruta es mono en todas partes. */
+.routeTag {
+    justify-self: start;
+    max-width: 100%;
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+    background: var(--cm-accent-soft);
+    box-shadow: inset 0 0 0 1px var(--cm-accent);
+    font-family: var(--font-family-mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.01em;
+    color: var(--cm-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pageHero {
+    min-height: 34px;
+    height: 100%;
+}
+
+.pageLines {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* «Antes y después»: dos huecos enfrentados partidos por el filo del acento.
+   Es una sección suya y por eso se dibuja; lo que no se hace es fingir las dos
+   fotos. */
+.pagePair {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    height: 26px;
+}
+
+.pagePair .well {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 100%;
+}
+
+.pagePair .well:first-of-type {
+    border-radius: 3px 0 0 3px;
+    border-right: none;
+}
+
+.pagePair .well:last-of-type {
+    border-radius: 0 3px 3px 0;
+    border-left: none;
+}
+
+.pairSplit {
+    width: 2px;
+    flex-shrink: 0;
+    background: var(--cm-accent);
+}
+
+/* ─── Las otras rutas ─── */
+.routes {
+    grid-area: routes;
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    min-width: 0;
+}
+
+.route {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1px;
+    min-width: 0;
+    padding: 4px 7px;
+    border-radius: var(--radius-control);
+    background: var(--cm-raised);
+    /* Filo del acento a la izquierda: las cuatro páginas cuelgan del mismo
+       tronco, y ese tronco es lo que se está enseñando. */
+    box-shadow: inset 2px 0 0 var(--cm-accent);
+}
+
+/* La ruta que se está viendo abierta. Tinte del acento y filo más grueso — el
+   oliva sobre blanco da 3.9:1, de sobra para un elemento no textual, y el
+   texto de dentro se queda en la tinta principal, que sí cumple 13.6:1. */
+.routeOpen {
+    background: var(--cm-accent-soft);
+    box-shadow: inset 3px 0 0 var(--cm-accent);
+}
+
+.routeLabel {
+    font-size: 0.5625rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.3;
+    letter-spacing: var(--tracking-tight);
+    color: var(--cm-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.routePath {
+    font-family: var(--font-family-mono);
+    font-size: 0.5rem;
+    line-height: 1.35;
+    color: var(--cm-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* La barra muda de cada ruta: dice "esta página también tiene contenido" sin
+   escribir el contenido. Se esconde en contenedor estrecho, donde el sitio lo
+   necesita la ruta. */
+.routeBar {
+    display: none;
+    padding-top: 2px;
+}
+
+/* ─── El formulario de captación ─── */
+.form {
+    grid-area: form;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px var(--spacing-2);
+    align-content: start;
+    min-width: 0;
+    padding: 7px 8px;
+    border-radius: var(--radius-control);
+    background: var(--cm-surface);
+    border: 1px solid var(--cm-line);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.fieldLabel {
+    font-size: 0.5rem;
+    line-height: 1.3;
+    color: var(--cm-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* El canal directo, con su nombre. Ocupa la fila entera bajo los campos: es la
+   otra salida, no un campo más. */
+.formGo {
+    grid-column: 1 / -1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 1px;
+    padding: 4px 8px;
+    border-radius: var(--radius-full);
+    background: var(--cm-action);
+    color: var(--cm-action-ink);
+    font-family: var(--font-family-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════
+   ESCENA 3 — CONSOLA (EnergyDeal)
+   ═══════════════════════════════════════════
+   Densidad. Tabla comparativa delante, cartera jerárquica al lado y el ciclo
+   de estados al pie. Mucha información por centímetro es lo que dice
+   "herramienta de trabajo" y no "escaparate", y por eso es lo contrario de las
+   otras dos escenas. */
+.frame[data-kind='console'] .body {
+    grid-template-areas:
+        'rail'
+        'compare'
+        'strip';
+    grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+/* Un CIF con sus CUPS colgando. Dos palabras que ningún CRM genérico usa, y
+   por eso se ESCRIBEN en vez de dibujarse. */
+.railChild {
+    padding: 3px 7px;
+    border-radius: var(--radius-control);
+    font-family: var(--font-family-mono);
+    font-size: 0.5625rem;
+    line-height: 1.5;
+    color: var(--cm-muted);
+    background: var(--cm-raised);
+    white-space: nowrap;
+}
+
+.compare {
+    grid-area: compare;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    min-height: 0;
+    padding: 8px;
+    border-radius: var(--radius-control);
+    background: var(--cm-surface);
+    border: 1px solid var(--cm-line);
+    box-shadow: var(--cm-glow);
+}
+
+/* El argumento del producto, con su nombre y con el acento. Va arriba porque
+   no es un pie: es lo que hace que esa tabla valga algo tres semanas después. */
+.badge {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: var(--cm-accent-soft);
+    box-shadow: inset 0 0 0 1px var(--cm-accent);
+    /* El azul de EnergyDeal sobre su tinte claro cumple de sobra (5.2:1 sobre
+       blanco), así que aquí SÍ puede haber texto en el acento. Es la
+       diferencia con el amarillo de la tienda, y por eso el color es dato y no
+       una regla escrita en el CSS. */
+    color: var(--cm-accent);
+    font-family: var(--font-family-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* La tabla. Celdas VACÍAS: las condiciones son tarifas de terceros que cambian
+   en días — inventarlas sería inventar la oferta de una comercializadora con
+   nombre y apellidos. */
+.table {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.tRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) repeat(var(--cm-cols, 3), minmax(0, 1fr));
+    align-items: center;
+    gap: 4px;
+    flex: 1 1 0;
+    min-height: 0;
+}
+
+.tLabel {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.tHeadCell {
+    height: 9px;
+    border-radius: 2px;
+    background: var(--cm-raised);
+    border: 1px solid var(--cm-line);
+}
+
+/* La primera celda de la fila de cabecera es la esquina de la tabla: no es una
+   columna, así que no se dibuja. */
+.tRow .tHeadCell:first-child {
+    background: transparent;
+    border-color: transparent;
+}
+
+.tCell {
+    height: 100%;
+    min-height: 9px;
+    border-radius: 2px;
+    background: var(--cm-raised);
+    border: 1px solid transparent;
+}
+
+/* La columna marcada. NO es "la mejor oferta" —eso sería un dato— sino la
+   columna sobre la que estarías con el cursor. */
+.tPick {
+    background: var(--cm-accent-soft);
+    border-color: var(--cm-accent);
+}
+
+/* ═══════════════════════════════════════════
+   LA TIRA DE CIERRE — misma clase, tres trabajos
+   ═══════════════════════════════════════════
+   En la tienda son sus destacados de portada, en la web sus otras secciones y
+   en la consola el ciclo de la comisión. Comparten sitio y aire porque son la
+   misma jugada compositiva (lo que hay al pie de lo que estás mirando) y no
+   comparten nada más. */
+.strip {
+    grid-area: strip;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding-top: 2px;
+    border-top: 1px solid var(--cm-line);
+}
+
+.stripLabel {
+    font-family: var(--font-family-mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.09em;
+    color: var(--cm-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 4px;
+}
+
+.stripTiles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-top: 4px;
+}
+
+.stripTile {
+    min-height: 18px;
+}
+
+.stripChip {
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    background: var(--cm-raised);
+    font-size: 0.5rem;
+    line-height: 1.4;
+    color: var(--cm-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    margin-top: 4px;
+}
+
+.stripIcon {
+    flex-shrink: 0;
+    color: var(--cm-muted);
+    margin-top: 4px;
+}
+
+/* Los cuatro estados de la comisión, con SUS palabras. El primero va marcado y
+   no significa "hay una pendiente" —eso sería un recuento— sino el estado en
+   el que estarías mirando. */
+.state {
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+    background: var(--cm-raised);
+    font-family: var(--font-family-mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.01em;
+    color: var(--cm-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    margin-top: 4px;
+}
+
+.stateOn {
+    background: var(--cm-accent-soft);
+    box-shadow: inset 0 0 0 1px var(--cm-accent);
+    color: var(--cm-accent);
+}
+
+/* Conector entre estados: son un ciclo en orden, no cuatro etiquetas sueltas.
+   Es exactamente la misma idea que las pestañas `cadena` de ProductPreview. */
+.stateLink {
+    width: 6px;
+    height: 1px;
+    flex-shrink: 0;
+    background: var(--cm-line);
+    margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════
+   <520px DE CONTENEDOR — los ajustes de la columna única
+   ═══════════════════════════════════════════
+   Aquí caen las DOS superficies estrechas: el panel de la portada (323-372px,
+   incluso con la ventana a 1440) y la tarjeta de /casos en móvil (269px). Todo
+   lo de arriba ya está escrito para este ancho; esto son los recortes que solo
+   tienen sentido aquí. */
+@container casemock (max-width: 519.98px) {
+    /* Las secciones bajan a su propia línea en vez de pelear con el nombre y
+       el botón. Ver el comentario de `.chrome`. */
+    .nav {
+        flex-basis: 100%;
+        margin-left: 0;
+        /* Detrás del botón en el ORDEN VISUAL, no en el del DOM: el marcado
+           sigue siendo nombre → secciones → botón, que es el orden en que se
+           lee una cabecera. */
+        order: 3;
+    }
+
+    /* Con la navegación fuera de la primera línea, el botón es quien se va al
+       extremo. */
+    .cta {
+        margin-left: auto;
+    }
+
+    /* Catálogo en horizontal: solo cabe UN nombre entero ("Placas Decorativas
+       PVC" pide 133px de los 248 que hay), así que se queda la categoría
+       ABIERTA —que es la que hace de titular de lo que se está mirando— y las
+       demás pasan a las filas mudas de al lado. Se recorta el CONTENEDOR,
+       nunca el nombre: "Jardines Vertic…" no es información, es ruido, y es
+       además lo que hace una barra de categorías real al estrecharse. */
+    .frame[data-kind='storefront'] .railItem:nth-child(n + 2) {
+        display: none;
+    }
+
+    .railRest .bar {
+        width: 18px !important;
+    }
+
+    /* Cuatro nombres de estado en 248px no caben en una línea, y truncar
+       "revertida" mata justo la palabra que hace único al producto. Se
+       envuelve. */
+    .frame[data-kind='console'] .strip {
+        flex-wrap: wrap;
+    }
+
+    /* La página abierta por dentro se va ENTERA: en columna única no caben
+       cuatro bloques y este es el único que no lleva ni un nombre —es
+       ilustración pura, hueco de hero y barras—. Su ruta no se pierde: sigue
+       en la lista de al lado, marcada. Se cae la figura, nunca el dato. */
+    .page {
+        display: none;
+    }
+
+    .form {
+        gap: 4px var(--spacing-2);
+        padding: 6px 7px;
+    }
+
+    /* El campo largo deja de serlo: en estrecho su altura extra vale más como
+       aire para las cuatro rutas, que son el argumento del caso. */
+    .fieldSlotTall {
+        height: 13px;
+    }
+
+    /* Misma regla que la navegación: la última sección se pliega. Dos nombres
+       enteros valen más que tres cortados. */
+    .frame[data-kind='sitemap'] .stripChip:nth-child(n + 3) {
+        display: none;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   ≥520px DE CONTENEDOR — la composición ancha
+   ═══════════════════════════════════════════
+   Solo la alcanza /casos (624px a 768 de ventana, 1038px a 1280). El panel de
+   la portada mide 323-372px y se queda SIEMPRE en la columna única de arriba,
+   que es lo correcto: es una franja vertical estrecha al lado de un texto, no
+   una banda ancha. Ver el bloque de cabecera sobre por qué esto es @container
+   y no @media. */
+@container casemock (min-width: 520px) {
+    .frame {
+        padding: 13px;
+    }
+
+    .chrome {
+        margin: -13px -13px 0;
+        padding: 9px 13px;
+    }
+
+    .body {
+        gap: var(--spacing-3);
+    }
+
+    /* ─── TIENDA: catálogo | rejilla | calculadora, y destacados al pie ─── */
+    .frame[data-kind='storefront'] .body {
+        grid-template-columns: 148px minmax(0, 1fr) 168px;
+        grid-template-rows: minmax(0, 1fr) auto;
+        grid-template-areas:
+            'rail grid tool'
+            'strip strip strip';
+    }
+
+    /* La lista de categorías vuelve a ser una lista, que es como está en la
+       tienda: en vertical caben los cuatro nombres enteros y las mudas. */
+    .rail {
+        flex-direction: column;
+        gap: 2px;
+        padding-right: var(--spacing-2);
+        border-right: 1px solid var(--cm-line);
+    }
+
+    .railRest {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        margin-top: auto;
+        padding: 6px 5px 2px;
+    }
+
+    .railRest .bar {
+        width: 62% !important;
+    }
+
+    .railRest .bar:nth-child(2) { width: 44% !important; }
+    .railRest .bar:nth-child(3) { width: 52% !important; }
+
+    /* La calculadora pasa a columna propia: deja de ser una barra al pie y se
+       lee como el widget que es. */
+    .tool {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .toolFields {
+        flex-direction: column;
+        align-items: stretch;
+        margin-left: 0;
+    }
+
+    .toolFields .fieldSlot {
+        flex: 0 0 auto;
+        height: 16px;
+    }
+
+    .toolGo {
+        width: 100%;
+        height: 16px;
+    }
+
+    /* ─── MAPA DE PÁGINAS: página abierta | rutas | formulario ─── */
+    .frame[data-kind='sitemap'] .body {
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr) auto;
+        grid-template-areas:
+            'page routes form'
+            'strip strip strip';
+    }
+
+    .routes {
+        align-content: stretch;
+    }
+
+    .route {
+        align-content: center;
+    }
+
+    /* Con sitio hay una columna entera enseñando la página abierta por dentro,
+       así que su entrada en la lista sobra: escribir la misma ruta dos veces a
+       diez centímetros una de otra se lee como un fallo, no como énfasis. En
+       estrecho, donde esa columna no existe, vuelve sola. */
+    .route:first-child {
+        display: none;
+    }
+
+    /* Con sitio, cada ruta enseña además que tiene contenido propio. En
+       estrecho esto se va: ahí lo que hay que leer es la ruta. */
+    .routeBar {
+        display: block;
+    }
+
+    .form {
+        align-content: center;
+    }
+
+    /* ─── CONSOLA: cartera | comparador, estados al pie ─── */
+    .frame[data-kind='console'] .body {
+        grid-template-columns: 124px minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr) auto;
+        grid-template-areas:
+            'rail compare'
+            'strip strip';
+    }
+
+    .railChild {
+        margin-left: 10px;
+    }
+
+    /* La tira de cierre respira más: deja de ir pegada al borde inferior. */
+    .strip {
+        padding-top: 4px;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   MÍNIMOS DE ALTURA — que las tres midan parecido
+   ═══════════════════════════════════════════
+   Sin esto la consola (que es la más corta: no tiene ficha de producto ni
+   hueco de hero) se quedaba 40px por debajo de la tienda, y en el carrusel eso
+   es un salto del carril al deslizar de una tarjeta a otra. Son MÍNIMOS y no
+   alturas fijas: si un día un nombre de categoría parte en dos líneas, la
+   maqueta crece en vez de recortarlo. */
+.frame {
+    min-height: 268px;
+}
+
+@container casemock (min-width: 520px) {
+    .frame {
+        min-height: 236px;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   CASCADA DE ENTRADA — la maqueta se ENSAMBLA
+   ═══════════════════════════════════════════
+   Gateada tras `data-animate="true"` (estado `revealed`, ver useRevealOnce en
+   el .tsx): el panel puede montarse muy por debajo del pliegue y sin esto la
+   animación se gastaría fuera de pantalla.
+
+   Y tras `prefers-reduced-motion: no-preference` en CSS y no con el hook de
+   JS: la consulta de medios se evalúa también durante el prerender SSG, sin
+   esperar a que hidrate. Mismo criterio que ProductPreview. (El hook sigue
+   mandando sobre el reveal exterior — ver `useRevealOnce`, que ni siquiera
+   crea el ScrollTrigger cuando el usuario pide menos movimiento.)
+
+   Dos tiempos y las piezas de la escena escalonadas detrás: cabecera → cuerpo,
+   y dentro del cuerpo cada bloque entra un pelo después que el anterior. Es lo
+   que da la sensación de "esto se está montando delante de mí". */
+@media (prefers-reduced-motion: no-preference) {
+    .frame[data-animate='true'] .chrome {
+        animation: cmRise 0.44s var(--ease-out-expo) both;
+    }
+
+    .frame[data-animate='true'] .body > * {
+        animation: cmRise 0.5s var(--ease-out-expo) both;
+    }
+
+    .frame[data-animate='true'] .body > *:nth-child(1) { animation-delay: 0.08s; }
+    .frame[data-animate='true'] .body > *:nth-child(2) { animation-delay: 0.15s; }
+    .frame[data-animate='true'] .body > *:nth-child(3) { animation-delay: 0.22s; }
+    .frame[data-animate='true'] .body > *:nth-child(4) { animation-delay: 0.29s; }
+
+    /* Las filas de la tabla y las fichas pequeñas entran una detrás de otra
+       dentro de su bloque: es la diferencia entre "ha aparecido una tabla" y
+       "se está cargando una tabla". */
+    .frame[data-animate='true'] .tRow,
+    .frame[data-animate='true'] .sCard,
+    .frame[data-animate='true'] .route {
+        animation: cmFade 0.4s var(--ease-custom) both;
+    }
+
+    .frame[data-animate='true'] .tRow:nth-child(1),
+    .frame[data-animate='true'] .sCard:nth-child(1),
+    .frame[data-animate='true'] .route:nth-child(1) { animation-delay: 0.26s; }
+
+    .frame[data-animate='true'] .tRow:nth-child(2),
+    .frame[data-animate='true'] .sCard:nth-child(2),
+    .frame[data-animate='true'] .route:nth-child(2) { animation-delay: 0.32s; }
+
+    .frame[data-animate='true'] .tRow:nth-child(3),
+    .frame[data-animate='true'] .sCard:nth-child(3),
+    .frame[data-animate='true'] .route:nth-child(3) { animation-delay: 0.38s; }
+
+    .frame[data-animate='true'] .tRow:nth-child(4) { animation-delay: 0.44s; }
+    .frame[data-animate='true'] .tRow:nth-child(5) { animation-delay: 0.50s; }
+}
+
+@keyframes cmRise {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cmFade {
+    from {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ═══════════════════════════════════════════
+   EL PIE — voz nuestra
+   ═══════════════════════════════════════════
+   Todo lo de aquí lo decimos NOSOTROS, nunca el sitio. De ahí que vaya fuera
+   del marco y con la tipografía y los colores de esta web: separar por
+   completo "lo que el sitio tiene" de "lo que nosotros decimos de él" es lo
+   que sostiene la pieza entera.
+
+   Un raíl fino a la izquierda en vez de un icono de aviso: esto no es una
+   advertencia, es un pie de foto. */
+.caption {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding-left: var(--spacing-3);
+    border-left: 1px solid var(--color-border-subtle);
+}
+
+.claim {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.35;
+    color: var(--color-text-strong);
+    text-wrap: balance;
+}
+
+.claimSub {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    line-height: 1.45;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+}
+
+/* La frase que separa ilustrar de mentir. En mono y no en la tipografía del
+   cuerpo a propósito: el mono es en toda esta web el registro de "apunte
+   técnico sobre lo que estás viendo", no una frase de venta más. Y va pegada
+   al marco, no en un pie de página lejano — quien mire el dibujo tiene que
+   leer esto sin buscarlo. */
+.note {
+    margin: 0;
+    margin-top: 3px;
+    font-family: var(--font-family-mono);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    color: var(--color-text-subtle);
 }
