@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Link } from 'react-router-dom';
+// `Link` y `ROUTES` se importaban SOLO para el enlace a la política de
+// privacidad de la cláusula de consentimiento, retirado mientras esa página no
+// exista (ver el TODO(negocio) junto a `.consentText`). Vuelven con él.
 import { Check, ChevronDown, ChevronLeft, Monitor, Smartphone } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useLeadForm, validateEmail } from '../../lib/forms';
 import { CONTACT_EMAIL, BRAND_NAME, FORM_PROCESSOR } from '../../lib/company';
-import { ROUTES } from '../../lib/routes';
 import { MockPreview, MOCK_ACCENT_VARS } from '../marketing/MockPreview';
 import { toMockBlock } from '../marketing/toMockBlock';
 import {
@@ -690,6 +691,30 @@ export const HeroLeadWidget: React.FC = () => {
                                 aria-invalid={!!consentError}
                                 aria-describedby={consentError ? `${consentId}-error` : undefined}
                               />
+                              {/* TODO(negocio): devolver el enlace a la política de
+                                  privacidad cuando la página exista.
+
+                                  Aquí había una frase final —"Más detalle en la
+                                  política de privacidad"— enlazando a
+                                  `ROUTES.privacidad`. Se ha retirado porque esa ruta
+                                  NO está registrada en src/routes.tsx: devolvía 404.
+
+                                  Y eso no era un enlace roto cualquiera. Una cláusula
+                                  de consentimiento que afirma que existe una política
+                                  de privacidad inexistente es PEOR que no decir nada:
+                                  se está informando de una garantía que no se presta,
+                                  justo en el punto donde se recogen datos personales.
+
+                                  Lo que queda sí es una capa de información básica
+                                  defendible: quién trata el dato, para qué, quién lo
+                                  procesa, que no se cede, y un canal REAL y funcional
+                                  para ejercer acceso y borrado.
+
+                                  Para cerrarlo del todo hacen falta la razón social,
+                                  el NIF y el domicilio (dato 1 de
+                                  .seo/02-plan-local-cordoba.md), que también exige el
+                                  artículo 10 de la LSSI. Con ellos se crea la página,
+                                  se registra la ruta y esta frase vuelve. */}
                               <span className={styles.consentText}>
                                 Acepto que {BRAND_NAME} trate mi email para responderme a esta
                                 solicitud. El envío se procesa a través de {FORM_PROCESSOR.name}.
@@ -698,10 +723,6 @@ export const HeroLeadWidget: React.FC = () => {
                                 <a href={`mailto:${CONTACT_EMAIL}`} className={styles.consentLink}>
                                   {CONTACT_EMAIL}
                                 </a>
-                                . Más detalle en la{' '}
-                                <Link to={ROUTES.privacidad} className={styles.consentLink}>
-                                  política de privacidad
-                                </Link>
                                 .
                               </span>
                             </label>
