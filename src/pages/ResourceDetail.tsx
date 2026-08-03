@@ -88,7 +88,7 @@ export const ResourceDetail: React.FC = () => {
         : RESOURCES.filter((r) => r.slug !== resource.slug).slice(0, 2);
 
     // ── Structured data (JSON-LD) por artículo ──
-    const articleUrl = `${SITE_URL}/recursos/${resource.slug}`;
+    const articleUrl = `${SITE_URL}/recursos/${resource.slug}/`;
     const publishedISO = resource.date;
     const modifiedISO = resource.updated ?? resource.date;
     // Article enriquecido: partimos del builder compartido y le añadimos
@@ -101,7 +101,7 @@ export const ResourceDetail: React.FC = () => {
     };
     const breadcrumbData = buildBreadcrumb([
         { name: 'Inicio', url: `${SITE_URL}/` },
-        { name: 'Recursos', url: `${SITE_URL}/recursos` },
+        { name: 'Recursos', url: `${SITE_URL}/recursos/` },
         { name: resource.title, url: articleUrl },
     ]);
 
@@ -127,7 +127,7 @@ export const ResourceDetail: React.FC = () => {
             <PageSEO
                 title={pageTitle}
                 description={resource.desc}
-                canonical={`https://opspilot.es/recursos/${resource.slug}`}
+                canonical={`https://opspilot.es/recursos/${resource.slug}/`}
             />
             <StructuredData data={articleData} />
             <StructuredData data={breadcrumbData} />

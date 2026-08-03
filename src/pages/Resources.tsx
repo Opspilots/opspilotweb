@@ -58,7 +58,7 @@ export const Resources: React.FC = () => {
         title: 'Recursos para automatizar y digitalizar tu PYME — OpsPilot',
         description:
             'Guías, artículos y herramientas gratis para automatizar y digitalizar tu PYME. Aprende cómo automatizar tu negocio, sin tecnicismos ni relleno.',
-        canonical: 'https://opspilot.es/recursos',
+        canonical: 'https://opspilot.es/recursos/',
     };
 
     const heroRef = useHeroReveal<HTMLDivElement>();
@@ -135,7 +135,7 @@ export const Resources: React.FC = () => {
             <StructuredData
                 data={buildBreadcrumb([
                     { name: 'Inicio', url: 'https://opspilot.es/' },
-                    { name: 'Recursos', url: 'https://opspilot.es/recursos' },
+                    { name: 'Recursos', url: 'https://opspilot.es/recursos/' },
                 ])}
             />
             {/* ═══ HERO ═══ */}

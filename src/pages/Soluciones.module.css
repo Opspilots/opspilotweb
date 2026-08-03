@@ -478,14 +478,24 @@ section.solHero p.heroSubtitle {
    independiente de la selección de sector, ver Soluciones.tsx.
    ═══════════════════════════════════════════ */
 
-/* Envoltorio de la página activa (AnimatePresence). `flex: 1` se come el
-   espacio sobrante entre el icono y `.pageNav`/`.panelCta` — así estos dos
-   quedan siempre pegados al fondo del panel sin depender de `margin-top:auto`
-   (que hoy solo hace falta en `.panelCta` como red de seguridad si
-   `.pageContent` llegara a quedar vacío). `min-height: 0` es necesario para
-   que un hijo flex con `overflow-y: auto` pueda encogerse por debajo de su
-   contenido — sin esto Chrome ignora el overflow y el panel se estira. */
-.pageContent {
+/* Deck de las 3 páginas del panel. Esto era `.pageContent`, el envoltorio de
+   la ÚNICA página montada en cada momento (AnimatePresence en Soluciones.tsx);
+   se renombró al pasar a montarlas las 3 a la vez — el copy de processSteps y
+   faq tiene que existir en el HTML prerenderizado, no solo el de la página 0,
+   que es la única que veía el SSG. Hereda tal cual el rol de hijo flex que
+   tenía `.pageContent`: `flex: 1` se come el espacio sobrante entre el icono y
+   `.pageNav`/`.panelCta` — así estos dos quedan siempre pegados al fondo del
+   panel sin depender de `margin-top: auto` (que hoy solo hace falta en
+   `.panelCta` como red de seguridad si el deck llegara a quedar vacío) — y
+   `min-height: 0` es necesario para que un hijo flex con `overflow-y: auto`
+   pueda encogerse por debajo de su contenido (sin esto Chrome ignora el
+   overflow y el panel se estira).
+   Lo NUEVO es `position: relative`: el deck pasa a ser el contenedor de
+   referencia de las 2 páginas inactivas, que se superponen absolutas sobre la
+   activa. Mismo patrón que `.panel`/`.panelHidden` dentro de `.panelWrap`, un
+   nivel más adentro. */
+.pageDeck {
+    position: relative;
     flex: 1 1 auto;
     min-height: 0;
 }
@@ -498,9 +508,50 @@ section.solHero p.heroSubtitle {
        futuro, esto evita que se recorte contenido en vez de fallar en
        silencio, a costa de una barra de scroll interna en vez de un layout
        que se rompe. */
-    .pageContent {
+    .pageDeck {
         overflow-y: auto;
+        /* `overflow-x: clip` NO es redundante, es obligatorio. Declarar solo
+           `overflow-y: auto` haría que `overflow-x` computara de `visible` a
+           `auto` (CSS Overflow 3: si un eje no es `visible`, el otro tampoco
+           puede serlo), y las 2 páginas inactivas están desplazadas con
+           `translateX` de +24px y +48px respecto a la activa — desplazamiento
+           que SÍ cuenta como scrollable overflow. Resultado sin esto: barra de
+           scroll horizontal dentro del panel en `page=0` (48px sobrantes) y en
+           `page=1` (24px), que desaparece en `page=2` porque el overflow
+           negativo no cuenta. Es decir, una barra que aparece y desaparece al
+           paginar y que en Windows se come ~15px del alto útil de los 500px.
+           `clip` en vez de `hidden` para no crear un contenedor de scroll en
+           ese eje. */
+        overflow-x: clip;
     }
+}
+
+/* Las 2 páginas inactivas del deck — misma receta que `.panelHidden` un nivel
+   más arriba: fuera de flujo, superpuestas sobre la activa (que es la que
+   sigue determinando el alto, y con él el del panel en los breakpoints donde
+   `.panel` no tiene alto fijo) y sin capturar puntero. La página ACTIVA no
+   lleva clase ninguna: no necesita nada, se queda en flujo normal.
+
+   Ni `display: none` ni desmontarlas: su copy debe seguir en el documento.
+   `inert` + `aria-hidden` (ver Soluciones.tsx) las sacan del árbol de
+   accesibilidad, y siguen siendo alcanzables con las flechas/dots de
+   `.pageNav`.
+
+   `overflow: hidden` no es cosmético: a ≥1024px quien scrollea es `.pageDeck`
+   (`overflow-y: auto` arriba), y una página inactiva más alta que el panel se
+   saldría de su caja de `inset: 0` alargando ese scroll interno con contenido
+   invisible — barra de scroll que no lleva a ninguna parte.
+
+   OJO con el nombre: NO se llama `.panelHidden`, y no es casualidad. En
+   `@media (max-width: 767px)` `.panel`/`.panelHidden` vuelven a
+   `position: relative` para formar el carril horizontal de sectores; aquí
+   dentro no queremos eso en ningún breakpoint — el carrusel de páginas nunca
+   es un carril scrolleable, se navega solo con `.pageNav`. */
+.pageSlideHidden {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
 }
 
 .pageBody {
@@ -1056,7 +1107,7 @@ section.solHero p.heroSubtitle {
     }
 
     /* El icono ya era persistente en las 3 páginas internas (vive fuera de
-       `.pageContent`); el margen inferior se recorta porque ahora el
+       `.pageDeck`); el margen inferior se recorta porque ahora el
        `.panelKicker` de texto (ver Soluciones.tsx) se apila justo debajo y
        aporta el resto del aire antes del contenido. */
     .panelIcon {

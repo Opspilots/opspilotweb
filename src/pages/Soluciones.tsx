@@ -12,7 +12,7 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { useDragScroll } from '../hooks/useDragScroll';
 import { PageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
-import { buildBreadcrumb } from '../lib/seo';
+import { buildBreadcrumb, buildFAQ } from '../lib/seo';
 import { StructuredData } from '../components/seo/StructuredData';
 import sys from '../styles/page-system.module.css';
 import styles from './Soluciones.module.css';
@@ -40,26 +40,28 @@ const SECTOR_CTA_LABEL = 'Cuéntanos tu caso';
 const PANEL_PAGE_COUNT = 3;
 const PANEL_PAGE_LABELS = ['Resumen', 'Cómo funciona', 'Preguntas frecuentes'] as const;
 
-// Variantes del slide horizontal entre páginas (Framer Motion, patrón
-// "swipeable carousel" oficial: `custom` en AnimatePresence Y en el hijo
-// entrante). `dir === 0` es el caso especial del RESET por cambio de sector
-// (ver useEffect de `page` más abajo): ahí no debe verse ningún slide —
-// el cambio de sector ya tiene su propia transición (crossfade de icono +
-// opacity/y del panel) y un segundo movimiento simultáneo se leería como
-// ruido, no como una señal. Con dir=0 entrada/salida quedan en opacity:1,
-// x:0 en todo momento, así que la página nueva del sector nuevo aparece
-// "ya puesta" sin animar por su cuenta.
-const pageVariants = {
-    enter: (dir: number) => ({
-        opacity: dir === 0 ? 1 : 0,
-        x: dir === 0 ? 0 : dir * 24,
-    }),
-    center: { opacity: 1, x: 0 },
-    exit: (dir: number) => ({
-        opacity: dir === 0 ? 1 : 0,
-        x: dir === 0 ? 0 : dir * -24,
-    }),
-};
+// FAQPage único para /soluciones, agregando los 21 pares (7 sectores × 3) de
+// `Sector.faq`. Vive a nivel de módulo, no dentro del componente: se deriva
+// EXCLUSIVAMENTE de `SECTORS`, que es un dato estático e inmutable, así que
+// recalcularlo en cada render sería trabajo puro a cambio de nada.
+//
+// Contexto: hasta ahora esta página solo emitía `BreadcrumbList`. No podía
+// emitir FAQPage aunque quisiéramos, porque el copy de la FAQ NO llegaba al
+// HTML prerenderizado — en el SSG `page` siempre vale 0 y AnimatePresence solo
+// montaba esa página, así que las 21 preguntas existían en el dato pero no en
+// el documento. Google exige que el marcado FAQPage se corresponda con
+// contenido VISIBLE en la página; marcar lo que no está es motivo de acción
+// manual. El deck de 3 páginas (ver `.pageDeck` en el JSX más abajo) es lo que
+// hace legítimo este bloque: ahora las 3 páginas de los 7 sectores están en el
+// HTML y son alcanzables con las flechas/dots de `.pageNav`.
+//
+// Las 21 preguntas son literalmente únicas entre sí (verificado sobre
+// src/data/sectors.ts), así que no hace falta desambiguar anteponiendo el
+// sector — y de hecho NO debe hacerse: alteraría el texto respecto al que se
+// pinta en el `<dt>`, que es justo lo que Google contrasta.
+const SECTOR_FAQ_SCHEMA = buildFAQ(
+    SECTORS.flatMap((s) => s.faq.map(({ question, answer }) => ({ q: question, a: answer }))),
+);
 
 /** Contenido de una de las 3 páginas del panel — extraído a parte para que el
  * `SECTORS.map` de más abajo no crezca un nivel más de anidación. Recibe el
@@ -139,7 +141,7 @@ export const Soluciones: React.FC = () => {
     const seoProps = {
         title: 'Software por sector: asesorías, energía y obra · OpsPilot',
         description: 'Software para asesorías, CRM para comercializadoras de energía, gestión para reformas y agencias, y digitalización de PYMEs. Encaja con cómo trabajas.',
-        canonical: 'https://opspilot.es/soluciones',
+        canonical: 'https://opspilot.es/soluciones/',
     };
 
     const heroRef = useHeroReveal<HTMLDivElement>();
@@ -169,11 +171,17 @@ export const Soluciones: React.FC = () => {
     const activeSector = SECTORS[selected];
     // Página activa DENTRO del panel del sector seleccionado (0 overview / 1
     // cómo funciona / 2 FAQ) — completamente independiente de `selected`
-    // salvo por el reset de abajo. `pageDirection` alimenta las variants del
-    // slide (1 = avanza a la derecha, -1 = retrocede, 0 = sentinel "sin
-    // slide", solo usado en el reset por cambio de sector).
+    // salvo por el reset de abajo.
+    //
+    // Aquí vivía también un `pageDirection` (1 avanza / -1 retrocede / 0
+    // sentinel "sin slide") que alimentaba las variants de AnimatePresence:
+    // con solo la página activa montada, la única forma de saber hacia qué
+    // lado deslizar era recordar el sentido del último salto. El deck de 3
+    // páginas (ver JSX) ya no lo necesita — las 3 están montadas a la vez, así
+    // que la posición de cada una se deduce de su DISTANCIA a `page`
+    // (`idx - page`), que es un dato geométrico y no un historial. Estado
+    // menos, y una fuente de desincronía menos.
     const [page, setPage] = useState(0);
-    const [pageDirection, setPageDirection] = useState(0);
     const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const ledgerRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
@@ -204,19 +212,16 @@ export const Soluciones: React.FC = () => {
     // pasan por `setSelected`) siempre vuelve el panel a su página 1 — nunca
     // se hereda la página en la que se había quedado el sector anterior (ver
     // instrucción explícita: aterrizar en la FAQ de un sector nuevo sin
-    // contexto confunde). `pageDirection` a 0 en el mismo tick evita que este
-    // reset dispare el slide horizontal de página (ver `pageVariants`).
+    // contexto confunde).
     useEffect(() => {
-        setPageDirection(0);
         setPage(0);
     }, [selected]);
 
     // Navegación entre páginas del panel — clamp a [0, N-1], no-op si ya
-    // estás en el destino (evita un re-render y una dirección espuria).
+    // estás en el destino (evita un re-render inútil).
     const goToPage = (target: number) => {
         const next = Math.max(0, Math.min(PANEL_PAGE_COUNT - 1, target));
         if (next === page) return;
-        setPageDirection(next > page ? 1 : -1);
         setPage(next);
     };
 
@@ -424,9 +429,15 @@ export const Soluciones: React.FC = () => {
             <StructuredData
                 data={buildBreadcrumb([
                     { name: 'Inicio', url: 'https://opspilot.es/' },
-                    { name: 'Soluciones', url: 'https://opspilot.es/soluciones' },
+                    { name: 'Soluciones', url: 'https://opspilot.es/soluciones/' },
                 ])}
             />
+            {/* FAQPage con las 21 preguntas de los 7 sectores (ver
+                `SECTOR_FAQ_SCHEMA` arriba). Va en un `<StructuredData>` aparte
+                del breadcrumb a propósito: cada bloque es un JSON-LD
+                independiente, no un @graph, así que añadir tipos nuevos no
+                obliga a tocar los que ya funcionan. */}
+            <StructuredData data={SECTOR_FAQ_SCHEMA} />
             {/* Hero — flujo normal, FUERA de `.solViewport`/`.solTrack`. Antes
                 vivía pineado dentro del scroll-jack junto al explorador (ver
                 decisión archivada en Soluciones.module.css junto a
@@ -691,34 +702,63 @@ export const Soluciones: React.FC = () => {
                                                     vista qué sector está viendo. */}
                                                 <span className={styles.panelKicker}>{s.label}</span>
 
-                                                {/* Páginas del panel (overview / cómo funciona / FAQ) — solo
-                                                    se anima con slide en el sector ACTIVO; en los 6 paneles
-                                                    inactivos `page`/`pageDirection` son el mismo estado
-                                                    compartido pero da igual: están invisibles/`inert`, así
-                                                    que el slide de fondo no se ve ni consume interacción. */}
-                                                {prefersReducedMotion ? (
-                                                    <div className={styles.pageContent}>
-                                                        <SectorPageContent sector={s} page={page} />
-                                                    </div>
-                                                ) : (
-                                                    <AnimatePresence mode="wait" initial={false} custom={pageDirection}>
-                                                        <motion.div
-                                                            key={page}
-                                                            custom={pageDirection}
-                                                            variants={pageVariants}
-                                                            initial="enter"
-                                                            animate="center"
-                                                            exit="exit"
-                                                            transition={{
-                                                                duration: pageDirection === 0 ? 0 : 0.22,
-                                                                ease: [0.16, 1, 0.3, 1],
-                                                            }}
-                                                            className={styles.pageContent}
-                                                        >
-                                                            <SectorPageContent sector={s} page={page} />
-                                                        </motion.div>
-                                                    </AnimatePresence>
-                                                )}
+                                                {/* Deck de las 3 páginas del panel (resumen / cómo funciona /
+                                                    FAQ). Las TRES se montan siempre, exactamente por el mismo
+                                                    motivo que los 7 paneles de sector de arriba y un nivel más
+                                                    adentro: el copy tiene que existir en el HTML
+                                                    prerenderizado.
+
+                                                    Contexto histórico — esto antes era un `AnimatePresence
+                                                    mode="wait"` que montaba ÚNICAMENTE la página `page`. En
+                                                    cliente funcionaba de maravilla; en el prerender SSG no,
+                                                    porque ahí `page` vale 0 siempre (es el valor inicial del
+                                                    useState y en node no hay interacción que lo mueva). O sea:
+                                                    `sector.processSteps` y `sector.faq` de los 7 sectores —677
+                                                    palabras y 21 pares pregunta/respuesta, medido— existían en
+                                                    src/data pero NUNCA llegaban al HTML estático. Se arregló
+                                                    igual que se arregló el nivel de los paneles: montar todo y
+                                                    mostrar solo lo activo.
+
+                                                    No se usa AnimatePresence: su contrato es precisamente
+                                                    desmontar el hijo saliente, que es justo lo que no
+                                                    queremos. El slide de 24px se reproduce con la DISTANCIA a
+                                                    la página activa (`idx - page`), que además sale gratis en
+                                                    las dos direcciones sin llevar un `pageDirection` a mano.
+
+                                                    Las dos páginas inactivas van `aria-hidden` + `inert`,
+                                                    mismo tratamiento que los paneles de sector inactivos: el
+                                                    lector de pantalla solo anuncia la visible y el tabulador no
+                                                    entra en las otras. NO están escondidas para el rastreador:
+                                                    siguen siendo alcanzables con las flechas y los dots de
+                                                    `.pageNav` de más abajo, que es el patrón de pestañas que
+                                                    Google soporta explícitamente. */}
+                                                <div className={styles.pageDeck}>
+                                                    {PANEL_PAGE_LABELS.map((label, idx) => {
+                                                        const isPageActive = idx === page;
+                                                        // Negativo si la página queda a la izquierda de la
+                                                        // activa, positivo si a la derecha, 0 la activa.
+                                                        const offset = idx - page;
+                                                        return (
+                                                            <motion.div
+                                                                key={label}
+                                                                className={isPageActive ? undefined : styles.pageSlideHidden}
+                                                                aria-hidden={!isPageActive}
+                                                                inert={!isPageActive}
+                                                                initial={false}
+                                                                animate={{
+                                                                    opacity: isPageActive ? 1 : 0,
+                                                                    x: prefersReducedMotion ? 0 : offset * 24,
+                                                                }}
+                                                                transition={{
+                                                                    duration: prefersReducedMotion ? 0 : 0.22,
+                                                                    ease: [0.16, 1, 0.3, 1],
+                                                                }}
+                                                            >
+                                                                <SectorPageContent sector={s} page={idx} />
+                                                            </motion.div>
+                                                        );
+                                                    })}
+                                                </div>
 
                                                 {/* Flechas + dots — navegan `page` (0-2) dentro del sector
                                                     activo, foco/teclado gestionados en `handlePanelKeyDown`

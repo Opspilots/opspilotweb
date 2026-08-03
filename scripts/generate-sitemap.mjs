@@ -135,7 +135,13 @@ function main() {
 
         const rel = relative(DIST_DIR, file).split(sep).join('/');
         const path = rel.replace(/\/?index\.html$/i, ''); // '' | 'soluciones' | 'recursos/slug'
-        const loc = path === '' ? `${SITE_URL}/` : `${SITE_URL}/${path}`;
+        // Barra final SIEMPRE. No es cosmética: con `dirStyle: 'nested'` cada
+        // ruta es una CARPETA en dist/, así que Apache (mod_dir) responde 301
+        // de `/casos` a `/casos/` antes de servir su index.html. Mientras esto
+        // emitía la forma sin barra, 21 de las 22 URLs del sitemap devolvían
+        // 301 en vez de 200 — un sitemap entero apuntando a redirecciones.
+        // La home es el único caso donde `path` es '' y la barra ya está.
+        const loc = path === '' ? `${SITE_URL}/` : `${SITE_URL}/${path}/`;
         const { priority, changefreq } = metaForPath(path);
 
         // Artículos de /recursos/<slug>: lastmod real si lo tenemos, si no,

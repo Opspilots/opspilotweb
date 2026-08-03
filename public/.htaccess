@@ -2,19 +2,23 @@
 # OpsPilot — https://opspilot.es (sin www)
 # Web SSG (vite-react-ssg): HTML estatico por ruta en carpetas.
 # Reglas: HTTPS + host canonico + redirects 301 finales +
-# fallback SPA + seguridad + cache + compresion.
+# 404 real + seguridad + cache + compresion.
 # Todo con guards <IfModule> para no romper si falta un modulo.
+#
+# CONVENCION DE URL: CON barra final (/casos/, no /casos). No es una
+# preferencia estetica, es lo que este servidor ya hacia por su cuenta: con
+# dirStyle 'nested' cada ruta es un DIRECTORIO en dist/, asi que mod_dir
+# responde 301 de /casos a /casos/ antes de servir su index.html. Los
+# canonicals, og:url, hreflang, sitemap y breadcrumbs declaran esa misma
+# forma para que lo declarado y lo servido coincidan.
 # =============================================================
 
 # -------------------------------------------------------------
-# 1) Reescrituras: HTTPS, host canonico, redirects y fallback SPA
+# 1) Reescrituras: HTTPS, host canonico y redirects 301
 # -------------------------------------------------------------
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-
-  # No reescribir index.html a si mismo (evita bucle en el fallback)
-  RewriteRule ^index\.html$ - [L]
 
   # Marca los assets con hash (/assets/*) para aplicarles cache immutable.
   # El env HASHED lo lee el bloque de mod_headers mas abajo.
@@ -30,37 +34,59 @@
   RewriteRule ^ https://opspilot.es%{REQUEST_URI} [R=301,L]
 
   # 3. Redirects 301 reales server-side hacia el destino FINAL (sin cadenas).
-  #    Van ANTES del fallback SPA. Contemplan con y sin barra final.
+  #    Contemplan con y sin barra final en el ORIGEN.
+  #
+  #    El destino lleva barra final. Antes no la llevaba y el fichero
+  #    presumia en este mismo comentario de "sin cadenas" mientras producia
+  #    exactamente eso: /services -> 301 /contacto -> 301 (mod_dir) /contacto/
+  #    Dos saltos para llegar al mismo sitio, diluyendo autoridad y gastando
+  #    presupuesto de rastreo por nada. Con la barra puesta aqui el redirect
+  #    aterriza directo en el destino final, que es lo que el comentario
+  #    siempre dijo que hacia.
 
-  #    3a. Rutas comerciales/legacy -> /contacto
-  RewriteRule ^services/?$        /contacto [R=301,L]
-  RewriteRule ^servicios/?$       /contacto [R=301,L]
-  RewriteRule ^precios/?$         /contacto [R=301,L]
-  RewriteRule ^pricing/?$         /contacto [R=301,L]
-  RewriteRule ^diagnostico/?$     /contacto [R=301,L]
-  RewriteRule ^demo/?$            /contacto [R=301,L]
-  RewriteRule ^contact/?$         /contacto [R=301,L]
+  #    3a. Rutas comerciales/legacy -> /contacto/
+  RewriteRule ^services/?$        /contacto/ [R=301,L]
+  RewriteRule ^servicios/?$       /contacto/ [R=301,L]
+  RewriteRule ^precios/?$         /contacto/ [R=301,L]
+  RewriteRule ^pricing/?$         /contacto/ [R=301,L]
+  RewriteRule ^diagnostico/?$     /contacto/ [R=301,L]
+  RewriteRule ^demo/?$            /contacto/ [R=301,L]
+  RewriteRule ^contact/?$         /contacto/ [R=301,L]
 
-  #    3b. Casos (EN) -> /casos
-  RewriteRule ^cases/?$           /casos [R=301,L]
+  #    3b. Casos (EN) -> /casos/
+  RewriteRule ^cases/?$           /casos/ [R=301,L]
 
-  #    3c. Recursos (EN) -> /recursos
-  RewriteRule ^resources/?$       /recursos [R=301,L]
+  #    3c. Recursos (EN) -> /recursos/
+  RewriteRule ^resources/?$       /recursos/ [R=301,L]
 
-  #    3d. Producto/productos -> /recursos
-  RewriteRule ^product/?$         /recursos [R=301,L]
-  RewriteRule ^productos/?$       /recursos [R=301,L]
-
-  # 4. Fallback SPA (DESPUES de los redirects). Si el path solicitado NO es
-  #    un archivo, directorio ni symlink existente, servir /index.html por
-  #    reescritura INTERNA (sin R, sin cambio de URL). Las rutas reales
-  #    resuelven a su propio index.html via DirectoryIndex; el fallback solo
-  #    cubre paths desconocidos (React renderiza la 404 con noindex).
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-l
-  RewriteRule . /index.html [L]
+  #    3d. Producto/productos -> /recursos/
+  RewriteRule ^product/?$         /recursos/ [R=301,L]
+  RewriteRule ^productos/?$       /recursos/ [R=301,L]
 </IfModule>
+
+# -------------------------------------------------------------
+# 4) 404 real para paths desconocidos
+# -------------------------------------------------------------
+# Aqui vivia un fallback SPA: si el path solicitado no era archivo,
+# directorio ni symlink existente, se reescribia INTERNAMENTE a /index.html.
+# Esa reescritura interna no cambia el codigo de estado, asi que Apache
+# respondia 200 OK a CUALQUIER path inventado, sirviendo el prerender de la
+# home con su "robots: index, follow" y su canonical a "/". Traducido: una
+# fabrica de paginas indexables infinitas. Ya hay basura indexada explotandolo
+# (p. ej. /landing-oficial-24542/diseno-web-para-pymes/automatizaciones/), y
+# el /404/index.html que SI lleva noindex no se servia jamas.
+#
+# Con SSG el fallback ya no hace falta para que la web funcione: vite-react-ssg
+# prerenderiza todas las rutas reales como carpeta con su index.html
+# (incluidos los 17 articulos de /recursos/<slug>, los stubs de redirect y la
+# propia /404/), asi que mod_dir + DirectoryIndex las resuelven solas. Lo unico
+# que cubria el fallback eran los paths que NO existen — que es precisamente lo
+# que debe devolver 404.
+#
+# ErrorDocument es core de Apache (no necesita <IfModule>): sirve el documento
+# manteniendo el codigo 404 y sin cambiar la URL del navegador, asi que el
+# usuario ve la pagina de error de la web y el rastreador ve un 404 de verdad.
+ErrorDocument 404 /404/index.html
 
 # -------------------------------------------------------------
 # 5) Cabeceras de seguridad

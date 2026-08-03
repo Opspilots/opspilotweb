@@ -235,12 +235,12 @@ export const Cases: React.FC = () => {
         title: 'Casos de éxito de software a medida · OpsPilot',
         description:
             'Resultados reales de pymes que dejaron el Excel: más obra, menos horas perdidas, seguimientos que ya no se escapan. Casos con cifras, no promesas.',
-        canonical: 'https://opspilot.es/casos',
+        canonical: 'https://opspilot.es/casos/',
     };
 
     const breadcrumb = buildBreadcrumb([
         { name: 'Inicio', url: 'https://opspilot.es/' },
-        { name: 'Casos', url: 'https://opspilot.es/casos' },
+        { name: 'Casos', url: 'https://opspilot.es/casos/' },
     ]);
 
     const heroRef = useHeroReveal<HTMLDivElement>();

@@ -18,12 +18,12 @@ export const Contact: React.FC = () => {
         title: 'Contacto OpsPilot — Diagnóstico gratuito y presupuesto',
         description:
             'Cuéntanos tu caso. En 30 minutos te decimos si tiene solución, cómo sería y un presupuesto aproximado. Diagnóstico gratuito, respuesta en menos de 24h.',
-        canonical: 'https://opspilot.es/contacto',
+        canonical: 'https://opspilot.es/contacto/',
     };
 
     const breadcrumb = buildBreadcrumb([
         { name: 'Inicio', url: 'https://opspilot.es/' },
-        { name: 'Contacto', url: 'https://opspilot.es/contacto' },
+        { name: 'Contacto', url: 'https://opspilot.es/contacto/' },
     ]);
 
     const heroRef = useHeroReveal<HTMLDivElement>();
