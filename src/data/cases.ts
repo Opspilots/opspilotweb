@@ -236,9 +236,24 @@ export const CASES: readonly Case[] = [
         // construimos: por eso aquí no pone "Tienda" (eso ya lo dice la
         // etiqueta TIENDA de al lado) sino de qué vive el negocio.
         label: 'Material de reforma',
-        title: 'Una tienda que vende placas y te dice cuántas necesitas',
+        /* PUENTE GENIL, EN EL TÍTULO Y EN EL RESUMEN, Y NO SOLO EN LA
+           NARRATIVA. El dato ya estaba en `text` ("desde su almacén en la
+           carretera de Puente Genil a Herrera") y `text` NO se pinta en la
+           portada: allí la tarjeta muestra `title` + `summary` + `bullets`, o
+           sea que la única localización auténtica que tiene este caso vivía
+           justo en el campo que el visitante de la home no llega a leer.
+
+           Es un HECHO, no una etiqueta de posicionamiento: la propia tienda se
+           titula «Placas decorativas de PVC sin obra | Puente Genil · Herrera».
+           Se escribe "Puente Genil (Córdoba)" y no solo el municipio porque
+           quien busca desde fuera de la comarca no tiene por qué situarlo, y
+           porque es la provincia la que conecta este caso con los otros dos.
+           Herrera se queda fuera del resumen —es de Sevilla y el almacén está
+           en la carretera ENTRE los dos— para no comprimir en una línea un
+           matiz que la narrativa larga ya cuenta bien. */
+        title: 'Una tienda de Puente Genil que vende placas y te dice cuántas necesitas',
         summary:
-            'Tienda online de placas decorativas de PVC en Andalucía, con carrito, calculadora y WhatsApp.',
+            'Tienda online de placas decorativas de PVC en Andalucía, con almacén en Puente Genil (Córdoba): carrito, calculadora y WhatsApp.',
         text:
             'ObraFácil vende placas y paneles decorativos de PVC que se colocan sobre el azulejo existente, sin obra, además de palillería y suelo SPC, desde su almacén en la carretera de Puente Genil a Herrera. Vender eso por internet tiene dos frenos concretos: el catálogo es grande —más de cien imágenes de producto— y el particular que mira una placa no sabe cuántas le entran en su pared. Construimos la tienda entera alrededor de esos dos frenos: catálogo con carrito de compra, una calculadora de placas que traduce los metros de la pared a unidades, una galería de «antes y después» que enseña el resultado sobre azulejo real, página de servicios, preguntas frecuentes y un botón de WhatsApp para las dudas que no cierra una ficha de producto. La propia tienda anuncia más de 200 diseños en stock y respuesta por WhatsApp en 24 horas. Está publicada: se puede entrar y comprobarlo entero.',
         bullets: [
@@ -352,6 +367,17 @@ export const CASES: readonly Case[] = [
         iconKey: 'building',
         // El SECTOR del cliente, no lo que le construimos (eso ya lo dice la
         // etiqueta WEB de al lado).
+        //
+        // SE QUEDA SIN CIUDAD, a propósito, y va escrito porque la tentación
+        // de poner "Reformas integrales · Córdoba" es evidente. Dos razones.
+        // La primera es de dato: este campo es UN EJE —el ramo del cliente—
+        // y al lado va el otro —la línea de servicio—; meterle una tercera
+        // cosa rompe la lectura de los dos chips que tiene la tarjeta y que
+        // este fichero documenta arriba. La segunda es que sería redundante:
+        // la localización de este caso YA está en las dos superficies que se
+        // leen de verdad, el `title` y el `summary` de aquí abajo, que dicen
+        // Córdoba los dos. Añadirla una tercera vez en la misma tarjeta no
+        // posiciona más, solo suena a relleno.
         label: 'Reformas integrales',
         title: 'Una página por cada reforma que se busca en Córdoba',
         summary:
@@ -447,6 +473,11 @@ export const CASES: readonly Case[] = [
         id: 'energydeal',
         sectorId: 'energia',
         iconKey: 'zap',
+        // SIN LOCALIZACIÓN, y aquí no es un olvido de la pasada de SEO local
+        // que sí tocó los otros dos casos: este cliente es `anonymous` (ver
+        // abajo), y de alguien a quien no se puede nombrar tampoco se puede
+        // decir de dónde es — la ciudad de un comercial de energía en un
+        // sector pequeño lo identifica casi tan bien como el nombre.
         label: 'Comercial de energía',
         title: 'Un CRM que sabe qué es un CUPS',
         summary:

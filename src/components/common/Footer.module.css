@@ -149,11 +149,34 @@
     transform: translateX(3px);
 }
 
+/* Ubicación del negocio. Ahora el elemento es un <address> (ver Footer.tsx),
+   y los navegadores lo traen en cursiva por defecto: `font-style: normal` es
+   obligatorio aquí, no una preferencia — sin él el pie mostraría la única
+   línea en cursiva de toda la web. `align-items: flex-start` y no `center`
+   porque el bloque puede crecer a tres líneas el día que haya calle y CP, y
+   el icono tiene que quedarse arriba con la primera, no centrado en el
+   conjunto. */
 .metaLocation {
     color: var(--color-text-subtle);
     font-size: var(--font-size-sm);
-    display: inline-flex;
-    align-items: center;
+    font-style: normal;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    line-height: 1.6;
+}
+
+/* El icono no encoge ni se lleva su parte del gap cuando la línea es larga.
+   El `margin-top` lo alinea con la altura de la x de la primera línea en vez
+   de con su caja, que es lo que se ve descuadrado a simple vista. */
+.metaLocationIcon {
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+.metaLocationLines {
+    display: flex;
+    flex-direction: column;
 }
 
 @media (prefers-reduced-motion: reduce) {

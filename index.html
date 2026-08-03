@@ -32,7 +32,48 @@
   <!-- Twitter Card (twitter:card/title/description los gestiona <PageSEO> por ruta) -->
   <meta name="twitter:image" content="https://opspilot.es/images/og-image.png" />
 
-  <!-- Schema.org structured data -->
+  <!-- ═══ Schema.org structured data ═══
+
+       SINCRONIZACIÓN A MANO CON src/lib/company.ts, Y NO ES UN DESCUIDO.
+       Este fichero es HTML estático: vite-react-ssg lo sirve tal cual como
+       plantilla del prerender, NO pasa por el bundler, así que no puede
+       importar un módulo TypeScript. Los valores de empresa que aparecen aquí
+       abajo —addressLocality, addressRegion, addressCountry, telephone, email,
+       geo— están DUPLICADOS de ADDRESS / PHONE / CONTACT_EMAIL en
+       src/lib/company.ts, que es la fuente única del resto de la web (Footer,
+       Contact, lib/forms.ts). Si cambia allí, hay que cambiarlo AQUÍ a mano:
+       no hay nada que avise. El día que se quiera cerrar el agujero, la vía
+       es mover este @graph a un componente <StructuredData> con <Head>, lo
+       que toca el prerender de todas las rutas (ver el bloque "LÍMITE
+       DELIBERADO" en company.ts).
+
+       TODO(negocio) — LO QUE FALTA Y NO SE INVENTA. `PostalAddress` está
+       incompleto a propósito: NO hay `streetAddress` ni `postalCode` porque
+       no consta el domicilio, y tampoco `legalName` ni `taxID` (`vatID`)
+       porque LEGAL_NAME y TAX_ID están vacíos en company.ts con su mismo
+       TODO(negocio). Una dirección inventada en el JSON-LD es peor que
+       ninguna: las citaciones locales (directorios, cámara de comercio, ficha
+       de Google) se puntúan por coherencia NAP —mismo nombre, dirección y
+       teléfono en todas partes— así que un dato falso aquí envenena todas las
+       demás. Cuando llegue el dato 1 del plan (.seo/02-plan-local-cordoba.md
+       §1) se rellena en company.ts y se replica aquí.
+
+       `areaServed`: los cuatro ámbitos (ciudad → provincia → comunidad → país)
+       se declaran ENTEROS y no solo "España", que es lo que había. Un solo
+       `Country` describe a quién se le vende pero no dice DÓNDE se está, y
+       para una consulta local es justo lo contrario de lo que hace falta. Van
+       repetidos en `Organization` y en `ProfessionalService` porque JSON-LD no
+       tiene variables y los dos nodos responden a preguntas distintas: quién
+       es la empresa y qué servicio se presta. `AdministrativeArea` para
+       provincia y comunidad —y no `State`— porque es el supertipo que encaja
+       sin forzar la división territorial española.
+
+       `telephone`: E.164 sin separadores en los dos nodos, que es lo que pide
+       Schema.org y lo que ya declara PHONE.e164 en company.ts. El
+       `contactPoint` de `Organization` lo tenía como "+34-640-756-126" y esa
+       divergencia era exactamente la incoherencia NAP que este bloque intenta
+       evitar. La forma legible ("+34 640 75 61 26") es PHONE.display y vive
+       solo en pantalla, no aquí. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -46,12 +87,17 @@
         "description": "Empresa de desarrollo de software en España. Productos verticales para fiscalidad, energía, construcción y agencias, y desarrollo a medida con agentes IA.",
         "slogan": "Tecnología que encaja con cómo trabajas.",
         "foundingDate": "2024",
-        "areaServed": { "@type": "Country", "name": "España" },
+        "areaServed": [
+          { "@type": "City", "name": "Córdoba" },
+          { "@type": "AdministrativeArea", "name": "Provincia de Córdoba" },
+          { "@type": "AdministrativeArea", "name": "Andalucía" },
+          { "@type": "Country", "name": "España" }
+        ],
         "address": { "@type": "PostalAddress", "addressCountry": "ES", "addressLocality": "Córdoba", "addressRegion": "Andalucía" },
         "geo": { "@type": "GeoCoordinates", "latitude": 37.8882, "longitude": -4.7794 },
         "contactPoint": {
           "@type": "ContactPoint",
-          "telephone": "+34-640-756-126",
+          "telephone": "+34640756126",
           "contactType": "customer service",
           "availableLanguage": ["Spanish"],
           "email": "opspilot.contact@gmail.com"
@@ -64,7 +110,15 @@
         "url": "https://opspilot.es/",
         "image": "https://opspilot.es/images/og-image.png",
         "priceRange": "€€",
-        "areaServed": "ES",
+        "areaServed": [
+          { "@type": "City", "name": "Córdoba" },
+          { "@type": "AdministrativeArea", "name": "Provincia de Córdoba" },
+          { "@type": "AdministrativeArea", "name": "Andalucía" },
+          { "@type": "Country", "name": "España" }
+        ],
+        "address": { "@type": "PostalAddress", "addressCountry": "ES", "addressLocality": "Córdoba", "addressRegion": "Andalucía" },
+        "geo": { "@type": "GeoCoordinates", "latitude": 37.8882, "longitude": -4.7794 },
+        "telephone": "+34640756126",
         "serviceType": "Desarrollo de software a medida, integraciones, agentes IA, ERP y CRM",
         "provider": { "@id": "https://opspilot.es/#organization" }
       },

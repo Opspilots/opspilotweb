@@ -119,10 +119,23 @@ const WHY_COMPARISON = [
 ];
 
 export const Home: React.FC = () => {
+  // Metadatos de la portada. El reparto local/nacional entre `title` y
+  // `description` NO es cosmético, responde a dónde se puede ganar HOY: el
+  // dominio tiene 3 páginas indexadas de 22 y cero visibilidad nacional, así
+  // que "España" en el título es aspiracional —se compite contra agencias con
+  // años de autoridad— mientras que "Córdoba" es alcanzable en semanas. Por
+  // eso el título prioriza lo local (que además es donde están los tres
+  // clientes reales: Córdoba capital y Puente Genil) y el alcance nacional se
+  // declara en la descripción, que es donde no cuesta posiciones. Ver
+  // .seo/02-plan-local-cordoba.md §2.
+  //
+  // LÍMITES DE LONGITUD, medidos y no estimados: title 50/60 y description
+  // 142/155 caracteres. Pasarse hace que Google recorte con puntos
+  // suspensivos justo donde está la palabra que importa.
   const seoProps = {
-    title: "Software a medida para PYMEs en España | OpsPilot",
+    title: "Software a medida para PYMEs en Córdoba | OpsPilot",
     description:
-      "Software a medida para pymes de toda España, hecho en Córdoba. Presupuesto cerrado, respuesta en menos de 24h. Cuéntanos tu problema.",
+      "Desarrollo de software a medida en Córdoba para pymes de toda España. Presupuesto cerrado y respuesta en menos de 24 h. Cuéntanos tu problema.",
     canonical: "https://opspilot.es/",
   };
 
@@ -374,9 +387,22 @@ export const Home: React.FC = () => {
                 </span>
               </span>
             </h1>
+            {/* "Desde Córdoba" y no un H1 con la ciudad dentro, y la decisión
+                merece explicación porque el criterio SEO empujaba a lo
+                contrario. El H1 dice "para tu PYME": meterle la ciudad da
+                "para tu PYME en Córdoba", que ya no es un matiz de redacción
+                sino un cambio de PROMESA — pasa de "trabajamos con pymes" a
+                "trabajamos con pymes cordobesas", y contradice de frente a la
+                description ("pymes de toda España") y a los propios casos, que
+                incluyen Puente Genil. "Desde" resuelve las dos cosas a la vez:
+                declara el origen —que es lo que Google necesita y lo que hoy
+                no está escrito en ningún sitio de esta web— sin acotar a quién
+                se le vende. Y va en la primera línea bajo el H1, o sea en la
+                superficie que de verdad se lee. */}
             <p className={styles.heroSubtitle}>
-              Construimos el sistema que tu PYME necesita, no el que te quieren
-              vender. Precio cerrado y respuesta en menos de 24 horas.
+              Desde Córdoba construimos el sistema que tu PYME necesita, no el
+              que te quieren vender. Precio cerrado y respuesta en menos de 24
+              horas.
             </p>
             <div className={styles.ctaGroup}>
               <Link to={ROUTES.contacto} ref={heroCtaRef}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { MapPin } from 'lucide-react';
 import styles from './Footer.module.css';
 import { Logo } from './Logo';
 import { Button } from '../ui/Button';
@@ -107,9 +108,50 @@ export const Footer: React.FC = () => {
                         <a href={WHATSAPP_URL} className={styles.link} target="_blank" rel="noopener noreferrer">
                             WhatsApp · {PHONE.display}
                         </a>
-                        <span className={styles.metaLocation}>
-                            {ADDRESS.locality}, {ADDRESS.country}
-                        </span>
+                        {/* Ubicación del negocio, y ahora se lee como tal.
+
+                            Antes era un `<span>` suelto con "Córdoba, España":
+                            cierto, pero indistinguible de un pie de página
+                            cualquiera. `<address>` es el elemento que HTML
+                            tiene para exactamente esto —los datos de contacto
+                            de quien firma el documento— y aquí está dentro del
+                            landmark `contentinfo`, que es el único sitio donde
+                            la especificación permite que se refiera al
+                            documento entero y no a un artículo suelto. Los
+                            navegadores lo pintan en cursiva por defecto: lo
+                            neutraliza `font-style: normal` en .metaLocation.
+
+                            SIN DIRECCIÓN POSTAL INVENTADA, y con el hueco ya
+                            montado. `street` y `postalCode` están vacíos en
+                            company.ts con su TODO(negocio); las líneas se
+                            componen en el orden postal español (vía → CP +
+                            localidad → comunidad, país) y las vacías se caen
+                            solas con el `.filter(Boolean)`. Hoy salen dos
+                            líneas; el día que alguien rellene la calle en
+                            company.ts salen tres, sin volver a tocar este
+                            componente. Un hueco dejado como comentario "para
+                            cuando llegue el dato" es justo el que nadie
+                            encuentra el día que el dato llega.
+
+                            OJO CON `region`: en company.ts es "Andalucía", o
+                            sea la COMUNIDAD, no la provincia — no hay campo de
+                            provincia y no se inventa uno. Para Córdoba capital
+                            coinciden nombre de ciudad y de provincia, así que
+                            no se pierde nada; si algún día la sede se mueve a
+                            otro municipio, el campo que falta hay que añadirlo
+                            allí y no parchearlo aquí. */}
+                        <address className={styles.metaLocation}>
+                            <MapPin size={14} strokeWidth={1.8} className={styles.metaLocationIcon} aria-hidden="true" />
+                            <span className={styles.metaLocationLines}>
+                                {[
+                                    ADDRESS.street,
+                                    [ADDRESS.postalCode, ADDRESS.locality].filter(Boolean).join(' '),
+                                    `${ADDRESS.region}, ${ADDRESS.country}`,
+                                ]
+                                    .filter(Boolean)
+                                    .map((line) => <span key={line}>{line}</span>)}
+                            </span>
+                        </address>
                     </div>
                 </div>
 
