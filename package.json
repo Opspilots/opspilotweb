@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite-react-ssg build && node scripts/generate-sitemap.mjs",
+    "build": "tsc && vite-react-ssg build && node scripts/generate-sitemap.mjs && node scripts/fix-charset.mjs",
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
