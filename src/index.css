@@ -314,6 +314,27 @@ video {
     }
 }
 
+/* Pantallas táctiles (móvil/tablet sin ratón): SIN reveal por scroll. El
+   contenido nace visible. Motivo (sep-2026, reportado en iPhone real): al
+   deslizar un poco, secciones enteras se quedaban en opacity:0 — solo se
+   veía el header con el logo — y volvían al recargar. El reveal depende de
+   que ScrollTrigger dispare al entrar en viewport, y en móvil eso falla de
+   forma intermitente (barra de direcciones que cambia el alto del viewport,
+   ScrollTrigger recalculando en mitad del gesto, Lenis + rAF en segundo
+   plano). Antes que un reveal "a veces", contenido siempre. En escritorio
+   (hover: hover) el reveal cinematográfico sigue igual. */
+@media (hover: none) and (pointer: coarse) {
+
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-scale {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
 /* ═══════════════════════════════════════════
    UTILIDADES VISUALES GLOBALES (aditivo)
    Grano, glass, spotlight, shimmer, float, hover-lift.

@@ -327,27 +327,14 @@ export const Soluciones: React.FC = () => {
     const ledgerRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
     const ledgerScrollRaf = useRef(0);
-    // ≤767px: `.ledger` (fila compacta) y `.panelWrap` (detalle completo) se
-    // fusionan en UNA sola superficie tipo hoja/modal que ES el carrusel —
-    // ver comentario junto a `.panelWrap` en Soluciones.module.css. `panelRefs`
-    // (uno por sector, igual que `tabRefs`) y `panelWrapScrollRaf` son el
-    // equivalente de `tabRefs`/`ledgerScrollRaf` pero para ese carrusel fusionado.
-    const panelRefs = useRef<Array<HTMLDivElement | null>>([]);
-    const panelWrapRef = useRef<HTMLDivElement>(null);
-    const panelWrapScrollRaf = useRef(0);
-    // Los dos efectos de "scrollIntoView de la fila/tarjeta activa" (uno para
-    // `.ledger`, uno para `.panelWrap`, ver más abajo) no deben ejecutar su
-    // scrollIntoView en el MOUNT inicial — con el hero ahora a tamaño
+    // El efecto de "scrollIntoView de la fila activa" de `.ledger` (ver más
+    // abajo) no debe ejecutar su scrollIntoView en el MOUNT inicial — con el hero ahora a tamaño
     // completo (ver Task A / `.solHero`), el explorador arranca por debajo
     // del pliegue en mobile, así que un `scrollIntoView` disparado en el
     // primer render (selected=0, sin interacción del usuario todavía) hacía
     // que la PÁGINA ENTERA saltara hacia abajo al cargar, saltándose el hero
-    // por completo — regresión real, verificada con Playwright. Cada efecto
-    // usa su propio flag (no uno compartido): comparten el mismo commit de
-    // React, así que un flag único quedaría "consumido" por el primero de
-    // los dos y el segundo igual dispararía el salto.
+    // por completo — regresión real, verificada con Playwright.
     const ledgerSyncMounted = useRef(false);
-    const panelSyncMounted = useRef(false);
 
     // Cambiar de sector (clic/tap/teclado en las filas O scroll-jack, ambos
     // pasan por `setSelected`) siempre vuelve el panel a su página 1 — nunca
@@ -428,44 +415,6 @@ export const Soluciones: React.FC = () => {
     }, []);
 
     useEffect(() => () => cancelAnimationFrame(ledgerScrollRaf.current), []);
-
-    // Mismo mecanismo que `handleLedgerScroll` de arriba, pero para el
-    // carrusel fusionado ≤767px (`.panelWrap` como carril scroll-snap de
-    // sectores, ver Soluciones.module.css) — a esos anchos `.ledger` está
-    // oculto (`display: none`) y es `.panelWrap` quien hace de carril
-    // horizontal, así que necesita su propio listener de scroll→`selected`
-    // en vez de reutilizar `ledgerRef` (que ya no existe visualmente en el
-    // DOM en ese rango). Gateado igual, ≤767px vía matchMedia: por encima de
-    // ese ancho `.panelWrap` vuelve a ser el panel de detalle absoluto de
-    // siempre (768–1023/desktop), donde este cálculo de índice por
-    // `scrollLeft / unit` no aplicaría.
-    //
-    // `panelRefs.current[0]` en vez de `wrap.children[0]` (que sí funciona
-    // en `handleLedgerScroll`): el primer hijo REAL de `.panelWrap` es
-    // `.panelBar` (el `<span>` decorativo del hairline, ver JSX más abajo),
-    // no una tarjeta — con `wrap.children[0]` la unidad de ancho se calculaba
-    // sobre ese span (0px en ≤767px, donde `.panelBar` es `display: none`),
-    // dando un `unit` erróneo (solo el gap) y un índice sistemáticamente mal
-    // calculado. `panelRefs` (uno por sector, ver más arriba) apunta siempre
-    // a una tarjeta real.
-    const handlePanelWrapScroll = useCallback(() => {
-        cancelAnimationFrame(panelWrapScrollRaf.current);
-        panelWrapScrollRaf.current = requestAnimationFrame(() => {
-            if (!window.matchMedia('(max-width: 767px)').matches) return;
-            const wrap = panelWrapRef.current;
-            if (!wrap) return;
-            const card = panelRefs.current[0];
-            if (!card) return;
-            const gap = parseFloat(window.getComputedStyle(wrap).gap) || 0;
-            const unit = card.offsetWidth + gap;
-            if (!unit) return;
-            const idx = Math.round(wrap.scrollLeft / unit);
-            const clamped = Math.max(0, Math.min(idx, SECTORS.length - 1));
-            setSelected((prev) => (prev === clamped ? prev : clamped));
-        });
-    }, []);
-
-    useEffect(() => () => cancelAnimationFrame(panelWrapScrollRaf.current), []);
 
     // Selección de sector — dos mecanismos que conviven:
     // 1. Clic/tap/teclado en las filas (ver onClick/onKeyDown más abajo) —
@@ -549,43 +498,6 @@ export const Soluciones: React.FC = () => {
             block: 'nearest',
         });
     }, [selected, prefersReducedMotion]);
-
-    // Mismo patrón que el efecto de arriba, pero para el slide activo del
-    // carrusel fusionado ≤767px (`.panelWrap`): cuando `selected` cambia por
-    // un mecanismo que NO es el propio swipe (tap en un `.sectorDot`, p. ej.
-    // — el swipe ya deja el carril en la posición correcta por sí mismo vía
-    // `handlePanelWrapScroll`), hay que desplazar `.panelWrap` para que el
-    // panel del sector nuevo quede snapeado y visible. Gateado a ≤767px:
-    // por encima de ese ancho `.panelWrap` no es un carril con scroll propio
-    // (es el panel de detalle absoluto de siempre) y `scrollIntoView` ahí
-    // podría desplazar la PÁGINA en vez de un contenedor interno. Mismo
-    // salto de MOUNT inicial que el efecto de `.ledger` de arriba, y por el
-    // mismo motivo (regresión verificada con Playwright: sin este guard, la
-    // página cargaba con el hero ya scrolleado fuera de vista).
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        if (!window.matchMedia('(max-width: 767px)').matches) return;
-        if (!panelSyncMounted.current) {
-            panelSyncMounted.current = true;
-            return;
-        }
-        // `instant` a propósito, NO `smooth` ni `auto`: verificado en producción
-        // (opspilot.es/soluciones a 390px, Chrome) que cualquier scroll suave
-        // programado sobre `.panelWrap` — scrollIntoView({behavior:'smooth'}),
-        // scrollTo({behavior:'smooth'}) o `auto` heredando el
-        // `scroll-behavior: smooth` del CSS — se cancela antes de moverse un
-        // píxel (scrollLeft no cambia): el contenedor con `scroll-snap-type: x
-        // mandatory` aborta la animación. Consecuencia real: los `.sectorDot`
-        // (y ahora las `.sectorChip`) cambiaban `selected` pero el carrusel se
-        // quedaba en el sector anterior. Con desplazamiento instantáneo el
-        // snap deja el panel exactamente alineado. Se pierde la animación del
-        // salto; se gana que el tap funcione.
-        panelRefs.current[selected]?.scrollIntoView({
-            behavior: 'instant',
-            inline: 'center',
-            block: 'nearest',
-        });
-    }, [selected]);
 
     return (
         <div className={sys.page}>
@@ -696,10 +608,8 @@ export const Soluciones: React.FC = () => {
                             <div className={styles.explorer} ref={listRef} data-lenis-prevent>
                                 {/* Columna izquierda — lista de sectores seleccionables (nav,
                                     no tabla: sin fila de cabecera, ver Soluciones.module.css).
-                                    Oculta (`display: none`) en ≤767px: ahí su trabajo de
-                                    "carrusel de sectores" lo hace `.panelWrap` de más abajo,
-                                    fusionado con el detalle en una sola superficie — ver
-                                    comentario junto a `.panelWrap`. Se deja montada (no
+                                    Oculta (`display: none`) en ≤767px: ahí la selección la
+                                    hacen las `.sectorChips` de más abajo. Se deja montada (no
                                     condicionada en JS) porque sigue siendo la lista/carril real
                                     en 768–1023px y desktop, sin cambios ahí. */}
                                 <div
@@ -802,59 +712,17 @@ export const Soluciones: React.FC = () => {
                                     })}
                                 </div>
 
-                                {/* Indicadores de posición del carrusel de sectores en móvil
-                                    (≤767px, ver .sectorDots en Soluciones.module.css) — mismo
-                                    patrón que .caseDots del carrusel de casos en Home.tsx.
-                                    Resuelven el gap de affordance que hizo abandonar el carril
-                                    horizontal anterior: de un vistazo se ve CUÁNTOS sectores hay
-                                    y CUÁL está activo, algo que ni el "peek" del borde ni el fade
-                                    comunican por sí solos. Son botones reales (no aria-hidden):
-                                    navegación adicional legítima, no decoración pura. Viven en el
-                                    DOM entre `.ledger` y `.panelWrap` (así son hermanos directos de
-                                    ambos, sin envoltorio extra) pero en ≤767px la posición VISUAL
-                                    queda por debajo del carrusel fusionado vía `order` en CSS (ver
-                                    Soluciones.module.css): ahora que `.ledger` está oculto ahí, ya
-                                    no hace falta un role="tab"/"tablist" propio para no duplicar
-                                    el de `.ledger` — a esos anchos `.ledger` no expone ningún
-                                    tablist (display:none lo saca del árbol de accesibilidad), así
-                                    que estos dots son la única superficie de "ir directo a X sector"
-                                    además del propio swipe. En 768–1023px/desktop quedan en el DOM
-                                    pero display:none, así que no ocupan layout ni orden de tab. */}
-                                <div className={styles.sectorDots}>
-                                    {SECTORS.map((s, i) => (
-                                        <button
-                                            key={s.id}
-                                            type="button"
-                                            className={`${styles.sectorDot} ${i === selected ? styles.sectorDotActive : ''}`}
-                                            aria-label={`Ir a ${s.label}`}
-                                            aria-current={i === selected ? 'true' : undefined}
-                                            onClick={() => setSelected(i)}
-                                        />
-                                    ))}
-                                </div>
-
                                 {/* Columna derecha — panel de detalle del sector activo.
-                                    ≥768px: comportamiento sin cambios — los 7 paneles se
-                                    superponen absolutos (`.panelHidden`), solo el activo en
-                                    flujo, tal como antes.
-                                    ≤767px: `.panelWrap` deja de ser un panel único y pasa a SER
-                                    el carrusel de sectores (fusión pedida de `.ledger` + panel de
-                                    detalle en una sola superficie tipo hoja/modal — ver
-                                    Soluciones.module.css): los 7 `.panel` quedan en flujo,
-                                    unos junto a otros, en un carril horizontal con scroll-snap
-                                    (mismo mecanismo que tenía `.ledger`, adaptado aquí vía
-                                    `panelWrapRef`/`handlePanelWrapScroll` en vez de
-                                    `ledgerRef`/`handleLedgerScroll`). `.ledger` en sí queda oculto
-                                    a ese ancho (ver comentario junto a `.ledger` más arriba); el
-                                    fallback de selección por tap sigue siendo el mismo patrón
-                                    (`onClick`/`.sectorDots`), solo que ahora el swipe actúa
-                                    directamente sobre la tarjeta de detalle en vez de sobre una
-                                    fila compacta separada. */}
-                                <div
-                                    className={`${styles.panelWrap} reveal`}
-                                    ref={panelWrapRef}
-                                    onScroll={handlePanelWrapScroll}
-                                >
+                                    En TODOS los breakpoints los 7 paneles se montan (SEO) y solo
+                                    el activo es visible. ≥768px: los inactivos se superponen
+                                    absolutos (`.panelHidden`). ≤767px: los inactivos van
+                                    `display: none` y el activo ocupa el ancho completo — el
+                                    sector se elige con `.sectorChips` (arriba), NO con swipe.
+                                    Hubo un carrusel horizontal con scroll-snap aquí (sep-2026):
+                                    se retiró porque en móvil el gesto era demasiado sensible,
+                                    robaba el scroll vertical y obligaba a pasar los 7 sectores
+                                    uno a uno para encontrar el propio. */}
+                                <div className={`${styles.panelWrap} reveal`}>
                                     <span className={styles.panelBar} aria-hidden="true" />
                                     {/* Los 7 paneles se montan siempre (SEO: el copy de who/solution/
                                         benefits de cada sector debe existir en el HTML prerenderizado,
@@ -888,7 +756,6 @@ export const Soluciones: React.FC = () => {
                                             <motion.div
                                                 key={s.id}
                                                 id={`sector-panel-${i}`}
-                                                ref={(el) => { panelRefs.current[i] = el; }}
                                                 role="tabpanel"
                                                 aria-labelledby={`sector-tab-${i}`}
                                                 // Fallback si `aria-labelledby` no resuelve — en ≤767px

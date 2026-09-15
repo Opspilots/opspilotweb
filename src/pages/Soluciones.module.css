@@ -1010,17 +1010,13 @@ section.solHero p.heroSubtitle {
     .row,
     .row::before,
     .rowArrow,
-    .sectorDot,
+    .sectorChip,
     .pageArrow,
     .pageDot {
         transition: none;
     }
 
-    /* El `scroll-behavior: smooth` del carrusel móvil (ver ≤767px más abajo)
-       queda anulado: los saltos entre tarjetas son instantáneos en vez de
-       animados. El componente ya usa `prefersReducedMotion` en JS para el
-       mismo propósito en `scrollIntoView` (Soluciones.tsx) — esto cubre el
-       scroll nativo por swipe, que no pasa por ese código. */
+    /* El carril de tabs de 768-1023px salta sin animación. */
     .ledger {
         scroll-behavior: auto;
     }
@@ -1094,95 +1090,45 @@ section.solHero p.heroSubtitle {
 }
 
 /* ═══════════════════════════════════════════
-   ≤767px (móvil/táctil) — `.ledger` (antes la "tarjeta" compacta con
-   icono+nombre) y `.panelWrap` (antes el detalle completo, apilado debajo)
-   se FUSIONAN en una sola superficie tipo hoja/modal — elevada, redondeada,
-   background+box-shadow propios, claramente una capa distinta del fondo de
-   la página — que ES el carrusel: `.panelWrap` pasa de "panel único con
-   overlay absoluto" a carril horizontal con scroll-snap, un sector-tarjeta
-   a la vez, SIN peek del siguiente (ancho completo, edge-to-edge). Cada
-   tarjeta lleva ya el icono + nombre del sector (`.panelKicker`, persistente
-   en las 3 páginas internas) Y el contenido completo (resumen/cómo
-   funciona/FAQ vía su propio carrusel interno — ver `.pageNav` más arriba,
-   controles explícitos, NO el mismo gesto que el swipe exterior). Petición
-   explícita del usuario: ya no dos bloques separados, sino una sola unidad
-   swipeable que sustituye tanto a la fila compacta como al panel de detalle.
-
-   `.ledger` queda oculto (`display: none`) a este ancho — su trabajo de
-   "carrusel de sectores" lo hace ahora `.panelWrap` directamente, mismo
-   mecanismo scroll-snap que antes tenía `.ledger` (grab cursor, scrollbar
-   oculta, snap obligatorio), adaptado en Soluciones.tsx vía
-   `panelWrapRef`/`handlePanelWrapScroll` (antes `ledgerRef`/
-   `handleLedgerScroll`) — el hero de arriba (`.solHero`, título "Software
-   para {sector}") sigue quedando PEGADO al carrusel al swipear por el mismo
-   mecanismo, solo que ahora es `.panelWrap` quien dispara el `onScroll`.
-   Señal de affordance: DOTS (`.sectorDots`, ver JSX en Soluciones.tsx,
-   mismo patrón que `.caseDots` del carrusel de Home) — conteo y posición,
-   reposicionados por debajo de `.panelWrap` vía `order` más abajo (en el DOM
-   siguen siendo hermanos intermedios entre `.ledger` y `.panelWrap`, ver
-   Soluciones.tsx).
-
-   Esto reemplaza el carrusel de `.ledger`/`.row` que existía aquí hasta
-   ahora (fila compacta, sin el detalle) — ese layout sigue siendo el de
-   768-1023px (ver bloque de arriba), donde `.ledger`/`.panelWrap` continúan
-   separados, sin cambios. El fallback de selección por clic/tap
-   (`onClick={() => setSelected(i)}` en Soluciones.tsx, sobre `.sectorDots`
-   ya que `.row` no es alcanzable aquí) sigue siendo el mismo mecanismo. */
+   ≤767px (móvil) — `.ledger` se oculta; el sector se elige con
+   `.sectorChips` (rejilla 2 columnas, los 7 a la vista) y el panel activo
+   se muestra en el sitio. NO hay carrusel ni swipe horizontal: lo hubo
+   (sep-2026) y se retiró por ser demasiado sensible en móvil y por obligar
+   a pasar los 7 sectores uno a uno para encontrar el propio.
+   ═══════════════════════════════════════════ */
 @media (max-width: 767px) {
     .ledger {
         display: none;
     }
 
+    /* Sin carrusel: `.panelWrap` es un contenedor normal en flujo, después
+       de `.sectorChips` (`order: 0`). Hubo aquí un carril horizontal con
+       scroll-snap (sep-2026) y se retiró: el gesto era demasiado sensible
+       en móvil, competía con el scroll vertical y no dejaba ver qué
+       sectores hay. Nada de `overflow-x: auto` aquí: sin contenedor de
+       scroll no hay swipe posible. */
     .panelWrap {
-        display: flex;
-        align-items: stretch;
-        gap: var(--spacing-3);
-        overflow-x: auto;
-        overflow-y: visible;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        cursor: grab;
-        margin: 0 calc(-1 * var(--spacing-1));
-        padding: var(--spacing-1) var(--spacing-1) 0;
-        /* Antes de `.sectorDots` en el orden VISUAL (ambos son `order`
-           explícito porque en el DOM `.sectorDots` va entre `.ledger` y
-           `.panelWrap`, ver Soluciones.tsx) — los dots deben leerse como el
-           indicador DEBAJO del carrusel, no al revés. */
+        display: block;
         order: 1;
     }
 
-    .panelWrap::-webkit-scrollbar {
+    /* Solo el panel activo existe en layout; los inactivos siguen en el DOM
+       (SEO + `inert`/`aria-hidden`, ver Soluciones.tsx) pero sin caja: ni
+       ocupan alto (adiós al hueco de ~100px que dejaba el `align-items:
+       stretch` del carril) ni son alcanzables con el dedo. */
+    .panel {
+        position: relative;
+        inset: auto;
+        width: 100%;
+    }
+
+    .panelHidden {
         display: none;
     }
 
-    .panelWrap:active {
-        cursor: grabbing;
-    }
-
-    /* Cada `.panel` (y su gemelo `.panelHidden`, normalmente superpuesto
-       absoluto — ver regla base más arriba) pasa a ser una tarjeta más del
-       carril: ancho completo, snap por tarjeta, sin peek del siguiente —
-       mismo criterio que tenía `.row`. `position: relative` reinicia el
-       `position: absolute` de `.panelHidden` para que los 7 queden en flujo
-       horizontal uno junto a otro en vez de apilados unos sobre otros. */
-    .panel,
-    .panelHidden {
-        position: relative;
-        inset: auto;
-        flex: 0 0 100%;
-        width: 100%;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-    }
-
-    /* El hairline mint de `.panelBar` decoraba UN panel único; con 7
-       tarjetas en fila no hay "un top" al que anclarlo (quedaría fijo sobre
-       la primera tarjeta, desalineado del resto al swipear). Cada tarjeta
-       lleva su propio hairline vía `::before` en su lugar — mismo
-       tratamiento visual (firma de acento mint de la web), por tarjeta en
-       vez de por wrap. */
+    /* Hairline mint por panel vía `::before` (el `.panelBar` del wrap se
+       oculta): mismo tratamiento visual que en escritorio, anclado a la
+       única tarjeta visible. */
     .panelBar {
         display: none;
     }
@@ -1224,17 +1170,13 @@ section.solHero p.heroSubtitle {
         margin: 0 0 var(--spacing-4);
     }
 
-    /* ─── Dots de posición — mismo patrón visual que .caseDots/.caseDot
-       en Home.module.css (carrusel de casos de éxito). `order: 2`: quedan
-       por debajo de `.panelWrap` visualmente (ver comentario junto a
-       `.panelWrap` arriba). ─── */
     /* ─── Selector de sectores (chips) — SOLO móvil. Los 7 sectores a la
-       vista en una rejilla de 2 columnas, encima del carrusel (`order: 0`,
+       vista en una rejilla de 2 columnas, encima del panel (`order: 0`,
        antes que `.panelWrap` con `order: 1`). Sin scroll propio: el objetivo
-       es que se lea "¿cuál es el mío?" de un vistazo, sin swipear. Tap →
-       `setSelected` → el carrusel snapea a ese panel (efecto de sync en
-       Soluciones.tsx). Mismo lenguaje que `.row`/`.rowActive` de la ledger
-       de escritorio (fondo mint suave + texto fuerte en activo). ─── */
+       es que se lea "¿cuál es el mío?" de un vistazo. Tap → `setSelected`
+       → el panel de ese sector sustituye al anterior en el sitio (sin
+       carrusel ni swipe). Mismo lenguaje que `.row`/`.rowActive` de la
+       ledger de escritorio (fondo mint suave + texto fuerte en activo). ─── */
     .sectorChips {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1292,62 +1234,10 @@ section.solHero p.heroSubtitle {
         outline: 2px solid var(--color-mint);
         outline-offset: 2px;
     }
-
-    .sectorDots {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 14px;
-        margin-top: var(--spacing-4);
-        order: 2;
-    }
-
-    .sectorDot {
-        position: relative;
-        width: 6px;
-        height: 6px;
-        border-radius: var(--radius-full);
-        background: var(--color-border-strong);
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        flex-shrink: 0;
-        transition: all var(--transition-normal);
-    }
-
-    /* Área de toque cómoda (34px) sin agrandar el punto visible — mismo
-       truco que `.caseDot::before` en Home.module.css. */
-    .sectorDot::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 34px;
-        height: 34px;
-        transform: translate(-50%, -50%);
-    }
-
-    .sectorDotActive {
-        width: 22px;
-        background: var(--color-mint);
-    }
-
-    .sectorDot:focus-visible {
-        outline: 2px solid var(--color-mint);
-        outline-offset: 2px;
-    }
 }
 
-/* Fuera de ≤767px el carrusel no aplica — los dots no tienen sentido junto
-   a la lista vertical/carril de tabs de los demás breakpoints.
-   Envuelto en @media (min-width: 768px): antes era una regla sin media
-   query, así que por orden de cascada (misma especificidad, 0,0,1,0) pisaba
-   SIEMPRE a la regla `display: flex` de `@media (max-width: 767px)` de más
-   arriba — los dots nunca llegaban a pintarse ni siquiera en móvil. Bug
-   real, confirmado con getBoundingClientRect (display computado: "none" a
-   375px de viewport). */
+/* Las chips solo existen en móvil; en 768px+ manda `.ledger`. */
 @media (min-width: 768px) {
-    .sectorDots,
     .sectorChips {
         display: none;
     }

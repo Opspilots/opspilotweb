@@ -7,6 +7,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 // módulo reventaría el prerender. En cliente se registra con normalidad.
 if (typeof window !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
+    // En móvil la barra de direcciones aparece/desaparece al hacer scroll y
+    // cambia el alto del viewport. Sin esto, ScrollTrigger trata cada uno de
+    // esos cambios como un resize y recalcula TODOS los triggers en mitad del
+    // gesto: los reveals se quedan a medias (secciones en opacity 0 hasta
+    // recargar). Fix documentado por GSAP para exactamente este síntoma.
+    ScrollTrigger.config({ ignoreMobileResize: true });
 }
 
 // Instancia singleton accesible fuera del hook (p. ej. ScrollToTop) para poder
