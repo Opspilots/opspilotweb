@@ -1425,3 +1425,13 @@
         }
     }
 }
+
+/* Pantallas táctiles: el glow del panel del hero sin `filter: blur(24px)`
+   (misma razón que los blobs de AmbientBackground: capas con blur grande
+   + backdrop-filter fixed hacen que Safari iOS descarte capas y el
+   contenido desaparezca al deslizar). El radial ya es difuso por sí mismo. */
+@media (hover: none) and (pointer: coarse) {
+    .heroPanelFrame::before {
+        filter: none;
+    }
+}

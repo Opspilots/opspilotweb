@@ -31,6 +31,14 @@ export function useLenis() {
         const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
         if (reduce) return;
 
+        // Pantallas táctiles: sin Lenis. No suaviza el touch (smoothTouch off),
+        // así que ahí no aporta nada y sí cuesta: un rAF permanente que
+        // llama a ScrollTrigger.update en cada frame mientras Safari iOS ya
+        // va justo de GPU con el resto de efectos. El scroll-jack del
+        // explorador de /soluciones es solo ≥1024px, no depende de esto.
+        const touch = window.matchMedia?.('(hover: none) and (pointer: coarse)').matches;
+        if (touch) return;
+
         // El smooth-scroll es mejora progresiva: hasta que arranca, el scroll
         // nativo funciona igual. Diferimos su instanciación a post-paint con
         // requestIdleCallback (fallback setTimeout) para no competir con el

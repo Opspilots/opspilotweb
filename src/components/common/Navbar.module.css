@@ -37,6 +37,21 @@
     }
 }
 
+/* Pantallas táctiles: SIN backdrop-filter en la barra fija. Safari iOS, con
+   un elemento fixed desenfocando lo que tiene debajo mientras la barra de
+   direcciones cambia el alto del viewport, descarta capas de GPU y el
+   contenido de la página desaparece (solo queda el logo) hasta recargar —
+   el mismo bug que ya hubo con la "píldora flotante" (commit e260cc7), ahora
+   reproducido en iPhone real (sep-2026). Fondo sólido: se pierde el cristal,
+   se gana que la página exista. En escritorio no cambia nada. */
+@media (hover: none) and (pointer: coarse) {
+    .navbar.scrolled {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: var(--color-bg-deep);
+    }
+}
+
 /* ─── Container ─── */
 /* Mismo eje (--container-max) y mismo gutter (--gutter) que el resto de la
    web: antes 1280px aquí contra 1200px en secciones y footer, así que por
