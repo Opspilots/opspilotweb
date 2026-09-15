@@ -383,6 +383,25 @@ video {
     }
 }
 
+/* Pantallas táctiles: sin backdrop-filter ni grano. Safari iOS descarta
+   capas de GPU cuando conviven elementos fixed con backdrop-filter, blobs
+   con blur de 80px y un overlay fixed sobredimensionado (`.grain`, 140% del
+   viewport, animado): el resultado, reportado en iPhone real (sep-2026), es
+   que al deslizar desaparecen texto y botones y solo queda el logo hasta
+   recargar. Ver también Navbar.module.css y AmbientBackground.module.css.
+   En escritorio (hover: hover) todo sigue igual. */
+@media (hover: none) and (pointer: coarse) {
+    .glass {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: var(--color-bg-elevated);
+    }
+
+    .grain {
+        display: none;
+    }
+}
+
 /* .spotlight — halo radial que sigue al puntero. Emparéjalo con useSpotlight
    (setea --mx/--my y data-spotlight-active). Reutilizable en cualquier card:
    pon la clase y envuelve en <SpotlightCard>. */

@@ -136,3 +136,24 @@
         left: -10vw;
     }
 }
+
+/* Pantallas táctiles: blobs sin `filter: blur(80px)` ni `mix-blend-mode`, y
+   sin grano. Cada blob es una capa de GPU de ~50vw con un desenfoque de
+   radio enorme, fija al viewport; el grano es otra capa fixed de 140% del
+   viewport animada. En Safari iOS, sumado al backdrop-filter de la navbar,
+   el compositor descarta capas y el contenido de la página desaparece al
+   deslizar (solo queda el logo) hasta recargar — reportado en iPhone real,
+   sep-2026. El degradado radial ya se desvanece a transparente por sí solo:
+   sin blur sigue siendo un halo suave; se baja la opacidad para compensar.
+   En escritorio (hover: hover) no cambia nada. */
+@media (hover: none) and (pointer: coarse) {
+    .blob {
+        filter: none;
+        mix-blend-mode: normal;
+        opacity: 0.35;
+    }
+
+    .grain {
+        display: none;
+    }
+}
