@@ -569,12 +569,23 @@ export const Soluciones: React.FC = () => {
             panelSyncMounted.current = true;
             return;
         }
+        // `instant` a propósito, NO `smooth` ni `auto`: verificado en producción
+        // (opspilot.es/soluciones a 390px, Chrome) que cualquier scroll suave
+        // programado sobre `.panelWrap` — scrollIntoView({behavior:'smooth'}),
+        // scrollTo({behavior:'smooth'}) o `auto` heredando el
+        // `scroll-behavior: smooth` del CSS — se cancela antes de moverse un
+        // píxel (scrollLeft no cambia): el contenedor con `scroll-snap-type: x
+        // mandatory` aborta la animación. Consecuencia real: los `.sectorDot`
+        // (y ahora las `.sectorChip`) cambiaban `selected` pero el carrusel se
+        // quedaba en el sector anterior. Con desplazamiento instantáneo el
+        // snap deja el panel exactamente alineado. Se pierde la animación del
+        // salto; se gana que el tap funcione.
         panelRefs.current[selected]?.scrollIntoView({
-            behavior: prefersReducedMotion ? 'auto' : 'smooth',
+            behavior: 'instant',
             inline: 'center',
             block: 'nearest',
         });
-    }, [selected, prefersReducedMotion]);
+    }, [selected]);
 
     return (
         <div className={sys.page}>
@@ -748,6 +759,44 @@ export const Soluciones: React.FC = () => {
                                                     <span className={styles.rowDesc}>{s.who}</span>
                                                 </span>
                                                 <ArrowRight size={15} strokeWidth={2} className={styles.rowArrow} aria-hidden="true" />
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Selector de sector para móvil (≤767px, ver .sectorChips en
+                                    Soluciones.module.css). Resuelve el problema de descubrimiento
+                                    que dejó la fusión ledger+panel: con `.ledger` oculto, en móvil
+                                    solo había swipe y dots, así que el usuario tenía que pasar por
+                                    los 7 sectores uno a uno para saber si el suyo estaba. Aquí se
+                                    ven LOS 7 DE UN VISTAZO (rejilla de 2 columnas, sin scroll) y
+                                    un tap lleva directo al panel: `setSelected` ya desplaza
+                                    `.panelWrap` vía el efecto de sincronización de más arriba.
+                                    Es un tablist real solo a este ancho — `.ledger` está
+                                    display:none ahí y fuera de él estas chips lo están, así que
+                                    nunca hay dos tablists en el árbol de accesibilidad. */}
+                                <div
+                                    className={styles.sectorChips}
+                                    role="tablist"
+                                    aria-label="Elige tu sector"
+                                >
+                                    {SECTORS.map((s, i) => {
+                                        const ChipIcon = ICONS[s.iconKey];
+                                        return (
+                                            <button
+                                                key={s.id}
+                                                type="button"
+                                                role="tab"
+                                                id={`sector-chip-${i}`}
+                                                aria-selected={i === selected}
+                                                aria-controls={`sector-panel-${i}`}
+                                                className={`${styles.sectorChip} ${i === selected ? styles.sectorChipActive : ''}`}
+                                                onClick={() => setSelected(i)}
+                                            >
+                                                <span className={styles.sectorChipIcon} aria-hidden="true">
+                                                    <ChipIcon size={16} strokeWidth={1.8} />
+                                                </span>
+                                                <span className={styles.sectorChipLabel}>{s.label}</span>
                                             </button>
                                         );
                                     })}
