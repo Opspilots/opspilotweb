@@ -1228,6 +1228,71 @@ section.solHero p.heroSubtitle {
        en Home.module.css (carrusel de casos de éxito). `order: 2`: quedan
        por debajo de `.panelWrap` visualmente (ver comentario junto a
        `.panelWrap` arriba). ─── */
+    /* ─── Selector de sectores (chips) — SOLO móvil. Los 7 sectores a la
+       vista en una rejilla de 2 columnas, encima del carrusel (`order: 0`,
+       antes que `.panelWrap` con `order: 1`). Sin scroll propio: el objetivo
+       es que se lea "¿cuál es el mío?" de un vistazo, sin swipear. Tap →
+       `setSelected` → el carrusel snapea a ese panel (efecto de sync en
+       Soluciones.tsx). Mismo lenguaje que `.row`/`.rowActive` de la ledger
+       de escritorio (fondo mint suave + texto fuerte en activo). ─── */
+    .sectorChips {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-4);
+        order: 0;
+    }
+
+    .sectorChip {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        min-height: 44px;
+        padding: var(--spacing-2) var(--spacing-3);
+        background: var(--color-bg-elevated);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-card);
+        color: var(--color-text-muted);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+        line-height: 1.25;
+        text-align: left;
+        cursor: pointer;
+        transition:
+            background-color var(--transition-fast),
+            border-color var(--transition-fast),
+            color var(--transition-fast);
+    }
+
+    .sectorChipIcon {
+        display: inline-flex;
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        color: currentColor;
+        opacity: 0.85;
+    }
+
+    .sectorChipLabel {
+        min-width: 0;
+    }
+
+    .sectorChipActive {
+        background: var(--color-mint-soft);
+        border-color: var(--color-border-mint);
+        color: var(--color-text-strong);
+    }
+
+    .sectorChipActive .sectorChipIcon {
+        color: var(--color-mint);
+        opacity: 1;
+    }
+
+    .sectorChip:focus-visible {
+        outline: 2px solid var(--color-mint);
+        outline-offset: 2px;
+    }
+
     .sectorDots {
         display: flex;
         justify-content: center;
@@ -1282,7 +1347,8 @@ section.solHero p.heroSubtitle {
    real, confirmado con getBoundingClientRect (display computado: "none" a
    375px de viewport). */
 @media (min-width: 768px) {
-    .sectorDots {
+    .sectorDots,
+    .sectorChips {
         display: none;
     }
 }
