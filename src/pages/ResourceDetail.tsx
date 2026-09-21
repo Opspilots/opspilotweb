@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { TextLink } from '../components/common/TextLink';
-import { Button } from '../components/ui/Button';
+import { ButtonLink } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { PageSEO } from '../hooks/usePageSEO';
 import { ROUTES } from '../lib/routes';
@@ -230,9 +230,9 @@ export const ResourceDetail: React.FC = () => {
                             30 minutos gratis para ver si esto encaja en tu negocio. Sin compromiso.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to={ROUTES.contacto}>
-                                <Button variant="secondary" size="lg">Reservar diagnóstico</Button>
-                            </Link>
+                            <ButtonLink to={ROUTES.contacto} variant="secondary" size="lg">
+                                Reservar diagnóstico
+                            </ButtonLink>
                         </div>
                     </div>
                 </div>

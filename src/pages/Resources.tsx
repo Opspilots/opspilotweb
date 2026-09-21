@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Button } from '../components/ui/Button';
+import { Button, ButtonLink } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { PageSEO } from '../hooks/usePageSEO';
@@ -350,9 +350,9 @@ export const Resources: React.FC = () => {
                             Media hora, gratis, sin compromiso. Hablamos de tu caso concreto.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to={ROUTES.contacto}>
-                                <Button variant="secondary" size="lg">Reservar diagnóstico</Button>
-                            </Link>
+                            <ButtonLink to={ROUTES.contacto} variant="secondary" size="lg">
+                                Reservar diagnóstico
+                            </ButtonLink>
                         </div>
                     </div>
                 </div>

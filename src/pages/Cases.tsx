@@ -1,6 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '../components/ui/Button';
+import { ButtonLink } from '../components/ui/Button';
 import { SpotlightCard } from '../components/fx/SpotlightCard';
 import { CaseMockPanel } from '../components/cases/CaseMockPanel';
 import { useScrollReveal } from '../hooks/useScrollReveal';
@@ -283,12 +282,12 @@ export const Cases: React.FC = () => {
                             Sin compromiso, sin letra pequeña.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to={ROUTES.contacto}>
-                                <Button variant="secondary" size="lg">Reservar diagnóstico</Button>
-                            </Link>
-                            <Link to={ROUTES.soluciones}>
-                                <Button variant="outline" size="lg">Ver soluciones</Button>
-                            </Link>
+                            <ButtonLink to={ROUTES.contacto} variant="secondary" size="lg">
+                                Reservar diagnóstico
+                            </ButtonLink>
+                            <ButtonLink to={ROUTES.soluciones} variant="outline" size="lg">
+                                Ver soluciones
+                            </ButtonLink>
                         </div>
                     </div>
                 </div>

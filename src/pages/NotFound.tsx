@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Head } from 'vite-react-ssg';
-import { Button } from '../components/ui/Button';
+import { ButtonLink } from '../components/ui/Button';
 import styles from './NotFound.module.css';
 
 const FINAL = '404';
@@ -89,12 +89,8 @@ export const NotFound: React.FC = () => {
                 </p>
 
                 <div className={styles.actions}>
-                    <Link to="/">
-                        <Button variant="primary" magnetic>Volver al inicio</Button>
-                    </Link>
-                    <Link to="/contacto">
-                        <Button variant="ghost">Hablar con nosotros</Button>
-                    </Link>
+                    <ButtonLink to="/" variant="primary" magnetic>Volver al inicio</ButtonLink>
+                    <ButtonLink to="/contacto" variant="ghost">Hablar con nosotros</ButtonLink>
                 </div>
 
                 {/* Enlaces de recuperación: reconducen al usuario perdido a las

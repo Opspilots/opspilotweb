@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Button } from '../ui/Button';
+import { ButtonLink } from '../ui/Button';
 import { Logo } from './Logo';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import { ROUTES } from '../../lib/routes';
@@ -60,6 +60,8 @@ export const Navbar: React.FC = () => {
         setIsMenuOpen(false);
     }, [pathname]);
 
+    const closeMenu = () => setIsMenuOpen(false);
+
     const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
         `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`;
 
@@ -77,9 +79,9 @@ export const Navbar: React.FC = () => {
                         <NavItem to={ROUTES.soluciones}>Soluciones</NavItem>
                         <NavItem to={ROUTES.casos}>Casos de Éxito</NavItem>
                         <NavItem to={ROUTES.recursos}>Recursos</NavItem>
-                        <Link to={ROUTES.contacto}>
-                            <Button variant="primary" size="sm">Empieza ahora</Button>
-                        </Link>
+                        <ButtonLink to={ROUTES.contacto} variant="primary" size="sm">
+                            Empieza ahora
+                        </ButtonLink>
                     </div>
 
                     <button
@@ -106,10 +108,14 @@ export const Navbar: React.FC = () => {
                 <NavLink to={ROUTES.recursos} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Recursos</NavLink>
                 <NavLink to={ROUTES.contacto} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>Contacto</NavLink>
                 <div className={styles.mobileCta}>
-                    <Link to={ROUTES.contacto} onClick={() => setIsMenuOpen(false)} style={{ width: '100%' }}>
-
-                        <Button variant="primary" fullWidth>Empieza ahora</Button>
-                    </Link>
+                    <ButtonLink
+                        to={ROUTES.contacto}
+                        onClick={closeMenu}
+                        variant="primary"
+                        fullWidth
+                    >
+                        Empieza ahora
+                    </ButtonLink>
                 </div>
             </div>
         </>

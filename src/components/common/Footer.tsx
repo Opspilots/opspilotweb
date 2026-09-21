@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Footer.module.css';
 import { Logo } from './Logo';
-import { Button } from '../ui/Button';
+import { ButtonAnchor, ButtonLink } from '../ui/Button';
 import { ROUTES } from '../../lib/routes';
 
 // Páginas que ya renderizan su propio panel de cierre (sys.endCtaBlock en
@@ -31,9 +31,27 @@ const WhatsAppIcon = () => (
     </svg>
 );
 
+/* Año del copyright — literal horneado en build (`define` en vite.config.ts).
+   `new Date().getFullYear()` durante el render es una fuente NO determinista
+   entre servidor y cliente: el HTML de /dist se prerrenderiza el día del build,
+   pero el navegador del visitante recalcula el año en cada carga. Coinciden…
+   hasta el 1 de enero siguiente, momento en el que el footer de TODAS las
+   páginas estáticas ya desplegadas produce un mismatch de hidratación (texto
+   servido ≠ texto renderizado). `__BUILD_YEAR__` es el MISMO literal en el HTML
+   y en el bundle, así que el primer render de cliente siempre coincide; el
+   efecto de abajo sube al año real DESPUÉS de hidratar, el único momento en el
+   que es seguro divergir. */
+const BUILD_YEAR = __BUILD_YEAR__;
+
 export const Footer: React.FC = () => {
     const { pathname } = useLocation();
     const showEndCta = !hasOwnEndCta(pathname);
+
+    const [year, setYear] = useState(BUILD_YEAR);
+    useEffect(() => {
+        const current = new Date().getFullYear();
+        if (current !== BUILD_YEAR) setYear(current);
+    }, []);
 
     return (
         <footer className={styles.footer}>
@@ -48,17 +66,17 @@ export const Footer: React.FC = () => {
                             Software a medida para PYMEs. Precio cerrado, trato directo
                             y cero humo.
                         </p>
-                        <a
+                        <ButtonAnchor
                             href="https://wa.me/34640756126"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={styles.whatsappLink}
+                            variant="outline"
+                            size="sm"
+                            className={styles.whatsappBtn}
                         >
-                            <Button variant="outline" size="sm" className={styles.whatsappBtn}>
-                                <WhatsAppIcon />
-                                Escríbenos por WhatsApp
-                            </Button>
-                        </a>
+                            <WhatsAppIcon />
+                            Escríbenos por WhatsApp
+                        </ButtonAnchor>
                     </div>
 
                     {/* Navegación */}
@@ -96,14 +114,19 @@ export const Footer: React.FC = () => {
                                 Cuéntanoslo. En 24 horas te decimos si tiene solución y qué costaría.
                             </p>
                         </div>
-                        <Link to={ROUTES.contacto} className={styles.ctaBtn}>
-                            <Button variant="primary" size="lg">Reservar diagnóstico</Button>
-                        </Link>
+                        <ButtonLink
+                            to={ROUTES.contacto}
+                            variant="primary"
+                            size="lg"
+                            className={styles.ctaBtn}
+                        >
+                            Reservar diagnóstico
+                        </ButtonLink>
                     </div>
                 )}
 
                 <div className={styles.bottom}>
-                    <p>&copy; {new Date().getFullYear()} OpsPilot. Todos los derechos reservados.</p>
+                    <p>&copy; {year} OpsPilot. Todos los derechos reservados.</p>
                     <span className={styles.bottomBrand}>
                         <span className={styles.bottomBrandDot} />
                         Hecho con cuidado en Córdoba

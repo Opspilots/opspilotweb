@@ -111,10 +111,9 @@
     margin-bottom: var(--spacing-6);
 }
 
-.whatsappLink {
-    display: inline-block;
-}
-
+/* (Antes existía `.whatsappLink` para el <a> que envolvía al <Button>. Ese
+   anidado <a><button> ya no existe: el CTA de WhatsApp es un único <a> con
+   clase de botón — ver <ButtonAnchor> en src/components/ui/Button.tsx.) */
 .whatsappBtn {
     display: flex;
     align-items: center;
