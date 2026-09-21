@@ -32,6 +32,13 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
+/* Titulares — el DEFAULT del elemento ya es la escala canónica (ver
+   variables.css). Antes esto fijaba `font-weight: 400` para h1..h6, así que
+   cualquier titular sin clase propia salía al peso del cuerpo. Ahora cada nivel
+   trae su tamaño/peso/interlineado del sistema y una página solo escribe CSS
+   cuando de verdad necesita desviarse (y entonces lo hace consumiendo los
+   mismos tokens, no valores sueltos). Una clase siempre gana a un elemento, así
+   que esto no pisa nada de lo que ya define su propia regla. */
 h1,
 h2,
 h3,
@@ -40,13 +47,35 @@ h5,
 h6 {
     font-family: var(--font-family-display);
     color: var(--color-text-strong);
-    line-height: 1.05;
-    font-weight: 400;
     letter-spacing: var(--tracking-tight);
+    text-wrap: balance;
 }
 
 h1 {
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    line-height: var(--line-height-h1);
     letter-spacing: var(--tracking-display);
+}
+
+h2 {
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
+    line-height: var(--line-height-h2);
+}
+
+h3 {
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
+    line-height: var(--line-height-h3);
+}
+
+h4,
+h5,
+h6 {
+    font-size: var(--font-size-title-compact);
+    font-weight: var(--font-weight-h3);
+    line-height: var(--line-height-h3);
 }
 
 strong,
@@ -121,7 +150,7 @@ video {
    ═══════════════════════════════════════════ */
 .display {
     font-family: var(--font-family-display);
-    font-weight: 400;
+    font-weight: var(--font-weight-h1);
     letter-spacing: -0.04em;
     line-height: 0.95;
     text-wrap: balance;

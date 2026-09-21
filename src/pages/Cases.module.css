@@ -138,10 +138,11 @@
     gap: var(--spacing-4);
 }
 
+/* Titular de tarjeta de caso — rol h3 del sistema (techo 28px, peso 600). */
 .cardTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(1.375rem, 2vw, 1.875rem);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     line-height: 1.1;
     letter-spacing: var(--tracking-display);
@@ -318,12 +319,13 @@
     margin-bottom: var(--spacing-14);
 }
 
+/* Titular de sección — rol h2 del sistema (techo 46px, peso 600). */
 .whyTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(1.875rem, 3.5vw, 2.75rem);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
     color: var(--color-text-strong);
-    line-height: 1.05;
+    line-height: var(--line-height-h2);
     letter-spacing: var(--tracking-display);
     margin: 0 0 var(--spacing-5);
     text-wrap: balance;
@@ -492,12 +494,13 @@
     }
 }
 
+/* Rejilla de 4 diferenciadores: tamaño compacto, peso de h3. */
 .whyItemTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-title-compact);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
-    line-height: 1.2;
+    line-height: var(--line-height-h3);
     letter-spacing: var(--tracking-tight);
     margin: 0 0 var(--spacing-3);
     text-wrap: balance;

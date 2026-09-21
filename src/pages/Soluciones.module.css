@@ -26,15 +26,18 @@
    `-webkit-line-clamp` de seguridad como sí necesitan `.panelTitle`/
    `.panelSolution`, que siguen viviendo dentro del panel de alto fijo del
    scroll-jack. */
+/* Sin font-size propio: el h1 ya lo pone `sys.pageHeroTitle` desde
+   --font-size-h1, el MISMO token que usa el hero del home. Eso disuelve de
+   raíz el empate de cascada que documentaba e2e/typography.spec.ts
+   (TYPO-E2E-001): dos reglas de igual especificidad —`sys.pageHeroTitle` y
+   este `.heroTitle`— competían por el mismo h1 y quién ganaba dependía del
+   orden de inyección del chunk lazy de la ruta, no de una regla determinista.
+   Si ambas piden el mismo valor, el empate deja de importar.
+   Queda solo el line-height, que sí es propio de esta página: el titular es
+   parcialmente reactivo (lead-in fijo + `activeSector.label`, ver
+   Soluciones.tsx) y va más apretado que el 1.02 del sistema. */
 .heroTitle {
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
     line-height: 1.0;
-}
-
-@media (max-width: 639px) {
-    .heroTitle {
-        font-size: clamp(1.75rem, 8vw, 2.5rem);
-    }
 }
 
 .heroContentLayer {
@@ -427,7 +430,10 @@ section.solHero p.heroSubtitle {
     }
 
     h2.panelTitle {
-        font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+        /* Mismo techo (28px) que --font-size-h3, ahora consumiendo el token en
+           vez de repetir el valor. El panel tiene alto fijo aquí, así que el
+           line-clamp de abajo sigue garantizando 2 líneas exactas. */
+        font-size: var(--font-size-h3);
         margin-bottom: var(--spacing-2);
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -509,10 +515,12 @@ section.solHero p.heroSubtitle {
     min-width: 0;
 }
 
+/* Titular interno del panel (3 páginas del explorador): rejilla densa dentro
+   de una tarjeta, así que tamaño compacto del sistema con el peso de h3. */
 .pageHeading {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-title-compact);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     letter-spacing: var(--tracking-tight);
     margin: 0 0 var(--spacing-4);
@@ -756,8 +764,8 @@ section.solHero p.heroSubtitle {
 
 .panelTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(var(--font-size-2xl, 1.8rem), 3.4vw, 2.6rem);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     line-height: 1.12;
     letter-spacing: var(--tracking-tight);

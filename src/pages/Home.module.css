@@ -216,10 +216,26 @@
     }
 }
 
+/* h1 del hero — tamaño y peso de la escala canónica (variables.css).
+   ANTES (bug real, medido en la auditoría): esta regla daba
+   `clamp(2.75rem, 5.5vw, 4.5rem)` de 640px en adelante, y el bloque
+   @media (max-width: 639px) de más abajo daba `clamp(36px, 12vw, 48px)`.
+   Resultado: 48px a 414px y 44px a 768px — el titular ENCOGÍA al crecer la
+   pantalla, justo en el salto entre los dos clamps. Dos clamps independientes
+   no pueden garantizar monotonía; uno solo y continuo, sí. `--font-size-h1`
+   interpola sin cortes: ~48px a 414px, ~60px a 768px, 72px de 1120px en
+   adelante. Ese tamaño mayor en tablet es además lo que cierra el hueco
+   derecho del titular a 768px (28px de margen izquierdo contra ~215px de aire
+   a la derecha: la línea no llenaba la medida porque la letra era demasiado
+   pequeña para el ancho disponible).
+   El peso pasa de 400 a 700: era el texto más grande de la web y el más
+   liviano, sin jerarquía frente al subtítulo.
+   `line-height: 1` se queda: el titular son tres líneas duras (.heroLine) y
+   necesita ir más apretado que el 1.02 del sistema. */
 .heroTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(2.75rem, 5.5vw, 4.5rem);
-    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
     color: var(--color-text-strong);
     line-height: 1;
     margin-bottom: var(--spacing-7);
@@ -251,7 +267,7 @@
 .heroSubtitle {
     font-size: clamp(1.05rem, 1.4vw, 1.2rem);
     color: var(--color-text-muted);
-    line-height: 1.6;
+    line-height: var(--line-height-body);
     margin: 0 0 var(--spacing-10);
     max-width: 54ch;
 }
@@ -378,8 +394,8 @@
 
 .problemTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(var(--font-size-lg), 3vw, var(--font-size-2xl, 1.8rem));
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     line-height: 1.15;
     letter-spacing: var(--tracking-tight);
@@ -537,10 +553,12 @@
     line-height: 1;
 }
 
+/* Rejilla densa de 4 pasos: usa el tamaño compacto del sistema, no el h3
+   completo — mismo peso, un escalón menos de tamaño. */
 .methodStepTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-title-compact);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     margin: 0 0 var(--spacing-3);
     line-height: 1.25;
@@ -857,8 +875,8 @@
 
 .caseCardTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(1.5rem, 2.4vw, 2rem);
-    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     line-height: 1.1;
     letter-spacing: var(--tracking-display);
@@ -1253,18 +1271,11 @@
     }
 
     .heroTitle {
-        /* Un escalón entero más que el fix anterior (suelo --font-size-2xl /
-           techo --font-size-3xl): con ese clamp el preferido (7vw) caía por
-           debajo del suelo en TODO el rango de teléfono real (360-430px), así
-           que el tamaño renderizado era un --font-size-2xl fijo (28px) — el
-           bloque titular+subtítulo+CTAs quedaba mucho más bajo que el
-           viewport y dejaba aire muerto sobre el widget colapsado. Subiendo
-           suelo a --font-size-3xl (36px) y techo a --font-size-4xl (48px),
-           con 12vw de preferido, el tamaño SÍ escala dentro del rango real:
-           ~43px a 360px, ~48px (techo) desde ~400px. Sin esto, mover solo el
-           techo no cambia nada visible: clamp() usa el techo únicamente
-           cuando el preferido lo supera, y a estos anchos nunca lo hacía. */
-        font-size: clamp(var(--font-size-3xl), 12vw, var(--font-size-4xl));
+        /* SIN override de font-size. Este bloque tenía su propio clamp
+           (36-48px) y el de la regla base arrancaba en 44px a partir de 640px,
+           así que el titular decrecía al pasar de teléfono a tablet. Ahora el
+           tamaño lo pone --font-size-h1, que ya es continuo y monótono en todo
+           el rango; aquí solo quedan los ajustes de ritmo vertical. */
         margin-bottom: var(--spacing-6);
         gap: 0.04em;
     }
