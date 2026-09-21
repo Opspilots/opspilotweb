@@ -90,24 +90,36 @@
     width: 100%;
     padding: 0.75rem 0.95rem;
     background: rgba(10, 14, 20, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    /* Borde de CONTROL, no hairline decorativo: --color-border-subtle/strong
+       se quedan en ~1.2–1.5:1 sobre el panel, por debajo del 3:1 que WCAG
+       1.4.11 (Non-text Contrast) exige a los bordes de un campo de
+       formulario. Ver --color-border-control en variables.css. */
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-control);
     color: var(--color-text-strong);
     font-family: var(--font-family-base);
-    font-size: var(--font-size-sm);
+    /* 16px, NO 14px: por debajo de 16px iOS Safari hace zoom automático al
+       enfocar el campo, y no lo deshace al salir. */
+    font-size: var(--font-size-base);
     transition: border-color var(--transition-fast) var(--ease-custom),
-        box-shadow var(--transition-fast) var(--ease-custom),
         background-color var(--transition-fast) var(--ease-custom);
-    outline: none;
 }
 
-/* Foco con glow mint sutil — halo tintado, nunca duro. */
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
     border-color: var(--color-mint);
     background: rgba(10, 14, 20, 0.55);
-    box-shadow: 0 0 0 3px var(--color-mint-soft);
+}
+
+/* Anillo de foco real, mismo patrón que el resto del sitio (botones,
+   flechas, dots). El halo anterior era `box-shadow` con --color-mint-soft
+   (mint al 10%): ~1.16:1 sobre el panel, invisible en la práctica. */
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
 }
 
 /* Error de campo — borde y halo en rojo templado, no negro puro. */
@@ -121,7 +133,12 @@
 .field select[aria-invalid="true"]:focus,
 .field textarea[aria-invalid="true"]:focus {
     border-color: var(--color-error);
-    box-shadow: 0 0 0 3px rgba(225, 90, 90, 0.14);
+}
+
+.field input[aria-invalid="true"]:focus-visible,
+.field select[aria-invalid="true"]:focus-visible,
+.field textarea[aria-invalid="true"]:focus-visible {
+    outline-color: var(--color-error);
 }
 
 /* Mensaje de error inline bajo el campo — mono, discreto, sin alarmismo. */
@@ -169,7 +186,8 @@
     color: var(--color-error);
     font-size: var(--font-size-sm);
     padding: var(--spacing-3) var(--spacing-4);
-    border: 1px solid rgba(225, 90, 90, 0.25);
+    /* Misma base RGB que --color-error (240,138,138) tras subirlo a 4.5:1. */
+    border: 1px solid rgba(240, 138, 138, 0.25);
     border-radius: var(--radius-control);
 }
 

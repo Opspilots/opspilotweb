@@ -178,13 +178,17 @@ export const Resources: React.FC = () => {
                                 </button>
                             )}
                         </div>
-                        <div className={styles.catPills} role="tablist" aria-label="Filtrar por categoría">
+                        {/* `role="group"` + `aria-pressed`, NO tablist/tab: estos botones
+                            no controlan paneles (no hay `aria-controls` ni tabpanel) ni
+                            implementan navegación por flechas, así que anunciarlos como
+                            pestañas prometía a un lector de pantalla un patrón que el
+                            componente no cumple. Son filtros de alternancia. */}
+                        <div className={styles.catPills} role="group" aria-label="Filtrar por categoría">
                             {(['Todos', ...RESOURCE_CATEGORIES] as CategoryFilter[]).map((cat) => (
                                 <button
                                     key={cat}
                                     type="button"
-                                    role="tab"
-                                    aria-selected={activeCat === cat}
+                                    aria-pressed={activeCat === cat}
                                     className={`${styles.catPill} ${activeCat === cat ? styles.catPillActive : ''}`}
                                     onClick={() => setActiveCat(cat)}
                                 >
@@ -312,7 +316,7 @@ export const Resources: React.FC = () => {
                         </div>
                         <div className={styles.nlRight}>
                             {nlStatus === 'success' ? (
-                                <p className={styles.nlSuccess}>
+                                <p className={styles.nlSuccess} role="status">
                                     Hecho. El primer email te llega esta semana.
                                 </p>
                             ) : (
@@ -324,12 +328,13 @@ export const Resources: React.FC = () => {
                                         required
                                         value={nlEmail}
                                         onChange={(e) => setNlEmail(e.target.value)}
+                                        aria-label="Tu email"
                                     />
                                     <Button variant="primary" type="submit" disabled={nlStatus === 'submitting'}>
                                         {nlStatus === 'submitting' ? 'Enviando...' : 'Suscribirme gratis'}
                                     </Button>
                                     {nlStatus === 'error' && (
-                                        <p className={styles.nlError}>
+                                        <p className={styles.nlError} role="alert">
                                             Error al suscribirse. Inténtalo de nuevo.
                                         </p>
                                     )}
@@ -351,7 +356,7 @@ export const Resources: React.FC = () => {
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>
-                                <Button variant="secondary" size="lg">Reservar diagnóstico</Button>
+                                <Button variant="primary" size="lg">Reservar diagnóstico</Button>
                             </Link>
                         </div>
                     </div>

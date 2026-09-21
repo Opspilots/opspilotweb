@@ -42,7 +42,9 @@ export const Footer: React.FC = () => {
                     {/* Marca */}
                     <div className={styles.brand}>
                         <Link to={ROUTES.home} className={styles.logo}>
-                            <Logo size={40} /> OpsPilot
+                            {/* Decorativo: el enlace ya dice "OpsPilot" al lado y la navbar
+                                ya anuncia la marca. alt="" evita el doble anuncio. */}
+                            <Logo size={40} alt="" /> OpsPilot
                         </Link>
                         <p className={styles.tagline}>
                             Software a medida para PYMEs. Precio cerrado, trato directo

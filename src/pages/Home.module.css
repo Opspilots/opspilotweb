@@ -776,46 +776,52 @@
     text-wrap: pretty;
 }
 
+/* `gap: 0` a propósito: cada `.caseDot` ES ya un objetivo táctil de 44×44
+   (ver abajo), así que las áreas quedan CONTIGUAS y no solapadas. Hit-areas
+   solapadas eran justo el bug anterior: el punto de la derecha, pintado
+   encima, se comía los clics dirigidos al centro de su vecino. */
 .caseDots {
     display: flex;
-    gap: 16px;
+    gap: 0;
     align-items: center;
 }
 
+/* El BOTÓN es el objetivo táctil completo (44×44, WCAG 2.5.5 Target Size);
+   el punto visible de 6px lo pinta `::before`. */
 .caseDot {
-    position: relative;
-    width: 6px;
-    height: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-full);
-    background: var(--color-border-strong);
+    background: none;
     border: none;
     padding: 0;
     cursor: pointer;
     flex-shrink: 0;
+}
+
+.caseDot::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
     transition: all var(--transition-normal);
 }
 
-/* Expand the clickable hit area toward a comfortable touch target without
-   growing the visible dot — centered on the dot regardless of its
-   (active/inactive) width. Clamped to 34px (rather than the full 44px
-   touch-target minimum) and paired with a wider row gap above so that
-   adjacent dots' hit areas never overlap and steal each other's clicks. */
-.caseDot::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 34px;
-    height: 34px;
-    transform: translate(-50%, -50%);
-}
-
-.caseDotActive {
+.caseDotActive::before {
     width: 24px;
     background: var(--color-mint);
 }
 
-.caseDot:focus-visible,
+.caseDot:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: -4px;
+}
+
 .caseNavBtn:focus-visible {
     outline: 2px solid var(--color-mint);
     outline-offset: 2px;

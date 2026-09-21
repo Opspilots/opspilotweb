@@ -57,6 +57,17 @@
     --color-border-strong: rgba(255, 255, 255, 0.14);
     --color-border-mint: rgba(57, 206, 134, 0.22);
 
+    /* Borde de CONTROL de formulario (input / select / textarea).
+       NO es un hairline decorativo más: WCAG 1.4.11 (Non-text Contrast) exige
+       3:1 al borde que delimita un control de entrada, y los dos de arriba se
+       quedan muy por debajo sobre los paneles navy (~1.17:1 el subtle,
+       ~1.45:1 el strong). Este llega a ~3:1 medido.
+       Úsalo SOLO en bordes de controles de formulario — los hairlines
+       decorativos del sitio (tarjetas, separadores, reglas) siguen siendo
+       --color-border-subtle/strong a propósito: subirlos ahí convertiría un
+       trazo apenas insinuado en una rejilla visible. */
+    --color-border-control: rgba(255, 255, 255, 0.35);
+
     /* Text */
     --color-text-strong: #FFFFFF;
     --color-text: #E6EBF2;
@@ -89,10 +100,27 @@
     --color-btn-dark: #1c2733;
     --color-btn-dark-hover: #25313f;
 
+    /* ─── CTA primario ───
+       Token SEMÁNTICO, no un color nuevo: apunta al relleno crema que ya es la
+       firma de "acción de conversión" en el hero, la navbar y el formulario de
+       contacto. Toda acción de conversión primaria (empezando por "Reservar
+       diagnóstico") usa ESTE token, no --color-btn-dark: sobre los paneles
+       oscuros de la web (endCtaBlock incluido) el relleno #1c2733 se confundía
+       con el fondo y dejaba el CTA principal y el secundario con el mismo peso
+       visual. Si algún día el CTA cambia de color, se cambia aquí y se propaga
+       a todas las páginas. */
+    --cta-primary: var(--color-btn-light);
+    --cta-primary-hover: var(--color-btn-light-hover);
+    --cta-primary-text: #14100c;
+
     /* Status (subtle) */
     --color-success: #39ce86;
     --color-warning: #e0a64a;
-    --color-error: #e15a5a;
+    /* #f08a8a, no #e15a5a: el rojo anterior daba 3.91:1 sobre el panel glass
+       — suficiente para un borde (1.4.11) pero NO para texto (1.4.3 pide
+       4.5:1), y este token se usa en mensajes de error de campo. El nuevo
+       queda en ~5.9-6.7:1 según la superficie. */
+    --color-error: #f08a8a;
     --color-info: #6189c4;
 
     /* ═══════════════════════════════════════════

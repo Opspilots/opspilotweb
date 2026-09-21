@@ -16,6 +16,10 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
+    /* Cualquier salto por fragmento (#ancla, skip link, scrollIntoView) deja
+       libre la altura de la navbar fija + un respiro, en vez de aterrizar con
+       el destino tapado debajo de ella. */
+    scroll-padding-top: calc(var(--navbar-offset) + 1rem);
     text-rendering: optimizeLegibility;
     font-feature-settings: "ss01", "cv11";
     /* Red de seguridad global anti-scroll horizontal: clip recorta el eje X
@@ -102,11 +106,17 @@ button:focus-visible {
     border-radius: var(--radius-sm);
 }
 
+/* Anillo de foco REAL en los campos, igual que en enlaces y botones. Antes
+   aquí había `outline: none` + solo un cambio de `border-color`; el halo
+   mint que lo sustituía (box-shadow con --color-mint-soft, mint al 10%)
+   quedaba en ~1.16:1 sobre el panel: técnicamente presente, visualmente
+   inexistente. */
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-    outline: none;
-    border-color: var(--color-mint) !important;
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
+    border-color: var(--color-mint);
 }
 
 img,
