@@ -3,45 +3,32 @@
    ═══════════════════════════════════════════ */
 
 /* ─── Hero title override ───
-   Antes esta declaración no tenía media query propia y competía en
-   especificidad IGUAL (una clase, sin @media) con `sys.pageHeroTitle` en
-   todo el rango <640px — un empate de cascada que hoy "gana" el valor
-   correcto (~31px) solo porque el chunk lazy de esta página se inyecta
-   después de page-system.module.css. Es un accidente de orden de bundling,
-   no una regla determinista (ver e2e/typography.spec.ts, TYPO-E2E-001).
-   Se resuelve igualando el valor móvil al de `sys.pageHeroTitle` en su
-   MISMA media query real (`max-width: 639px` — verificado en
-   page-system.module.css; el breakpoint no es 767px pese a lo que sugiere
-   el nombre "mobile" en otros sitios del código): así, gane quien gane la
-   cascada, el resultado es idéntico. El valor desktop (4.5rem, mayor que
-   el 4rem de `pageHeroTitle`) se queda fuera de la media query — Soluciones
-   sí necesita un titular más grande en desktop que el resto de páginas.
+   Sin font-size propio, en NINGÚN breakpoint: el h1 ya lo pone
+   `sys.pageHeroTitle` desde `--font-size-h1`, el MISMO token que usa el hero
+   del home y las otras 3 páginas internas — el clamp del token ya cubre todo
+   el rango (2.75rem → 4.5rem), así que Soluciones no necesita una rampa
+   propia ni en desktop ni en móvil.
+   Hasta hace poco SÍ había un `@media (max-width: 639px) { font-size:
+   clamp(1.75rem, 8vw, 2.5rem) }` aquí: un valor hardcodeado que en 375px de
+   ancho da ~30px, muy por debajo de los ~47.4px que da `--font-size-h1` en el
+   mismo viewport (`2.5rem + 1.98vw`) y que sí miden las otras 4 páginas — el
+   fallo que e2e/typography.spec.ts (TYPO-E2E-001) lleva documentando desde
+   antes de que existiera ese override. Borrado: sin regla propia que compita,
+   el h1 de Soluciones mide EXACTAMENTE lo mismo que el resto en todos los
+   viewports, que es justo lo que el test comprueba.
+   Queda solo el line-height, que sí es propio de esta página: este titular va
+   más apretado que el 1.02 del sistema.
 
    El bloque reactivo (`activeSector.label`) ya no está en el H1 sino en el
-   subtítulo, ver Soluciones.tsx — los 7 labels tienen longitud distinta
-   ("Asesorías y despachos" vs "PYMEs con operativa dispersa"), pero como el
-   hero vive en flujo normal, un label más largo que el resto simplemente
-   empuja el resto de la página unos píxeles — no hace falta un
-   `-webkit-line-clamp` de seguridad como sí necesitan
+   indicador `.heroSector` de debajo, ver Soluciones.tsx — los 7 labels tienen
+   longitud distinta ("Asesorías y despachos" vs "PYMEs con operativa
+   dispersa"), pero como el hero vive en flujo normal, un label más largo que
+   el resto simplemente empuja el resto de la página unos píxeles — no hace
+   falta un `-webkit-line-clamp` de seguridad como sí necesitan
    `.panelTitle`/`.panelSolution`, que siguen viviendo dentro del panel de
    alto fijo de desktop. */
-/* Sin font-size propio: el h1 ya lo pone `sys.pageHeroTitle` desde
-   --font-size-h1, el MISMO token que usa el hero del home. Eso disuelve de
-   raíz el empate de cascada que documentaba e2e/typography.spec.ts
-   (TYPO-E2E-001): dos reglas de igual especificidad —`sys.pageHeroTitle` y
-   este `.heroTitle`— competían por el mismo h1 y quién ganaba dependía del
-   orden de inyección del chunk lazy de la ruta, no de una regla determinista.
-   Si ambas piden el mismo valor, el empate deja de importar.
-   Queda solo el line-height, que sí es propio de esta página: este titular va
-   más apretado que el 1.02 del sistema. */
 .heroTitle {
     line-height: 1.0;
-}
-
-@media (max-width: 639px) {
-    .heroTitle {
-        font-size: clamp(1.75rem, 8vw, 2.5rem);
-    }
 }
 
 /* ─── Indicador de sector activo ───
