@@ -2,60 +2,95 @@ import { test, expect } from '@playwright/test';
 import { gotoStable } from './helpers';
 
 /**
- * Tipografía responsive de los h1.
+ * Escala tipográfica — invariantes del sistema, no valores mágicos.
  *
- * Vigila que la escala móvil definida en `page-system.module.css` sea la que
- * realmente llega al navegador. El sistema de páginas es la fuente de verdad;
- * cuando el CSS de una página concreta la pisa sin quererlo, el h1 se dispara
- * y rompe el ritmo vertical en pantallas pequeñas.
+ * El h1 de TODAS las páginas sale de un único token (`--font-size-h1` en
+ * src/styles/variables.css) y ninguna página declara su propio clamp. Estos
+ * tests vigilan las dos propiedades que ese diseño garantiza y que el CSS
+ * anterior rompía:
+ *
+ *   1. CONSISTENCIA — a un mismo viewport, el h1 mide lo mismo en todas las
+ *      rutas. Antes no: `sys.pageHeroTitle` y el `.heroTitle` de cada página
+ *      eran dos reglas de la MISMA especificidad compitiendo por el mismo
+ *      nodo, así que quién ganaba dependía del orden en que se inyectara el
+ *      chunk lazy de la ruta — un accidente de bundling, no una regla.
+ *
+ *   2. MONOTONÍA — el h1 nunca ENCOGE al crecer el viewport. Antes sí: el
+ *      hero del home se pintaba a 48px a 414px y bajaba a 44px a 768px,
+ *      porque el tramo de teléfono y el de tablet eran dos clamp()
+ *      independientes que no se encontraban en el breakpoint.
+ *
+ * Por eso corren sobre el build (ver playwright.config.ts): en `dev` el orden
+ * de inyección de las hojas es otro y el fallo de consistencia no se
+ * reproduce igual.
  */
-test.describe('Escala tipográfica móvil', () => {
-    // El skip va a nivel de describe y lee `viewport` del fixture de opciones:
-    // así se resuelve ANTES de lanzar navegador. Dentro del test tendríamos que
-    // usar `page.viewportSize()`, lo que obliga a abrir el browser solo para
-    // descartar el test.
-    test.skip(
-        ({ viewport }) => viewport?.width !== 375,
-        'Aserción calibrada para el viewport de 375px.'
+
+const ROUTES_WITH_H1 = ['/', '/soluciones', '/casos', '/recursos', '/contacto'];
+
+async function h1FontSize(page: import('@playwright/test').Page, route: string) {
+    await gotoStable(page, route);
+    const h1 = page.locator('h1').first();
+    await expect(h1).toBeVisible();
+    return h1.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+}
+
+test.describe('Escala tipográfica', () => {
+    test(
+        'el h1 mide lo mismo en las 5 páginas al mismo viewport',
+        { tag: ['@critical', '@e2e', '@typography', '@TYPO-E2E-001'] },
+        async ({ page }) => {
+            const sizes: Record<string, number> = {};
+            for (const route of ROUTES_WITH_H1) {
+                sizes[route] = await h1FontSize(page, route);
+            }
+
+            const unique = [...new Set(Object.values(sizes).map((n) => Math.round(n)))];
+            expect(
+                unique,
+                `El h1 debería salir del mismo token en todas las rutas. Medido: ${JSON.stringify(sizes)}`
+            ).toHaveLength(1);
+        }
     );
 
     test(
-        'el h1 de /soluciones mide ~30px a 375px',
-        { tag: ['@critical', '@e2e', '@typography', '@TYPO-E2E-001'] },
+        'el h1 nunca encoge al ensanchar el viewport',
+        { tag: ['@critical', '@e2e', '@typography', '@TYPO-E2E-002'] },
         async ({ page }) => {
-            await gotoStable(page, '/soluciones');
+            // 414 y 768 son los dos anchos donde estaba el salto real
+            // (48px -> 44px). 360 y 1280 cubren los extremos del rango.
+            const widths = [360, 414, 768, 1280];
+            const measured: Array<{ width: number; size: number }> = [];
 
-            const h1 = page.locator('h1');
-            await expect(h1).toBeVisible();
+            for (const width of widths) {
+                await page.setViewportSize({ width, height: 900 });
+                measured.push({ width, size: await h1FontSize(page, '/') });
+            }
 
-            const fontSize = await h1.evaluate((el) =>
-                parseFloat(getComputedStyle(el).fontSize)
-            );
+            for (let i = 1; i < measured.length; i++) {
+                expect(
+                    measured[i].size,
+                    `El h1 baja de ${measured[i - 1].size}px a ${measured[i - 1].width}px ` +
+                        `hasta ${measured[i].size}px a ${measured[i].width}px. ` +
+                        `Serie completa: ${JSON.stringify(measured)}`
+                ).toBeGreaterThanOrEqual(measured[i - 1].size);
+            }
+        }
+    );
 
-            /**
-             * FALLA HOY — bug real, se arregla en fase 2. Mide 40px, esperamos ~30px.
-             *
-             * Causa: dos reglas de la MISMA especificidad (una clase) compiten
-             * sobre el mismo h1, que lleva `sys.pageHeroTitle` + `styles.heroTitle`:
-             *
-             *   page-system.module.css @media (max-width: 767px):
-             *     .pageHeroTitle { font-size: clamp(1.75rem, 8vw, 2.5rem) }  → 30px
-             *   Soluciones.module.css (sin media query):
-             *     .heroTitle      { font-size: clamp(2.5rem, 5vw, 4.5rem) }  → 40px
-             *
-             * A igual especificidad decide el orden de hoja. Soluciones.module.css
-             * viaja en el chunk lazy de la ruta y se inyecta DESPUÉS de
-             * page-system.module.css, así que gana — y el override de móvil del
-             * sistema queda muerto. Que el override viva en una @media no le da
-             * prioridad: las media queries no suman especificidad.
-             *
-             * Por eso este test corre sobre el build (ver playwright.config.ts):
-             * en `dev` el orden de inyección es otro y el bug no se reproduce igual.
-             */
+    test(
+        'los titulares cargan un peso real, no el peso del cuerpo',
+        { tag: ['@e2e', '@typography', '@TYPO-E2E-003'] },
+        async ({ page }) => {
+            await gotoStable(page, '/');
+            const weight = await page
+                .locator('h1')
+                .first()
+                .evaluate((el) => parseInt(getComputedStyle(el).fontWeight, 10));
+
             expect(
-                fontSize,
-                `El h1 de /soluciones mide ${fontSize}px a 375px; la escala móvil del sistema pide ~30px.`
-            ).toBeLessThanOrEqual(32);
+                weight,
+                `El h1 se pinta a font-weight ${weight}; la escala canónica pide 700.`
+            ).toBe(700);
         }
     );
 });

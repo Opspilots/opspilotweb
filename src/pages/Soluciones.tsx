@@ -215,7 +215,12 @@ const SectorPageContent: React.FC<{ sector: Sector; page: number; active: boolea
 
     return (
         <div className={styles.pageBody}>
-            <h2 className={styles.panelTitle}>{sector.title}</h2>
+            {/* h3, no h2: desde que la sección tiene su propia cabecera real
+                (`Sectores` / `Elige tu sector`, ver más abajo), este titular es el
+                de una tarjeta DENTRO de esa sección, no el de la sección. Al ser
+                h3 hereda tamaño/peso/interlineado de la escala canónica en vez de
+                recrearlos en `.panelTitle`. */}
+            <h3 className={styles.panelTitle}>{sector.title}</h3>
 
             <p className={styles.panelWho}>
                 <span className={styles.whoLabel}>Para</span> {sector.who}
@@ -547,12 +552,20 @@ export const Soluciones: React.FC = () => {
                                el H1 no se mueve y el sector activo vive en su propia
                                región `aria-live`, que SÍ se anuncia al cambiar.
 
+                            El TEXTO fijo, en cambio, viene de la auditoría de contenido:
+                            "Software para tu sector" era el mismo titular-catálogo del
+                            problema original, solo que sin la rotación — etiquetaba el
+                            selector en vez de afirmar algo. "Tu sector ya lo hemos resuelto
+                            antes" es la única afirmación que le importa a quien llega por
+                            su sector.
+
                             Visualmente se conserva la idea: titular grande + nombre de
                             sector en acento justo debajo, con el mismo crossfade
                             (opacity/y, mismo timing y easing que `.rowIconMotion`,
                             `.panelIconMotion` y la transición de panel). */}
                         <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>
-                            Software para tu sector
+                            Tu sector ya lo hemos{' '}
+                            <em className={sys.pageHeroAccent}>resuelto antes</em>.
                         </h1>
 
                         {/* Sector activo. Ya no es un encabezado: es un indicador de
@@ -605,6 +618,17 @@ export const Soluciones: React.FC = () => {
                 <div className={styles.solTrack} ref={trackRef}>
                     <div className={styles.solViewport}>
                         <div className={sys.container}>
+                            {/* Cabecera real de la sección. Hasta ahora el explorador era la
+                                única sección de las cinco páginas sin ningún <h2>: su rótulo
+                                vivía solo en `PANEL_PAGE_LABELS` y en el `aria-label` del
+                                tablist, así que el esquema de encabezados saltaba del h1 del
+                                hero directamente a los h2/h3 de dentro de los paneles y, en
+                                pantalla, el bloque más importante de la página empezaba sin
+                                presentarse. */}
+                            <header className={`${sys.sectionHeader} ${styles.explorerHeader}`}>
+                                <p className={sys.sectionEyebrow}>Sectores</p>
+                                <h2 className={sys.sectionTitle}>Elige tu sector</h2>
+                            </header>
                             <div className={styles.explorer} ref={listRef} data-lenis-prevent>
                                 {/* Columna izquierda — lista de sectores seleccionables (nav,
                                     no tabla: sin fila de cabecera, ver Soluciones.module.css).
@@ -945,6 +969,50 @@ export const Soluciones: React.FC = () => {
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* Franja de condiciones — plazos, soporte y permanencia.
+                Estos tres datos ya existían en el sitio, pero enterrados: vivían
+                en la FAQ del sector "Procesos únicos a medida", o sea en la
+                página 3 del carrusel interno de UNO de los siete paneles. Ahí
+                solo los veía quien ya había elegido ese sector concreto Y
+                avanzado dos páginas dentro de él — exactamente el visitante que
+                menos falta le hacen. Son las tres objeciones que frenan una
+                decisión de compra (cuánto tarda, qué pasa después, a qué me
+                ato), así que suben a una franja fija, siempre visible, justo
+                debajo del explorador.
+                No se duplica el contenido: aquí va la versión de titular y el
+                detalle sigue en las FAQ de cada sector (donde además está
+                matizado por sector, que es lo que una franja global no puede
+                hacer). Las cifras son literalmente las del dato —ver
+                src/data/sectors.ts, sector `medida`—, no una redondeada para
+                que quede mejor. */}
+            <section className={styles.termsSection}>
+                <div className={sys.container}>
+                    <dl className={styles.termsGrid}>
+                        <div className={styles.termsItem}>
+                            <dt className={styles.termsValue}>6–8 semanas</dt>
+                            <dd className={styles.termsLabel}>
+                                Lo que tarda un proceso simple. Con varias integraciones,
+                                de 3 a 4 meses — y una versión funcional mucho antes.
+                            </dd>
+                        </div>
+                        <div className={styles.termsItem}>
+                            <dt className={styles.termsValue}>6 meses de soporte</dt>
+                            <dd className={styles.termsLabel}>
+                                El contrato incluye los cambios de los primeros seis meses.
+                                Si tu proceso cambia, lo ajustamos.
+                            </dd>
+                        </div>
+                        <div className={styles.termsItem}>
+                            <dt className={styles.termsValue}>Sin permanencia</dt>
+                            <dd className={styles.termsLabel}>
+                                Ni cuotas mensuales por el software ni letra pequeña.
+                                Pagas el desarrollo una vez y el sistema es tuyo.
+                            </dd>
+                        </div>
+                    </dl>
                 </div>
             </section>
 

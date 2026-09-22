@@ -47,10 +47,12 @@
        dashboard quepan sin cortarse; en pantallas altas sube a spacing-12. */
     padding: clamp(var(--spacing-6), 4vh, var(--spacing-12)) 0;
     overflow: hidden;
-    /* Transparente para dejar ver los halos ambientales; un glow mint local
-       refuerza el foco justo detrás del titular. */
+    /* Transparente para dejar ver los halos ambientales; un glow local refuerza
+       el foco justo detrás del titular. Era mint al 9%: decoración de fondo
+       pintada con el color de lo interactivo (ver política en variables.css).
+       Luz neutra hace exactamente el mismo trabajo. */
     background:
-        radial-gradient(60% 55% at 22% 42%, rgba(57, 206, 134, 0.09), transparent 70%),
+        radial-gradient(60% 55% at 22% 42%, rgba(255, 255, 255, 0.045), transparent 70%),
         transparent;
 }
 
@@ -87,11 +89,14 @@
     .heroEyebrow::before { animation: none; }
 }
 
-/* Halo suave tras la palabra de acento */
+/* Palabra de acento del titular. Conserva el mint (es la firma de marca del
+   hero, presente en las 5 páginas vía `sys.pageHeroAccent`), pero pierde el
+   `text-shadow: 0 0 30px` que lo rodeaba de un halo verde: ese glow no era
+   color con significado, era el mismo acento repintado una segunda vez como
+   decoración alrededor de sí mismo. */
 .heroAccent {
     color: var(--color-mint);
     position: relative;
-    text-shadow: 0 0 30px rgba(57, 206, 134, 0.35);
 }
 
 /* Marco del dashboard: glow + spotlight que sigue al puntero */
@@ -107,9 +112,11 @@
     position: absolute;
     inset: -14% -10%;
     z-index: -1;
+    /* Glow ambiental del marco: luz neutra. Eran dos halos de acento (mint
+       0.16 + ámbar 0.10) detrás de un panel que no es un control. */
     background:
-        radial-gradient(50% 50% at 60% 30%, rgba(57, 206, 134, 0.16), transparent 70%),
-        radial-gradient(46% 46% at 30% 90%, rgba(232, 165, 99, 0.10), transparent 70%);
+        radial-gradient(50% 50% at 60% 30%, rgba(255, 255, 255, 0.09), transparent 70%),
+        radial-gradient(46% 46% at 30% 90%, rgba(255, 255, 255, 0.05), transparent 70%);
     filter: blur(24px);
     opacity: 0.9;
 }
@@ -125,7 +132,7 @@
     opacity: 0;
     transition: opacity var(--transition-normal);
     background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
-        rgba(57, 206, 134, 0.14), transparent 60%);
+        rgba(255, 255, 255, 0.07), transparent 60%);
 }
 
 .heroPanelFrame[data-spotlight-active]::after {
@@ -216,10 +223,26 @@
     }
 }
 
+/* h1 del hero — tamaño y peso de la escala canónica (variables.css).
+   ANTES (bug real, medido en la auditoría): esta regla daba
+   `clamp(2.75rem, 5.5vw, 4.5rem)` de 640px en adelante, y el bloque
+   @media (max-width: 639px) de más abajo daba `clamp(36px, 12vw, 48px)`.
+   Resultado: 48px a 414px y 44px a 768px — el titular ENCOGÍA al crecer la
+   pantalla, justo en el salto entre los dos clamps. Dos clamps independientes
+   no pueden garantizar monotonía; uno solo y continuo, sí. `--font-size-h1`
+   interpola sin cortes: ~48px a 414px, ~60px a 768px, 72px de 1120px en
+   adelante. Ese tamaño mayor en tablet es además lo que cierra el hueco
+   derecho del titular a 768px (28px de margen izquierdo contra ~215px de aire
+   a la derecha: la línea no llenaba la medida porque la letra era demasiado
+   pequeña para el ancho disponible).
+   El peso pasa de 400 a 700: era el texto más grande de la web y el más
+   liviano, sin jerarquía frente al subtítulo.
+   `line-height: 1` se queda: el titular son tres líneas duras (.heroLine) y
+   necesita ir más apretado que el 1.02 del sistema. */
 .heroTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(2.75rem, 5.5vw, 4.5rem);
-    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
     color: var(--color-text-strong);
     line-height: 1;
     margin-bottom: var(--spacing-7);
@@ -251,7 +274,7 @@
 .heroSubtitle {
     font-size: clamp(1.05rem, 1.4vw, 1.2rem);
     color: var(--color-text-muted);
-    line-height: 1.6;
+    line-height: var(--line-height-body);
     margin: 0 0 var(--spacing-10);
     max-width: 54ch;
 }
@@ -364,22 +387,24 @@
     min-width: 0;
 }
 
+/* Etiqueta de dato ("4 apps", "Excel"). Neutra: es un metadato de la tarjeta,
+   no algo que se pueda pulsar. En mint parecía un chip de filtro activo. */
 .problemTag {
     align-self: flex-start;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     letter-spacing: 0.06em;
-    color: var(--color-mint);
+    color: var(--color-text-muted);
     padding: var(--spacing-1) var(--spacing-3);
-    border: 1px solid var(--color-border-mint);
+    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-control);
-    background: var(--color-mint-soft);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .problemTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(var(--font-size-lg), 3vw, var(--font-size-2xl, 1.8rem));
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     line-height: 1.15;
     letter-spacing: var(--tracking-tight);
@@ -394,14 +419,15 @@
     max-width: 52ch;
 }
 
-/* Indicador 01 / 03 arriba a la derecha de la tarjeta. */
+/* Indicador 01 / 03 arriba a la derecha de la tarjeta. Neutro: es un contador
+   de posición, no un control ni un estado. */
 .problemCount {
     position: absolute;
     top: var(--spacing-6);
     right: var(--spacing-7);
     font-family: var(--font-family-mono);
     font-size: var(--font-size-sm);
-    color: var(--color-mint);
+    color: var(--color-text-subtle);
     letter-spacing: 0.04em;
 }
 
@@ -516,15 +542,17 @@
     margin-bottom: var(--spacing-6);
 }
 
+/* Badge del icono de paso. Neutro: identifica el paso, no responde al puntero
+   ni indica selección. */
 .methodStepIcon {
     width: 48px;
     height: 48px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-control);
 }
 
@@ -537,10 +565,12 @@
     line-height: 1;
 }
 
+/* Rejilla densa de 4 pasos: usa el tamaño compacto del sistema, no el h3
+   completo — mismo peso, un escalón menos de tamaño. */
 .methodStepTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-title-compact);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     margin: 0 0 var(--spacing-3);
     line-height: 1.25;
@@ -554,13 +584,14 @@
     margin: 0;
 }
 
-/* Barra inferior que se dibuja al entrar (contraste de carga). */
+/* Barra inferior que se dibuja al entrar (contraste de carga). Hairline
+   decorativo: era `--gradient-mint` a 3px de alto en las 4 tarjetas. */
 .methodStepBar {
     position: absolute;
     left: 0; bottom: 0;
     width: 100%;
-    height: 3px;
-    background: var(--gradient-mint, var(--color-mint));
+    height: 2px;
+    background: var(--color-border-strong);
     transform: scaleX(0);
     transform-origin: left;
 }
@@ -675,20 +706,22 @@
     margin-bottom: var(--spacing-6);
 }
 
+/* Badge del icono de sector. Neutro (antes mint + `--shadow-mint`, un halo
+   verde proyectado bajo un icono que no es accionable). */
 .caseIconTile {
     width: 46px;
     height: 46px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-card);
-    box-shadow: var(--shadow-mint);
     flex-shrink: 0;
 }
 
+/* Nombre del sector — metadato de la tarjeta, no un enlace. */
 .caseSector {
     display: inline-flex;
     align-items: center;
@@ -697,7 +730,7 @@
     font-size: var(--font-size-xs);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--color-mint);
+    color: var(--color-text-muted);
 }
 
 /* Línea de servicio (TIENDA / WEB / APP A MEDIDA). Misma pastilla que en
@@ -789,7 +822,7 @@
     opacity: 0;
     transition: opacity var(--transition-normal);
     background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%),
-        rgba(57, 206, 134, 0.11), transparent 60%);
+        rgba(255, 255, 255, 0.06), transparent 60%);
 }
 
 .caseCard[data-spotlight-active] {
@@ -821,46 +854,52 @@
     text-wrap: pretty;
 }
 
+/* `gap: 0` a propósito: cada `.caseDot` ES ya un objetivo táctil de 44×44
+   (ver abajo), así que las áreas quedan CONTIGUAS y no solapadas. Hit-areas
+   solapadas eran justo el bug anterior: el punto de la derecha, pintado
+   encima, se comía los clics dirigidos al centro de su vecino. */
 .caseDots {
     display: flex;
-    gap: 16px;
+    gap: 0;
     align-items: center;
 }
 
+/* El BOTÓN es el objetivo táctil completo (44×44, WCAG 2.5.5 Target Size);
+   el punto visible de 6px lo pinta `::before`. */
 .caseDot {
-    position: relative;
-    width: 6px;
-    height: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-full);
-    background: var(--color-border-strong);
+    background: none;
     border: none;
     padding: 0;
     cursor: pointer;
     flex-shrink: 0;
+}
+
+.caseDot::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
     transition: all var(--transition-normal);
 }
 
-/* Expand the clickable hit area toward a comfortable touch target without
-   growing the visible dot — centered on the dot regardless of its
-   (active/inactive) width. Clamped to 34px (rather than the full 44px
-   touch-target minimum) and paired with a wider row gap above so that
-   adjacent dots' hit areas never overlap and steal each other's clicks. */
-.caseDot::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 34px;
-    height: 34px;
-    transform: translate(-50%, -50%);
-}
-
-.caseDotActive {
+.caseDotActive::before {
     width: 24px;
     background: var(--color-mint);
 }
 
-.caseDot:focus-visible,
+.caseDot:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: -4px;
+}
+
 .caseNavBtn:focus-visible {
     outline: 2px solid var(--color-mint);
     outline-offset: 2px;
@@ -902,8 +941,8 @@
 
 .caseCardTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(1.5rem, 2.4vw, 2rem);
-    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     line-height: 1.1;
     letter-spacing: var(--tracking-display);
@@ -919,7 +958,8 @@
     line-height: 1.5;
     margin-bottom: var(--spacing-7);
     padding-left: var(--spacing-5);
-    border-left: 2px solid var(--color-mint);
+    /* Filete de cita: hairline decorativo, no acento. */
+    border-left: 2px solid var(--color-border-strong);
     letter-spacing: var(--tracking-tight);
 }
 
@@ -1039,7 +1079,7 @@
     opacity: 0;
     transition: opacity var(--transition-normal);
     background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%),
-        rgba(57, 206, 134, 0.09), transparent 60%);
+        rgba(255, 255, 255, 0.055), transparent 60%);
 }
 
 .whyCol[data-spotlight-active]::before {
@@ -1060,15 +1100,19 @@
     background: transparent;
 }
 
-/* OpsPilot column — elevada: fondo mint tenue, borde mint y un glow suave
-   que la levanta sobre la columna genérica. Elevación vía box-shadow (no
-   transform: el reveal de GSAP resetea transform a none tras animar). */
+/* OpsPilot column — elevada sobre la genérica. Elevación vía box-shadow (no
+   transform: el reveal de GSAP resetea transform a none tras animar).
+   El tinte y el borde mint SE QUEDAN: marcan la opción recomendada, que es un
+   estado de selección, no decoración. Lo que cae es el glow proyectado de
+   70px en mint al 50% — una sombra tintada, es decir, el acento usado como
+   iluminación ambiental. La elevación la da ahora una sombra neutra del
+   sistema, igual que cualquier otra superficie elevada. */
 .whyColOps {
     background: rgba(57, 206, 134, 0.045);
     border-color: rgba(57, 206, 134, 0.32);
     box-shadow:
-        inset 0 1px 0 rgba(57, 206, 134, 0.12),
-        0 28px 70px -34px rgba(57, 206, 134, 0.5);
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        var(--shadow-lg);
 }
 
 /* Columna genérica — ligeramente recedida */
@@ -1224,9 +1268,14 @@
     color: var(--color-text-muted);
 }
 
+/* Columna OpsPilot. El texto ya no va en mint: eran 6 filas de cuerpo enteras
+   pintadas de verde — el acento usado como color de texto corrido, no como
+   señal. La jerarquía ahora la da el contraste (genérico en `--color-text-muted`,
+   OpsPilot en `--color-text`), y el tinte de fondo sigue marcando qué columna
+   es cuál. */
 .compareTableOpsCol {
     width: 36%;
-    color: var(--color-mint);
+    color: var(--color-text);
     background: rgba(57, 206, 134, 0.045);
 }
 
@@ -1298,18 +1347,11 @@
     }
 
     .heroTitle {
-        /* Un escalón entero más que el fix anterior (suelo --font-size-2xl /
-           techo --font-size-3xl): con ese clamp el preferido (7vw) caía por
-           debajo del suelo en TODO el rango de teléfono real (360-430px), así
-           que el tamaño renderizado era un --font-size-2xl fijo (28px) — el
-           bloque titular+subtítulo+CTAs quedaba mucho más bajo que el
-           viewport y dejaba aire muerto sobre el widget colapsado. Subiendo
-           suelo a --font-size-3xl (36px) y techo a --font-size-4xl (48px),
-           con 12vw de preferido, el tamaño SÍ escala dentro del rango real:
-           ~43px a 360px, ~48px (techo) desde ~400px. Sin esto, mover solo el
-           techo no cambia nada visible: clamp() usa el techo únicamente
-           cuando el preferido lo supera, y a estos anchos nunca lo hacía. */
-        font-size: clamp(var(--font-size-3xl), 12vw, var(--font-size-4xl));
+        /* SIN override de font-size. Este bloque tenía su propio clamp
+           (36-48px) y el de la regla base arrancaba en 44px a partir de 640px,
+           así que el titular decrecía al pasar de teléfono a tablet. Ahora el
+           tamaño lo pone --font-size-h1, que ya es continuo y monótono en todo
+           el rango; aquí solo quedan los ajustes de ritmo vertical. */
         margin-bottom: var(--spacing-6);
         gap: 0.04em;
     }

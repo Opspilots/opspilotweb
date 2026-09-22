@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { SpotlightCard } from '../components/fx/SpotlightCard';
 import { CaseMockPanel } from '../components/cases/CaseMockPanel';
 import { CasesDisclaimer } from '../components/cases/CasesDisclaimer';
 import { useScrollReveal } from '../hooks/useScrollReveal';
@@ -14,10 +13,6 @@ import { ROUTES } from '../lib/routes';
 import {
     ChevronLeft,
     ChevronRight,
-    Code2,
-    Clock,
-    BadgeCheck,
-    Cpu,
     // Renombrado: en src/data hay un TIPO llamado `ExternalLink` (el enlace a
     // producción, ver types.ts) y compartir identificador con un componente
     // de lucide solo genera dudas al leer.
@@ -29,34 +24,10 @@ import styles from './Cases.module.css';
 import { CASES, SERVICE_LINE_LABEL, getProduct, isLinkable } from '../data';
 import type { Case } from '../data';
 
-interface DiffItem {
-    Icon: React.FC<{ size?: number; strokeWidth?: number }>;
-    title: string;
-    text: string;
-}
-
-const DIFFERENTIATORS: DiffItem[] = [
-    {
-        Icon: Code2,
-        title: 'Software hecho para ti, no plantillas',
-        text: 'Cada sistema se diseña desde cero para tu operativa concreta. No adaptamos plantillas de terceros ni te vendemos suscripciones que no controlas. Lo que construimos es tuyo.',
-    },
-    {
-        Icon: Clock,
-        title: 'Entrega en semanas, no en meses',
-        text: 'Sin proyectos eternos ni fases de consultoría facturadas por horas. Defines el problema, construimos la solución y la entregamos lista para usar en 4 a 8 semanas.',
-    },
-    {
-        Icon: BadgeCheck,
-        title: 'Pagas una vez, es tuyo para siempre',
-        text: 'Sin cuotas mensuales por el software. Pagas el desarrollo una sola vez y el sistema es completamente tuyo. Solo vuelves si quieres añadir más funcionalidades.',
-    },
-    {
-        Icon: Cpu,
-        title: 'IA donde reduce trabajo real',
-        text: 'No añadimos inteligencia artificial como reclamo de marketing. La integramos en tareas concretas donde ahorra horas reales: documentos, respuestas, clasificación, presupuestos.',
-    },
-];
+// El bloque de 4 diferenciadores ("Software hecho para ti, no plantillas",
+// "Entrega en semanas, no en meses", …) ya no vive aquí: se extrajo a
+// src/components/marketing/Differentiators.tsx y se reubicó en Home, encima de
+// la tabla comparativa. Esta página queda centrada solo en los casos.
 
 // Pure card — no hooks
 const CaseCard: React.FC<{ c: Case; index: number }> = ({ c, index }) => {
@@ -270,49 +241,6 @@ const CarouselSection: React.FC = () => {
     );
 };
 
-const WhySection: React.FC = () => {
-    const whyRef = useScrollReveal<HTMLDivElement>({ stagger: true });
-
-    return (
-        <section className={styles.whySection}>
-            <div className={sys.container} ref={whyRef}>
-                <div className={`${styles.whyHeader} reveal`}>
-                    <h2 className={styles.whyTitle}>Resultados que se ven. No promesas de folleto</h2>
-                    <p className={styles.whySub}>
-                        No somos una agencia digital ni una consultora. Somos un equipo pequeño
-                        que construye software a medida para PYMEs que quieren trabajar mejor,
-                        sin depender de herramientas genéricas ni de procesos que no se adaptan a ellas.
-                    </p>
-                </div>
-
-                <div className={styles.whyGrid}>
-                    {DIFFERENTIATORS.map((d, i) => (
-                        <SpotlightCard
-                            as="article"
-                            key={i}
-                            className={`${styles.whyItem} ${i === DIFFERENTIATORS.length - 1 ? styles.whyItemClosing : ''} reveal`}
-                        >
-                            <span className={styles.whyItemBar} aria-hidden="true" />
-                            <div className={styles.whyIconWrap} aria-hidden="true">
-                                <d.Icon size={20} strokeWidth={1.75} />
-                            </div>
-                            <h3 className={styles.whyItemTitle}>{d.title}</h3>
-                            <p className={styles.whyItemText}>{d.text}</p>
-                        </SpotlightCard>
-                    ))}
-                </div>
-                {/* Indicador de scroll horizontal (solo móvil): avisa de que
-                   la fila continúa fuera de pantalla. */}
-                {DIFFERENTIATORS.length > 1 && (
-                    <p className={styles.scrollHint} aria-hidden="true">
-                        Desliza para ver más →
-                    </p>
-                )}
-            </div>
-        </section>
-    );
-};
-
 export const Cases: React.FC = () => {
     const seoProps = {
         title: 'Casos de éxito de software a medida · OpsPilot',
@@ -367,14 +295,18 @@ export const Cases: React.FC = () => {
             {/* ═══ CAROUSEL ═══ */}
             <CarouselSection />
 
-            {/* ═══ DIFERENCIADORES ═══ */}
-            <WhySection />
-
             {/* ═══ CTA ═══ */}
             <section className={sys.endCta}>
                 <div className={sys.container}>
                     <div className={sys.endCtaBlock} ref={ctaRef}>
-                        <h2 className={sys.endCtaTitle}>¿Tu empresa podría ser la siguiente?</h2>
+                        {/* Antes: "¿Tu empresa podría ser la siguiente?" — una
+                            pregunta halagadora que no pide nada concreto. Ahora
+                            apunta al problema operativo del visitante, igual que el
+                            cierre de Home ("¿Qué es lo que más te está frenando
+                            ahora mismo?") y el de Soluciones ("¿No encuentras tu
+                            sector aquí?"): mismo patrón de pregunta en las tres
+                            páginas, cada una anclada a lo que se acaba de leer. */}
+                        <h2 className={sys.endCtaTitle}>¿Cuál de estos problemas se parece al tuyo?</h2>
                         <p className={sys.endCtaSub}>
                             Miramos tu operativa media hora y te decimos qué encajaría contigo.
                             Sin compromiso, sin letra pequeña.

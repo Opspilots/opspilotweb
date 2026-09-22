@@ -67,12 +67,13 @@
     text-transform: uppercase;
 }
 
+/* h1 del artículo — misma escala canónica que el h1 del resto de la web. */
 .title {
     font-family: var(--font-family-base);
-    font-size: clamp(1.875rem, 4.4vw, 3.25rem);
-    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
     color: var(--color-text-strong);
-    line-height: 1.08;
+    line-height: var(--line-height-h1);
     letter-spacing: var(--tracking-display);
     text-wrap: balance;
     /* break-word rompe solo cuando una palabra no cabe; anywhere partía
@@ -85,7 +86,7 @@
 .lead {
     font-size: clamp(1rem, 1.3vw, 1.1875rem);
     color: var(--color-text-muted);
-    line-height: 1.6;
+    line-height: var(--line-height-body);
     overflow-wrap: anywhere;
     max-width: 68ch;
     margin: 0;
@@ -170,13 +171,17 @@
     overflow-wrap: anywhere;
 }
 
+/* h2 dentro del long-form. NO usa --font-size-h2 (46px): dentro de una columna
+   de 64ch un titular de 46px rompe el ritmo de lectura. Lo que sí comparte con
+   el resto de la web es el PESO (600) — que es justo lo que le da jerarquía
+   frente al cuerpo y lo que faltaba cuando todos los pesos topaban en 500. */
 .blockH2 {
     font-family: var(--font-family-base);
-    font-size: clamp(1.25rem, 2vw, 1.625rem);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h2);
     color: var(--color-text-strong);
     letter-spacing: var(--tracking-tight);
-    line-height: 1.25;
+    line-height: var(--line-height-h3);
     margin: var(--spacing-11) 0 var(--spacing-4);
     /* Deja aire bajo la navbar fija al saltar a un ancla. La navbar ya no
        encoge al hacer scroll: mide siempre --navbar-offset. */
@@ -195,7 +200,7 @@
     gap: var(--spacing-3);
     font-family: var(--font-family-base);
     font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     letter-spacing: var(--tracking-tight);
     line-height: 1.4;
@@ -203,35 +208,45 @@
     scroll-margin-top: 6rem;
 }
 
+/* Glifo decorativo delante de la pregunta: neutro, no acento. */
 .blockFaqQ::before {
     content: '+';
     flex: none;
-    color: var(--color-mint);
+    color: var(--color-text-subtle);
     font-family: var(--font-family-mono);
     font-weight: var(--font-weight-regular);
     line-height: inherit;
 }
 
+/* CUERPO DEL ARTÍCULO — color de texto PRINCIPAL, no el "muted".
+   Iba a --color-text-muted (#8E9BAA) en todo el long-form: el texto que más se
+   lee de la web era también el de menor contraste, por debajo del de cualquier
+   subtítulo decorativo. --color-text (#E6EBF2) mantiene la paleta oscura y
+   sube el contraste a un nivel de lectura larga. El gris "muted" se reserva
+   para lo que de verdad es secundario: lead, metadatos, pies. */
 .blockP {
     font-size: var(--font-size-base);
-    color: var(--color-text-muted);
+    color: var(--color-text);
     line-height: 1.75;
     margin: 0 0 var(--spacing-5);
 }
 
+/* Mismo criterio que .blockP: las listas son cuerpo de artículo. */
 .blockList {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-3);
     margin: 0 0 var(--spacing-6);
     padding-left: var(--spacing-6);
-    color: var(--color-text-muted);
+    color: var(--color-text);
     font-size: var(--font-size-base);
     line-height: 1.65;
 }
 
+/* Viñetas del artículo: neutras. Una lista de 8 ítems con los marcadores en
+   mint convierte el acento en tipografía de cuerpo. */
 .blockList li::marker {
-    color: var(--color-mint);
+    color: var(--color-text-subtle);
 }
 
 /* Note — hairline panel with mint status dot */
@@ -349,8 +364,8 @@
 
 .relatedTitle {
     font-family: var(--font-family-base);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-title-compact);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     line-height: 1.3;
     letter-spacing: var(--tracking-tight);
@@ -373,10 +388,6 @@
        tap target on phones (it's inline-flex, so min-height applies). */
     .backLink {
         min-height: 44px;
-    }
-
-    .title {
-        font-size: clamp(1.625rem, 7vw, 2.25rem);
     }
 
     .coverSection {

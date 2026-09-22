@@ -128,21 +128,50 @@ export const Contact: React.FC = () => {
                 <div className={sys.container} ref={contactRef}>
                     <div className={styles.contactGrid}>
                         <div className={`${styles.formCard} glass reveal`}>
+                            <p className={sys.sectionEyebrow}>Diagnóstico</p>
                             <h2 className={styles.formTitle}>Reserva tu diagnóstico gratuito</h2>
                             <p className={styles.formSub}>
                                 Cuéntanos tu caso y te escribimos con los próximos pasos en
                                 menos de 24 horas laborables.
                             </p>
-                            {status === 'success' ? (
-                                <div className={styles.formSuccess}>
-                                    <p className={styles.formSuccessTitle}>Mensaje recibido</p>
-                                    <p className={styles.formSuccessText}>
-                                        Lo revisamos y te escribimos con los próximos pasos en
-                                        menos de 24 horas laborables. Revisa también tu carpeta de spam.
-                                    </p>
+                            {/* ─── Intercambio de estado SIN cambio de tamaño ───
+                                El acuse de recibo y el formulario comparten UNA celda de grid
+                                (`.formSwap`, ver Contact.module.css), así que la tarjeta mide
+                                siempre lo que mide el formulario. Antes el éxito desmontaba el
+                                formulario y la tarjeta se desplomaba de 916px a 492px en móvil
+                                (848→476 en escritorio): el bloque de contacto de al lado subía
+                                de golpe y la página entera "desencajaba" justo en el momento de
+                                más confianza del flujo. Ahora el formulario se queda en la celda
+                                — invisible (`visibility: hidden` vía el selector de
+                                `aria-hidden`) e `inert`, es decir fuera del orden de tabulación
+                                y del árbol de accesibilidad — reservando su propio alto, y el
+                                acuse se centra encima.
+
+                                `role="status"` (= aria-live polite) va en la CAPA, que está
+                                siempre montada, no en el bloque de éxito: una región viva solo
+                                anuncia los cambios que ocurren DENTRO de ella mientras ya
+                                existe en el DOM. Montar la región y su contenido a la vez —
+                                como se hacía antes — es precisamente el caso que varios
+                                lectores de pantalla no anuncian. */}
+                            <div className={styles.formSwap}>
+                                <div className={styles.formStatusLayer} role="status">
+                                    {status === 'success' && (
+                                        <div className={styles.formSuccess}>
+                                            <p className={styles.formSuccessTitle}>Mensaje recibido</p>
+                                            <p className={styles.formSuccessText}>
+                                                Lo revisamos y te escribimos con los próximos pasos en
+                                                menos de 24 horas laborables. Revisa también tu carpeta de spam.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
-                            ) : (
-                                <form className={styles.form} onSubmit={handleSubmit} noValidate>
+                                <form
+                                    className={styles.form}
+                                    onSubmit={handleSubmit}
+                                    noValidate
+                                    aria-hidden={status === 'success' || undefined}
+                                    inert={status === 'success'}
+                                >
                                     {/* Honeypot antispam de FormSubmit: invisible para humanos, cebo para bots */}
                                     <input
                                         type="text"
@@ -262,7 +291,7 @@ export const Contact: React.FC = () => {
                                         Respuesta &lt; 24h · Sin compromiso · Sin letra pequeña
                                     </p>
                                 </form>
-                            )}
+                            </div>
                         </div>
 
                         <div className={styles.infoCol}>

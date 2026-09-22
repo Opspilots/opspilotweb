@@ -29,8 +29,9 @@
     width: min(680px, 90vw);
     aspect-ratio: 1;
     transform: translate3d(-50%, -50%, 0);
+    /* Halo ambiental: luz neutra, no acento (era mint al 16%). */
     background: radial-gradient(circle,
-            rgba(57, 206, 134, 0.16),
+            rgba(255, 255, 255, 0.085),
             transparent 62%);
     filter: blur(28px);
     pointer-events: none;

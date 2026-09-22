@@ -48,9 +48,13 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
+    /* Los dos halos eran mint (0.16) y ámbar (0.07): decoración ambiental
+       pintada con los dos colores de acento del sistema, en todas las páginas
+       internas, detrás de todos los h1. Ahora son luz neutra — misma
+       profundidad, sin gastar el color que debe significar "interactivo". */
     background:
-        radial-gradient(38% 62% at 88% 8%, rgba(57, 206, 134, 0.16), transparent 70%),
-        radial-gradient(34% 55% at 4% 98%, rgba(232, 165, 99, 0.07), transparent 72%),
+        radial-gradient(38% 62% at 88% 8%, rgba(255, 255, 255, 0.07), transparent 70%),
+        radial-gradient(34% 55% at 4% 98%, rgba(255, 255, 255, 0.04), transparent 72%),
         linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 100% 100%, 100% 100%, 34px 34px, 34px 34px;
@@ -79,12 +83,16 @@
     max-width: 880px;
 }
 
+/* h1 de página. Tamaño/peso/interlineado vienen de la escala canónica
+   (variables.css) — los mismos que usa el hero del home, para que las 5 páginas
+   compartan una única familia de tamaños en vez de un clamp por página. Aquí
+   solo vive lo que es específico del hero: el margen inferior. */
 .pageHeroTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(2.25rem, 5vw, 4rem);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
     color: var(--color-text-strong);
-    line-height: 1.02;
+    line-height: var(--line-height-h1);
     letter-spacing: var(--tracking-display);
     text-wrap: balance;
     margin-bottom: var(--spacing-6);
@@ -98,7 +106,7 @@
 .pageHeroSubtitle {
     font-size: clamp(1rem, 1.4vw, 1.25rem);
     color: var(--color-text-muted);
-    line-height: 1.6;
+    line-height: var(--line-height-body);
     max-width: 60ch;
     margin-bottom: var(--spacing-9);
 }
@@ -109,14 +117,18 @@
     flex-wrap: wrap;
 }
 
-/* ─── Shared: amber "data accent" stat number ───
-   Canonical color treatment for large/animated stat numbers (Home's case
-   carousel `.caseStatNumber`, Cases page's `.cardStatVal`). Amber reads as
-   a distinct data accent since mint already dominates every other accent
-   use on the site. Font-size/weight/tracking stay page-specific — only
-   the color treatment is shared here. */
+/* ─── Cifra de resultado (stat) ───
+   Tratamiento de color canónico de las cifras grandes de resultado. Era ámbar
+   (`--color-warm`) con el argumento de que "el mint ya domina todos los demás
+   acentos": es decir, se añadió un SEGUNDO acento para huir del primero, y el
+   sitio acabó con dos colores compitiendo por significar "esto importa".
+   Resuelto eligiendo uno: las cifras van en texto fuerte. Un número a 48px en
+   blanco puro sobre un panel navy ya es el elemento más alto en contraste de
+   su tarjeta — no necesitaba color para destacar, y así el ámbar deja de ser
+   un tercer lenguaje cromático a mantener. El mint queda libre para lo
+   interactivo (ver la política en variables.css). */
 .statAccent {
-    color: var(--color-warm);
+    color: var(--color-text-strong);
 }
 
 /* ─── Section header simple ─── */
@@ -125,12 +137,32 @@
     max-width: 820px;
 }
 
+/* Eyebrow de sección — SLOT OPCIONAL, siempre antes del título.
+   `.eyebrow` (mono uppercase + punto mint) vivía en index.css con CERO usos:
+   un sistema declarado y nunca activado, así que cada sección que quería una
+   etiqueta se inventaba la suya (`.nlLabel` en /recursos, `.whoLabel` en
+   Soluciones, `.cardSector`...). Aquí se convierte en parte estructural de
+   `sys.sectionHeader`: `composes ... from global` reutiliza LITERALMENTE la
+   regla global — no la duplica —, así que sigue habiendo una sola definición
+   del lenguaje visual y este módulo solo añade el espaciado propio del slot.
+   Cualquier página que ya use `sys.sectionHeader` puede rotular su sección
+   con un <p class={sys.sectionEyebrow}> sin tocar el layout.
+
+   El punto mint se MANTIENE (ver la política de color en variables.css): el
+   eyebrow forma parte del lenguaje de navegación/estructura, no es un adorno
+   ambiental. */
+.sectionEyebrow {
+    composes: eyebrow from global;
+    margin: 0 0 var(--spacing-4);
+}
+
+/* h2 de sección — escala canónica (46px de techo, peso 600). */
 .sectionTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(1.875rem, 3.6vw, 2.875rem);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
     color: var(--color-text-strong);
-    line-height: 1.05;
+    line-height: var(--line-height-h2);
     letter-spacing: var(--tracking-display);
     text-wrap: balance;
 }
@@ -174,13 +206,13 @@
 /* Panel de cierre — rediseñado como superficie oscura on-brand (glass + glow
    mint + hairline superior), coherente con el lenguaje del resto de la web en
    lugar de la antigua tarjeta clara que rompía la estética. Al vivir en
-   sys.endCta*, el rediseño se propaga a todas las páginas (Home "¿Hablamos?",
-   Casos, Soluciones, Recursos). */
+   sys.endCta*, el rediseño se propaga a todas las páginas (Home, Casos,
+   Soluciones, Recursos). */
 .endCtaBlock {
     text-align: center;
     padding: clamp(var(--spacing-14), 8vw, var(--spacing-20)) var(--spacing-10);
     background:
-        radial-gradient(130% 120% at 50% 0%, rgba(57, 206, 134, 0.14), transparent 62%),
+        radial-gradient(130% 120% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 62%),
         var(--gradient-surface),
         var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
@@ -195,7 +227,9 @@
     isolation: isolate;
 }
 
-/* Hairline mint superior — misma firma de acento que las tarjetas de la web. */
+/* Hairline superior que remata el panel. Era `--gradient-mint`: un trazo
+   decorativo de 2px, en las 5 páginas, pintado con el color de lo interactivo
+   sin ser interactivo. Ahora es un hairline del sistema de bordes. */
 .endCtaBlock::before {
     content: '';
     position: absolute;
@@ -203,27 +237,29 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: var(--gradient-mint);
-    opacity: 0.9;
+    background: var(--color-border-strong);
     z-index: 2;
 }
 
-/* Halo mint difuso inferior — profundidad sin ruido. */
+/* Halo difuso inferior — profundidad sin ruido; luz neutra, no acento. */
 .endCtaBlock::after {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(80% 60% at 50% 122%, rgba(57, 206, 134, 0.12), transparent 70%);
+    background: radial-gradient(80% 60% at 50% 122%, rgba(255, 255, 255, 0.05), transparent 70%);
 }
 
+/* El titular del bloque de cierre es un h2: misma escala que .sectionTitle.
+   Antes iba a 68px con font-weight 400 hardcodeado — más grande que el h1 de
+   varias páginas y más liviano que su propio subtítulo. */
 .endCtaTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(2.5rem, 5.5vw, 4.25rem);
-    font-weight: 400;
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
     color: var(--color-text-strong);
-    line-height: 1.02;
+    line-height: var(--line-height-h2);
     margin-bottom: var(--spacing-6);
     letter-spacing: var(--tracking-display);
     text-wrap: balance;
@@ -288,10 +324,11 @@
         opacity: 0.6;
     }
 
-    .pageHeroTitle {
-        font-size: clamp(1.75rem, 8vw, 2.5rem);
-    }
-
+    /* Sin override de tamaño para .pageHeroTitle: --font-size-h1 ya es un
+       clamp continuo desde teléfono hasta escritorio. Un segundo clamp aquí es
+       exactamente lo que producía el salto no monótono del hero del home
+       (48px a 414px -> 44px a 768px) y el empate de cascada con
+       Soluciones.module.css documentado en e2e/typography.spec.ts. */
     .pageHeroSubtitle {
         font-size: var(--font-size-base);
     }
@@ -300,17 +337,12 @@
         margin-bottom: var(--spacing-8);
     }
 
-    .sectionTitle {
-        font-size: clamp(1.5rem, 6.5vw, 2rem);
-    }
+    /* .sectionTitle / .endCtaTitle: sin override — --font-size-h2 ya baja a
+       ~29px en teléfono por su propio clamp. */
 
     .endCtaBlock {
         padding: var(--spacing-10) var(--spacing-6);
         border-radius: var(--radius-panel);
-    }
-
-    .endCtaTitle {
-        font-size: clamp(1.75rem, 8vw, 2.5rem);
     }
 
     .endCtaSub {

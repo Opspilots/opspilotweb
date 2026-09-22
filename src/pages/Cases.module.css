@@ -75,12 +75,14 @@
         box-shadow var(--transition-expressive);
 }
 
-/* Tinted navy elevation lifts the active slide off the mesh background;
-   mint glow on hover (hover-capable pointers only, no touch flash). */
+/* La elevación levanta el slide activo sobre el fondo. El hover sube borde y
+   sombra, ambos NEUTROS: antes tintaba el borde de mint y proyectaba
+   `--shadow-mint` bajo una tarjeta que no es un control (ver la política de
+   color en variables.css). */
 @media (hover: hover) {
     .caseCard:hover {
-        border-color: var(--color-border-mint);
-        box-shadow: var(--shadow-lg), var(--shadow-mint);
+        border-color: var(--color-border-strong);
+        box-shadow: var(--shadow-lg);
     }
 }
 
@@ -190,10 +192,11 @@
     gap: var(--spacing-4);
 }
 
+/* Titular de tarjeta de caso — rol h3 del sistema (techo 28px, peso 600). */
 .cardTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(1.375rem, 2vw, 1.875rem);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     line-height: 1.1;
     letter-spacing: var(--tracking-display);
@@ -238,7 +241,7 @@
 .cardQuote {
     margin: 0;
     padding: var(--spacing-6) 0 0;
-    border-top: 1px solid var(--color-border-mint);
+    border-top: 1px solid var(--color-border-subtle);
 }
 
 .cardQuote p {
@@ -279,43 +282,52 @@
     text-wrap: pretty;
 }
 
+/* `gap: 0` a propósito: cada `.dot` ES ya un objetivo táctil de 44×44 (ver
+   abajo), así que las áreas quedan CONTIGUAS y no solapadas. Un gap extra
+   solo separaría visualmente puntos que ya están a 44px de distancia entre
+   centros; un gap junto a hit-areas solapadas era justo el bug anterior
+   (el punto de la derecha, pintado encima, se comía los clics del vecino). */
 .dots {
     display: flex;
-    gap: 16px;
+    gap: 0;
     align-items: center;
 }
 
+/* El BOTÓN es el objetivo táctil completo (44×44, WCAG 2.5.5 Target Size);
+   el punto visible de 6px lo pinta `::before`. Separar ambas cosas permite
+   subir el área sin tocar el aspecto del indicador. */
 .dot {
-    position: relative;
-    width: 6px;
-    height: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-full);
-    background: var(--color-border-strong);
+    background: none;
     border: none;
     padding: 0;
     cursor: pointer;
     flex-shrink: 0;
+}
+
+.dot::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
     transition: all var(--transition-normal);
 }
 
-/* Expand the clickable hit area toward a comfortable touch target without
-   growing the visible dot — centered on the dot regardless of its
-   (active/inactive) width. Clamped to 34px (rather than the full 44px
-   touch-target minimum) and paired with a wider row gap above so that
-   adjacent dots' hit areas never overlap and steal each other's clicks. */
-.dot::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 34px;
-    height: 34px;
-    transform: translate(-50%, -50%);
-}
-
-.dotActive {
+.dotActive::before {
     width: 24px;
     background: var(--color-mint);
+}
+
+.dot:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: -4px;
 }
 
 .navButtons {
@@ -369,267 +381,12 @@
 }
 
 /* ═══════════════════════════════════════════
-   Why section — Diferenciadores
-   ═══════════════════════════════════════════ */
-
-.whySection {
-    padding: var(--space-section-loose) 0;
-    background: var(--color-bg);
-    position: relative;
-}
-
-.whySection::before,
-.whySection::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--color-border-subtle);
-}
-
-.whySection::before { top: 0; }
-.whySection::after { bottom: 0; }
-
-/* ─── Why header ─── */
-.whyHeader {
-    max-width: 720px;
-    margin-bottom: var(--spacing-14);
-}
-
-.whyTitle {
-    font-family: var(--font-family-display);
-    font-size: clamp(1.875rem, 3.5vw, 2.75rem);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-strong);
-    line-height: 1.05;
-    letter-spacing: var(--tracking-display);
-    margin: 0 0 var(--spacing-5);
-    text-wrap: balance;
-}
-
-.whySub {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-muted);
-    line-height: 1.65;
-    max-width: 62ch;
-    margin: 0;
-}
-
-/* ─── Grid: tarjetas interactivas elevadas (3 col desktop) ─── */
-.whyGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-5);
-}
-
-@media (min-width: 1024px) {
-    .whyGrid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: var(--spacing-6);
-    }
-}
-
-.whyItem {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: var(--spacing-8) var(--spacing-7);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-panel);
-    background:
-        var(--gradient-surface),
-        var(--color-bg-elevated);
-    box-shadow: var(--glass-inset), var(--shadow-sm);
-    overflow: hidden;
-    isolation: isolate;
-    transition:
-        transform var(--transition-expressive),
-        border-color var(--transition-normal),
-        box-shadow var(--transition-expressive);
-}
-
-/* Halo de spotlight (SpotlightCard escribe --mx/--my + data-spotlight-active) */
-.whyItem::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    border-radius: inherit;
-    opacity: 0;
-    transition: opacity var(--transition-normal);
-    background: radial-gradient(
-        240px circle at var(--mx, 50%) var(--my, 50%),
-        rgba(57, 206, 134, 0.10),
-        transparent 62%
-    );
-}
-
-.whyItem[data-spotlight-active]::before {
-    opacity: 1;
-}
-
-.whyItem > * {
-    position: relative;
-    z-index: 1;
-}
-
-@media (hover: hover) {
-    .whyItem:hover {
-        transform: translateY(-4px);
-        border-color: var(--color-border-mint);
-        box-shadow: var(--shadow-lg), var(--shadow-mint);
-    }
-}
-
-/* Barra de acento superior — crece en hover (misma firma que Soluciones) */
-.whyItemBar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 2px;
-    width: 100%;
-    z-index: 2;
-    background: var(--gradient-mint);
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform var(--transition-expressive);
-}
-
-@media (hover: hover) {
-    .whyItem:hover .whyItemBar {
-        transform: scaleX(1);
-    }
-}
-
-/* Keystone de cierre: el 5º diferenciador ocupa todo el ancho y en pantallas
-   anchas se dispone horizontal (icono + título + texto) para que el span
-   completo se lea como cierre intencional, no como una celda huérfana. */
-.whyItem:last-child {
-    grid-column: 1 / -1;
-}
-
-@media (min-width: 640px) {
-    .whyItemClosing {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        grid-template-areas:
-            'icon title'
-            'icon text';
-        column-gap: var(--spacing-8);
-        row-gap: var(--spacing-3);
-        align-items: start;
-        padding: var(--spacing-9) var(--spacing-9);
-    }
-
-    .whyItemClosing .whyItemBar {
-        grid-column: 1 / -1;
-    }
-
-    .whyItemClosing .whyIconWrap {
-        grid-area: icon;
-        align-self: center;
-        margin-bottom: 0;
-    }
-
-    .whyItemClosing .whyItemTitle {
-        grid-area: title;
-        align-self: end;
-        margin-bottom: 0;
-    }
-
-    .whyItemClosing .whyItemText {
-        grid-area: text;
-        max-width: 80ch;
-    }
-}
-
-/* ─── Why item inner ─── */
-/* Contenedor: mismo tratamiento que el cardIcon de Soluciones
-   (borde mint + fondo tenue + glow) para coherencia entre páginas.
-   Escala levemente en hover. */
-.whyIconWrap {
-    width: 52px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-mint);
-    margin-bottom: var(--spacing-5);
-    flex-shrink: 0;
-    transition: transform var(--transition-expressive);
-}
-
-@media (hover: hover) {
-    .whyItem:hover .whyIconWrap {
-        transform: scale(1.06) translateY(-1px);
-    }
-}
-
-.whyItemTitle {
-    font-family: var(--font-family-display);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-strong);
-    line-height: 1.2;
-    letter-spacing: var(--tracking-tight);
-    margin: 0 0 var(--spacing-3);
-    text-wrap: balance;
-}
-
-.whyItemText {
-    font-size: var(--font-size-base);
-    color: var(--color-text-muted);
-    line-height: 1.65;
-    margin: 0;
-    max-width: 52ch;
-}
-
-/* Indicador de scroll horizontal: oculto por defecto, solo visible en el
-   carrusel móvil (media query de más abajo). */
-.scrollHint {
-    display: none;
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-subtle);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin: var(--spacing-4) 0 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .whyItem,
-    .whyItemBar,
-    .whyIconWrap {
-        transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    .whyItem:hover {
-        transform: none;
-    }
-
-    .whyItem:hover .whyIconWrap {
-        transform: none;
-    }
-
-    .whyItem:hover .whyItemBar {
-        transform: scaleX(1);
-        transition: none;
-    }
-}
-
-/* ═══════════════════════════════════════════
    Mobile — < 640px
    ═══════════════════════════════════════════ */
 @media (max-width: 639px) {
-    /* .carouselSection y .whySection NO rebajan aquí su spacing a `default`:
-       el token --space-section-loose ya baja solo (128px → 72px en ≤TÁCTIL,
-       ver variables.css). Con el override encima acababan en 56px mientras
+    /* .carouselSection NO rebaja aquí su spacing a `default`: el token
+       --space-section-loose ya baja solo (128px → 72px en ≤TÁCTIL, ver
+       variables.css). Con el override encima acababa en 56px mientras
        secciones del mismo rol semántico en Home se quedaban en 72px. */
     .caseCard {
         /* Inherits flex: 0 0 100% — exactly one slide visible on mobile too. */
@@ -679,53 +436,7 @@
         gap: var(--spacing-4);
     }
 
-    /* Why section */
-    .whyHeader {
-        margin-bottom: var(--spacing-8);
-    }
-
-    .whySub {
-        font-size: var(--font-size-base);
-    }
-
-    .whyGrid {
-        display: flex;
-        gap: var(--spacing-5);
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        cursor: grab;
-        /* Extend slightly past the right edge so the peeking card feels open */
-        padding-right: var(--spacing-7);
-        margin-right: calc(-1 * var(--spacing-7));
-    }
-
-    .whyGrid::-webkit-scrollbar {
-        display: none;
-    }
-
-    .whyGrid:active {
-        cursor: grabbing;
-    }
-
-    .whyItem {
-        flex: 0 0 85%;
-        scroll-snap-align: start;
-        padding: var(--spacing-7) var(--spacing-6);
-    }
-
-    /* Horizontal row — no single item spans full width */
-    .whyItem:last-child {
-        grid-column: unset;
-    }
-
-    /* "Desliza para ver más →": solo aparece en el carrusel horizontal móvil,
-       mismo patrón que Resources.module.css .scrollHint. */
-    .scrollHint {
-        display: block;
-        text-align: right;
-        padding-right: var(--spacing-7);
-    }
+    /* (Las reglas móviles de los diferenciadores —.whyGrid como carril
+       horizontal, .whyItem al 85%, .scrollHint— se movieron con el resto del
+       bloque a src/components/marketing/Differentiators.module.css.) */
 }
