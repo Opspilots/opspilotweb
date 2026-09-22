@@ -723,7 +723,7 @@ export const Home: React.FC = () => {
             </p>
             <div className={sys.endCtaButtons}>
               <Link to={ROUTES.contacto}>
-                <Button variant="secondary" size="lg">
+                <Button variant="primary" size="lg">
                   Reservar diagnóstico
                 </Button>
               </Link>

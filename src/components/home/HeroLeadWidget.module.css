@@ -428,21 +428,27 @@
     min-height: 44px;
     padding: 0.75rem 0.95rem;
     background: rgba(10, 14, 20, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    /* Borde de CONTROL (≥3:1, WCAG 1.4.11), no hairline decorativo. */
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-control);
     color: var(--color-text-strong);
     font-family: var(--font-family-base);
-    font-size: var(--font-size-sm);
+    /* 16px: por debajo, iOS Safari hace zoom al enfocar y no lo deshace.
+       Mismo criterio que el formulario de /contacto. */
+    font-size: var(--font-size-base);
     transition: border-color var(--transition-fast) var(--ease-custom),
-        box-shadow var(--transition-fast) var(--ease-custom),
         background-color var(--transition-fast) var(--ease-custom);
-    outline: none;
 }
 
 .field input:focus {
     border-color: var(--color-mint);
     background: rgba(10, 14, 20, 0.55);
-    box-shadow: 0 0 0 3px var(--color-mint-soft);
+}
+
+/* Anillo de foco real; el halo mint-soft anterior daba ~1.16:1 (invisible). */
+.field input:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 2px;
 }
 
 .field input[aria-invalid='true'] {
@@ -451,7 +457,10 @@
 
 .field input[aria-invalid='true']:focus {
     border-color: var(--color-error);
-    box-shadow: 0 0 0 3px rgba(225, 90, 90, 0.14);
+}
+
+.field input[aria-invalid='true']:focus-visible {
+    outline-color: var(--color-error);
 }
 
 .field input::placeholder {
@@ -471,7 +480,8 @@
     font-size: var(--font-size-sm);
     margin: 0;
     padding: var(--spacing-3) var(--spacing-4);
-    border: 1px solid rgba(225, 90, 90, 0.25);
+    /* Misma base RGB que --color-error (240,138,138) tras subirlo a 4.5:1. */
+    border: 1px solid rgba(240, 138, 138, 0.25);
     border-radius: var(--radius-control);
 }
 

@@ -65,7 +65,13 @@ export const Navbar: React.FC = () => {
 
     return (
         <>
-            <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
+            {/* `aria-label`: hay dos <nav> en el documento (este y el del pie). Sin
+                etiqueta, un lector de pantalla los lista como dos "navegación"
+                indistinguibles. */}
+            <nav
+                className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}
+                aria-label="Principal"
+            >
                 <div className={styles.container}>
                     <Link to={ROUTES.home} className={styles.logo}>
                         <Logo size={50} />

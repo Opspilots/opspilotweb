@@ -784,7 +784,7 @@ export const Soluciones: React.FC = () => {
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>
-                                <Button variant="secondary" size="lg">Reservar diagnóstico gratuito</Button>
+                                <Button variant="primary" size="lg">Reservar diagnóstico gratuito</Button>
                             </Link>
                             <Link to={ROUTES.casos}>
                                 <Button variant="outline" size="lg">Ver casos</Button>

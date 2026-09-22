@@ -284,7 +284,7 @@ export const Cases: React.FC = () => {
                         </p>
                         <div className={sys.endCtaButtons}>
                             <Link to={ROUTES.contacto}>
-                                <Button variant="secondary" size="lg">Reservar diagnóstico</Button>
+                                <Button variant="primary" size="lg">Reservar diagnóstico</Button>
                             </Link>
                             <Link to={ROUTES.soluciones}>
                                 <Button variant="outline" size="lg">Ver soluciones</Button>

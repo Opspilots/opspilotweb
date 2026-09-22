@@ -629,8 +629,10 @@ section.solHero p.heroSubtitle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    /* 44×44 (WCAG 2.5.5 Target Size): el disco crece 4px respecto a los 40px
+       originales — mismo aspecto, objetivo táctil conforme. */
+    width: 44px;
+    height: 44px;
     flex-shrink: 0;
     color: var(--color-mint);
     background: var(--color-mint-soft);
@@ -665,55 +667,52 @@ section.solHero p.heroSubtitle {
     cursor: default;
 }
 
+/* `gap: 0` a propósito: cada `.pageDot` ES ya un objetivo táctil de 44×44
+   (ver abajo), así que las áreas quedan CONTIGUAS, nunca solapadas. El gap
+   de 24px anterior existía solo para evitar que los hit-areas invisibles se
+   pisaran entre sí (el punto de la DERECHA, pintado encima, se comía los
+   clics dirigidos al centro del vecino — verificado con Playwright). Con el
+   botón siendo el propio objetivo, ese problema desaparece por construcción. */
 .pageDots {
     display: flex;
     align-items: center;
-    /* 24px, no 10px: con solo 3 puntos el hit-area invisible de 24px (ver
-       `.pageDot::before`) necesita más separación visual que `.sectorDots`
-       (7 puntos, gap 14px) para no solaparse con el del vecino — un gap
-       menor aquí producía hit-areas contiguas donde el punto de la DERECHA
-       (más tarde en el DOM, pintado encima) se comía los clics dirigidos al
-       de la izquierda incluso apuntando a su centro exacto. Verificado con
-       Playwright: clicks fallando/reintentando 30s antes del fix. */
-    gap: 24px;
+    gap: 0;
 }
 
+/* El BOTÓN es el objetivo táctil completo (44×44, WCAG 2.5.5 Target Size);
+   el punto visible de 6px lo pinta `::before`. */
 .pageDot {
-    position: relative;
-    width: 6px;
-    height: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-full);
-    background: var(--color-border-strong);
+    background: none;
     border: none;
     padding: 0;
     cursor: pointer;
     flex-shrink: 0;
+}
+
+.pageDot::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
     transition: all var(--transition-normal);
 }
 
-/* Área de toque cómoda (24px) sin agrandar el punto visible — mismo truco
-   que `.sectorDot::before`, pero más pequeña que sus 34px: con el gap de
-   24px de arriba, 24px de hit-area es el máximo que cabe entre los 3 puntos
-   sin que sus zonas invisibles se solapen ni en el caso más ajustado (punto
-   activo de 18px junto a uno inactivo de 6px). */
-.pageDot::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 24px;
-    height: 24px;
-    transform: translate(-50%, -50%);
-}
-
-.pageDotActive {
+.pageDotActive::before {
     width: 18px;
     background: var(--color-mint);
 }
 
 .pageDot:focus-visible {
     outline: 2px solid var(--color-mint);
-    outline-offset: 2px;
+    outline-offset: -4px;
 }
 
 /* Sin `border`: el badge se distingue del panel solo por `background`
@@ -867,7 +866,7 @@ section.solHero p.heroSubtitle {
     .rowArrow,
     .sectorDot,
     .pageArrow,
-    .pageDot {
+    .pageDot::before {
         transition: none;
     }
 

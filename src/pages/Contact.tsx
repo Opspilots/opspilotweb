@@ -129,8 +129,12 @@ export const Contact: React.FC = () => {
                                 Cuéntanos tu caso y te escribimos con los próximos pasos en
                                 menos de 24 horas laborables.
                             </p>
+                            {/* `role="status"` (= aria-live polite) en el bloque de éxito: ese
+                                bloque SUSTITUYE al formulario, así que sin región viva el lector
+                                de pantalla se queda en silencio tras enviar. Mismo patrón que
+                                `.success` en HeroLeadWidget.tsx. */}
                             {status === 'success' ? (
-                                <div className={styles.formSuccess}>
+                                <div className={styles.formSuccess} role="status">
                                     <p className={styles.formSuccessTitle}>Mensaje recibido</p>
                                     <p className={styles.formSuccessText}>
                                         Lo revisamos y te escribimos con los próximos pasos en
