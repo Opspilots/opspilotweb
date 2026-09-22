@@ -17,13 +17,14 @@
    el 4rem de `pageHeroTitle`) se queda fuera de la media query — Soluciones
    sí necesita un titular más grande en desktop que el resto de páginas.
 
-   El titular es parcialmente reactivo (lead-in fijo + `activeSector.label`,
-   ver Soluciones.tsx) — los 7 labels tienen longitud distinta ("Asesorías y
-   despachos" vs "PYMEs con operativa dispersa"), pero como el hero vive en
-   flujo normal, un label más largo que el resto simplemente empuja el resto
-   de la página unos píxeles — no hace falta un `-webkit-line-clamp` de
-   seguridad como sí necesitan `.panelTitle`/`.panelSolution`, que siguen
-   viviendo dentro del panel de alto fijo de desktop. */
+   El bloque reactivo (`activeSector.label`) ya no está en el H1 sino en el
+   subtítulo, ver Soluciones.tsx — los 7 labels tienen longitud distinta
+   ("Asesorías y despachos" vs "PYMEs con operativa dispersa"), pero como el
+   hero vive en flujo normal, un label más largo que el resto simplemente
+   empuja el resto de la página unos píxeles — no hace falta un
+   `-webkit-line-clamp` de seguridad como sí necesitan
+   `.panelTitle`/`.panelSolution`, que siguen viviendo dentro del panel de
+   alto fijo de desktop. */
 /* Sin font-size propio: el h1 ya lo pone `sys.pageHeroTitle` desde
    --font-size-h1, el MISMO token que usa el hero del home. Eso disuelve de
    raíz el empate de cascada que documentaba e2e/typography.spec.ts
@@ -31,9 +32,8 @@
    este `.heroTitle`— competían por el mismo h1 y quién ganaba dependía del
    orden de inyección del chunk lazy de la ruta, no de una regla determinista.
    Si ambas piden el mismo valor, el empate deja de importar.
-   Queda solo el line-height, que sí es propio de esta página: el titular es
-   parcialmente reactivo (lead-in fijo + `activeSector.label`, ver
-   Soluciones.tsx) y va más apretado que el 1.02 del sistema. */
+   Queda solo el line-height, que sí es propio de esta página: este titular va
+   más apretado que el 1.02 del sistema. */
 .heroTitle {
     line-height: 1.0;
 }
@@ -125,6 +125,22 @@ section.solHero h1.heroTitle {
 
 section.solHero p.heroSubtitle {
     margin-bottom: 0;
+}
+
+/* Nombre del sector activo dentro del subtítulo del hero. Antes era un
+   `sys.pageHeroAccent` dentro del H1; al bajar al subtítulo (ver Soluciones.tsx)
+   necesita clase propia por dos motivos:
+   · `inline-block` — motion anima `y` (una transform) en este `<em>`, y las
+     transforms no se aplican a elementos inline no reemplazados. En el H1 el
+     crossfade se quedaba de facto en un fade sin desplazamiento.
+   · `font-style: normal` — es un `<em>` por énfasis semántico (es el dato que
+     cambia), no para pintarlo en cursiva; mismo criterio que
+     `sys.pageHeroAccent`. */
+.heroSectorName {
+    display: inline-block;
+    color: var(--color-mint);
+    font-style: normal;
+    font-weight: var(--font-weight-medium);
 }
 
 /* Aquí vivía también `.explorerSection`, que recortaba el padding vertical
@@ -1183,6 +1199,77 @@ section.solHero p.heroSubtitle {
     .sectorChips {
         display: none;
     }
+}
+
+/* ═══════════════════════════════════════════
+   Franja de condiciones — plazos / soporte / permanencia
+   ═══════════════════════════════════════════ */
+
+/* Franja FIJA, no un carrusel ni un acordeón: el motivo entero de sacarla de
+   las FAQ del panel es que nadie tenga que interactuar para verla (ver
+   comentario en Soluciones.tsx). Spacing `tight` y no `default` porque es un
+   remate del explorador de arriba, no una sección independiente — sigue
+   leyéndose como parte del mismo bloque. Hairline superior para separarla del
+   explorador sin meter otra superficie más. */
+.termsSection {
+    padding: var(--space-section-tight) 0;
+    position: relative;
+}
+
+.termsSection::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--color-border-subtle);
+}
+
+.termsGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .termsGrid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-8);
+        /* Cada dato mide lo que mide su texto: sin esto las tres celdas se
+           estiran al alto de la más larga y las barras de acento dejan de
+           alinearse con el bloque que rematan. */
+        align-items: start;
+    }
+}
+
+/* Barra mint a la izquierda en vez de tarjeta: la franja tiene que leerse
+   como un dato en crudo (condiciones del contrato), no como tres productos
+   más que elegir. Sin superficie, sin hover, sin CTA. */
+.termsItem {
+    padding-left: var(--spacing-5);
+    border-left: 2px solid var(--color-border-mint);
+}
+
+.termsValue {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-title-compact);
+    font-weight: var(--font-weight-h3);
+    color: var(--color-mint);
+    line-height: var(--line-height-h3);
+    letter-spacing: var(--tracking-tight);
+    margin: 0 0 var(--spacing-2);
+}
+
+/* `<dd>` trae un margin-left de 40px por defecto del UA — aquí sobra, la
+   sangría ya la da el padding de .termsItem. */
+.termsLabel {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    max-width: 46ch;
 }
 
 /* ─── Mobile ─── */

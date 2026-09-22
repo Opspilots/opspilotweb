@@ -206,8 +206,8 @@
 /* Panel de cierre — rediseñado como superficie oscura on-brand (glass + glow
    mint + hairline superior), coherente con el lenguaje del resto de la web en
    lugar de la antigua tarjeta clara que rompía la estética. Al vivir en
-   sys.endCta*, el rediseño se propaga a todas las páginas (Home "¿Hablamos?",
-   Casos, Soluciones, Recursos). */
+   sys.endCta*, el rediseño se propaga a todas las páginas (Home, Casos,
+   Soluciones, Recursos). */
 .endCtaBlock {
     text-align: center;
     padding: clamp(var(--spacing-14), 8vw, var(--spacing-20)) var(--spacing-10);
