@@ -258,7 +258,12 @@
     gap: var(--spacing-2);
     padding: 0.45rem 0.85rem;
     background: transparent;
-    border: 1px solid var(--color-border-subtle);
+    /* Borde de CONTROL (≥3:1, WCAG 1.4.11), igual que `.searchInput` justo
+       encima. Con `--color-border-subtle` (0.07 alfa ≈ 1.2:1 sobre el fondo)
+       estas pastillas no se leían como controles pulsables: quedaban como
+       micro-texto gris suelto al lado de un buscador que sí tiene borde
+       visible desde el pase de accesibilidad. Son filtros, no decoración. */
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-control);
     color: var(--color-text-muted);
     font-family: var(--font-family-mono);
@@ -702,6 +707,33 @@
     gap: var(--spacing-3);
 }
 
+/* ─── Capa de estado del newsletter ───
+   Form y acuse comparten UNA celda de grid: el bloque mide siempre lo que
+   mide el formulario, así que suscribirse no lo encoge. Mismo patrón que
+   `.formSwap` en Contact.module.css. */
+.nlSwap {
+    display: grid;
+}
+
+.nlSwap > * {
+    grid-area: 1 / 1;
+}
+
+/* Región viva siempre montada; vacía en `idle`, así que no puede robarle los
+   clicks al formulario que tiene debajo. */
+.nlStatusLayer {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
+
+/* Ya suscrito: el formulario sigue midiendo (conserva el alto) pero ni se ve
+   ni es alcanzable — `inert` en el markup cubre foco y lectores de pantalla. */
+.nlForm[aria-hidden='true'] {
+    visibility: hidden;
+}
+
 .nlForm {
     display: flex;
     flex-direction: column;
@@ -744,18 +776,26 @@
 }
 
 .nlSuccess {
+    width: 100%;
     color: var(--color-mint);
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-base);
     padding: var(--spacing-5);
-    background: transparent;
+    /* Opaco: se superpone al formulario (oculto pero presente en la misma
+       celda de grid), así que no puede dejar ver nada por detrás. */
+    background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-mint);
     border-radius: var(--radius-card);
 }
 
+/* Slot de error con alto reservado (ver el markup en Resources.tsx): el <p>
+   está siempre en el DOM y solo se rellena en estado de error, así que el
+   mensaje no empuja `.nlNote` ni el borde del bloque al aparecer. */
 .nlError {
+    min-height: 1.3rem;
     color: var(--color-error);
     font-size: var(--font-size-sm);
+    line-height: 1.3;
     margin: 0;
 }
 
@@ -817,6 +857,46 @@
 
     .catPill {
         min-height: 44px;
+        /* En el carril no se encogen ni se parten: cada filtro entero o nada. */
+        flex: none;
+    }
+
+    /* ─── El filtro de categorías, en un carril de UNA fila ───
+       Con `flex-wrap: wrap` (la regla base, pensada para escritorio) los 6
+       filtros se repartían en 3 filas. Sumado al `min-height: 44px` de aquí
+       arriba —el tamaño de toque cómodo que pide la accesibilidad— ese bloque
+       medía 148px a 390px de ancho y 200px a 320px, y arrancaba en y=600.
+       Medido con Playwright sobre el build: en un iPhone SE (320x568) NINGUNO
+       de los 6 filtros quedaba dentro del viewport inicial, y en un iPhone 12
+       Mini solo 3 de 6. De ahí el "en móvil el filtro no aparece": el usuario
+       veía el buscador, no veía filtro alguno y seguía bajando hasta las
+       tarjetas.
+
+       Una sola fila con scroll horizontal reduce el bloque de 148-200px a
+       44px y sube el carril por encima del pliegue en todos los móviles
+       probados. El sangrado hasta los bordes (`--gutter` es el padding de
+       `sys.container`) es el mismo recurso que ya usa `.grid` aquí debajo:
+       deja ver que la fila continúa fuera de pantalla en vez de cortarse
+       contra un margen.
+
+       Sin `scroll-snap`: con `scroll-snap-align: start` en las pastillas el
+       navegador ancla la primera contra el borde del contenedor y se come el
+       `padding-left` del sangrado — el filtro "Todos" quedaba pegado al canto
+       de la pantalla, desalineado respecto al buscador de arriba. Seis
+       filtros no necesitan imán de scroll. */
+    .catPills {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        margin-left: calc(-1 * var(--gutter));
+        margin-right: calc(-1 * var(--gutter));
+        padding-left: var(--gutter);
+        padding-right: var(--gutter);
+    }
+
+    .catPills::-webkit-scrollbar {
+        display: none;
     }
 
     .searchClear {

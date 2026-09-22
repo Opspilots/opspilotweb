@@ -342,12 +342,25 @@ export const Resources: React.FC = () => {
                             </p>
                         </div>
                         <div className={styles.nlRight}>
-                            {nlStatus === 'success' ? (
-                                <p className={styles.nlSuccess} role="status">
-                                    Hecho. El primer email te llega esta semana.
-                                </p>
-                            ) : (
-                                <form className={styles.nlForm} onSubmit={handleNewsletter}>
+                            {/* Mismo patrón de "intercambio sin cambio de tamaño" que el
+                                formulario de /contacto: form y acuse comparten una celda de
+                                grid, así que el bloque no se encoge al suscribirse. La región
+                                viva (`role="status"`) va en la capa, siempre montada, para que
+                                el lector de pantalla anuncie el cambio. */}
+                            <div className={styles.nlSwap}>
+                                <div className={styles.nlStatusLayer} role="status">
+                                    {nlStatus === 'success' && (
+                                        <p className={styles.nlSuccess}>
+                                            Hecho. El primer email te llega esta semana.
+                                        </p>
+                                    )}
+                                </div>
+                                <form
+                                    className={styles.nlForm}
+                                    onSubmit={handleNewsletter}
+                                    aria-hidden={nlStatus === 'success' || undefined}
+                                    inert={nlStatus === 'success'}
+                                >
                                     <input
                                         type="email"
                                         placeholder="tu@email.com"
@@ -360,13 +373,14 @@ export const Resources: React.FC = () => {
                                     <Button variant="primary" type="submit" disabled={nlStatus === 'submitting'}>
                                         {nlStatus === 'submitting' ? 'Enviando...' : 'Suscribirme gratis'}
                                     </Button>
-                                    {nlStatus === 'error' && (
-                                        <p className={styles.nlError} role="alert">
-                                            Error al suscribirse. Inténtalo de nuevo.
-                                        </p>
-                                    )}
+                                    {/* Slot de error de alto reservado: el mensaje aparece sin
+                                        empujar nada — antes su aparición movía `.nlNote` y el
+                                        borde del bloque hacia abajo. */}
+                                    <p className={styles.nlError} role="alert">
+                                        {nlStatus === 'error' && 'Error al suscribirse. Inténtalo de nuevo.'}
+                                    </p>
                                 </form>
-                            )}
+                            </div>
                             <p className={styles.nlNote}>Sin spam. Baja cuando quieras.</p>
                         </div>
                     </div>
