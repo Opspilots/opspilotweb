@@ -144,8 +144,8 @@
 
     /* ═══════════════════════════════════════════
        TYPOGRAPHY — Factory
-       Display + body: Inter (400/500, tracking negativo)
-       Wordmark: Bricolage Grotesque (solo Navbar/Footer)
+       Display + body: Inter (400/500/600/700, tracking negativo)
+       Wordmark: Bricolage Grotesque, peso 500 (Navbar y Footer)
        Instrumento: JetBrains Mono
        ═══════════════════════════════════════════ */
     /* 'Inter Fallback' (declarada abajo) se interpone entre 'Inter' y las
@@ -175,12 +175,75 @@
     --font-size-6xl: 4.75rem;    /* 76 */
     --font-size-7xl: 5.5rem;     /* 88 */
 
-    /* Font weights — Factory: 500 es el peso máximo */
+    /* ─── Font weights ───
+       Hasta ahora TODOS los pesos por encima de 500 eran alias de 500 ("Factory:
+       500 es el peso máximo") y, además, Inter solo se cargaba en 400/500. El
+       resultado medible: el h1 de 72px del home se pintaba en font-weight 400 —
+       el titular más grande de la web era también el más liviano, y ningún
+       titular tenía jerarquía de peso frente al cuerpo. Inter carga ahora
+       400/500/600/700 (ver index.html) y los pesos vuelven a ser pesos reales.
+       Si algún día hay que volver a aplanar la marca, este es el único sitio. */
     --font-weight-regular: 400;
     --font-weight-medium: 500;
-    --font-weight-semibold: 500;
-    --font-weight-bold: 500;
-    --font-weight-extrabold: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 700;
+
+    /* ═══════════════════════════════════════════
+       ESCALA TIPOGRÁFICA CANÓNICA — h1 / h2 / h3
+       ═══════════════════════════════════════════
+
+       Fuente ÚNICA de verdad del tamaño y el peso de los titulares. Antes cada
+       página traía su propio clamp() suelto y el resultado era un mosaico: h1 a
+       72/64px con pesos 400 y 500 según la página, h2 mezclando 28/36/46px y h3
+       repartido entre 18/22/28/32px. Una página no debe decidir "cuánto mide un
+       h2": decide qué ES un h2 y el sistema le da el tamaño.
+
+       Los tres son clamp() MONÓTONOS (nunca decrecen al crecer el viewport —
+       ver el bug del hero del home, que a 414px se pintaba a 48px y a 768px
+       BAJABA a 44px porque el tramo móvil y el de tablet eran dos clamps
+       independientes). Cada uno interpola entre su valor de teléfono y su techo
+       de escritorio en un solo tramo continuo, así que no hacen falta overrides
+       por breakpoint y no hay boundary donde el tamaño pueda dar un salto atrás.
+
+       Un CUARTO rol, deliberadamente separado: los titulares de tarjeta/ítem no
+       son titulares de sección. Usan --font-size-h3 igualmente (mismo rol
+       visual: subtítulo), pero quien necesite algo menor tiene
+       --font-size-title-compact. No añadas un quinto tamaño de titular. */
+
+    /* h1 — techo 72px, el tamaño del hero del home; ahora el de las 5 páginas.
+       Anclas: ~48px a 414px (lo que ya medía el hero en teléfono), ~55px a
+       768px, 72px desde ~1615px.
+
+       El ancla de 768px NO es libre: la tercera línea dura del hero del home
+       ("Sin plantillas. Sin sorpresas.") mide ~11,9em, y a 768px el contenedor
+       deja 712px útiles (768 menos dos gutters de 28px). 11,9em × 55px ≈ 658px
+       cabe con holgura; a 60px serían ~716px y la línea rompería en dos,
+       deshaciendo el corte de tres líneas que el titular tiene por diseño.
+       Ese mismo aumento (44px → 55px) es lo que cierra el hueco derecho del
+       titular a esa anchura: de ~215px de aire a ~54px, contra 28px de gutter
+       izquierdo. */
+    --font-size-h1: clamp(2.75rem, 2.5rem + 1.98vw, 4.5rem);
+    --font-weight-h1: var(--font-weight-bold);          /* 700 */
+    --line-height-h1: 1.02;
+
+    /* h2 — techo 46px (título de sección). ~31px a 414px, ~40px a 768px. */
+    --font-size-h2: clamp(1.75rem, 1.25rem + 2.6vw, 2.875rem);
+    --font-weight-h2: var(--font-weight-semibold);      /* 600 */
+    --line-height-h2: 1.08;
+
+    /* h3 — techo 28px (subsección y titular de tarjeta). 22px en teléfono. */
+    --font-size-h3: clamp(1.375rem, 1.125rem + 0.9vw, 1.75rem);
+    --font-weight-h3: var(--font-weight-semibold);      /* 600 */
+    --line-height-h3: 1.25;
+
+    /* Titular de rejilla densa (3-4 columnas) donde 28px no cabe sin romper la
+       tarjeta. Mismo peso que h3 — solo cambia el tamaño. */
+    --font-size-title-compact: var(--font-size-lg);     /* 18 */
+
+    /* Cuerpo y texto de instrumento (meta, eyebrows, contadores). */
+    --line-height-body: 1.6;
+    --font-size-meta: var(--font-size-xs);              /* 12, siempre mono */
 
     /* Tracking */
     --tracking-tight: -0.02em;

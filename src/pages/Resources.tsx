@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Button } from '../components/ui/Button';
+import { Button, ButtonLink } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { PageSEO } from '../hooks/usePageSEO';
@@ -36,19 +36,45 @@ function normalize(value: string): string {
 const featured = RESOURCES.find((r) => r.featured)!;
 const rest = RESOURCES.filter((r) => !r.featured);
 
-const CoverSlot: React.FC<{ cover: string | undefined; label: string; className?: string }> = ({
+/* Variante de patrón para el slot de portada sin ilustración real. Derivada
+   del slug con un hash estable (NO aleatoria: debe dar el mismo valor en el
+   prerender SSG y en el cliente, o sería un mismatch de hidratación). Tres
+   variantes bastan para que una rejilla de 3 columnas no se lea como tres
+   rectángulos idénticos. */
+function patternVariant(seed: string): '0' | '1' | '2' {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
+    return String(Math.abs(h) % 3) as '0' | '1' | '2';
+}
+
+/**
+ * Slot de portada — UNA sola anatomía para todas las tarjetas de /recursos.
+ *
+ * Antes había dos tarjetas distintas conviviendo en la misma rejilla: las que
+ * tenían ilustración mostraban [portada] → [meta: tipo + tiempo] → [título] →
+ * [sumario] → [enlace], y las que no tenían dejaban un panel vacío de ~200px
+ * con la etiqueta de categoría flotando suelta en el centro — y además perdían
+ * la categoría de su fila meta (se pintaba condicionada a `cover`), así que ni
+ * la estructura ni la información eran las mismas. Dos plantillas para el mismo
+ * objeto es lo que hacía que la rejilla se viera rota.
+ *
+ * Ahora el slot SIEMPRE existe y siempre mide lo mismo; lo único que cambia es
+ * qué lo rellena: la ilustración real si la hay, o un patrón del sistema de
+ * diseño (rejilla de blueprint + halo mint/ámbar, los mismos ingredientes de
+ * `sys.pageHero::before`) si todavía no. La fila meta es idéntica en ambos
+ * casos. Cuando lleguen las ilustraciones que faltan, basta con rellenar
+ * `cover` en src/lib/resources.ts: no hay que tocar nada más.
+ */
+const CoverSlot: React.FC<{ cover: string | undefined; seed: string; className?: string }> = ({
     cover,
-    label,
+    seed,
     className,
 }) => (
     <div className={`${styles.cover}${className ? ` ${className}` : ''}`} aria-hidden="true">
         {cover ? (
             <img className={styles.coverImg} src={cover} alt="" loading="lazy" />
         ) : (
-            <span className={styles.coverPh}>
-                <span className={styles.coverDot} />
-                {label}
-            </span>
+            <span className={styles.coverPattern} data-variant={patternVariant(seed)} />
         )}
     </div>
 );
@@ -228,7 +254,7 @@ export const Resources: React.FC = () => {
                                 </div>
                                 <CoverSlot
                                     cover={featured.cover}
-                                    label={featured.cat}
+                                    seed={featured.slug}
                                     className={styles.coverFeatured}
                                 />
                             </article>
@@ -252,14 +278,15 @@ export const Resources: React.FC = () => {
                             {visible.map((r) => (
                                 <Link key={r.slug} to={`/recursos/${r.slug}`} className={`${styles.cardLink} reveal`}>
                                     <article className={styles.card}>
-                                        <CoverSlot cover={r.cover} label={r.cat} />
+                                        <CoverSlot cover={r.cover} seed={r.slug} />
                                         <div className={styles.cardBody}>
+                                            {/* Fila meta IDÉNTICA en todas las tarjetas: tipo + tiempo de
+                                               lectura. Antes la categoría iba condicionada a `r.cover`
+                                               (sin portada se pintaba flotando dentro del panel vacío),
+                                               así que media rejilla tenía una fila meta con dos datos y la
+                                               otra media con uno solo. */}
                                             <div className={styles.cardMeta}>
-                                                {/* Sin cover real, CoverSlot ya muestra la categoría como badge
-                                                   flotante sobre el placeholder — repetirla aquí sería
-                                                   duplicado. Con cover real, el badge no se pinta, así que este
-                                                   texto es la única señal de categoría. */}
-                                                {r.cover && <span className={styles.cardCat}>{r.cat}</span>}
+                                                <span className={styles.cardCat}>{r.cat}</span>
                                                 <span className={styles.cardTime}>
                                                     <Clock size={11} strokeWidth={2} />
                                                     {r.time}
@@ -355,9 +382,9 @@ export const Resources: React.FC = () => {
                             Media hora, gratis, sin compromiso. Hablamos de tu caso concreto.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to={ROUTES.contacto}>
-                                <Button variant="primary" size="lg">Reservar diagnóstico</Button>
-                            </Link>
+                            <ButtonLink to={ROUTES.contacto} variant="primary" size="lg">
+                                Reservar diagnóstico
+                            </ButtonLink>
                         </div>
                     </div>
                 </div>

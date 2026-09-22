@@ -37,12 +37,14 @@
         var(--color-bg-elevated);
 }
 
+/* h2 de la banda CTA del pie. Rol h3 en tamaño (la banda es estrecha y vive
+   junto a un botón) pero PESO de h2: la jerarquía la marca el peso. */
 .ctaTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(var(--font-size-xl), 3vw, 2rem);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h2);
     color: var(--color-text-strong);
-    line-height: 1.15;
+    line-height: var(--line-height-h3);
     letter-spacing: var(--tracking-tight);
     margin: 0 0 var(--spacing-3);
 }
@@ -50,7 +52,7 @@
 .ctaSub {
     font-size: var(--font-size-base);
     color: var(--color-text-muted);
-    line-height: 1.6;
+    line-height: var(--line-height-body);
     margin: 0;
     max-width: 46ch;
 }
@@ -85,10 +87,18 @@
     max-width: 360px;
 }
 
+/* Wordmark — MISMA tipografía y MISMO peso que el de la navbar.
+   Antes pedía --font-family-heading (Inter) con el peso heredado del cuerpo
+   (400), así que la marca se pintaba con dos tipografías distintas según dónde
+   apareciera. Bricolage Grotesque se carga en un único peso (500, ver
+   index.html): pedir cualquier otro obliga al navegador a sintetizarlo o a
+   caer a la fuente de sistema. */
 .logo {
     color: #FFFFFF;
     font-size: var(--font-size-xl);
-    font-family: var(--font-family-heading);
+    font-family: var(--font-family-wordmark);
+    font-weight: 500;
+    letter-spacing: -0.01em;
     margin-bottom: var(--spacing-4);
     display: flex;
     align-items: center;
@@ -111,10 +121,9 @@
     margin-bottom: var(--spacing-6);
 }
 
-.whatsappLink {
-    display: inline-block;
-}
-
+/* (Antes existía `.whatsappLink` para el <a> que envolvía al <Button>. Ese
+   anidado <a><button> ya no existe: el CTA de WhatsApp es un único <a> con
+   clase de botón — ver <ButtonAnchor> en src/components/ui/Button.tsx.) */
 .whatsappBtn {
     display: flex;
     align-items: center;

@@ -112,9 +112,9 @@ export default defineConfig({
             },
         },
         {
-            // 768 es exactamente el breakpoint del menú desktop (min-width: 768px):
-            // aquí la hamburguesa ya NO se muestra. Los tests de navbar móvil se
-            // saltan este proyecto a propósito.
+            // iPad en vertical. El menú desktop arranca en 1024px (corte
+            // DESKTOP), así que a este ancho la cabecera sigue siendo la táctil
+            // y los tests de navbar móvil SÍ corren aquí.
             name: 'ipad-mini-768',
             use: {
                 ...devices['iPad Mini'],

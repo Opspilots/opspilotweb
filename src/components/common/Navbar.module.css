@@ -87,7 +87,9 @@
    menor en vez de la marca. Un escalón más en la misma escala tipográfica
    (sin inventar un tamaño nuevo) le da la presencia que le falta junto al
    icono de 50px. */
-@media (max-width: 767px) {
+/* El umbral acompaña al del hamburguesa (ver el bloque DESKTOP al final):
+   mientras la barra sea táctil, el wordmark es casi su único texto. */
+@media (max-width: 1023px) {
     .logo {
         font-size: var(--font-size-2xl);
     }
@@ -289,6 +291,12 @@
     transition: transform var(--transition-normal), top var(--transition-normal);
     z-index: 100;
     overflow-y: auto;
+    /* El scroll del overlay NO se encadena al del documento: sin esto, al
+       llegar al final de la lista el gesto seguía moviendo la página de
+       detrás (medido: 385px de desplazamiento invisible). El bloqueo del
+       body en Navbar.tsx cubre el caso general; esto cubre el rebote/encadenado
+       dentro del propio panel. */
+    overscroll-behavior: contain;
 }
 
 .mobileMenu.open {
@@ -351,8 +359,22 @@
     padding-top: var(--spacing-5);
 }
 
-/* ─── ≥TÁCTIL: menú de escritorio ─── */
-@media (min-width: 768px) {
+/* ─── DESKTOP (≥1024px): menú de escritorio ───
+
+   Antes este bloque arrancaba en 768px, o sea en el complemento del corte
+   TÁCTIL. Eso dejaba al iPad en vertical (768x1024, que es un dispositivo
+   táctil puro) con la navegación de escritorio: enlaces mono de ~19px de
+   alto y un CTA de 36px. La experiencia EMPEORABA justo cuando la pantalla
+   se hacía más grande, porque el criterio aplicado era el ancho y el que
+   importa aquí es el puntero.
+
+   Se sube al corte DESKTOP, que ya existe en el sistema (ver la tabla de
+   breakpoints en src/styles/variables.css: hay TRES cortes y añadir un
+   cuarto a 900px solo para esto sería inventarse un valor que ningún otro
+   componente reconoce). Con ≥1024px el iPad vertical conserva la navegación
+   táctil completa y el iPad horizontal (1024px justos) entra en la de
+   escritorio, que es donde ya hay sitio de sobra para ella. */
+@media (min-width: 1024px) {
     .desktopMenu {
         display: flex;
     }

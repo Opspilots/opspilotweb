@@ -42,9 +42,14 @@
 }
 
 /* ═══════════════════════════════════════════
-   Cover slot — 16:9 placeholder until Fase 4
-   fills it with real images via `cover`
-   ═══════════════════════════════════════════ */
+   Slot de portada — UNA sola anatomía de tarjeta
+   ═══════════════════════════════════════════
+
+   El slot existe SIEMPRE y siempre ocupa el mismo 16:9, tenga o no
+   ilustración real. Dentro va `.coverImg` (la ilustración) o `.coverPattern`
+   (patrón del sistema). Ver el comentario de <CoverSlot> en Resources.tsx
+   para el porqué: antes había dos anatomías de tarjeta distintas conviviendo
+   en la misma rejilla. */
 
 .cover {
     position: relative;
@@ -55,18 +60,6 @@
     background: var(--color-bg-elevated);
     border-bottom: 1px solid var(--color-border-subtle);
     overflow: hidden;
-}
-
-/* instrument hairline across the middle; label masks it (placeholder only —
-   the real cover image sits on top of it) */
-.cover::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 1px;
-    background: var(--color-border-subtle);
 }
 
 /* Gradient wash that fades up on hover — deepens the navy at the base and
@@ -106,27 +99,52 @@
     opacity: 1;
 }
 
-.coverPh {
-    position: relative;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    padding: 0 var(--spacing-3);
-    background: var(--color-bg-elevated);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-subtle);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+/* ─── Portada sin ilustración: patrón del sistema, no un panel vacío ───
+
+   Sustituye al antiguo `.coverPh` (un panel liso de ~200px con la etiqueta de
+   categoría flotando suelta en el centro, que además duplicaba/sustituía a la
+   categoría de la fila meta). Aquí no hay texto: el slot es decoración pura
+   (`aria-hidden` en el markup) y la información vive donde le corresponde, en
+   la fila meta, igual que en las tarjetas con portada real.
+
+   Ingredientes tomados tal cual del sistema de diseño ya existente — la
+   rejilla de blueprint y los halos mint/ámbar de `sys.pageHero::before`, más
+   --gradient-surface. Cero assets nuevos: son gradientes CSS.
+
+   Las 3 variantes (`data-variant`, derivada del slug con un hash estable —
+   ver patternVariant() en Resources.tsx) solo rotan la posición y el tinte del
+   halo, para que una fila de 3 tarjetas sin portada no se lea como tres
+   rectángulos clonados. */
+.coverPattern {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(42% 70% at 82% 12%, rgba(57, 206, 134, 0.18), transparent 68%),
+        radial-gradient(38% 60% at 8% 96%, rgba(232, 165, 99, 0.09), transparent 72%),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        var(--gradient-surface);
+    background-size: 100% 100%, 100% 100%, 26px 26px, 26px 26px, 100% 100%;
 }
 
-.coverDot {
-    flex: none;
-    width: 6px;
-    height: 6px;
-    border-radius: var(--radius-full);
-    background: var(--color-mint);
+.coverPattern[data-variant='1'] {
+    background:
+        radial-gradient(46% 66% at 14% 16%, rgba(57, 206, 134, 0.16), transparent 70%),
+        radial-gradient(40% 58% at 92% 88%, rgba(232, 165, 99, 0.10), transparent 72%),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        var(--gradient-surface);
+    background-size: 100% 100%, 100% 100%, 34px 34px, 34px 34px, 100% 100%;
+}
+
+.coverPattern[data-variant='2'] {
+    background:
+        radial-gradient(58% 84% at 50% 108%, rgba(57, 206, 134, 0.17), transparent 66%),
+        radial-gradient(34% 52% at 4% 6%, rgba(232, 165, 99, 0.08), transparent 74%),
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        var(--gradient-surface);
+    background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px, 100% 100%;
 }
 
 /* ═══════════════════════════════════════════
@@ -405,12 +423,13 @@
     gap: var(--spacing-4);
 }
 
+/* h2 del recurso destacado — rol h2 del sistema. */
 .featuredTitle {
     font-family: var(--font-family-base);
-    font-size: clamp(1.625rem, 2.8vw, 2.25rem);
-    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
     color: var(--color-text-strong);
-    line-height: 1.1;
+    line-height: var(--line-height-h2);
     letter-spacing: var(--tracking-display);
     margin: 0;
     max-width: 760px;
@@ -558,12 +577,13 @@
     margin-bottom: var(--spacing-1);
 }
 
+/* Titular de tarjeta en rejilla de 3 columnas: tamaño compacto, peso de h3. */
 .cardTitle {
     font-family: var(--font-family-base);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-title-compact);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
-    line-height: 1.25;
+    line-height: var(--line-height-h3);
     letter-spacing: var(--tracking-tight);
     text-wrap: balance;
     margin: 0;
@@ -657,12 +677,13 @@
     background: var(--color-mint);
 }
 
+/* h2 del bloque de newsletter — rol h2 del sistema. */
 .nlTitle {
     font-family: var(--font-family-base);
-    font-size: clamp(1.625rem, 2.4vw, 2.125rem);
-    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
     color: var(--color-text-strong);
-    line-height: 1.12;
+    line-height: var(--line-height-h2);
     letter-spacing: var(--tracking-display);
     margin: 0;
 }

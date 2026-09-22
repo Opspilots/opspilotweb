@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { SplitText } from "gsap/SplitText";
-import { Button } from "../components/ui/Button";
+import { ButtonLink } from "../components/ui/Button";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { useDragScroll } from "../hooks/useDragScroll";
 import { PageSEO } from "../hooks/usePageSEO";
@@ -417,11 +416,14 @@ export const Home: React.FC = () => {
               vender. Precio cerrado y respuesta en menos de 24 horas.
             </p>
             <div className={styles.ctaGroup}>
-              <Link to={ROUTES.contacto} ref={heroCtaRef}>
-                <Button variant="primary" size="lg">
-                  Cuéntanos tu problema
-                </Button>
-              </Link>
+              <ButtonLink
+                to={ROUTES.contacto}
+                ref={heroCtaRef}
+                variant="primary"
+                size="lg"
+              >
+                Cuéntanos tu problema
+              </ButtonLink>
               <TextLink
                 to={ROUTES.soluciones}
                 tone="strong"
@@ -722,16 +724,12 @@ export const Home: React.FC = () => {
               construir y qué no, sin venderte de más.
             </p>
             <div className={sys.endCtaButtons}>
-              <Link to={ROUTES.contacto}>
-                <Button variant="primary" size="lg">
-                  Reservar diagnóstico
-                </Button>
-              </Link>
-              <Link to={ROUTES.soluciones}>
-                <Button variant="outline" size="lg">
-                  Ver soluciones
-                </Button>
-              </Link>
+              <ButtonLink to={ROUTES.contacto} variant="primary" size="lg">
+                Reservar diagnóstico
+              </ButtonLink>
+              <ButtonLink to={ROUTES.soluciones} variant="outline" size="lg">
+                Ver soluciones
+              </ButtonLink>
             </div>
           </div>
         </div>

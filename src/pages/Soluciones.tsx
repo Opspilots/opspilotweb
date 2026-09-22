@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, ChevronLeft, ChevronRight, Check } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { ButtonLink } from '../components/ui/Button';
 import { TextLink } from '../components/common/TextLink';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
@@ -150,19 +149,32 @@ export const Soluciones: React.FC = () => {
     // Deep-link de ENTRADA por sector vía hash de URL (p. ej. `/soluciones#agencias`
     // desde un cross-link de /recursos) — solo lee el hash al MONTAR, nunca lo
     // escribe de vuelta cuando el usuario cambia de sector a mano (no es
-    // bidireccional, ver instrucción explícita). `window` no existe en el
-    // prerender SSG (node): ahí el inicializador devuelve 0 sin más, así que el
-    // HTML estático siempre muestra el sector 0 — el ajuste al hash ocurre en
-    // cliente, tras hidratar, igual que cualquier otro `useState` derivado de
-    // `window`. Lazy initializer (función a `useState`, no `useState(getInitial())`)
-    // para no recalcular el hash en cada render, solo en el mount.
-    const [selected, setSelected] = useState(() => {
-        if (typeof window === 'undefined') return 0;
+    // bidireccional, ver instrucción explícita).
+    //
+    // HYDRATION-SAFE POR CONSTRUCCIÓN — no tocar sin leer esto.
+    // `/soluciones` se prerrenderiza como UNA sola página estática: el HTML del
+    // servidor SIEMPRE trae `selected = 0`. Antes esto era un lazy initializer
+    // (`useState(() => { ... window.location.hash ... })`), y un initializer de
+    // useState SÍ se ejecuta durante el primer render de CLIENTE, o sea durante
+    // la hidratación. Con tráfico real que llega con hash (`/soluciones#agencias`,
+    // que es justo lo que generan los cross-links de /recursos desde el commit
+    // ee333a7) el primer render de cliente calculaba un panel distinto al del
+    // HTML servido → mismatch de hidratación → React #418 → descarta el subárbol
+    // prerenderizado y lo remonta desde cero (parpadeo + salto de layout).
+    // Es EXACTAMENTE el mismo bug que ya se corrigió en /recursos con `?q=`
+    // (commit 2ff47cc) y el mismo patrón que documenta usePrefersReducedMotion.
+    // Regla: el estado arranca con el valor SSR (0) y el hash se aplica en un
+    // useEffect, ya después del montaje.
+    const [selected, setSelected] = useState(0);
+
+    useEffect(() => {
         const hash = window.location.hash.slice(1);
-        if (!hash) return 0;
+        if (!hash) return;
         const idx = SECTORS.findIndex((s) => s.id === hash);
-        return idx === -1 ? 0 : idx;
-    });
+        if (idx > 0) setSelected(idx);
+        // Solo al montar: el deep-link es de ENTRADA, no bidireccional.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     // Sector activo — leído tanto por el hero (titular reactivo, ver más
     // abajo) como por el explorador. Un solo `const` en vez de `SECTORS[selected]`
     // repetido evita desincronías si algún día cambia la fuente de `selected`.
@@ -757,11 +769,9 @@ export const Soluciones: React.FC = () => {
                                                 </div>
 
                                                 <div className={styles.panelCta}>
-                                                    <Link to={ROUTES.contacto}>
-                                                        <Button variant="primary" size="lg">
-                                                            {SECTOR_CTA_LABEL}
-                                                        </Button>
-                                                    </Link>
+                                                    <ButtonLink to={ROUTES.contacto} variant="primary" size="lg">
+                                                        {SECTOR_CTA_LABEL}
+                                                    </ButtonLink>
                                                 </div>
                                             </motion.div>
                                         );
@@ -783,12 +793,12 @@ export const Soluciones: React.FC = () => {
                             por vender.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to={ROUTES.contacto}>
-                                <Button variant="primary" size="lg">Reservar diagnóstico gratuito</Button>
-                            </Link>
-                            <Link to={ROUTES.casos}>
-                                <Button variant="outline" size="lg">Ver casos</Button>
-                            </Link>
+                            <ButtonLink to={ROUTES.contacto} variant="primary" size="lg">
+                                Reservar diagnóstico gratuito
+                            </ButtonLink>
+                            <ButtonLink to={ROUTES.casos} variant="outline" size="lg">
+                                Ver casos
+                            </ButtonLink>
                         </div>
                     </div>
                 </div>
