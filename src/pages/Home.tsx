@@ -101,7 +101,7 @@ const WHY_COMPARISON = [
   {
     feature: "Plazos",
     generic: "6–12 meses para ver resultados reales",
-    ops: "Primeros resultados visibles en 4–6 semanas",
+    ops: "Sistema completo funcionando en 6 a 8 semanas",
   },
   {
     feature: "Integración",
@@ -415,8 +415,13 @@ export const Home: React.FC = () => {
                 las tres negaciones bajan al subtítulo, que es su sitio natural.
                 El plazo NO es inventado: es el mismo que ya afirma el
                 diferenciador "Entrega en semanas, no en meses" dos secciones más
-                abajo en esta misma página ("la entregamos lista para usar en 4 a
-                8 semanas"), palabra por palabra. */}
+                abajo en esta misma página ("la entregamos lista para usar en 6 a
+                8 semanas"), palabra por palabra, y coincide con el dato fuente
+                de src/data/sectors.ts (sector `medida`, FAQ de plazos): 6-8
+                semanas para procesos simples, 3-4 meses con integraciones. El
+                titular usa el caso simple porque es el más representativo; el
+                matiz de integraciones complejas vive en /soluciones, donde sí
+                cabe la nota. */}
             <h1 className={styles.heroTitle}>
               <span className={styles.heroLine}>
                 <span className={styles.heroLineInner}>Tu operativa entera</span>
@@ -426,7 +431,7 @@ export const Home: React.FC = () => {
               </span>
               <span className={styles.heroLine}>
                 <span className={styles.heroLineInner}>
-                  En <span className={styles.heroAccent}>4 a 8 semanas.</span>
+                  En <span className={styles.heroAccent}>6 a 8 semanas.</span>
                 </span>
               </span>
             </h1>

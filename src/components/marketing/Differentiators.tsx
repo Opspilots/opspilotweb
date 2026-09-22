@@ -34,7 +34,7 @@ const DIFFERENTIATORS: DiffItem[] = [
     {
         Icon: Clock,
         title: 'Entrega en semanas, no en meses',
-        text: 'Sin proyectos eternos ni fases de consultoría facturadas por horas. Defines el problema, construimos la solución y la entregamos lista para usar en 4 a 8 semanas.',
+        text: 'Sin proyectos eternos ni fases de consultoría facturadas por horas. Defines el problema, construimos la solución y la entregamos lista para usar en 6 a 8 semanas.',
     },
     {
         Icon: BadgeCheck,
