@@ -75,12 +75,14 @@
         box-shadow var(--transition-expressive);
 }
 
-/* Tinted navy elevation lifts the active slide off the mesh background;
-   mint glow on hover (hover-capable pointers only, no touch flash). */
+/* La elevación levanta el slide activo sobre el fondo. El hover sube borde y
+   sombra, ambos NEUTROS: antes tintaba el borde de mint y proyectaba
+   `--shadow-mint` bajo una tarjeta que no es un control (ver la política de
+   color en variables.css). */
 @media (hover: hover) {
     .caseCard:hover {
-        border-color: var(--color-border-mint);
-        box-shadow: var(--shadow-lg), var(--shadow-mint);
+        border-color: var(--color-border-strong);
+        box-shadow: var(--shadow-lg);
     }
 }
 
@@ -190,10 +192,11 @@
     gap: var(--spacing-4);
 }
 
+/* Titular de tarjeta de caso — rol h3 del sistema (techo 28px, peso 600). */
 .cardTitle {
     font-family: var(--font-family-display);
-    font-size: clamp(1.375rem, 2vw, 1.875rem);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
     line-height: 1.1;
     letter-spacing: var(--tracking-display);
@@ -238,7 +241,7 @@
 .cardQuote {
     margin: 0;
     padding: var(--spacing-6) 0 0;
-    border-top: 1px solid var(--color-border-mint);
+    border-top: 1px solid var(--color-border-subtle);
 }
 
 .cardQuote p {
@@ -279,43 +282,52 @@
     text-wrap: pretty;
 }
 
+/* `gap: 0` a propósito: cada `.dot` ES ya un objetivo táctil de 44×44 (ver
+   abajo), así que las áreas quedan CONTIGUAS y no solapadas. Un gap extra
+   solo separaría visualmente puntos que ya están a 44px de distancia entre
+   centros; un gap junto a hit-areas solapadas era justo el bug anterior
+   (el punto de la derecha, pintado encima, se comía los clics del vecino). */
 .dots {
     display: flex;
-    gap: 16px;
+    gap: 0;
     align-items: center;
 }
 
+/* El BOTÓN es el objetivo táctil completo (44×44, WCAG 2.5.5 Target Size);
+   el punto visible de 6px lo pinta `::before`. Separar ambas cosas permite
+   subir el área sin tocar el aspecto del indicador. */
 .dot {
-    position: relative;
-    width: 6px;
-    height: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-full);
-    background: var(--color-border-strong);
+    background: none;
     border: none;
     padding: 0;
     cursor: pointer;
     flex-shrink: 0;
+}
+
+.dot::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
     transition: all var(--transition-normal);
 }
 
-/* Expand the clickable hit area toward a comfortable touch target without
-   growing the visible dot — centered on the dot regardless of its
-   (active/inactive) width. Clamped to 34px (rather than the full 44px
-   touch-target minimum) and paired with a wider row gap above so that
-   adjacent dots' hit areas never overlap and steal each other's clicks. */
-.dot::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 34px;
-    height: 34px;
-    transform: translate(-50%, -50%);
-}
-
-.dotActive {
+.dotActive::before {
     width: 24px;
     background: var(--color-mint);
+}
+
+.dot:focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: -4px;
 }
 
 .navButtons {
@@ -397,15 +409,14 @@
     margin-bottom: var(--spacing-14);
 }
 
-.whyTitle {
-    font-family: var(--font-family-display);
-    font-size: clamp(1.875rem, 3.5vw, 2.75rem);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-strong);
-    line-height: 1.05;
-    letter-spacing: var(--tracking-display);
+/* El titular de esta cabecera usa `sys.sectionTitle`, no una clase propia.
+   Antes vivía aquí un `.whyTitle` que reproducía literalmente las mismas seis
+   declaraciones que `sys.sectionTitle` — una copia del sistema, no una
+   desviación de él, y por tanto un sitio más donde la jerarquía de cabecera
+   podía divergir en silencio. Lo único específico de esta página era el hueco
+   hasta `.whySub`, que es lo que queda aquí. */
+.whyHeader h2 {
     margin: 0 0 var(--spacing-5);
-    text-wrap: balance;
 }
 
 .whySub {
@@ -417,10 +428,19 @@
 }
 
 /* ─── Grid: tarjetas interactivas elevadas (3 col desktop) ─── */
+/* `align-items: flex-start` (no el `stretch` por defecto) — cada tarjeta mide
+   lo que mide su contenido. Con `stretch`, TODAS las tarjetas de una misma
+   fila (o, en el carril flex de ≤639px, las 4 del carril) crecían hasta el
+   alto de la más alta, y como el 4º diferenciador es el de texto más largo
+   eso dejaba una franja de tarjeta vacía bajo el texto de las demás —
+   ~27px en móvil y hasta ~50px en tablet. Nota: `flex-start` y no `start`
+   porque este mismo selector es un contenedor flex en ≤639px, y `flex-start`
+   es el valor válido en ambos modelos de layout. */
 .whyGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-5);
+    align-items: flex-start;
 }
 
 @media (min-width: 1024px) {
@@ -461,7 +481,7 @@
     transition: opacity var(--transition-normal);
     background: radial-gradient(
         240px circle at var(--mx, 50%) var(--my, 50%),
-        rgba(57, 206, 134, 0.10),
+        rgba(255, 255, 255, 0.055),
         transparent 62%
     );
 }
@@ -478,8 +498,8 @@
 @media (hover: hover) {
     .whyItem:hover {
         transform: translateY(-4px);
-        border-color: var(--color-border-mint);
-        box-shadow: var(--shadow-lg), var(--shadow-mint);
+        border-color: var(--color-border-strong);
+        box-shadow: var(--shadow-lg);
     }
 }
 
@@ -491,7 +511,7 @@
     height: 2px;
     width: 100%;
     z-index: 2;
-    background: var(--gradient-mint);
+    background: var(--color-border-strong);
     transform: scaleX(0);
     transform-origin: left center;
     transition: transform var(--transition-expressive);
@@ -503,14 +523,23 @@
     }
 }
 
-/* Keystone de cierre: el 5º diferenciador ocupa todo el ancho y en pantallas
-   anchas se dispone horizontal (icono + título + texto) para que el span
-   completo se lea como cierre intencional, no como una celda huérfana. */
-.whyItem:last-child {
-    grid-column: 1 / -1;
-}
+/* Keystone de cierre: el ÚLTIMO diferenciador ocupa todo el ancho y se
+   dispone horizontal (icono + título + texto) para que el span completo se
+   lea como cierre intencional.
+   SOLO a partir de 1024px, donde la rejilla tiene 3 columnas: ahí los 3
+   primeros llenan exactamente la fila 1 y el 4º cierra abajo a todo lo
+   ancho, sin huecos. Este bloque se escribió cuando la lista tenía 5 items
+   (2 columnas → filas de 2 + 2 y el 5º de cierre cuadraba igual de bien).
+   Con 4 items y 2 columnas el span dejaba al 3º SOLO en la fila 2 y su
+   celda vecina completamente vacía — ese era el hueco muerto real de
+   /casos entre 640px y 1023px, un rectángulo de ~346×327px de nada. Por
+   debajo de 1024px el 4º vuelve a ser una tarjeta normal y la rejilla queda
+   en un 2×2 limpio (y en ≤639px, en el carril horizontal de siempre). */
+@media (min-width: 1024px) {
+    .whyItem:last-child {
+        grid-column: 1 / -1;
+    }
 
-@media (min-width: 640px) {
     .whyItemClosing {
         display: grid;
         grid-template-columns: auto 1fr;
@@ -546,20 +575,20 @@
 }
 
 /* ─── Why item inner ─── */
-/* Contenedor: mismo tratamiento que el cardIcon de Soluciones
-   (borde mint + fondo tenue + glow) para coherencia entre páginas.
-   Escala levemente en hover. */
+/* Contenedor: mismo tratamiento que el `.panelIcon` de Soluciones — fondo
+   tenue neutro y sin hairline — para coherencia entre páginas. Escala
+   levemente en hover. Era mint + `--shadow-mint`; el icono es decorativo
+   (`aria-hidden`), así que el acento no señalaba nada accionable. */
 .whyIconWrap {
     width: 52px;
     height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-card);
-    box-shadow: var(--shadow-mint);
     margin-bottom: var(--spacing-5);
     flex-shrink: 0;
     transition: transform var(--transition-expressive);
@@ -571,12 +600,13 @@
     }
 }
 
+/* Rejilla de 4 diferenciadores: tamaño compacto, peso de h3. */
 .whyItemTitle {
     font-family: var(--font-family-display);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-title-compact);
+    font-weight: var(--font-weight-h3);
     color: var(--color-text-strong);
-    line-height: 1.2;
+    line-height: var(--line-height-h3);
     letter-spacing: var(--tracking-tight);
     margin: 0 0 var(--spacing-3);
     text-wrap: balance;
@@ -716,10 +746,8 @@
         padding: var(--spacing-7) var(--spacing-6);
     }
 
-    /* Horizontal row — no single item spans full width */
-    .whyItem:last-child {
-        grid-column: unset;
-    }
+    /* (El `grid-column: 1 / -1` del último item ya no llega hasta aquí: vive
+       dentro del @media ≥1024px, ver el keystone de cierre más arriba.) */
 
     /* "Desliza para ver más →": solo aparece en el carrusel horizontal móvil,
        mismo patrón que Resources.module.css .scrollHint. */

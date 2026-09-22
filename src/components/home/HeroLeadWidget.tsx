@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
 // `Link` y `ROUTES` se importaban SOLO para el enlace a la política de
 // privacidad de la cláusula de consentimiento, retirado mientras esa página no
@@ -66,6 +66,14 @@ import styles from './HeroLeadWidget.module.css';
  */
 
 const TOTAL_STEPS = 4;
+
+/* `useLayoutEffect` en un proyecto con prerender SSG (vite-react-ssg) emite
+   el aviso "useLayoutEffect does nothing on the server" durante el build. El
+   efecto que lo usa (el tween de alto del panel) mide el DOM, así que en el
+   servidor no tiene nada que hacer: se cae a `useEffect`, que en SSR es un
+   no-op silencioso. En el cliente sigue siendo layout effect de verdad, que
+   es lo que evita que el salto de alto llegue a pintarse. */
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 // Toggle escritorio/móvil del Paso 4 — recupera la idea del antiguo
 // HeroDashboard (eliminado en una iteración anterior), que tenía un switch
@@ -276,6 +284,76 @@ export const HeroLeadWidget: React.FC = () => {
     }, el);
     return () => ctx.revert();
   }, [step]);
+
+  // ─── Alto continuo entre estados ───
+  //
+  // El panel cambia de contenido cuatro veces (pasos 1-3 → paso 4 → acuse de
+  // envío) y esos contenidos NO miden lo mismo: medido con Playwright, el
+  // cuerpo iba 420px (pasos 1-3, que ya comparten `min-height`) → 426px
+  // (esqueleto "montando tu propuesta…") → 705px (plantilla + formulario) →
+  // 420px (éxito). Eran dos saltos secos de ~280px en el hero de la home: el
+  // titular y el resto de la sección se recolocaban de golpe a mitad del
+  // flujo, que es justo el "desencaje" reportado.
+  //
+  // No sirve un `min-height` al estado más alto: dejaría los pasos 1-3 con
+  // ~285px de hueco vacío. Lo que corresponde aquí es animar el alto, no
+  // congelarlo. Se mide el alto natural ANTES de pintar el estado nuevo
+  // (layout effect: corre tras el commit del DOM pero antes del paint, así
+  // que el usuario nunca ve el salto), se fija el alto anterior y se tuvea
+  // hasta el nuevo. Al terminar se limpia el alto inline para que el panel
+  // vuelva a ser fluido (si cambia el viewport, el texto reflowea sin que un
+  // alto fijo lo recorte).
+  //
+  // El desbordamiento durante el tween lo recorta `.collapseInner`
+  // (`overflow: hidden`, regla base sin media query).
+  //
+  // Bajo `prefers-reduced-motion: reduce` no se anima: se deja el alto
+  // natural, igual que hace el resto de los sistemas de animación del sitio.
+  const bodyHeightRef = useRef<number | null>(null);
+  const heightTweenRef = useRef<gsap.core.Tween | null>(null);
+
+  useEffect(
+    () => () => {
+      heightTweenRef.current?.kill();
+    },
+    [],
+  );
+
+  useIsomorphicLayoutEffect(() => {
+    const el = collapsibleBodyRef.current;
+    if (!el) return;
+
+    // Cualquier tween en vuelo dejó un `height` inline: se mata y se limpia
+    // ANTES de medir, o mediríamos el alto intermedio de la animación
+    // anterior en vez del alto natural del estado nuevo.
+    heightTweenRef.current?.kill();
+    heightTweenRef.current = null;
+    gsap.set(el, { clearProps: 'height' });
+
+    const next = el.getBoundingClientRect().height;
+    const prev = bodyHeightRef.current;
+    bodyHeightRef.current = next;
+
+    // Primer render (prev === null): nada que animar desde.
+    if (prev === null) return;
+    // <2px es ruido de subpíxel, no un cambio de estado perceptible.
+    if (Math.abs(next - prev) < 2) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    heightTweenRef.current = gsap.fromTo(
+      el,
+      { height: prev },
+      {
+        height: next,
+        duration: 0.45,
+        ease: 'power3.out',
+        onComplete: () => {
+          gsap.set(el, { clearProps: 'height' });
+          heightTweenRef.current = null;
+        },
+      },
+    );
+  }, [step, status, isAssembling]);
 
   // Latido de anticipación — dispara solo al llegar por primera vez al Paso
   // 4 (ver comentario en la declaración de `hasEnteredStep4`). Bajo

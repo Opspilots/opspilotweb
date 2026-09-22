@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Button } from '../components/ui/Button';
+import { Button, ButtonLink } from '../components/ui/Button';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useHeroReveal } from '../hooks/useHeroReveal';
 import { PageSEO } from '../hooks/usePageSEO';
@@ -36,19 +36,45 @@ function normalize(value: string): string {
 const featured = RESOURCES.find((r) => r.featured)!;
 const rest = RESOURCES.filter((r) => !r.featured);
 
-const CoverSlot: React.FC<{ cover: string | undefined; label: string; className?: string }> = ({
+/* Variante de patrón para el slot de portada sin ilustración real. Derivada
+   del slug con un hash estable (NO aleatoria: debe dar el mismo valor en el
+   prerender SSG y en el cliente, o sería un mismatch de hidratación). Tres
+   variantes bastan para que una rejilla de 3 columnas no se lea como tres
+   rectángulos idénticos. */
+function patternVariant(seed: string): '0' | '1' | '2' {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
+    return String(Math.abs(h) % 3) as '0' | '1' | '2';
+}
+
+/**
+ * Slot de portada — UNA sola anatomía para todas las tarjetas de /recursos.
+ *
+ * Antes había dos tarjetas distintas conviviendo en la misma rejilla: las que
+ * tenían ilustración mostraban [portada] → [meta: tipo + tiempo] → [título] →
+ * [sumario] → [enlace], y las que no tenían dejaban un panel vacío de ~200px
+ * con la etiqueta de categoría flotando suelta en el centro — y además perdían
+ * la categoría de su fila meta (se pintaba condicionada a `cover`), así que ni
+ * la estructura ni la información eran las mismas. Dos plantillas para el mismo
+ * objeto es lo que hacía que la rejilla se viera rota.
+ *
+ * Ahora el slot SIEMPRE existe y siempre mide lo mismo; lo único que cambia es
+ * qué lo rellena: la ilustración real si la hay, o un patrón del sistema de
+ * diseño (rejilla de blueprint + halo mint/ámbar, los mismos ingredientes de
+ * `sys.pageHero::before`) si todavía no. La fila meta es idéntica en ambos
+ * casos. Cuando lleguen las ilustraciones que faltan, basta con rellenar
+ * `cover` en src/lib/resources.ts: no hay que tocar nada más.
+ */
+const CoverSlot: React.FC<{ cover: string | undefined; seed: string; className?: string }> = ({
     cover,
-    label,
+    seed,
     className,
 }) => (
     <div className={`${styles.cover}${className ? ` ${className}` : ''}`} aria-hidden="true">
         {cover ? (
             <img className={styles.coverImg} src={cover} alt="" loading="lazy" />
         ) : (
-            <span className={styles.coverPh}>
-                <span className={styles.coverDot} />
-                {label}
-            </span>
+            <span className={styles.coverPattern} data-variant={patternVariant(seed)} />
         )}
     </div>
 );
@@ -178,13 +204,17 @@ export const Resources: React.FC = () => {
                                 </button>
                             )}
                         </div>
-                        <div className={styles.catPills} role="tablist" aria-label="Filtrar por categoría">
+                        {/* `role="group"` + `aria-pressed`, NO tablist/tab: estos botones
+                            no controlan paneles (no hay `aria-controls` ni tabpanel) ni
+                            implementan navegación por flechas, así que anunciarlos como
+                            pestañas prometía a un lector de pantalla un patrón que el
+                            componente no cumple. Son filtros de alternancia. */}
+                        <div className={styles.catPills} role="group" aria-label="Filtrar por categoría">
                             {(['Todos', ...RESOURCE_CATEGORIES] as CategoryFilter[]).map((cat) => (
                                 <button
                                     key={cat}
                                     type="button"
-                                    role="tab"
-                                    aria-selected={activeCat === cat}
+                                    aria-pressed={activeCat === cat}
                                     className={`${styles.catPill} ${activeCat === cat ? styles.catPillActive : ''}`}
                                     onClick={() => setActiveCat(cat)}
                                 >
@@ -224,7 +254,7 @@ export const Resources: React.FC = () => {
                                 </div>
                                 <CoverSlot
                                     cover={featured.cover}
-                                    label={featured.cat}
+                                    seed={featured.slug}
                                     className={styles.coverFeatured}
                                 />
                             </article>
@@ -236,7 +266,10 @@ export const Resources: React.FC = () => {
             {/* ═══ GRID ═══ */}
             <section className={styles.gridSection}>
                 <div className={sys.container} ref={gridRef}>
-                    <h2 className={styles.gridSectionTitle}>Todos los recursos.</h2>
+                    <header className={`${sys.sectionHeader} ${styles.gridHeader}`}>
+                        <p className={sys.sectionEyebrow}>Recursos</p>
+                        <h2 className={sys.sectionTitle}>Todos los recursos.</h2>
+                    </header>
                     {/* Contador de resultados: feedback y confianza al filtrar. */}
                     {isFiltering && visible.length > 0 && (
                         <p className={styles.resultCount} aria-live="polite">
@@ -248,14 +281,15 @@ export const Resources: React.FC = () => {
                             {visible.map((r) => (
                                 <Link key={r.slug} to={`/recursos/${r.slug}`} className={`${styles.cardLink} reveal`}>
                                     <article className={styles.card}>
-                                        <CoverSlot cover={r.cover} label={r.cat} />
+                                        <CoverSlot cover={r.cover} seed={r.slug} />
                                         <div className={styles.cardBody}>
+                                            {/* Fila meta IDÉNTICA en todas las tarjetas: tipo + tiempo de
+                                               lectura. Antes la categoría iba condicionada a `r.cover`
+                                               (sin portada se pintaba flotando dentro del panel vacío),
+                                               así que media rejilla tenía una fila meta con dos datos y la
+                                               otra media con uno solo. */}
                                             <div className={styles.cardMeta}>
-                                                {/* Sin cover real, CoverSlot ya muestra la categoría como badge
-                                                   flotante sobre el placeholder — repetirla aquí sería
-                                                   duplicado. Con cover real, el badge no se pinta, así que este
-                                                   texto es la única señal de categoría. */}
-                                                {r.cover && <span className={styles.cardCat}>{r.cat}</span>}
+                                                <span className={styles.cardCat}>{r.cat}</span>
                                                 <span className={styles.cardTime}>
                                                     <Clock size={11} strokeWidth={2} />
                                                     {r.time}
@@ -311,12 +345,25 @@ export const Resources: React.FC = () => {
                             </p>
                         </div>
                         <div className={styles.nlRight}>
-                            {nlStatus === 'success' ? (
-                                <p className={styles.nlSuccess}>
-                                    Hecho. El primer email te llega esta semana.
-                                </p>
-                            ) : (
-                                <form className={styles.nlForm} onSubmit={handleNewsletter}>
+                            {/* Mismo patrón de "intercambio sin cambio de tamaño" que el
+                                formulario de /contacto: form y acuse comparten una celda de
+                                grid, así que el bloque no se encoge al suscribirse. La región
+                                viva (`role="status"`) va en la capa, siempre montada, para que
+                                el lector de pantalla anuncie el cambio. */}
+                            <div className={styles.nlSwap}>
+                                <div className={styles.nlStatusLayer} role="status">
+                                    {nlStatus === 'success' && (
+                                        <p className={styles.nlSuccess}>
+                                            Hecho. El primer email te llega esta semana.
+                                        </p>
+                                    )}
+                                </div>
+                                <form
+                                    className={styles.nlForm}
+                                    onSubmit={handleNewsletter}
+                                    aria-hidden={nlStatus === 'success' || undefined}
+                                    inert={nlStatus === 'success'}
+                                >
                                     <input
                                         type="email"
                                         placeholder="tu@email.com"
@@ -324,17 +371,19 @@ export const Resources: React.FC = () => {
                                         required
                                         value={nlEmail}
                                         onChange={(e) => setNlEmail(e.target.value)}
+                                        aria-label="Tu email"
                                     />
                                     <Button variant="primary" type="submit" disabled={nlStatus === 'submitting'}>
                                         {nlStatus === 'submitting' ? 'Enviando...' : 'Suscribirme gratis'}
                                     </Button>
-                                    {nlStatus === 'error' && (
-                                        <p className={styles.nlError}>
-                                            Error al suscribirse. Inténtalo de nuevo.
-                                        </p>
-                                    )}
+                                    {/* Slot de error de alto reservado: el mensaje aparece sin
+                                        empujar nada — antes su aparición movía `.nlNote` y el
+                                        borde del bloque hacia abajo. */}
+                                    <p className={styles.nlError} role="alert">
+                                        {nlStatus === 'error' && 'Error al suscribirse. Inténtalo de nuevo.'}
+                                    </p>
                                 </form>
-                            )}
+                            </div>
                             <p className={styles.nlNote}>Sin spam. Baja cuando quieras.</p>
                         </div>
                     </div>
@@ -350,9 +399,9 @@ export const Resources: React.FC = () => {
                             Media hora, gratis, sin compromiso. Hablamos de tu caso concreto.
                         </p>
                         <div className={sys.endCtaButtons}>
-                            <Link to={ROUTES.contacto}>
-                                <Button variant="secondary" size="lg">Reservar diagnóstico</Button>
-                            </Link>
+                            <ButtonLink to={ROUTES.contacto} variant="primary" size="lg">
+                                Reservar diagnóstico
+                            </ButtonLink>
                         </div>
                     </div>
                 </div>

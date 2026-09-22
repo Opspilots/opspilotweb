@@ -215,7 +215,12 @@ const SectorPageContent: React.FC<{ sector: Sector; page: number; active: boolea
 
     return (
         <div className={styles.pageBody}>
-            <h2 className={styles.panelTitle}>{sector.title}</h2>
+            {/* h3, no h2: desde que la sección tiene su propia cabecera real
+                (`Sectores` / `Elige tu sector`, ver más abajo), este titular es el
+                de una tarjeta DENTRO de esa sección, no el de la sección. Al ser
+                h3 hereda tamaño/peso/interlineado de la escala canónica en vez de
+                recrearlos en `.panelTitle`. */}
+            <h3 className={styles.panelTitle}>{sector.title}</h3>
 
             <p className={styles.panelWho}>
                 <span className={styles.whoLabel}>Para</span> {sector.who}
@@ -605,6 +610,17 @@ export const Soluciones: React.FC = () => {
                 <div className={styles.solTrack} ref={trackRef}>
                     <div className={styles.solViewport}>
                         <div className={sys.container}>
+                            {/* Cabecera real de la sección. Hasta ahora el explorador era la
+                                única sección de las cinco páginas sin ningún <h2>: su rótulo
+                                vivía solo en `PANEL_PAGE_LABELS` y en el `aria-label` del
+                                tablist, así que el esquema de encabezados saltaba del h1 del
+                                hero directamente a los h2/h3 de dentro de los paneles y, en
+                                pantalla, el bloque más importante de la página empezaba sin
+                                presentarse. */}
+                            <header className={`${sys.sectionHeader} ${styles.explorerHeader}`}>
+                                <p className={sys.sectionEyebrow}>Sectores</p>
+                                <h2 className={sys.sectionTitle}>Elige tu sector</h2>
+                            </header>
                             <div className={styles.explorer} ref={listRef} data-lenis-prevent>
                                 {/* Columna izquierda — lista de sectores seleccionables (nav,
                                     no tabla: sin fila de cabecera, ver Soluciones.module.css).

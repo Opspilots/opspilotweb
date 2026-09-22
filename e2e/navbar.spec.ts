@@ -9,14 +9,15 @@ import { gotoStable } from './helpers';
  * fallan a propósito hoy: son el baseline de bugs conocidos que arregla la
  * fase 2 del refactor. Ver el comentario de cada uno.
  *
- * El proyecto `ipad-mini-768` se salta el fichero entero: 768px es exactamente
- * el breakpoint `min-width: 768px` donde la hamburguesa desaparece y entra el
- * menú desktop, así que no hay cabecera móvil que medir.
+ * El umbral del menú desktop es `min-width: 1024px` (corte DESKTOP). Antes
+ * estaba en 768px, lo que dejaba al iPad en vertical —un dispositivo táctil—
+ * con la navegación de escritorio; ahora `ipad-mini-768` SÍ ejecuta este
+ * fichero, porque a ese ancho la cabecera sigue siendo la táctil.
  */
 test.describe('Cabecera móvil', () => {
     test.skip(
-        ({ viewport }) => (viewport?.width ?? 0) >= 768,
-        'A partir de 768px la navbar cambia al menú desktop: no hay hamburguesa.'
+        ({ viewport }) => (viewport?.width ?? 0) >= 1024,
+        'A partir de 1024px la navbar cambia al menú desktop: no hay hamburguesa.'
     );
 
     /**
@@ -35,11 +36,13 @@ test.describe('Cabecera móvil', () => {
     /**
      * Alto real del área táctil de un control.
      *
-     * No basta con el rect del propio elemento: el CTA del menú es un
-     * `<a>` (inline) envolviendo un `<button>` (bloque). El rect del ancla
-     * colapsa a la altura de línea (~20px) aunque lo que el dedo toca es el
-     * botón de dentro. Medir solo el ancla daría un falso positivo de "target
-     * pequeño". Nos quedamos con el descendiente más alto.
+     * Se queda con el rect más alto entre el elemento y sus descendientes. Hoy
+     * el CTA del menú ya es un único <a> con clase de botón (ver ButtonLink en
+     * src/components/ui/Button.tsx), así que su propio rect ya es el bueno;
+     * antes era un <a> inline envolviendo un <button> y el rect del ancla
+     * colapsaba a la altura de línea, dando un falso "target pequeño". El
+     * helper se conserva porque sigue siendo correcto para cualquier control
+     * compuesto.
      */
     async function tapTargetHeight(locator: ReturnType<Page['locator']>): Promise<number> {
         return locator.evaluate((el) => {

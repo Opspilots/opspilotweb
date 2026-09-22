@@ -7,6 +7,40 @@
     z-index: 0;
 }
 
+/* ─── Skip link ───
+   Oculto fuera del viewport (NO `display:none` ni `visibility:hidden`, que lo
+   sacarían del orden de tabulación) y traído a la esquina superior izquierda
+   al recibir foco. z-index por encima de --z-index-navbar (1000) para que no
+   quede tapado por la navbar fija. */
+.skipLink {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: calc(var(--z-index-navbar) + 1);
+    transform: translateY(-200%);
+    padding: var(--spacing-3) var(--spacing-5);
+    background: var(--color-btn-light);
+    color: var(--color-btn-dark);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    border-bottom-right-radius: var(--radius-control);
+    text-decoration: none;
+}
+
+.skipLink:focus,
+.skipLink:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--color-mint);
+    outline-offset: -4px;
+}
+
+/* El foco programático en <main tabIndex={-1}> no debe pintar un anillo
+   alrededor de toda la página: el destino ya es evidente por el scroll. */
+.main:focus {
+    outline: none;
+}
+
 /* Contenido por encima de la capa ambiental (AmbientBackground, z-index 0) */
 .main {
     flex: 1;

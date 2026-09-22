@@ -8,7 +8,7 @@
     overflow: hidden;
     /* Base ligeramente más profunda que el bg para que los halos "floten" */
     background:
-        radial-gradient(120% 80% at 50% -10%, rgba(57, 206, 134, 0.05), transparent 60%),
+        radial-gradient(120% 80% at 50% -10%, rgba(255, 255, 255, 0.035), transparent 60%),
         var(--color-bg-deep);
 }
 
@@ -30,11 +30,12 @@
    protagonismo al contenido ni comprometer el contraste. */
 .rootSubtle {
     background:
-        radial-gradient(110% 65% at 50% -8%, rgba(57, 206, 134, 0.035), transparent 55%),
+        radial-gradient(110% 65% at 50% -8%, rgba(255, 255, 255, 0.028), transparent 55%),
         var(--color-bg-deep);
 }
 
-/* Único halo de la variante sutil: mint muy tenue, centrado arriba y estático. */
+/* Único halo de la variante sutil: luz neutra muy tenue, centrada arriba y
+   estática. Era mint al 10%. */
 .blobSubtle {
     width: 64vw;
     height: 64vw;
@@ -42,10 +43,18 @@
     left: 50%;
     transform: translateX(-50%);
     opacity: 0.55;
-    background: radial-gradient(circle, rgba(57, 206, 134, 0.10), transparent 66%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.07), transparent 66%);
 }
 
-/* ─── Halos de luz (mesh gradient) ─── */
+/* ─── Halos de luz (mesh gradient) ───
+   Los tres halos eran mint, ámbar y azul: la capa MÁS decorativa del sitio
+   (fija, detrás de todo, pointer-events:none) pintada con tres colores de marca
+   a la vez — uno de ellos (#6189c4) sin ninguna otra aparición en toda la web:
+   era el valor literal del token muerto `--color-info`, ya borrado de
+   variables.css. Ahora los tres son luz blanca a distinta intensidad: la misma
+   sensación de mesh y de profundidad, y cero presupuesto de color gastado en
+   una capa que nadie puede accionar. Los nombres de clase (Mint/Warm/Blue) se
+   conservan como identificadores de POSICIÓN; ya no describen el color. ─── */
 .blob {
     position: absolute;
     border-radius: 50%;
@@ -67,7 +76,7 @@
     height: 52vw;
     top: -14vw;
     left: -8vw;
-    background: radial-gradient(circle, rgba(57, 206, 134, 0.22), transparent 68%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.10), transparent 68%);
 }
 
 .blobWarm {
@@ -75,7 +84,7 @@
     height: 44vw;
     top: 28vh;
     right: -12vw;
-    background: radial-gradient(circle, rgba(232, 165, 99, 0.14), transparent 68%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.075), transparent 68%);
 }
 
 .blobBlue {
@@ -83,7 +92,7 @@
     height: 46vw;
     bottom: -18vw;
     left: 24vw;
-    background: radial-gradient(circle, rgba(97, 137, 196, 0.12), transparent 68%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.06), transparent 68%);
 }
 
 /* ─── Grano ─── */

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import styles from './Footer.module.css';
@@ -36,9 +36,27 @@ const WhatsAppIcon = () => (
     </svg>
 );
 
+/* Año del copyright — literal horneado en build (`define` en vite.config.ts).
+   `new Date().getFullYear()` durante el render es una fuente NO determinista
+   entre servidor y cliente: el HTML de /dist se prerrenderiza el día del build,
+   pero el navegador del visitante recalcula el año en cada carga. Coinciden…
+   hasta el 1 de enero siguiente, momento en el que el footer de TODAS las
+   páginas estáticas ya desplegadas produce un mismatch de hidratación (texto
+   servido ≠ texto renderizado). `__BUILD_YEAR__` es el MISMO literal en el HTML
+   y en el bundle, así que el primer render de cliente siempre coincide; el
+   efecto de abajo sube al año real DESPUÉS de hidratar, el único momento en el
+   que es seguro divergir. */
+const BUILD_YEAR = __BUILD_YEAR__;
+
 export const Footer: React.FC = () => {
     const { pathname } = useLocation();
     const showEndCta = !hasOwnEndCta(pathname);
+
+    const [year, setYear] = useState(BUILD_YEAR);
+    useEffect(() => {
+        const current = new Date().getFullYear();
+        if (current !== BUILD_YEAR) setYear(current);
+    }, []);
 
     return (
         <footer className={styles.footer}>
@@ -47,7 +65,9 @@ export const Footer: React.FC = () => {
                     {/* Marca */}
                     <div className={styles.brand}>
                         <Link to={ROUTES.home} className={styles.logo}>
-                            <Logo size={40} /> OpsPilot
+                            {/* Decorativo: el enlace ya dice "OpsPilot" al lado y la navbar
+                                ya anuncia la marca. alt="" evita el doble anuncio. */}
+                            <Logo size={40} alt="" /> OpsPilot
                         </Link>
                         <p className={styles.tagline}>
                             Software a medida para PYMEs. Precio cerrado, trato directo
@@ -174,7 +194,7 @@ export const Footer: React.FC = () => {
                 )}
 
                 <div className={styles.bottom}>
-                    <p>&copy; {new Date().getFullYear()} OpsPilot. Todos los derechos reservados.</p>
+                    <p>&copy; {year} OpsPilot. Todos los derechos reservados.</p>
                     <span className={styles.bottomBrand}>
                         <span className={styles.bottomBrandDot} />
                         Hecho con cuidado en Córdoba

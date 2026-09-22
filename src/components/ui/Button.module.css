@@ -63,14 +63,14 @@
 
 /* Primary — light fill (chalk), dark text. Flat, no glow. */
 .primary {
-    background-color: var(--color-btn-light);
-    color: #14100c;
-    border-color: var(--color-btn-light);
+    background-color: var(--cta-primary);
+    color: var(--cta-primary-text);
+    border-color: var(--cta-primary);
 }
 
 .primary:hover:not(:disabled) {
-    background-color: var(--color-btn-light-hover);
-    border-color: var(--color-btn-light-hover);
+    background-color: var(--cta-primary-hover);
+    border-color: var(--cta-primary-hover);
     /* Glow mint sutil — el único acento primario, tintado, nunca duro. */
     box-shadow: var(--shadow-mint);
 }
