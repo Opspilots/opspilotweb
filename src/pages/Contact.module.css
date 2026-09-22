@@ -50,6 +50,38 @@
     margin-bottom: var(--spacing-9);
 }
 
+/* ─── Capa de estado: el formulario y su acuse comparten celda ───
+   Una sola celda de grid con los dos estados superpuestos. El alto de la
+   tarjeta lo fija SIEMPRE el formulario (el estado más alto), así que pasar a
+   "Mensaje recibido" no encoge la tarjeta ni reacomoda la columna de info de
+   al lado. Sin números mágicos: no hay `min-height` que mantener a mano si
+   mañana cambia el copy o se añade un campo. */
+.formSwap {
+    display: grid;
+}
+
+.formSwap > * {
+    grid-area: 1 / 1;
+}
+
+/* Región viva siempre montada (ver comentario en Contact.tsx). Vacía en
+   `idle`, así que NO debe interceptar los clicks del formulario que tiene
+   debajo — de ahí `pointer-events: none` (no contiene nada interactivo). */
+.formStatusLayer {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+/* El formulario sigue ocupando la celda cuando ya se envió: invisible pero
+   midiendo. `visibility: hidden` (no `display: none`) es lo que conserva el
+   alto; `inert` en el markup lo saca del foco y del árbol de accesibilidad. */
+.form[aria-hidden='true'] {
+    visibility: hidden;
+}
+
 .form {
     display: flex;
     flex-direction: column;
@@ -236,10 +268,14 @@
 }
 
 .formSuccess {
+    width: 100%;
     text-align: center;
     padding: var(--spacing-12) var(--spacing-6);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-card);
+    /* Fondo propio: se superpone al formulario (oculto pero presente en la
+       misma celda), así que necesita opacidad para no dejar ver nada detrás. */
+    background: var(--color-bg-elevated);
 }
 
 .formSuccessTitle {
