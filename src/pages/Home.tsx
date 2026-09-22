@@ -244,7 +244,12 @@ export const Home: React.FC = () => {
   // movimiento permitido; móvil y reduced-motion reciben versiones estáticas.
   useEffect(() => {
     const mm = gsap.matchMedia();
-    const MINT = "rgba(57, 206, 134, 0.95)";
+    // Color al que "se encienden" los números de paso al entrar en viewport.
+    // Era mint: un número decorativo pintado con el color reservado a lo
+    // interactivo (ver la política en variables.css). Ahora el paso pasa de
+    // --color-text-subtle (#8E9BAA) a --color-text-strong (#FFFFFF): el mismo
+    // gesto de "encenderse", con contraste en vez de color.
+    const STEP_LIT = "#FFFFFF";
 
     // Escribe (scramble) los números de los pasos del método al entrar.
     const scrambleSteps = (steps: HTMLElement[]) =>
@@ -267,7 +272,7 @@ export const Home: React.FC = () => {
       steps.forEach((step, i) => {
         const num = step.querySelector<HTMLElement>(`.${styles.methodStepNum}`);
         const bar = step.querySelector<HTMLElement>(`.${styles.methodStepBar}`);
-        if (num) gsap.to(num, { color: MINT, duration: 0.4, delay: i * 0.12 });
+        if (num) gsap.to(num, { color: STEP_LIT, duration: 0.4, delay: i * 0.12 });
         if (bar)
           gsap.fromTo(
             bar,
@@ -367,7 +372,7 @@ export const Home: React.FC = () => {
     mm.add("(prefers-reduced-motion: reduce)", () => {
       methodScrollRef.current
         ?.querySelectorAll<HTMLElement>(`.${styles.methodStepNum}`)
-        .forEach((n) => (n.style.color = MINT));
+        .forEach((n) => (n.style.color = STEP_LIT));
       methodScrollRef.current
         ?.querySelectorAll<HTMLElement>(`.${styles.methodStepBar}`)
         .forEach((b) => (b.style.transform = "scaleX(1)"));
@@ -449,6 +454,7 @@ export const Home: React.FC = () => {
           <div className={styles.problemViewport}>
             <div className={`${sys.container} ${styles.problemLayout}`}>
               <div className={`${styles.problemHead} reveal`}>
+                <p className={sys.sectionEyebrow}>El problema</p>
                 <h2 className={sys.sectionTitle}>
                   Las herramientas que usas no fueron pensadas para ti.
                 </h2>
@@ -482,6 +488,7 @@ export const Home: React.FC = () => {
       <section className={styles.caseSection}>
         <div className={sys.container} ref={caseRef}>
           <header className={`${sys.sectionHeader} reveal`}>
+            <p className={sys.sectionEyebrow}>Casos</p>
             <h2 className={sys.sectionTitle}>
               Lo que construimos ya está trabajando.
             </h2>
@@ -587,6 +594,7 @@ export const Home: React.FC = () => {
       <section className={styles.whySection}>
         <div className={sys.container} ref={whyRef}>
           <header className={`${sys.sectionHeader} reveal`}>
+            <p className={sys.sectionEyebrow}>Por qué nosotros</p>
             <h2 className={sys.sectionTitle}>
               Por qué no el software de catálogo.
             </h2>
@@ -689,6 +697,7 @@ export const Home: React.FC = () => {
       <section className={styles.methodSection}>
         <div className={sys.container} ref={methodScrollRef}>
           <header className={`${sys.sectionHeader} reveal`}>
+            <p className={sys.sectionEyebrow}>Cómo trabajamos</p>
             <h2 className={sys.sectionTitle}>Así trabajamos contigo.</h2>
           </header>
           <div className={styles.methodGrid} ref={processTrackRef}>

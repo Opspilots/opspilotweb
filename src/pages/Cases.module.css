@@ -64,12 +64,14 @@
         box-shadow var(--transition-expressive);
 }
 
-/* Tinted navy elevation lifts the active slide off the mesh background;
-   mint glow on hover (hover-capable pointers only, no touch flash). */
+/* La elevación levanta el slide activo sobre el fondo. El hover sube borde y
+   sombra, ambos NEUTROS: antes tintaba el borde de mint y proyectaba
+   `--shadow-mint` bajo una tarjeta que no es un control (ver la política de
+   color en variables.css). */
 @media (hover: hover) {
     .caseCard:hover {
-        border-color: var(--color-border-mint);
-        box-shadow: var(--shadow-lg), var(--shadow-mint);
+        border-color: var(--color-border-strong);
+        box-shadow: var(--shadow-lg);
     }
 }
 
@@ -160,7 +162,7 @@
 .cardQuote {
     margin: 0;
     padding: var(--spacing-6) 0 0;
-    border-top: 1px solid var(--color-border-mint);
+    border-top: 1px solid var(--color-border-subtle);
 }
 
 .cardQuote p {
@@ -328,16 +330,14 @@
     margin-bottom: var(--spacing-14);
 }
 
-/* Titular de sección — rol h2 del sistema (techo 46px, peso 600). */
-.whyTitle {
-    font-family: var(--font-family-display);
-    font-size: var(--font-size-h2);
-    font-weight: var(--font-weight-h2);
-    color: var(--color-text-strong);
-    line-height: var(--line-height-h2);
-    letter-spacing: var(--tracking-display);
+/* El titular de esta cabecera usa `sys.sectionTitle`, no una clase propia.
+   Antes vivía aquí un `.whyTitle` que reproducía literalmente las mismas seis
+   declaraciones que `sys.sectionTitle` — una copia del sistema, no una
+   desviación de él, y por tanto un sitio más donde la jerarquía de cabecera
+   podía divergir en silencio. Lo único específico de esta página era el hueco
+   hasta `.whySub`, que es lo que queda aquí. */
+.whyHeader h2 {
     margin: 0 0 var(--spacing-5);
-    text-wrap: balance;
 }
 
 .whySub {
@@ -402,7 +402,7 @@
     transition: opacity var(--transition-normal);
     background: radial-gradient(
         240px circle at var(--mx, 50%) var(--my, 50%),
-        rgba(57, 206, 134, 0.10),
+        rgba(255, 255, 255, 0.055),
         transparent 62%
     );
 }
@@ -419,8 +419,8 @@
 @media (hover: hover) {
     .whyItem:hover {
         transform: translateY(-4px);
-        border-color: var(--color-border-mint);
-        box-shadow: var(--shadow-lg), var(--shadow-mint);
+        border-color: var(--color-border-strong);
+        box-shadow: var(--shadow-lg);
     }
 }
 
@@ -432,7 +432,7 @@
     height: 2px;
     width: 100%;
     z-index: 2;
-    background: var(--gradient-mint);
+    background: var(--color-border-strong);
     transform: scaleX(0);
     transform-origin: left center;
     transition: transform var(--transition-expressive);
@@ -496,20 +496,20 @@
 }
 
 /* ─── Why item inner ─── */
-/* Contenedor: mismo tratamiento que el cardIcon de Soluciones
-   (borde mint + fondo tenue + glow) para coherencia entre páginas.
-   Escala levemente en hover. */
+/* Contenedor: mismo tratamiento que el `.panelIcon` de Soluciones — fondo
+   tenue neutro y sin hairline — para coherencia entre páginas. Escala
+   levemente en hover. Era mint + `--shadow-mint`; el icono es decorativo
+   (`aria-hidden`), así que el acento no señalaba nada accionable. */
 .whyIconWrap {
     width: 52px;
     height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
-    border: 1px solid var(--color-border-mint);
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-card);
-    box-shadow: var(--shadow-mint);
     margin-bottom: var(--spacing-5);
     flex-shrink: 0;
     transition: transform var(--transition-expressive);

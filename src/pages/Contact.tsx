@@ -124,6 +124,7 @@ export const Contact: React.FC = () => {
                 <div className={sys.container} ref={contactRef}>
                     <div className={styles.contactGrid}>
                         <div className={`${styles.formCard} glass reveal`}>
+                            <p className={sys.sectionEyebrow}>Diagnóstico</p>
                             <h2 className={styles.formTitle}>Reserva tu diagnóstico gratuito</h2>
                             <p className={styles.formSub}>
                                 Cuéntanos tu caso y te escribimos con los próximos pasos en

@@ -266,7 +266,10 @@ export const Resources: React.FC = () => {
             {/* ═══ GRID ═══ */}
             <section className={styles.gridSection}>
                 <div className={sys.container} ref={gridRef}>
-                    <h2 className={styles.gridSectionTitle}>Todos los recursos.</h2>
+                    <header className={`${sys.sectionHeader} ${styles.gridHeader}`}>
+                        <p className={sys.sectionEyebrow}>Recursos</p>
+                        <h2 className={sys.sectionTitle}>Todos los recursos.</h2>
+                    </header>
                     {/* Contador de resultados: feedback y confianza al filtrar. */}
                     {isFiltering && visible.length > 0 && (
                         <p className={styles.resultCount} aria-live="polite">

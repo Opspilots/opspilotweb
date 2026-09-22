@@ -80,7 +80,31 @@
        verdad, este es el sitio donde hacerlo. */
     --color-text-subtle: var(--color-text-muted);
 
-    /* Accents */
+    /* ─── Accents ───
+       POLÍTICA DE USO DEL MINT — leer antes de escribir `var(--color-mint)`.
+
+       El mint es el color de lo INTERACTIVO, no el color de la marca aplicado
+       a discreción. Usos legítimos:
+         · estado hover/activo de un control real (botón, enlace, fila de tab)
+         · anillo de foco visible
+         · pestaña/opción seleccionada (dot activo, fila activa)
+         · el punto del eyebrow (`.eyebrow::before`), que es el mismo lenguaje
+           de "esto es una etiqueta de estructura/navegación"
+         · marcas semánticas de afirmación frente a su par negativo (checks de
+           la comparativa, que se leen contra las X en `--color-error`)
+
+       NO son usos legítimos: halos ambientales, glows de fondo, hairlines
+       decorativos, sombras tintadas y "brillos" de hover sobre superficies que
+       no son controles. Ahí el color no informa de nada y, repetido en ~160
+       sitios, vacía de significado los que sí informan. Esa capa decorativa
+       usa neutros (`--color-text-muted`, `--color-border-subtle` o blanco a
+       muy baja opacidad).
+
+       EXCEPCIÓN DELIBERADA — las mini-interfaces (`HeroLeadWidget`,
+       `CaseMockPanel`, `MockPreview`) no son cromo de la web: son la
+       REPRESENTACIÓN de un producto de software. Ahí el mint es el acento del
+       producto dibujado, y además casi todos sus usos ya son estados reales
+       (chip seleccionado, foco, toggle activo). Se quedan como están. */
     --color-mint: #39ce86;
     --color-mint-dark: #2bb874;
     --color-mint-soft: rgba(57, 206, 134, 0.10);
@@ -121,7 +145,10 @@
        4.5:1), y este token se usa en mensajes de error de campo. El nuevo
        queda en ~5.9-6.7:1 según la superficie. */
     --color-error: #f08a8a;
-    --color-info: #6189c4;
+    /* Aquí vivía `--color-info: #6189c4`. Cero usos en todo `src` (verificado
+       por grep): un sexto color de marca que nadie pintaba nunca, pero que
+       estaba disponible para que el siguiente componente lo adoptara y abriera
+       una familia cromática más. Borrado. */
 
     /* ═══════════════════════════════════════════
        BACKWARDS-COMPAT TOKENS (DEPRECADOS — alias, no eliminar)

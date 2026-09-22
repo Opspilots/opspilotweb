@@ -62,9 +62,9 @@
     overflow: hidden;
 }
 
-/* Gradient wash that fades up on hover — deepens the navy at the base and
-   adds a mint kiss at the top corner. Sits above the image, below the
-   placeholder label. Solo opacity. */
+/* Velo que sube al pasar el puntero — oscurece el navy de la base y añade un
+   toque de luz en la esquina superior (era un "beso" mint). Por encima de la
+   imagen, por debajo de la etiqueta. Solo opacity. */
 .cover::before {
     content: '';
     position: absolute;
@@ -73,7 +73,7 @@
     pointer-events: none;
     opacity: 0;
     background:
-        linear-gradient(160deg, rgba(57, 206, 134, 0.14), transparent 42%),
+        linear-gradient(160deg, rgba(255, 255, 255, 0.09), transparent 42%),
         linear-gradient(0deg, rgba(3, 7, 12, 0.6), transparent 58%);
     transition: opacity var(--transition-expressive);
 }
@@ -108,19 +108,24 @@
    la fila meta, igual que en las tarjetas con portada real.
 
    Ingredientes tomados tal cual del sistema de diseño ya existente — la
-   rejilla de blueprint y los halos mint/ámbar de `sys.pageHero::before`, más
+   rejilla de blueprint y los halos de `sys.pageHero::before`, más
    --gradient-surface. Cero assets nuevos: son gradientes CSS.
 
+   Los halos eran mint + ámbar; ahora son luz neutra, igual que el resto de la
+   capa decorativa del sitio (ver la política de color en variables.css). Este
+   slot es `aria-hidden` y no se puede accionar: no hay nada que el acento
+   pudiera estar señalando.
+
    Las 3 variantes (`data-variant`, derivada del slug con un hash estable —
-   ver patternVariant() en Resources.tsx) solo rotan la posición y el tinte del
-   halo, para que una fila de 3 tarjetas sin portada no se lea como tres
-   rectángulos clonados. */
+   ver patternVariant() en Resources.tsx) rotan la posición, el tamaño de la
+   rejilla y la intensidad del halo, para que una fila de 3 tarjetas sin
+   portada no se lea como tres rectángulos clonados. */
 .coverPattern {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(42% 70% at 82% 12%, rgba(57, 206, 134, 0.18), transparent 68%),
-        radial-gradient(38% 60% at 8% 96%, rgba(232, 165, 99, 0.09), transparent 72%),
+        radial-gradient(42% 70% at 82% 12%, rgba(255, 255, 255, 0.10), transparent 68%),
+        radial-gradient(38% 60% at 8% 96%, rgba(255, 255, 255, 0.05), transparent 72%),
         linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
         var(--gradient-surface);
@@ -129,8 +134,8 @@
 
 .coverPattern[data-variant='1'] {
     background:
-        radial-gradient(46% 66% at 14% 16%, rgba(57, 206, 134, 0.16), transparent 70%),
-        radial-gradient(40% 58% at 92% 88%, rgba(232, 165, 99, 0.10), transparent 72%),
+        radial-gradient(46% 66% at 14% 16%, rgba(255, 255, 255, 0.09), transparent 70%),
+        radial-gradient(40% 58% at 92% 88%, rgba(255, 255, 255, 0.055), transparent 72%),
         linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
         var(--gradient-surface);
@@ -139,8 +144,8 @@
 
 .coverPattern[data-variant='2'] {
     background:
-        radial-gradient(58% 84% at 50% 108%, rgba(57, 206, 134, 0.17), transparent 66%),
-        radial-gradient(34% 52% at 4% 6%, rgba(232, 165, 99, 0.08), transparent 74%),
+        radial-gradient(58% 84% at 50% 108%, rgba(255, 255, 255, 0.095), transparent 66%),
+        radial-gradient(34% 52% at 4% 6%, rgba(255, 255, 255, 0.045), transparent 74%),
         linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
         var(--gradient-surface);
@@ -475,18 +480,16 @@
     margin: 0 0 var(--spacing-6);
 }
 
-/* Título de sección del grid: solo para lectores de pantalla / SEO.
-   Da jerarquía real al listado sin alterar el diseño visual del toolbar. */
-.gridSectionTitle {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+/* Cabecera de la rejilla principal. Antes el h2 ("Todos los recursos.") era
+   `.gridSectionTitle`, una clase sr-only: existía para lectores de pantalla y
+   para el esquema de encabezados, pero visualmente la rejilla arrancaba sin
+   cabecera de ningún tipo, así que esta página era la única de las cinco sin
+   jerarquía de sección visible. Ahora usa `sys.sectionHeader` +
+   `sys.sectionEyebrow` + `sys.sectionTitle` como el resto; aquí solo queda el
+   hueco inferior, más corto que el del sistema porque debajo va el contador de
+   resultados, no directamente el contenido. */
+.gridHeader {
+    margin-bottom: var(--spacing-8);
 }
 
 /* Indicador de scroll horizontal: oculto por defecto, solo visible en el

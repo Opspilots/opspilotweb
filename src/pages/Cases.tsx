@@ -193,7 +193,8 @@ const WhySection: React.FC = () => {
         <section className={styles.whySection}>
             <div className={sys.container} ref={whyRef}>
                 <div className={`${styles.whyHeader} reveal`}>
-                    <h2 className={styles.whyTitle}>Resultados que se ven. No promesas de folleto</h2>
+                    <p className={sys.sectionEyebrow}>Por qué nosotros</p>
+                    <h2 className={sys.sectionTitle}>Resultados que se ven. No promesas de folleto</h2>
                     <p className={styles.whySub}>
                         No somos una agencia digital ni una consultora. Somos un equipo pequeño
                         que construye software a medida para PYMEs que quieren trabajar mejor,

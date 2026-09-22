@@ -208,10 +208,11 @@
     scroll-margin-top: 6rem;
 }
 
+/* Glifo decorativo delante de la pregunta: neutro, no acento. */
 .blockFaqQ::before {
     content: '+';
     flex: none;
-    color: var(--color-mint);
+    color: var(--color-text-subtle);
     font-family: var(--font-family-mono);
     font-weight: var(--font-weight-regular);
     line-height: inherit;
@@ -242,8 +243,10 @@
     line-height: 1.65;
 }
 
+/* Viñetas del artículo: neutras. Una lista de 8 ítems con los marcadores en
+   mint convierte el acento en tipografía de cuerpo. */
 .blockList li::marker {
-    color: var(--color-mint);
+    color: var(--color-text-subtle);
 }
 
 /* Note — hairline panel with mint status dot */

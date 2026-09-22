@@ -85,6 +85,15 @@ section.solHero p.heroSubtitle {
 /* ═══════════════════════════════════════════
    Explorador — 2 columnas (desktop) / apilado (≤1023px)
    ═══════════════════════════════════════════ */
+
+/* Cabecera de la sección del explorador. Usa `sys.sectionHeader` completo;
+   aquí solo se recorta el hueco inferior, porque debajo va una superficie
+   elevada (el propio explorador), no texto en flujo — con los 56px del
+   sistema el título quedaba flotando separado de lo que rotula. */
+.explorerHeader {
+    margin-bottom: var(--spacing-8);
+}
+
 .explorer {
     display: grid;
     grid-template-columns: 1fr;
@@ -280,13 +289,14 @@ section.solHero p.heroSubtitle {
     right: var(--spacing-8);
     height: 2px;
     z-index: 3;
-    background: var(--gradient-mint);
+    /* Hairline de remate del panel: decorativo, no interactivo. Era
+       `--gradient-mint` (ver la política de color en variables.css). */
+    background: var(--color-border-strong);
     border-radius: 1px;
-    opacity: 0.9;
 }
 
 /* Sin `border`: igual que `.ledger`, la separación del panel respecto al
-   fondo viene solo de `background` (radial mint + gradiente de superficie) y
+   fondo viene solo de `background` (halo neutro + gradiente de superficie) y
    `box-shadow` difuso (glass-inset + shadow-md) — cero hairline. */
 .panel {
     position: relative;
@@ -296,7 +306,7 @@ section.solHero p.heroSubtitle {
     padding: var(--spacing-10) var(--spacing-9);
     border-radius: var(--radius-panel);
     background:
-        radial-gradient(120% 90% at 100% 0%, rgba(57, 206, 134, 0.10), transparent 55%),
+        radial-gradient(120% 90% at 100% 0%, rgba(255, 255, 255, 0.055), transparent 55%),
         var(--gradient-surface),
         var(--color-bg-elevated);
     box-shadow: var(--glass-inset), var(--shadow-md);
@@ -474,8 +484,9 @@ section.solHero p.heroSubtitle {
     margin-top: 1px;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
+    /* Numeración de paso: ordinal, no control. Neutra. */
+    color: var(--color-text-muted);
+    background: rgba(255, 255, 255, 0.06);
     border-radius: var(--radius-full);
     flex-shrink: 0;
 }
@@ -563,8 +574,11 @@ section.solHero p.heroSubtitle {
     width: 44px;
     height: 44px;
     flex-shrink: 0;
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
+    /* En REPOSO el control es neutro; el mint aparece al pasar el puntero
+       (ver `:hover` justo debajo) y en el anillo de foco. Antes el botón ya
+       nacía mint, así que el hover no añadía ninguna información nueva. */
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.06);
     border: none;
     border-radius: var(--radius-full);
     cursor: pointer;
@@ -644,8 +658,9 @@ section.solHero p.heroSubtitle {
     outline-offset: -4px;
 }
 
-/* Sin `border`: el badge se distingue del panel solo por `background`
-   (verde suave) y `box-shadow` (glow mint difuso), no por un hairline. */
+/* Sin `border`: el badge se distingue del panel solo por `background`, no por
+   un hairline. Era verde suave + `--shadow-mint` (un glow verde proyectado
+   bajo un icono decorativo); ahora es neutro. */
 .panelIcon {
     position: relative;
     width: 60px;
@@ -653,12 +668,14 @@ section.solHero p.heroSubtitle {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-mint);
-    background: var(--color-mint-soft);
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-card);
-    box-shadow: var(--shadow-mint);
     flex-shrink: 0;
-    margin-bottom: var(--spacing-7);
+    /* Antes 28px: el icono iba seguido directamente del contenido. Ahora
+       `.panelKicker` se apila justo debajo en todas las anchuras y aporta el
+       resto del aire, así que este hueco se recorta para no duplicarlo. */
+    margin-bottom: var(--spacing-4);
 }
 
 /* Mismo patrón que `.rowIconMotion` — overlay absoluto para que el
@@ -672,25 +689,30 @@ section.solHero p.heroSubtitle {
     justify-content: center;
 }
 
-/* Kicker mobile-only con el nombre del sector — oculto ≥768px (ahí
-   `.panelTitle`, dentro de la página de resumen, ya es la referencia
-   textual y este badge quedaría redundante); pintado solo en ≤767px, ver
-   ese `@media` más abajo, donde `.panelWrap` pasa a ser un carrusel de
-   tarjetas y este kicker es lo único que identifica el sector cuando el
-   usuario está en las páginas "Cómo funciona"/FAQ (sin `.panelTitle`). */
+/* Kicker con el nombre del sector — visible en TODAS las anchuras.
+   Antes estaba `display: none` por encima de 768px, con el argumento de que
+   ahí `.panelTitle` ya daba la referencia textual. Pero `.panelTitle` solo
+   existe en la página de "Resumen": en "Cómo funciona" y en la FAQ el panel de
+   escritorio se quedaba igual de huérfano que el móvil — un icono genérico y
+   nada más que dijera de qué sector se está hablando. El problema que este
+   kicker resuelve no dependía del ancho de pantalla, así que la solución
+   tampoco debe hacerlo.
+   Toma su forma del mismo sistema de eyebrows que rotula las secciones
+   (`.eyebrow` global): mono en versalitas + punto mint. Antes pintaba el texto
+   ENTERO en mint, un uso decorativo del color interactivo. */
 .panelKicker {
-    display: none;
+    composes: eyebrow from global;
+    margin: 0 0 var(--spacing-4);
 }
 
+/* Titular del panel de sector. Ya no redeclara familia/tamaño/peso/color/
+   tracking: el elemento es un <h3> y la escala canónica (variables.css, vía
+   index.css) se los da. Aquí queda solo la desviación real — un interlineado
+   más apretado que el h3 por defecto, porque son títulos cortos de 1-2 líneas
+   dentro de una tarjeta — y el margen. */
 .panelTitle {
-    font-family: var(--font-family-display);
-    font-size: var(--font-size-h3);
-    font-weight: var(--font-weight-h3);
-    color: var(--color-text-strong);
     line-height: 1.12;
-    letter-spacing: var(--tracking-tight);
     margin: 0 0 var(--spacing-4);
-    text-wrap: balance;
 }
 
 .panelWho {
@@ -978,9 +1000,8 @@ section.solHero p.heroSubtitle {
         right: var(--spacing-6);
         height: 2px;
         z-index: 3;
-        background: var(--gradient-mint);
+        background: var(--color-border-strong);
         border-radius: 1px;
-        opacity: 0.9;
     }
 
     /* El icono ya era persistente en las 3 páginas internas (vive fuera de
@@ -991,21 +1012,8 @@ section.solHero p.heroSubtitle {
         margin-bottom: var(--spacing-3);
     }
 
-    /* Kicker con el nombre del sector — sin él, un usuario que hubiera
-       avanzado a "Cómo funciona"/FAQ (donde no aparece `.panelTitle`, solo
-       en la página de resumen) y luego deslizara al sector siguiente
-       perdería toda referencia textual de qué sector está viendo, quedando
-       solo el icono (mismo badge en los 7 sectores salvo el glifo). */
-    .panelKicker {
-        display: block;
-        font-family: var(--font-family-mono);
-        font-size: var(--font-size-xs);
-        font-weight: var(--font-weight-medium);
-        color: var(--color-mint);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        margin: 0 0 var(--spacing-4);
-    }
+    /* `.panelKicker` ya no necesita override aquí: se pinta en todas las
+       anchuras desde su regla base (ver más arriba). */
 
     /* ─── Dots de posición — mismo patrón visual que .caseDots/.caseDot
        en Home.module.css (carrusel de casos de éxito). `order: 2`: quedan

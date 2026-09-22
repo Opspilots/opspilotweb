@@ -1,7 +1,6 @@
 import React from 'react';
 import { Navbar } from '../common/Navbar';
 import { Footer } from '../common/Footer';
-import { CustomCursor } from '../fx/CustomCursor';
 import { useLenis } from '../../hooks/useLenis';
 import styles from './Layout.module.css';
 
@@ -20,7 +19,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <a href="#main" className={styles.skipLink}>
                 Saltar al contenido
             </a>
-            <CustomCursor />
             <Navbar />
             {/* `tabIndex={-1}`: sin él, el salto por fragmento mueve el scroll pero
                 NO el foco, y el siguiente Tab volvería al principio de la navbar. */}

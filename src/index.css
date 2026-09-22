@@ -106,28 +106,14 @@ button {
     background: none;
 }
 
-/* Cursor custom activo (CustomCursor.tsx, solo puntero fino): oculta el
-   nativo para que el dot/ring lo reemplace en vez de duplicarlo. */
-html[data-custom-cursor="on"],
-html[data-custom-cursor="on"] * {
-    cursor: none !important;
-}
-
-/* ...pero en campos de texto y controles restauramos el cursor nativo: el
-   caret de escritura y el "no permitido" son affordances funcionales que el
-   dot/ring no comunican. */
-html[data-custom-cursor="on"] input,
-html[data-custom-cursor="on"] textarea,
-html[data-custom-cursor="on"] select,
-html[data-custom-cursor="on"] [contenteditable],
-html[data-custom-cursor="on"] [contenteditable] * {
-    cursor: auto !important;
-}
-
-html[data-custom-cursor="on"] :disabled,
-html[data-custom-cursor="on"] [disabled] {
-    cursor: not-allowed !important;
-}
+/* El cursor del sistema es el nativo, siempre. Aquí vivía un bloque
+   `cursor: none !important` que ocultaba el cursor del SO para que el dot/ring
+   decorativo de CustomCursor.tsx lo sustituyera. Ese componente se eliminó: su
+   único aporte informativo (un `scale(1.6)` del anillo sobre elementos
+   interactivos) ya lo comunican los `:hover` reales de botones, enlaces y
+   tarjetas, y a cambio secuestraba una affordance del sistema operativo —
+   incluidas las variantes contextuales (text, grab, not-allowed) y el cursor
+   ampliado/de alto contraste que configura el usuario por accesibilidad. */
 
 button:focus-visible {
     outline: 2px solid var(--color-mint);
@@ -418,8 +404,11 @@ video {
     pointer-events: none;
     opacity: 0;
     transition: opacity var(--transition-normal);
+    /* Luz neutra, no mint: el spotlight sigue al puntero sobre TARJETAS (no
+       sobre controles), así que es un efecto de profundidad, no la señal de
+       que algo es accionable. Ver la política de color en variables.css. */
     background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%),
-            rgba(57, 206, 134, 0.14), transparent 60%);
+            rgba(255, 255, 255, 0.07), transparent 60%);
 }
 
 .spotlight[data-spotlight-active]::before {
