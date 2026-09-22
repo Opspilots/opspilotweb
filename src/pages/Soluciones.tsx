@@ -408,24 +408,34 @@ export const Soluciones: React.FC = () => {
             <section className={`${sys.pageHero} ${styles.solHero}`}>
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
                     <div className={sys.pageHeroContent} ref={heroRef}>
-                        {/* Titular reactivo al sector activo — el lead-in ("Software
-                            para") queda fijo, solo el nombre del sector (`activeSector.label`)
-                            cambia, con el mismo crossfade+slide (opacity/y, mismo timing/
-                            easing que el crossfade de icono `.rowIconMotion`/
-                            `.panelIconMotion` y la transición de panel) al cambiar
-                            `selected` — por clic, por tap en un dot o por swipe, da igual,
-                            todos pasan por el mismo `setSelected`. Gated tras `prefersReducedMotion`
-                            como el resto del componente: con reduced motion el nombre
-                            también cambia, solo que sin animar. */}
+                        {/* Antes el H1 era el titular-catálogo "Software para {sector}":
+                            etiquetaba el selector en vez de decir nada. Ahora el H1 es fijo
+                            y afirma lo único que le importa a quien llega por su sector —
+                            que ya se ha resuelto antes—, y el nombre reactivo del sector
+                            baja al subtítulo.
+                            El MECANISMO reactivo se conserva intacto, solo cambia de línea:
+                            `activeSector.label` sigue cruzando con el mismo crossfade+slide
+                            (opacity/y, mismo timing/easing que el crossfade de icono
+                            `.rowIconMotion`/`.panelIconMotion` y la transición de panel) al
+                            cambiar `selected` — por clic, por tap en un dot o por swipe, da
+                            igual, todos pasan por el mismo `setSelected`. Eso importa:
+                            varios comentarios de este fichero (ver `handlePanelWrapScroll`)
+                            dan por hecho que el hero sigue al carrusel, y así sigue siendo.
+                            Gated tras `prefersReducedMotion` como el resto del componente:
+                            con reduced motion el nombre también cambia, solo que sin animar. */}
                         <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>
-                            Software para{' '}
+                            Tu sector ya lo hemos{' '}
+                            <em className={sys.pageHeroAccent}>resuelto antes</em>.
+                        </h1>
+                        <p className={`${sys.pageHeroSubtitle} ${styles.heroSubtitle} reveal`}>
+                            Conocemos de cerca la operativa de{' '}
                             {prefersReducedMotion ? (
-                                <em className={sys.pageHeroAccent}>{activeSector.label}</em>
+                                <em className={styles.heroSectorName}>{activeSector.label}</em>
                             ) : (
                                 <AnimatePresence mode="wait" initial={false}>
                                     <motion.em
                                         key={activeSector.id}
-                                        className={sys.pageHeroAccent}
+                                        className={styles.heroSectorName}
                                         initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -8 }}
@@ -435,10 +445,7 @@ export const Soluciones: React.FC = () => {
                                     </motion.em>
                                 </AnimatePresence>
                             )}
-                        </h1>
-                        <p className={`${sys.pageHeroSubtitle} ${styles.heroSubtitle} reveal`}>
-                            Conocemos de cerca la operativa de estos sectores. Elige el tuyo y
-                            te decimos exactamente qué podemos construir para ti.
+                            . Elige el tuyo y te decimos exactamente qué podemos construir para ti.
                         </p>
                     </div>
                 </div>
@@ -729,6 +736,50 @@ export const Soluciones: React.FC = () => {
                             })}
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* Franja de condiciones — plazos, soporte y permanencia.
+                Estos tres datos ya existían en el sitio, pero enterrados: vivían
+                en la FAQ del sector "Procesos únicos a medida", o sea en la
+                página 3 del carrusel interno de UNO de los siete paneles. Ahí
+                solo los veía quien ya había elegido ese sector concreto Y
+                avanzado dos páginas dentro de él — exactamente el visitante que
+                menos falta le hacen. Son las tres objeciones que frenan una
+                decisión de compra (cuánto tarda, qué pasa después, a qué me
+                ato), así que suben a una franja fija, siempre visible, justo
+                debajo del explorador.
+                No se duplica el contenido: aquí va la versión de titular y el
+                detalle sigue en las FAQ de cada sector (donde además está
+                matizado por sector, que es lo que una franja global no puede
+                hacer). Las cifras son literalmente las del dato —ver
+                src/data/sectors.ts, sector `medida`—, no una redondeada para
+                que quede mejor. */}
+            <section className={styles.termsSection}>
+                <div className={sys.container}>
+                    <dl className={styles.termsGrid}>
+                        <div className={styles.termsItem}>
+                            <dt className={styles.termsValue}>6–8 semanas</dt>
+                            <dd className={styles.termsLabel}>
+                                Lo que tarda un proceso simple. Con varias integraciones,
+                                de 3 a 4 meses — y una versión funcional mucho antes.
+                            </dd>
+                        </div>
+                        <div className={styles.termsItem}>
+                            <dt className={styles.termsValue}>6 meses de soporte</dt>
+                            <dd className={styles.termsLabel}>
+                                El contrato incluye los cambios de los primeros seis meses.
+                                Si tu proceso cambia, lo ajustamos.
+                            </dd>
+                        </div>
+                        <div className={styles.termsItem}>
+                            <dt className={styles.termsValue}>Sin permanencia</dt>
+                            <dd className={styles.termsLabel}>
+                                Ni cuotas mensuales por el software ni letra pequeña.
+                                Pagas el desarrollo una vez y el sistema es tuyo.
+                            </dd>
+                        </div>
+                    </dl>
                 </div>
             </section>
 

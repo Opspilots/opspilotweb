@@ -25,6 +25,7 @@ import sys from "../styles/page-system.module.css";
 import { HeroLeadWidget } from "../components/home/HeroLeadWidget";
 import { SpotlightCard } from "../components/fx/SpotlightCard";
 import { CaseMockPanel } from "../components/cases/CaseMockPanel";
+import { Differentiators } from "../components/marketing/Differentiators";
 import { TextLink } from "../components/common/TextLink";
 import { CASES } from "../data";
 import { ICONS } from "../components/icons/registry";
@@ -92,7 +93,10 @@ const WHY_COMPARISON = [
   {
     feature: "Soporte",
     generic: "Un ticket, un foro en inglés, y a esperar",
-    ops: "Escribes al equipo que lo construyó. Te responde esa misma persona",
+    // "Escribes al equipo que lo construyó. Te responde esa misma persona" se
+    // contradecía dentro de la MISMA frase: un equipo no es "esa misma
+    // persona". OpsPilot es unipersonal, así que gana la segunda mitad.
+    ops: "Escribes a quien lo construyó. Te responde esa misma persona",
   },
   {
     feature: "Plazos",
@@ -338,17 +342,25 @@ export const Home: React.FC = () => {
       };
     });
 
-    // ─── CTA "¿Hablamos?" — char por char desde una máscara SplitText ───
+    // ─── CTA de cierre — char por char desde una máscara SplitText ───
+    // El `stagger` se calcula, no se fija: el titular pasó de "¿Hablamos?" (10
+    // chars) a "¿Qué es lo que más te está frenando ahora mismo?" (~47), y con
+    // el 0.04 fijo de antes el último carácter arrancaba a 1.8s — el bloque se
+    // quedaba "escribiéndose" casi tres segundos. Repartiendo una ventana fija
+    // de 0.7s entre los chars que haya, la animación dura lo mismo que siempre
+    // sea cual sea el largo del copy (y el tope de 0.04 evita que un titular
+    // muy corto se vuelva más lento de lo que era).
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const title = ctaRef.current?.querySelector<HTMLElement>(
         `.${sys.endCtaTitle}`,
       );
       if (!title) return;
       const split = SplitText.create(title, { type: "chars", mask: "chars" });
+      const stagger = Math.min(0.04, 0.7 / Math.max(split.chars.length, 1));
       const tween = gsap.from(split.chars, {
         yPercent: 120,
         duration: 0.8,
-        stagger: 0.04,
+        stagger,
         ease: "power4.out",
         scrollTrigger: {
           trigger: ctaRef.current,
@@ -397,23 +409,33 @@ export const Home: React.FC = () => {
       <section className={styles.hero} ref={heroRef}>
         <div className={styles.heroInner}>
           <div className={styles.heroContent}>
+            {/* Antes: "Software a medida para tu PYME. Sin plantillas. Sin
+                sorpresas." — describía la CATEGORÍA de producto, no el
+                resultado. Ahora el titular dice qué acabas teniendo y cuándo, y
+                las tres negaciones bajan al subtítulo, que es su sitio natural.
+                El plazo NO es inventado: es el mismo que ya afirma el
+                diferenciador "Entrega en semanas, no en meses" dos secciones más
+                abajo en esta misma página ("la entregamos lista para usar en 4 a
+                8 semanas"), palabra por palabra. */}
             <h1 className={styles.heroTitle}>
               <span className={styles.heroLine}>
-                <span className={styles.heroLineInner}>Software a medida</span>
+                <span className={styles.heroLineInner}>Tu operativa entera</span>
               </span>
               <span className={styles.heroLine}>
-                <span className={styles.heroLineInner}>para tu PYME.</span>
+                <span className={styles.heroLineInner}>en un sistema.</span>
               </span>
               <span className={styles.heroLine}>
                 <span className={styles.heroLineInner}>
-                  Sin plantillas. Sin{" "}
-                  <span className={styles.heroAccent}>sorpresas.</span>
+                  En <span className={styles.heroAccent}>4 a 8 semanas.</span>
                 </span>
               </span>
             </h1>
+            {/* "Software a medida" abre el subtítulo a propósito: al salir del
+                H1 se quedaba sin aparecer en todo el pliegue, y es la consulta
+                por la que esta página compite (ver `seoProps.title`). */}
             <p className={styles.heroSubtitle}>
-              Construimos el sistema que tu PYME necesita, no el que te quieren
-              vender. Precio cerrado y respuesta en menos de 24 horas.
+              Software a medida: sin plantillas, sin cuotas, sin sorpresas.
+              Precio cerrado y respuesta en menos de 24 horas.
             </p>
             <div className={styles.ctaGroup}>
               <ButtonLink
@@ -583,6 +605,15 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* ═══ DIFERENCIADORES ═══ */}
+      {/* Movido desde /casos (ver src/components/marketing/Differentiators.tsx):
+          es el bloque que mejor explica la propuesta y estaba en la página con
+          menos tráfico. Va aquí, entre el carrusel de casos y la tabla
+          comparativa: primero la prueba (casos), luego el porqué en positivo
+          (estos 4 diferenciadores) y solo después la comparativa contra el
+          software de catálogo, que es el argumento en negativo. */}
+      <Differentiators />
+
       {/* ═══ POR QUÉ OPSPILOT ═══ */}
       <section className={styles.whySection}>
         <div className={sys.container} ref={whyRef}>
@@ -718,14 +749,21 @@ export const Home: React.FC = () => {
       <section className={sys.endCta}>
         <div className={sys.container}>
           <div className={sys.endCtaBlock} ref={ctaRef}>
-            <h2 className={sys.endCtaTitle}>¿Hablamos?</h2>
+            {/* Antes: "¿Hablamos?" + "Reservar diagnóstico". El titular no
+                preguntaba nada real y el botón pedía agendar algo con nombre de
+                consultoría. Ahora el titular es la pregunta operativa que el
+                visitante ya se está haciendo, y el botón la responde en primera
+                persona nombrando el coste exacto de decir que sí: media hora. */}
+            <h2 className={sys.endCtaTitle}>
+              ¿Qué es lo que más te está frenando ahora mismo?
+            </h2>
             <p className={sys.endCtaSub}>
-              Treinta minutos que te ahorran meses de dudas. Te decimos qué
-              construir y qué no, sin venderte de más.
+              Nos lo cuentas, miramos tu operativa y te decimos qué construir y
+              qué no. Sin venderte de más.
             </p>
             <div className={sys.endCtaButtons}>
               <ButtonLink to={ROUTES.contacto} variant="primary" size="lg">
-                Reservar diagnóstico
+                Contármelo en 30 minutos
               </ButtonLink>
               <ButtonLink to={ROUTES.soluciones} variant="outline" size="lg">
                 Ver soluciones

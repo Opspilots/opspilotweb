@@ -21,7 +21,12 @@ export const CASES: readonly Case[] = [
         sectorId: 'reformas',
         iconKey: 'building',
         label: 'Reformas',
-        title: 'De la libreta al sistema que trabaja solo',
+        // Antes: "De la libreta al sistema que trabaja solo" — una metáfora sin
+        // cifra, justo en el caso que SÍ tiene una en sus propios datos
+        // ("triplicó su capacidad sin contratar a nadie más" en `summary`, "en
+        // tres meses triplicaron su capacidad" en `text`). El titular ahora usa
+        // ese dato tal cual, sin inventar nada nuevo.
+        title: 'Triplicaron su capacidad sin contratar a nadie',
         summary:
             'Empresa familiar de reformas que triplicó su capacidad sin contratar a nadie más.',
         text:
