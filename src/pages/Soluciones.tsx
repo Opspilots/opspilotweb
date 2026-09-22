@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { ButtonLink } from '../components/ui/Button';
 import { TextLink } from '../components/common/TextLink';
@@ -19,14 +17,6 @@ import styles from './Soluciones.module.css';
 import type { Sector } from '../data';
 import { SECTORS } from '../data';
 import { ICONS } from '../components/icons/registry';
-
-// Guard SSR: en build (node) no hay `window`; registrar el plugin a nivel de
-// módulo reventaría el prerender. En cliente se registra con normalidad —
-// mismo guard que useLenis.ts, que también registra este plugin (registrar
-// dos veces es un no-op seguro en GSAP).
-if (typeof window !== 'undefined') {
-    gsap.registerPlugin(ScrollTrigger);
-}
 
 // CTA del panel de detalle: idéntico en los 6 sectores, así que es
 // presentación (no dato) — se hardcodea aquí en vez de repetirse en src/data.
@@ -188,7 +178,6 @@ export const Soluciones: React.FC = () => {
     const [pageDirection, setPageDirection] = useState(0);
     const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const ledgerRef = useRef<HTMLDivElement>(null);
-    const trackRef = useRef<HTMLDivElement>(null);
     const ledgerScrollRaf = useRef(0);
     // ≤767px: `.ledger` (fila compacta) y `.panelWrap` (detalle completo) se
     // fusionan en UNA sola superficie tipo hoja/modal que ES el carrusel —
@@ -212,7 +201,7 @@ export const Soluciones: React.FC = () => {
     const ledgerSyncMounted = useRef(false);
     const panelSyncMounted = useRef(false);
 
-    // Cambiar de sector (clic/tap/teclado en las filas O scroll-jack, ambos
+    // Cambiar de sector (clic/tap/teclado en las filas, dots o swipe: todos
     // pasan por `setSelected`) siempre vuelve el panel a su página 1 — nunca
     // se hereda la página en la que se había quedado el sector anterior (ver
     // instrucción explícita: aterrizar en la FAQ de un sector nuevo sin
@@ -321,52 +310,23 @@ export const Soluciones: React.FC = () => {
 
     useEffect(() => () => cancelAnimationFrame(panelWrapScrollRaf.current), []);
 
-    // Selección de sector — dos mecanismos que conviven:
-    // 1. Clic/tap/teclado en las filas (ver onClick/onKeyDown más abajo) —
-    //    funciona en TODOS los breakpoints, es el único mecanismo en
-    //    <1024px y también el fallback en desktop con reduced-motion.
-    // 2. Scroll-jack en desktop (≥1024px) sin reduced-motion (ver useEffect
-    //    justo abajo): el explorador se queda sticky (`.solViewport`) dentro
-    //    de un track alto (`.solTrack`) y el scroll de página avanza
-    //    `selected` por los 7 sectores. Gated en el propio matchMedia de
-    //    GSAP a `prefers-reduced-motion: no-preference` — quien pide reduced
-    //    motion nunca activa el pin/scroll-jack, solo clic/tap/teclado.
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const mm = gsap.matchMedia();
-        mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
-            const track = trackRef.current;
-            if (!track) return;
-            const st = ScrollTrigger.create({
-                trigger: track,
-                start: 'top top',
-                end: 'bottom bottom',
-                onUpdate: (self) => {
-                    const idx = Math.min(
-                        SECTORS.length - 1,
-                        Math.floor(self.progress * SECTORS.length),
-                    );
-                    setSelected((prev) => (prev === idx ? prev : idx));
-                },
-            });
-            return () => st.kill();
-        });
-
-        // El alto real del track depende de fuentes/imágenes que pueden
-        // terminar de cargar después del primer cálculo de ScrollTrigger —
-        // sin este refresh, `end: 'bottom bottom'` puede quedar corto y el
-        // último tramo de scroll no llega a seleccionar el último sector.
-        const refresh = () => ScrollTrigger.refresh();
-        window.addEventListener('load', refresh);
-        const rid = window.setTimeout(refresh, 400);
-
-        return () => {
-            window.removeEventListener('load', refresh);
-            window.clearTimeout(rid);
-            mm.revert();
-        };
-    }, []);
-
+    // Selección de sector — UN solo mecanismo, idéntico en todos los
+    // dispositivos y breakpoints: clic/tap/teclado sobre las filas
+    // (`role="tab"`, ver onClick/onKeyDown más abajo) y sobre `.sectorDots`,
+    // más el swipe horizontal del carrusel ≤767px, que también desemboca en
+    // el mismo `setSelected` vía `handlePanelWrapScroll`.
+    //
+    // Aquí vivía un scroll-jack de GSAP/ScrollTrigger: en desktop (≥1024px)
+    // sin reduced-motion, el explorador se quedaba pineado (`.solViewport`
+    // sticky) dentro de un track de 280vh (`.solTrack`) y el progreso de
+    // scroll de la página se traducía a un índice de sector entero. Se
+    // eliminó por petición explícita del usuario: capturar el scroll de la
+    // página para mover una selección es un efecto que estorba más de lo que
+    // aporta, y obligaba a mantener dos caminos de selección distintos según
+    // dispositivo. Ahora el antiguo "fallback" (táctil/reduced-motion) es el
+    // único camino, para todos. El track alto y el sticky asociados también
+    // desaparecieron de Soluciones.module.css: la sección vuelve a medir lo
+    // que mide su contenido real.
     const handleTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
         const count = SECTORS.length;
         let nextIndex: number | null = null;
@@ -439,15 +399,12 @@ export const Soluciones: React.FC = () => {
                     { name: 'Soluciones', url: 'https://opspilot.es/soluciones' },
                 ])}
             />
-            {/* Hero — flujo normal, FUERA de `.solViewport`/`.solTrack`. Antes
-                vivía pineado dentro del scroll-jack junto al explorador (ver
-                decisión archivada en Soluciones.module.css junto a
-                `.solHero`); el usuario pidió explícitamente que el
-                scroll-jack (ver useEffect de ScrollTrigger más abajo) siga
-                aplicando SOLO al explorador de sectores, no al hero. Vuelve a
-                ser un `<section>` propio (era un `<div>` mientras vivía
-                dentro del viewport pineado, sin aportar landmark) — mismo
-                patrón que el hero de Casos/Contacto/Recursos. */}
+            {/* Hero — flujo normal, como el de Casos/Contacto/Recursos. En su
+                día vivió pineado dentro de un scroll-jack junto al explorador;
+                primero salió de ahí y después el scroll-jack entero se eliminó
+                (ver comentario junto a `handleTabKeyDown` más arriba), así que
+                hoy no hay ningún contenedor sticky ni track alto en esta
+                página. */}
             <section className={`${sys.pageHero} ${styles.solHero}`}>
                 <div className={`${sys.container} ${styles.heroContentLayer}`}>
                     <div className={sys.pageHeroContent} ref={heroRef}>
@@ -456,8 +413,8 @@ export const Soluciones: React.FC = () => {
                             cambia, con el mismo crossfade+slide (opacity/y, mismo timing/
                             easing que el crossfade de icono `.rowIconMotion`/
                             `.panelIconMotion` y la transición de panel) al cambiar
-                            `selected` — por clic o por scroll-jack, da igual, ambos pasan
-                            por el mismo `setSelected`. Gated tras `prefersReducedMotion`
+                            `selected` — por clic, por tap en un dot o por swipe, da igual,
+                            todos pasan por el mismo `setSelected`. Gated tras `prefersReducedMotion`
                             como el resto del componente: con reduced motion el nombre
                             también cambia, solo que sin animar. */}
                         <h1 className={`${sys.pageHeroTitle} ${styles.heroTitle} reveal`}>
@@ -488,296 +445,288 @@ export const Soluciones: React.FC = () => {
             </section>
 
             {/* Sectores — explorador de dos paneles (lista + detalle). Selección
-                por clic/tap/teclado en todos los breakpoints, más scroll-jack
-                en desktop sin reduced-motion (ver comentario junto a
-                `selected`/al useEffect de ScrollTrigger más arriba).
-                `.solTrack`/`.solViewport` son la pareja track alto + sticky
-                que hace posible el scroll-jack (ver Soluciones.module.css);
-                el hero YA NO vive aquí dentro (ver arriba), así que el pin
-                ahora afecta únicamente al explorador. Fuera de ese matchMedia
-                (móvil/tablet/reduced-motion) ambos colapsan a su alto de
-                contenido normal, sin efecto visible. */}
-            <section className={`${sys.section} ${styles.explorerSection}`}>
-                <div className={styles.solTrack} ref={trackRef}>
-                    <div className={styles.solViewport}>
-                        <div className={sys.container}>
-                            <div className={styles.explorer} ref={listRef} data-lenis-prevent>
-                                {/* Columna izquierda — lista de sectores seleccionables (nav,
-                                    no tabla: sin fila de cabecera, ver Soluciones.module.css).
-                                    Oculta (`display: none`) en ≤767px: ahí su trabajo de
-                                    "carrusel de sectores" lo hace `.panelWrap` de más abajo,
-                                    fusionado con el detalle en una sola superficie — ver
-                                    comentario junto a `.panelWrap`. Se deja montada (no
-                                    condicionada en JS) porque sigue siendo la lista/carril real
-                                    en 768–1023px y desktop, sin cambios ahí. */}
-                                <div
-                                    className={`${styles.ledger} reveal`}
-                                    role="tablist"
-                                    aria-label="Sectores"
-                                    aria-orientation="vertical"
-                                    ref={ledgerRef}
-                                    onScroll={handleLedgerScroll}
-                                >
-                                    {SECTORS.map((s, i) => {
-                                        const RowIcon = ICONS[s.iconKey];
-                                        return (
-                                            <button
-                                                key={s.id}
-                                                ref={(el) => { tabRefs.current[i] = el; }}
-                                                type="button"
-                                                role="tab"
-                                                id={`sector-tab-${i}`}
-                                                aria-selected={i === selected}
-                                                aria-controls={`sector-panel-${i}`}
-                                                tabIndex={i === selected ? 0 : -1}
-                                                className={`${styles.row} ${i === selected ? styles.rowActive : ''}`}
-                                                onClick={() => setSelected(i)}
-                                                onKeyDown={(e) => handleTabKeyDown(e, i)}
-                                            >
-                                                <span className={styles.rowIcon} aria-hidden="true">
-                                                    {prefersReducedMotion ? (
+                SOLO por clic/tap/teclado (filas y dots) y swipe del carrusel
+                ≤767px, idéntica en todos los dispositivos — ver comentario
+                junto a `handleTabKeyDown` más arriba. La sección es un bloque
+                normal del documento: sin track alto ni viewport sticky, mide
+                lo que mide su contenido. */}
+            <section className={sys.section}>
+                <div className={sys.container}>
+                    <div className={styles.explorer} ref={listRef} data-lenis-prevent>
+                        {/* Columna izquierda — lista de sectores seleccionables (nav,
+                            no tabla: sin fila de cabecera, ver Soluciones.module.css).
+                            Oculta (`display: none`) en ≤767px: ahí su trabajo de
+                            "carrusel de sectores" lo hace `.panelWrap` de más abajo,
+                            fusionado con el detalle en una sola superficie — ver
+                            comentario junto a `.panelWrap`. Se deja montada (no
+                            condicionada en JS) porque sigue siendo la lista/carril real
+                            en 768–1023px y desktop, sin cambios ahí. */}
+                        <div
+                            className={`${styles.ledger} reveal`}
+                            role="tablist"
+                            aria-label="Sectores"
+                            aria-orientation="vertical"
+                            ref={ledgerRef}
+                            onScroll={handleLedgerScroll}
+                        >
+                            {SECTORS.map((s, i) => {
+                                const RowIcon = ICONS[s.iconKey];
+                                return (
+                                    <button
+                                        key={s.id}
+                                        ref={(el) => { tabRefs.current[i] = el; }}
+                                        type="button"
+                                        role="tab"
+                                        id={`sector-tab-${i}`}
+                                        aria-selected={i === selected}
+                                        aria-controls={`sector-panel-${i}`}
+                                        tabIndex={i === selected ? 0 : -1}
+                                        className={`${styles.row} ${i === selected ? styles.rowActive : ''}`}
+                                        onClick={() => setSelected(i)}
+                                        onKeyDown={(e) => handleTabKeyDown(e, i)}
+                                    >
+                                        <span className={styles.rowIcon} aria-hidden="true">
+                                            {prefersReducedMotion ? (
+                                                <RowIcon size={22} strokeWidth={1.6} />
+                                            ) : (
+                                                // Crossfade+scale al activarse/desactivarse la fila — la
+                                                // key cambia con el estado activo (no con iconKey, que es
+                                                // fijo por fila) para que AnimatePresence anime el "pop"
+                                                // justo cuando esta fila pasa a ser la seleccionada.
+                                                <AnimatePresence mode="wait" initial={false}>
+                                                    <motion.span
+                                                        key={i === selected ? 'active' : 'inactive'}
+                                                        className={styles.rowIconMotion}
+                                                        initial={{ opacity: 0, scale: 0.85 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 0.85 }}
+                                                        transition={{ duration: 0.22, ease: 'easeOut' }}
+                                                    >
                                                         <RowIcon size={22} strokeWidth={1.6} />
-                                                    ) : (
-                                                        // Crossfade+scale al activarse/desactivarse la fila — la
-                                                        // key cambia con el estado activo (no con iconKey, que es
-                                                        // fijo por fila) para que AnimatePresence anime el "pop"
-                                                        // justo cuando esta fila pasa a ser la seleccionada.
-                                                        <AnimatePresence mode="wait" initial={false}>
-                                                            <motion.span
-                                                                key={i === selected ? 'active' : 'inactive'}
-                                                                className={styles.rowIconMotion}
-                                                                initial={{ opacity: 0, scale: 0.85 }}
-                                                                animate={{ opacity: 1, scale: 1 }}
-                                                                exit={{ opacity: 0, scale: 0.85 }}
-                                                                transition={{ duration: 0.22, ease: 'easeOut' }}
-                                                            >
-                                                                <RowIcon size={22} strokeWidth={1.6} />
-                                                            </motion.span>
-                                                        </AnimatePresence>
-                                                    )}
-                                                </span>
-                                                {/* rowDesc (s.who) — hoy no se pinta en ningún breakpoint
-                                                    (queda `display: none` también en ≤767px, ver
-                                                    Soluciones.module.css: ahí ahora manda `.panelWrap`, no
-                                                    `.ledger`). Se deja el markup/dato en vez de borrarlo: es
-                                                    barato de mantener y sirve de fallback textual si `.row`
-                                                    volviera a mostrarse en algún breakpoint futuro. */}
-                                                <span className={styles.rowText}>
-                                                    <span className={styles.rowLabel}>{s.label}</span>
-                                                    <span className={styles.rowDesc}>{s.who}</span>
-                                                </span>
-                                                <ArrowRight size={15} strokeWidth={2} className={styles.rowArrow} aria-hidden="true" />
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                                                    </motion.span>
+                                                </AnimatePresence>
+                                            )}
+                                        </span>
+                                        {/* rowDesc (s.who) — hoy no se pinta en ningún breakpoint
+                                            (queda `display: none` también en ≤767px, ver
+                                            Soluciones.module.css: ahí ahora manda `.panelWrap`, no
+                                            `.ledger`). Se deja el markup/dato en vez de borrarlo: es
+                                            barato de mantener y sirve de fallback textual si `.row`
+                                            volviera a mostrarse en algún breakpoint futuro. */}
+                                        <span className={styles.rowText}>
+                                            <span className={styles.rowLabel}>{s.label}</span>
+                                            <span className={styles.rowDesc}>{s.who}</span>
+                                        </span>
+                                        <ArrowRight size={15} strokeWidth={2} className={styles.rowArrow} aria-hidden="true" />
+                                    </button>
+                                );
+                            })}
+                        </div>
 
-                                {/* Indicadores de posición del carrusel de sectores en móvil
-                                    (≤767px, ver .sectorDots en Soluciones.module.css) — mismo
-                                    patrón que .caseDots del carrusel de casos en Home.tsx.
-                                    Resuelven el gap de affordance que hizo abandonar el carril
-                                    horizontal anterior: de un vistazo se ve CUÁNTOS sectores hay
-                                    y CUÁL está activo, algo que ni el "peek" del borde ni el fade
-                                    comunican por sí solos. Son botones reales (no aria-hidden):
-                                    navegación adicional legítima, no decoración pura. Viven en el
-                                    DOM entre `.ledger` y `.panelWrap` (así son hermanos directos de
-                                    ambos, sin envoltorio extra) pero en ≤767px la posición VISUAL
-                                    queda por debajo del carrusel fusionado vía `order` en CSS (ver
-                                    Soluciones.module.css): ahora que `.ledger` está oculto ahí, ya
-                                    no hace falta un role="tab"/"tablist" propio para no duplicar
-                                    el de `.ledger` — a esos anchos `.ledger` no expone ningún
-                                    tablist (display:none lo saca del árbol de accesibilidad), así
-                                    que estos dots son la única superficie de "ir directo a X sector"
-                                    además del propio swipe. En 768–1023px/desktop quedan en el DOM
-                                    pero display:none, así que no ocupan layout ni orden de tab. */}
-                                <div className={styles.sectorDots}>
-                                    {SECTORS.map((s, i) => (
-                                        <button
-                                            key={s.id}
-                                            type="button"
-                                            className={`${styles.sectorDot} ${i === selected ? styles.sectorDotActive : ''}`}
-                                            aria-label={`Ir a ${s.label}`}
-                                            aria-current={i === selected ? 'true' : undefined}
-                                            onClick={() => setSelected(i)}
-                                        />
-                                    ))}
-                                </div>
+                        {/* Indicadores de posición del carrusel de sectores en móvil
+                            (≤767px, ver .sectorDots en Soluciones.module.css) — mismo
+                            patrón que .caseDots del carrusel de casos en Home.tsx.
+                            Resuelven el gap de affordance que hizo abandonar el carril
+                            horizontal anterior: de un vistazo se ve CUÁNTOS sectores hay
+                            y CUÁL está activo, algo que ni el "peek" del borde ni el fade
+                            comunican por sí solos. Son botones reales (no aria-hidden):
+                            navegación adicional legítima, no decoración pura. Viven en el
+                            DOM entre `.ledger` y `.panelWrap` (así son hermanos directos de
+                            ambos, sin envoltorio extra) pero en ≤767px la posición VISUAL
+                            queda por debajo del carrusel fusionado vía `order` en CSS (ver
+                            Soluciones.module.css): ahora que `.ledger` está oculto ahí, ya
+                            no hace falta un role="tab"/"tablist" propio para no duplicar
+                            el de `.ledger` — a esos anchos `.ledger` no expone ningún
+                            tablist (display:none lo saca del árbol de accesibilidad), así
+                            que estos dots son la única superficie de "ir directo a X sector"
+                            además del propio swipe. En 768–1023px/desktop quedan en el DOM
+                            pero display:none, así que no ocupan layout ni orden de tab. */}
+                        <div className={styles.sectorDots}>
+                            {SECTORS.map((s, i) => (
+                                <button
+                                    key={s.id}
+                                    type="button"
+                                    className={`${styles.sectorDot} ${i === selected ? styles.sectorDotActive : ''}`}
+                                    aria-label={`Ir a ${s.label}`}
+                                    aria-current={i === selected ? 'true' : undefined}
+                                    onClick={() => setSelected(i)}
+                                />
+                            ))}
+                        </div>
 
-                                {/* Columna derecha — panel de detalle del sector activo.
-                                    ≥768px: comportamiento sin cambios — los 7 paneles se
-                                    superponen absolutos (`.panelHidden`), solo el activo en
-                                    flujo, tal como antes.
-                                    ≤767px: `.panelWrap` deja de ser un panel único y pasa a SER
-                                    el carrusel de sectores (fusión pedida de `.ledger` + panel de
-                                    detalle en una sola superficie tipo hoja/modal — ver
-                                    Soluciones.module.css): los 7 `.panel` quedan en flujo,
-                                    unos junto a otros, en un carril horizontal con scroll-snap
-                                    (mismo mecanismo que tenía `.ledger`, adaptado aquí vía
-                                    `panelWrapRef`/`handlePanelWrapScroll` en vez de
-                                    `ledgerRef`/`handleLedgerScroll`). `.ledger` en sí queda oculto
-                                    a ese ancho (ver comentario junto a `.ledger` más arriba); el
-                                    fallback de selección por tap sigue siendo el mismo patrón
-                                    (`onClick`/`.sectorDots`), solo que ahora el swipe actúa
-                                    directamente sobre la tarjeta de detalle en vez de sobre una
-                                    fila compacta separada. */}
-                                <div
-                                    className={`${styles.panelWrap} reveal`}
-                                    ref={panelWrapRef}
-                                    onScroll={handlePanelWrapScroll}
-                                >
-                                    <span className={styles.panelBar} aria-hidden="true" />
-                                    {/* Los 7 paneles se montan siempre (SEO: el copy de who/solution/
-                                        benefits de cada sector debe existir en el HTML prerenderizado,
-                                        no solo el del sector activo). ≥768px: solo el activo queda en
-                                        flujo normal — determina el alto de `.panelWrap` —; el resto se
-                                        superpone absoluto (`.panelHidden`), invisible y con `inert`
-                                        para que no sea alcanzable por teclado ni lectores de pantalla.
-                                        ≤767px: los 7 quedan en flujo horizontal (ver comentario de
-                                        `.panelWrap` arriba) pero `inert`/`aria-hidden` en los inactivos
-                                        se mantienen igual — solo la tarjeta centrada/snapeada es
-                                        alcanzable por teclado o lector de pantalla, el resto es
-                                        "visible pero no interactivo" mientras se desliza hacia ella.
-                                        La transición opacity/y de abajo cubre TANTO el cambio de
-                                        sector por clic/dot como por scroll-jack o swipe — todos pasan
-                                        por el mismo `setSelected`, así que `isActive` cambia igual en
-                                        todos los casos y motion anima la misma transición. */}
-                                    {SECTORS.map((s, i) => {
-                                        const isActive = i === selected;
-                                        const PanelIcon = ICONS[s.iconKey];
-                                        return (
-                                            <motion.div
-                                                key={s.id}
-                                                id={`sector-panel-${i}`}
-                                                ref={(el) => { panelRefs.current[i] = el; }}
-                                                role="tabpanel"
-                                                aria-labelledby={`sector-tab-${i}`}
-                                                // Fallback si `aria-labelledby` no resuelve — en ≤767px
-                                                // `#sector-tab-${i}` vive dentro de `.ledger`, que ahí está
-                                                // `display: none` (fuera del árbol de accesibilidad); según
-                                                // el algoritmo de accessible-name, si la referencia no
-                                                // resuelve se cae a `aria-label`. En ≥768px `aria-labelledby`
-                                                // sigue ganando (el tab SÍ es visible ahí), así que este
-                                                // `aria-label` es puro seguro sin efecto visible/funcional.
-                                                aria-label={s.label}
-                                                aria-hidden={!isActive}
-                                                tabIndex={isActive ? 0 : -1}
-                                                inert={!isActive}
-                                                className={`${styles.panel} ${isActive ? '' : styles.panelHidden}`}
-                                                onKeyDown={handlePanelKeyDown}
-                                                initial={false}
-                                                animate={{
-                                                    opacity: isActive ? 1 : 0,
-                                                    y: prefersReducedMotion ? 0 : (isActive ? 0 : 12),
-                                                }}
-                                                transition={{ duration: prefersReducedMotion ? 0 : 0.3, ease: [0.16, 1, 0.3, 1] }}
-                                            >
-                                                <div className={styles.panelIcon} aria-hidden="true">
-                                                    {prefersReducedMotion ? (
+                        {/* Columna derecha — panel de detalle del sector activo.
+                            ≥768px: comportamiento sin cambios — los 7 paneles se
+                            superponen absolutos (`.panelHidden`), solo el activo en
+                            flujo, tal como antes.
+                            ≤767px: `.panelWrap` deja de ser un panel único y pasa a SER
+                            el carrusel de sectores (fusión pedida de `.ledger` + panel de
+                            detalle en una sola superficie tipo hoja/modal — ver
+                            Soluciones.module.css): los 7 `.panel` quedan en flujo,
+                            unos junto a otros, en un carril horizontal con scroll-snap
+                            (mismo mecanismo que tenía `.ledger`, adaptado aquí vía
+                            `panelWrapRef`/`handlePanelWrapScroll` en vez de
+                            `ledgerRef`/`handleLedgerScroll`). `.ledger` en sí queda oculto
+                            a ese ancho (ver comentario junto a `.ledger` más arriba); el
+                            fallback de selección por tap sigue siendo el mismo patrón
+                            (`onClick`/`.sectorDots`), solo que ahora el swipe actúa
+                            directamente sobre la tarjeta de detalle en vez de sobre una
+                            fila compacta separada. */}
+                        <div
+                            className={`${styles.panelWrap} reveal`}
+                            ref={panelWrapRef}
+                            onScroll={handlePanelWrapScroll}
+                        >
+                            <span className={styles.panelBar} aria-hidden="true" />
+                            {/* Los 7 paneles se montan siempre (SEO: el copy de who/solution/
+                                benefits de cada sector debe existir en el HTML prerenderizado,
+                                no solo el del sector activo). ≥768px: solo el activo queda en
+                                flujo normal — determina el alto de `.panelWrap` —; el resto se
+                                superpone absoluto (`.panelHidden`), invisible y con `inert`
+                                para que no sea alcanzable por teclado ni lectores de pantalla.
+                                ≤767px: los 7 quedan en flujo horizontal (ver comentario de
+                                `.panelWrap` arriba) pero `inert`/`aria-hidden` en los inactivos
+                                se mantienen igual — solo la tarjeta centrada/snapeada es
+                                alcanzable por teclado o lector de pantalla, el resto es
+                                "visible pero no interactivo" mientras se desliza hacia ella.
+                                La transición opacity/y de abajo cubre TANTO el cambio de
+                                sector por clic/dot como por swipe — todos pasan
+                                por el mismo `setSelected`, así que `isActive` cambia igual en
+                                todos los casos y motion anima la misma transición. */}
+                            {SECTORS.map((s, i) => {
+                                const isActive = i === selected;
+                                const PanelIcon = ICONS[s.iconKey];
+                                return (
+                                    <motion.div
+                                        key={s.id}
+                                        id={`sector-panel-${i}`}
+                                        ref={(el) => { panelRefs.current[i] = el; }}
+                                        role="tabpanel"
+                                        aria-labelledby={`sector-tab-${i}`}
+                                        // Fallback si `aria-labelledby` no resuelve — en ≤767px
+                                        // `#sector-tab-${i}` vive dentro de `.ledger`, que ahí está
+                                        // `display: none` (fuera del árbol de accesibilidad); según
+                                        // el algoritmo de accessible-name, si la referencia no
+                                        // resuelve se cae a `aria-label`. En ≥768px `aria-labelledby`
+                                        // sigue ganando (el tab SÍ es visible ahí), así que este
+                                        // `aria-label` es puro seguro sin efecto visible/funcional.
+                                        aria-label={s.label}
+                                        aria-hidden={!isActive}
+                                        tabIndex={isActive ? 0 : -1}
+                                        inert={!isActive}
+                                        className={`${styles.panel} ${isActive ? '' : styles.panelHidden}`}
+                                        onKeyDown={handlePanelKeyDown}
+                                        initial={false}
+                                        animate={{
+                                            opacity: isActive ? 1 : 0,
+                                            y: prefersReducedMotion ? 0 : (isActive ? 0 : 12),
+                                        }}
+                                        transition={{ duration: prefersReducedMotion ? 0 : 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                    >
+                                        <div className={styles.panelIcon} aria-hidden="true">
+                                            {prefersReducedMotion ? (
+                                                <PanelIcon size={22} strokeWidth={1.6} />
+                                            ) : (
+                                                // Mismo patrón que .rowIcon: crossfade+scale cuando este
+                                                // panel pasa a ser el activo (o deja de serlo).
+                                                <AnimatePresence mode="wait" initial={false}>
+                                                    <motion.span
+                                                        key={isActive ? 'active' : 'inactive'}
+                                                        className={styles.panelIconMotion}
+                                                        initial={{ opacity: 0, scale: 0.85 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 0.85 }}
+                                                        transition={{ duration: 0.22, ease: 'easeOut' }}
+                                                    >
                                                         <PanelIcon size={22} strokeWidth={1.6} />
-                                                    ) : (
-                                                        // Mismo patrón que .rowIcon: crossfade+scale cuando este
-                                                        // panel pasa a ser el activo (o deja de serlo).
-                                                        <AnimatePresence mode="wait" initial={false}>
-                                                            <motion.span
-                                                                key={isActive ? 'active' : 'inactive'}
-                                                                className={styles.panelIconMotion}
-                                                                initial={{ opacity: 0, scale: 0.85 }}
-                                                                animate={{ opacity: 1, scale: 1 }}
-                                                                exit={{ opacity: 0, scale: 0.85 }}
-                                                                transition={{ duration: 0.22, ease: 'easeOut' }}
-                                                            >
-                                                                <PanelIcon size={22} strokeWidth={1.6} />
-                                                            </motion.span>
-                                                        </AnimatePresence>
-                                                    )}
-                                                </div>
+                                                    </motion.span>
+                                                </AnimatePresence>
+                                            )}
+                                        </div>
 
-                                                {/* Kicker con el nombre del sector — solo pintado ≤767px
-                                                    (ver .panelKicker en Soluciones.module.css). El icono de
-                                                    arriba ya es persistente en las 3 páginas internas, pero
-                                                    no lleva texto: sin este kicker, un usuario que hubiera
-                                                    avanzado a "Cómo funciona"/FAQ y luego deslizara al
-                                                    sector siguiente perdería el nombre del sector hasta
-                                                    volver a "Resumen" (la única página con `panelTitle`).
-                                                    En ≥768px no hace falta — el usuario nunca pierde de
-                                                    vista qué sector está viendo. */}
-                                                <span className={styles.panelKicker}>{s.label}</span>
+                                        {/* Kicker con el nombre del sector — solo pintado ≤767px
+                                            (ver .panelKicker en Soluciones.module.css). El icono de
+                                            arriba ya es persistente en las 3 páginas internas, pero
+                                            no lleva texto: sin este kicker, un usuario que hubiera
+                                            avanzado a "Cómo funciona"/FAQ y luego deslizara al
+                                            sector siguiente perdería el nombre del sector hasta
+                                            volver a "Resumen" (la única página con `panelTitle`).
+                                            En ≥768px no hace falta — el usuario nunca pierde de
+                                            vista qué sector está viendo. */}
+                                        <span className={styles.panelKicker}>{s.label}</span>
 
-                                                {/* Páginas del panel (overview / cómo funciona / FAQ) — solo
-                                                    se anima con slide en el sector ACTIVO; en los 6 paneles
-                                                    inactivos `page`/`pageDirection` son el mismo estado
-                                                    compartido pero da igual: están invisibles/`inert`, así
-                                                    que el slide de fondo no se ve ni consume interacción. */}
-                                                {prefersReducedMotion ? (
-                                                    <div className={styles.pageContent}>
-                                                        <SectorPageContent sector={s} page={page} />
-                                                    </div>
-                                                ) : (
-                                                    <AnimatePresence mode="wait" initial={false} custom={pageDirection}>
-                                                        <motion.div
-                                                            key={page}
-                                                            custom={pageDirection}
-                                                            variants={pageVariants}
-                                                            initial="enter"
-                                                            animate="center"
-                                                            exit="exit"
-                                                            transition={{
-                                                                duration: pageDirection === 0 ? 0 : 0.22,
-                                                                ease: [0.16, 1, 0.3, 1],
-                                                            }}
-                                                            className={styles.pageContent}
-                                                        >
-                                                            <SectorPageContent sector={s} page={page} />
-                                                        </motion.div>
-                                                    </AnimatePresence>
-                                                )}
+                                        {/* Páginas del panel (overview / cómo funciona / FAQ) — solo
+                                            se anima con slide en el sector ACTIVO; en los 6 paneles
+                                            inactivos `page`/`pageDirection` son el mismo estado
+                                            compartido pero da igual: están invisibles/`inert`, así
+                                            que el slide de fondo no se ve ni consume interacción. */}
+                                        {prefersReducedMotion ? (
+                                            <div className={styles.pageContent}>
+                                                <SectorPageContent sector={s} page={page} />
+                                            </div>
+                                        ) : (
+                                            <AnimatePresence mode="wait" initial={false} custom={pageDirection}>
+                                                <motion.div
+                                                    key={page}
+                                                    custom={pageDirection}
+                                                    variants={pageVariants}
+                                                    initial="enter"
+                                                    animate="center"
+                                                    exit="exit"
+                                                    transition={{
+                                                        duration: pageDirection === 0 ? 0 : 0.22,
+                                                        ease: [0.16, 1, 0.3, 1],
+                                                    }}
+                                                    className={styles.pageContent}
+                                                >
+                                                    <SectorPageContent sector={s} page={page} />
+                                                </motion.div>
+                                            </AnimatePresence>
+                                        )}
 
-                                                {/* Flechas + dots — navegan `page` (0-2) dentro del sector
-                                                    activo, foco/teclado gestionados en `handlePanelKeyDown`
-                                                    (arriba, en el propio `motion.div` del panel). */}
-                                                <div className={styles.pageNav}>
+                                        {/* Flechas + dots — navegan `page` (0-2) dentro del sector
+                                            activo, foco/teclado gestionados en `handlePanelKeyDown`
+                                            (arriba, en el propio `motion.div` del panel). */}
+                                        <div className={styles.pageNav}>
+                                            <button
+                                                type="button"
+                                                className={styles.pageArrow}
+                                                aria-label="Página anterior"
+                                                disabled={page === 0}
+                                                onClick={() => goToPage(page - 1)}
+                                            >
+                                                <ChevronLeft size={18} strokeWidth={2} />
+                                            </button>
+                                            <div className={styles.pageDots}>
+                                                {PANEL_PAGE_LABELS.map((label, idx) => (
                                                     <button
+                                                        key={label}
                                                         type="button"
-                                                        className={styles.pageArrow}
-                                                        aria-label="Página anterior"
-                                                        disabled={page === 0}
-                                                        onClick={() => goToPage(page - 1)}
-                                                    >
-                                                        <ChevronLeft size={18} strokeWidth={2} />
-                                                    </button>
-                                                    <div className={styles.pageDots}>
-                                                        {PANEL_PAGE_LABELS.map((label, idx) => (
-                                                            <button
-                                                                key={label}
-                                                                type="button"
-                                                                className={`${styles.pageDot} ${idx === page ? styles.pageDotActive : ''}`}
-                                                                aria-label={`Ir a ${label}`}
-                                                                aria-current={idx === page ? 'true' : undefined}
-                                                                onClick={() => goToPage(idx)}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        className={styles.pageArrow}
-                                                        aria-label="Página siguiente"
-                                                        disabled={page === PANEL_PAGE_COUNT - 1}
-                                                        onClick={() => goToPage(page + 1)}
-                                                    >
-                                                        <ChevronRight size={18} strokeWidth={2} />
-                                                    </button>
-                                                </div>
+                                                        className={`${styles.pageDot} ${idx === page ? styles.pageDotActive : ''}`}
+                                                        aria-label={`Ir a ${label}`}
+                                                        aria-current={idx === page ? 'true' : undefined}
+                                                        onClick={() => goToPage(idx)}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className={styles.pageArrow}
+                                                aria-label="Página siguiente"
+                                                disabled={page === PANEL_PAGE_COUNT - 1}
+                                                onClick={() => goToPage(page + 1)}
+                                            >
+                                                <ChevronRight size={18} strokeWidth={2} />
+                                            </button>
+                                        </div>
 
-                                                <div className={styles.panelCta}>
-                                                    <ButtonLink to={ROUTES.contacto} variant="primary" size="lg">
-                                                        {SECTOR_CTA_LABEL}
-                                                    </ButtonLink>
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
+                                        <div className={styles.panelCta}>
+                                            <ButtonLink to={ROUTES.contacto} variant="primary" size="lg">
+                                                {SECTOR_CTA_LABEL}
+                                            </ButtonLink>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>

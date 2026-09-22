@@ -349,10 +349,19 @@
 }
 
 /* ─── Grid: tarjetas interactivas elevadas (3 col desktop) ─── */
+/* `align-items: flex-start` (no el `stretch` por defecto) — cada tarjeta mide
+   lo que mide su contenido. Con `stretch`, TODAS las tarjetas de una misma
+   fila (o, en el carril flex de ≤639px, las 4 del carril) crecían hasta el
+   alto de la más alta, y como el 4º diferenciador es el de texto más largo
+   eso dejaba una franja de tarjeta vacía bajo el texto de las demás —
+   ~27px en móvil y hasta ~50px en tablet. Nota: `flex-start` y no `start`
+   porque este mismo selector es un contenedor flex en ≤639px, y `flex-start`
+   es el valor válido en ambos modelos de layout. */
 .whyGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-5);
+    align-items: flex-start;
 }
 
 @media (min-width: 1024px) {
@@ -435,14 +444,23 @@
     }
 }
 
-/* Keystone de cierre: el 5º diferenciador ocupa todo el ancho y en pantallas
-   anchas se dispone horizontal (icono + título + texto) para que el span
-   completo se lea como cierre intencional, no como una celda huérfana. */
-.whyItem:last-child {
-    grid-column: 1 / -1;
-}
+/* Keystone de cierre: el ÚLTIMO diferenciador ocupa todo el ancho y se
+   dispone horizontal (icono + título + texto) para que el span completo se
+   lea como cierre intencional.
+   SOLO a partir de 1024px, donde la rejilla tiene 3 columnas: ahí los 3
+   primeros llenan exactamente la fila 1 y el 4º cierra abajo a todo lo
+   ancho, sin huecos. Este bloque se escribió cuando la lista tenía 5 items
+   (2 columnas → filas de 2 + 2 y el 5º de cierre cuadraba igual de bien).
+   Con 4 items y 2 columnas el span dejaba al 3º SOLO en la fila 2 y su
+   celda vecina completamente vacía — ese era el hueco muerto real de
+   /casos entre 640px y 1023px, un rectángulo de ~346×327px de nada. Por
+   debajo de 1024px el 4º vuelve a ser una tarjeta normal y la rejilla queda
+   en un 2×2 limpio (y en ≤639px, en el carril horizontal de siempre). */
+@media (min-width: 1024px) {
+    .whyItem:last-child {
+        grid-column: 1 / -1;
+    }
 
-@media (min-width: 640px) {
     .whyItemClosing {
         display: grid;
         grid-template-columns: auto 1fr;
@@ -649,10 +667,8 @@
         padding: var(--spacing-7) var(--spacing-6);
     }
 
-    /* Horizontal row — no single item spans full width */
-    .whyItem:last-child {
-        grid-column: unset;
-    }
+    /* (El `grid-column: 1 / -1` del último item ya no llega hasta aquí: vive
+       dentro del @media ≥1024px, ver el keystone de cierre más arriba.) */
 
     /* "Desliza para ver más →": solo aparece en el carrusel horizontal móvil,
        mismo patrón que Resources.module.css .scrollHint. */
