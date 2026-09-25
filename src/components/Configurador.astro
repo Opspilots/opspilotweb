@@ -1,0 +1,47 @@
+---
+// El embudo real de la web (src/data/leadFunnel.ts), en una ventana. Lo activa public/js/opspilot.js.
+---
+<div class="cfg-marco flota">
+          <form class="ventana cfg" data-cfg action="https://wa.me/34640756126" method="get" target="_blank" aria-label="Configura tu propuesta">
+            <div class="v-barra">
+              <svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+              <span class="v-titulo">Tu propuesta</span>
+              <span class="cfg-paso" data-cfg-paso>Paso 1 de 3</span>
+            </div>
+            <div class="cfg-progreso" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+            <div class="cfg-vista" data-cfg-vista>
+              <fieldset class="cfg-p activo" data-p="1">
+                <legend>¿Qué necesitas?</legend>
+                <label class="op"><input type="radio" name="necesidad" value="web"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg><span>Una web nueva</span><svg class="ico op-ir" aria-hidden="true"><use href="#i-chevron-right"/></svg></label>
+                <label class="op"><input type="radio" name="necesidad" value="sistema"><svg class="ico" aria-hidden="true"><use href="#i-layout-dashboard"/></svg><span>Un sistema interno</span><svg class="ico op-ir" aria-hidden="true"><use href="#i-chevron-right"/></svg></label>
+                <label class="op"><input type="radio" name="necesidad" value="automatizar"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg><span>Automatizar tareas repetitivas</span><svg class="ico op-ir" aria-hidden="true"><use href="#i-chevron-right"/></svg></label>
+                <label class="op"><input type="radio" name="necesidad" value="guia"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg><span>No lo sé, que me guíen</span><svg class="ico op-ir" aria-hidden="true"><use href="#i-chevron-right"/></svg></label>
+              </fieldset>
+              <fieldset class="cfg-p" data-p="2"><legend data-p2-q>¿A qué se dedica tu negocio?</legend><div class="cfg-ops" data-p2-ops></div></fieldset>
+              <fieldset class="cfg-p" data-p="3">
+                <legend>¿Cuál es tu objetivo principal?</legend>
+                <div class="cfg-ops cfg-ops-2">
+                  <label class="op op-c"><input type="radio" name="objetivo" value="vender"><span>Vender más</span></label>
+                  <label class="op op-c"><input type="radio" name="objetivo" value="ahorrar"><span>Ahorrar tiempo</span></label>
+                  <label class="op op-c"><input type="radio" name="objetivo" value="imagen"><span>Dar mejor imagen</span></label>
+                  <label class="op op-c"><input type="radio" name="objetivo" value="controlar"><span>Tener todo controlado</span></label>
+                </div>
+              </fieldset>
+              <div class="cfg-p cfg-res" data-p="4" aria-live="polite">
+                <p class="res-listo"><svg class="ico" aria-hidden="true"><use href="#i-sparkles"/></svg>Propuesta lista</p>
+                <p class="res-diag" data-res-diag></p>
+                <div class="res-mock" data-res-mock aria-hidden="true"></div>
+                <p class="res-titulo" data-res-titulo></p>
+                <ul class="res-lista" data-res-lista></ul>
+                <p class="res-extra" data-res-extra></p>
+              </div>
+            </div>
+            <input type="hidden" name="text" value="Hola OpsPilot, os cuento mi problema:">
+            <div class="cfg-pie">
+              <button type="button" class="cfg-atras" data-atras hidden><svg class="ico" aria-hidden="true"><use href="#i-arrow-left"/></svg>Atrás</button>
+              <span class="cfg-garantia" data-garantia><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Precio cerrado · respuesta en menos de 24 h</span>
+              <button class="btn btn-tinta cfg-enviar" type="submit" data-enviar hidden><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Pedir esta propuesta</button>
+            </div>
+          </form>
+          <p class="cfg-sello" aria-hidden="true"><svg class="ico"><use href="#i-clock"/></svg><span><b>6 a 8 semanas</b>de la idea a tu sistema</span></p>
+        </div>

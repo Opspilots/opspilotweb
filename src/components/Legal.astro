@@ -1,0 +1,23 @@
+---
+// Plantilla de página legal. Mientras falten razón social, NIF o domicilio (src/lib/company.ts),
+// la página se publica con esos huecos marcados y en noindex, y la construcción avisa.
+// Textos a revisar por la asesoría antes de retirar el noindex.
+import Base from '../layouts/Base.astro';
+import CabeceraPagina from './CabeceraPagina.astro';
+import { LEGAL_NAME, TAX_ID, ADDRESS } from '../lib/company';
+import { migas } from '../lib/sitio';
+interface Props { title: string; description: string; path: string; titulo: string; nombre: string }
+const { title, description, path, titulo, nombre } = Astro.props;
+const faltan = [!LEGAL_NAME && 'razón social', !TAX_ID && 'NIF', !ADDRESS.street && 'domicilio'].filter(Boolean);
+if (faltan.length) console.warn(`[legal] ${path}: faltan ${faltan.join(', ')} en src/lib/company.ts → se publica en noindex`);
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre, path }];
+---
+<Base title={title} description={description} path={path} noindex={faltan.length > 0} jsonld={[migas(M)]}>
+  <CabeceraPagina sobre="Legal" titulo={titulo} migas={M} horizonte={false} />
+  <section class="s-papel" aria-label={titulo}>
+    <div class="wrap">
+      {faltan.length > 0 && <p class="aviso-noindex">Faltan datos de la empresa ({faltan.join(', ')}). Esta página no se indexa hasta completarlos.</p>}
+      <div class="prosa"><slot /></div>
+    </div>
+  </section>
+</Base>

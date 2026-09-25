@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import Cierre from '../../components/Cierre.astro';
+import { migas, SITE_URL } from '../../lib/sitio';
+
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Productos', path: '/productos/' }];
+// Solo productos en producción (availability 'live' en src/data/products.ts). Fiscalidad sigue fuera
+// hasta que su aplicación vuelva a estar en pie (.seo/01-rutas-y-metadatos.md §5).
+// EnergyDeal no lleva página aquí: tiene dominio y SEO propios (evita canibalizar, .seo/01 §3).
+const PRODUCTOS = [
+  { n: 'PresupuesYa', meta: 'Reformas e instalaciones', frase: 'Presupuestos de obra en minutos: partidas con IA, firma digital del cliente, portal del cliente y plan de obra.', href: '/productos/presupuesya/', icono: 'file-text', externo: false },
+  { n: 'ERP para hostelería', meta: 'Restaurantes y bares', frase: 'TPV con mesas y comandas, inventario que se descuenta solo, reservas, turnos y cierre de caja.', href: '/productos/erp-hosteleria/', icono: 'utensils-crossed', externo: false },
+  { n: 'EnergyDeal', meta: 'Energía', frase: 'CRM para vender luz y gas: comparativas congeladas, cartera por CIF y CUPS y comisiones con estado.', href: 'https://energydeal.es', icono: 'zap', externo: true },
+];
+const lista = {
+  '@type': 'ItemList',
+  name: 'Productos de OpsPilot',
+  itemListElement: PRODUCTOS.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.n, url: p.externo ? p.href : `${SITE_URL}${p.href}` })),
+};
+---
+<Base title="Productos: software vertical que ya funciona · OpsPilot"
+  description="Software propio en producción: PresupuesYa para presupuestos de obra, un ERP para hostelería y EnergyDeal para comerciales de energía. Con la aplicación real."
+  path="/productos/" jsonld={[migas(M), lista]}>
+  <CabeceraPagina sobre="Productos" titulo="Software que ya está funcionando."
+    entrada="Lo que aprendemos haciendo software a medida lo convertimos en productos para sectores concretos. Están en producción y se pueden probar."
+    migas={M} />
+  <section class="s-navy" aria-labelledby="t-prod">
+    <div class="wrap">
+      <p class="etiqueta">En producción</p>
+      <h2 id="t-prod" class="h2">Elige tu sector.</h2>
+      <div class="puertas">
+        {PRODUCTOS.map((p) => (
+          <a class="puerta" href={p.href} rel={p.externo ? 'noopener' : undefined}>
+            <span class="puerta-ico"><svg class="ico" aria-hidden="true"><use href={`#i-${p.icono}`}/></svg></span>
+            <p class="bloque-meta" style="margin:0">{p.meta}</p>
+            <h3>{p.n}</h3>
+            <p>{p.frase}</p>
+            <span class="puerta-ir" style="margin-top:auto">{p.externo ? 'Ir a energydeal.es' : `Ver ${p.n}`} <svg class="ico" aria-hidden="true"><use href={p.externo ? '#i-arrow-up-right' : '#i-chevron-right'}/></svg></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+  <Cierre />
+</Base>

@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import CabeceraPagina from '../components/CabeceraPagina.astro';
+import Configurador from '../components/Configurador.astro';
+import { migas, PHONE, CONTACT_EMAIL, WA, BRAND_NAME, LEGAL_NAME } from '../lib/sitio';
+import { FORMSUBMIT_ENDPOINT, FORM_PROCESSOR } from '../lib/company';
+
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Contacto', path: '/contacto/' }];
+const contacto = { '@type': 'ContactPage', name: 'Contacto · OpsPilot', url: 'https://opspilot.es/contacto/' };
+---
+<Base title="Contacto: cuéntanos tu problema · OpsPilot"
+  description="Escríbenos por WhatsApp, llámanos o déjanos tu mensaje. Te respondemos en menos de 24 horas con una propuesta concreta y precio cerrado. Desde Córdoba."
+  path="/contacto/" jsonld={[migas(M), contacto]}>
+  <CabeceraPagina sobre="Contacto" titulo="Cuéntanos tu problema."
+    entrada="Te respondemos en menos de 24 horas. Primero te escuchamos 30 minutos, sin tecnicismos; después te decimos qué haríamos y cuánto cuesta, por escrito."
+    migas={M}>
+    <Configurador />
+  </CabeceraPagina>
+
+  <section class="s-navy" aria-labelledby="t-canales">
+    <div class="wrap contacto-in">
+      <div>
+        <p class="etiqueta">Directo</p>
+        <h2 id="t-canales" class="h2">Como te venga mejor.</h2>
+        <div class="canales">
+          <a class="canal" href={WA('Hola OpsPilot, os escribo desde la web.')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg><span><b>WhatsApp</b><small>{PHONE.display}</small></span></a>
+          <a class="canal" href={`tel:${PHONE.e164}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><b>Teléfono</b><small>{PHONE.display}</small></span></a>
+          <a class="canal" href={`mailto:${CONTACT_EMAIL}`}><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span><b>Correo</b><small>{CONTACT_EMAIL}</small></span></a>
+          <p class="canal" style="cursor:default"><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg><span><b>Córdoba, Andalucía</b><small>Trabajamos con pymes de toda España</small></span></p>
+        </div>
+      </div>
+      <form class="formu" data-formu action={FORMSUBMIT_ENDPOINT} method="post" novalidate>
+        <p class="bloque-meta" style="color:var(--verde-h);margin:0">O déjanos un mensaje</p>
+        <label>Nombre<input name="nombre" autocomplete="name" required></label>
+        <label>Correo<input name="email" type="email" autocomplete="email" required></label>
+        <label>Teléfono <small style="font-weight:400;color:var(--gris-papel)">(opcional)</small><input name="telefono" type="tel" autocomplete="tel"></label>
+        <label>¿Qué te está frenando?<textarea name="mensaje" required placeholder="Cuéntanos cómo trabajas hoy y qué te gustaría que cambiara."></textarea></label>
+        <input type="hidden" name="_subject" value="Nuevo mensaje desde opspilot.es/contacto">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label class="consent"><input type="checkbox" name="consentimiento" required><span>Acepto que {LEGAL_NAME || BRAND_NAME} trate estos datos solo para responderme. El mensaje se envía a través de {FORM_PROCESSOR.name} ({FORM_PROCESSOR.url.replace('https://', '')}), que nos lo entrega por correo. Más información en la <a href="/privacidad/">política de privacidad</a>.</span></label>
+        <button class="btn btn-tinta" type="submit"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg>Enviar mensaje</button>
+        <p class="formu-estado" data-formu-estado role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+  <script is:inline>
+    (function () {
+      var f = document.querySelector('[data-formu]'); if (!f) return;
+      var est = f.querySelector('[data-formu-estado]');
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!f.checkValidity()) { est.className = 'formu-estado err'; est.textContent = 'Revisa los campos obligatorios y la casilla de privacidad.'; f.reportValidity(); return; }
+        var datos = {}; new FormData(f).forEach(function (v, k) { datos[k] = v; });
+        est.className = 'formu-estado'; est.textContent = 'Enviando…';
+        fetch(f.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(datos) })
+          .then(function (r) { if (!r.ok) throw new Error(r.status); est.className = 'formu-estado ok'; est.textContent = 'Recibido. Te respondemos en menos de 24 horas.'; f.reset(); })
+          .catch(function () { est.className = 'formu-estado err'; est.textContent = 'No se ha podido enviar. Escríbenos por WhatsApp o al correo, por favor.'; });
+      });
+    })();
+  </script>
+</Base>

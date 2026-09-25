@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import { LINEAS } from '../lib/sitio';
+---
+<Base title="Página no encontrada · OpsPilot" description="Esta página no existe o ha cambiado de sitio." path="/404/" noindex>
+  <section class="portada portada-sub" aria-labelledby="titular">
+    <div class="wrap portada-in">
+      <div class="portada-texto">
+        <h1 id="titular"><span class="sobre">Error 404</span><span class="grande grande-sub">Esta página se ha salido de la ruta.</span></h1>
+        <p class="entrada">No existe o ha cambiado de dirección. Te dejamos por dónde seguir:</p>
+        <div class="acciones">
+          <a class="btn btn-tinta" href="/">Volver al inicio</a>
+          {LINEAS.map((l) => <a class="enlace" href={l.href}>{l.label}</a>)}
+        </div>
+      </div>
+      <div class="instrumento instrumento-sub" aria-hidden="true">
+        <div class="actitud"><div class="giro"><div class="suelo"></div></div><svg class="aro" viewBox="0 0 100 100"><use href="#aro"/></svg></div>
+      </div>
+    </div>
+  </section>
+</Base>

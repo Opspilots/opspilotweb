@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import Cierre from '../../components/Cierre.astro';
+import { RESOURCES } from '../../lib/resources';
+import { migas, SITE_URL } from '../../lib/sitio';
+
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos', path: '/recursos/' }];
+// Destacados primero y después por fecha, lo más reciente arriba.
+const lista = [...RESOURCES].sort((a, b) => Number(!!b.featured) - Number(!!a.featured) || (b.date ?? '').localeCompare(a.date ?? ''));
+const CATS = [...new Set(RESOURCES.map((r) => r.cat))];
+const blog = {
+  '@type': 'Blog',
+  name: 'Recursos de OpsPilot',
+  url: `${SITE_URL}/recursos/`,
+  blogPost: lista.map((r) => ({ '@type': 'BlogPosting', headline: r.title, url: `${SITE_URL}/recursos/${r.slug}/`, ...(r.date ? { datePublished: r.date } : {}) })),
+};
+---
+<Base title="Recursos: guías de software y digitalización · OpsPilot"
+  description="Guías, casos prácticos y checklists para digitalizar una pyme sin tecnicismos: cuándo pedir software a medida, cómo migrar de Excel, qué automatizar primero."
+  path="/recursos/" jsonld={[migas(M), blog]}>
+  <CabeceraPagina sobre="Recursos" titulo="Para decidir con criterio, sin tecnicismos."
+    entrada="Lo que explicamos una y otra vez en las primeras conversaciones, por escrito: cuándo compensa un software a medida, cómo pedir un presupuesto, qué automatizar primero."
+    migas={M} />
+  <section class="s-papel" aria-labelledby="t-rec">
+    <div class="wrap">
+      <h2 id="t-rec" class="h2">{RESOURCES.length} guías, casos y checklists.</h2>
+      <div class="recursos-filtro" role="group" aria-label="Filtrar por tipo" data-filtro hidden>
+        <button type="button" aria-pressed="true" data-cat="">Todo</button>
+        {CATS.map((c) => <button type="button" aria-pressed="false" data-cat={c}>{c}</button>)}
+      </div>
+      <div class="recursos-rej">
+        {lista.map((r) => (
+          <a class="recurso" href={`/recursos/${r.slug}/`} data-cat={r.cat}>
+            {r.cover
+              ? <span class="recurso-img"><img src={r.cover} alt="" width="640" height="360" loading="lazy" decoding="async"></span>
+              : <span class="recurso-sin" aria-hidden="true"><svg viewBox="0 0 100 100"><use href="#aro"/></svg></span>}
+            <span class="recurso-c">
+              <span class="recurso-cat">{r.cat}</span>
+              <h3>{r.title}</h3>
+              <p>{r.desc}</p>
+              <span class="recurso-t">{r.time} de lectura</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+  <Cierre />
+  <script is:inline>
+    (function () {
+      var f = document.querySelector('[data-filtro]'); if (!f) return; f.hidden = false;
+      var bs = f.querySelectorAll('button'), cs = document.querySelectorAll('.recurso');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        bs.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        cs.forEach(function (c) { c.hidden = !!b.dataset.cat && c.dataset.cat !== b.dataset.cat; });
+      }); });
+    })();
+  </script>
+</Base>

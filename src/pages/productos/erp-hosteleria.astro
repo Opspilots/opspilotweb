@@ -1,0 +1,73 @@
+---
+import Base from '../../layouts/Base.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import ErpHosteleria from '../../components/pantallas/ErpHosteleria.astro';
+import Faq from '../../components/Faq.astro';
+import Cierre from '../../components/Cierre.astro';
+import { getProductPage } from '../../data/productPages';
+import { migas, faqSchema, ORG_ID } from '../../lib/sitio';
+
+// Metadatos y decisión de indexar: los de src/data/productPages.ts (el equipo la dejó en noindex).
+const PAGINA = getProductPage('erp-hosteleria')!;
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Productos', path: '/productos/' }, { nombre: 'ERP para hostelería', path: '/productos/erp-hosteleria/' }];
+// Texto del artículo publicado erp-hosteleria-tpv-restaurantes.
+const FUNCIONES = [
+  { i: 'utensils-crossed', t: 'TPV con mesas y comandas', d: 'La sala en tiempo real: qué mesa está ocupada, qué ha pedido y cuánto lleva.' },
+  { i: 'package', t: 'Inventario y proveedores', d: 'Cada comanda descuenta los ingredientes de su receta. Las alertas avisan antes de quedarte sin producto un sábado noche.' },
+  { i: 'calendar-days', t: 'Reservas', d: 'Un calendario fiable para comidas de grupo y eventos.' },
+  { i: 'users', t: 'Personal y turnos', d: 'Turnos y permisos por rol, sin el grupo de WhatsApp.' },
+  { i: 'banknote', t: 'Cierre de caja y analítica', d: 'Cada cierre queda registrado, y la analítica de ventas y consumo se alimenta sola.' },
+];
+const FAQ = [
+  { q: '¿Qué incluye un ERP de hostelería?', a: 'Reúne en un solo sistema el TPV de sala (mesas y comandas), el inventario y los pedidos a proveedores, la gestión de personal y turnos, las reservas y el cierre de caja con analítica. Todo conectado: lo que se vende descuenta stock y la analítica se alimenta sola.' },
+  { q: '¿Sirve para un grupo con varios locales?', a: 'Sí. Los grupos pequeños con más de un local pueden ver ventas y consumo por local en tiempo real, en lugar de sumar Excels de cada sitio a final de mes.' },
+  { q: '¿Tiene permanencia o coste por terminal?', a: 'Funciona con suscripción mensual fija, sin permanencia y con soporte humano en español incluido.' },
+];
+const app = {
+  '@type': 'SoftwareApplication',
+  name: 'ERP Hostelería',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  description: 'ERP para restaurantes y bares: TPV con mesas y comandas, inventario y pedidos a proveedores, turnos, reservas y cierre de caja con analítica.',
+  publisher: { '@id': ORG_ID },
+};
+---
+<Base title={PAGINA.title} description={PAGINA.description} path="/productos/erp-hosteleria/"
+  noindex={PAGINA.noindex} jsonld={[migas(M), app, faqSchema(FAQ)]}>
+  <CabeceraPagina sobre="Producto · restaurantes y bares" titulo={PAGINA.h1}
+    entrada="Todo lo que hoy llevas con un TPV por un lado, un Excel de compras por otro y un grupo de WhatsApp para los turnos, en un solo sistema conectado."
+    migas={M}>
+    <div class="acciones">
+      <a class="btn btn-tinta" href="https://erp.mcpopspilot.org" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>Ver la aplicación</a>
+    </div>
+  </CabeceraPagina>
+
+  <section class="s-hondo" aria-labelledby="t-sala">
+    <div class="wrap">
+      <p class="etiqueta">Pruébalo aquí</p>
+      <h2 id="t-sala" class="h2">Donde se pierde el margen: en los huecos entre herramientas.</h2>
+      <div class="bloque">
+        <div class="bloque-texto">
+          <p class="bloque-meta">La sala, el stock y la caja</p>
+          <h3>Una comanda descuenta la receta. Un cobro cuadra la caja.</h3>
+          <p>El stock que nadie descontó, el pedido al proveedor hecho a ojo, el cierre de caja que no cuadra y nadie sabe por qué. Al unir venta, inventario y caja en el mismo sistema, esos huecos desaparecen.</p>
+          <p>Elige una mesa, añade platos y cóbrala: mira cómo baja el stock y sube la caja.</p>
+        </div>
+        <div class="caso-pantalla"><ErpHosteleria /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-papel" aria-labelledby="t-func">
+    <div class="wrap">
+      <p class="etiqueta">Funciones</p>
+      <h2 id="t-func" class="h2">Del TPV al cierre de caja.</h2>
+      <div class="producto-ficha">
+        {FUNCIONES.map((f) => <div class="pf"><svg class="ico" aria-hidden="true"><use href={`#i-${f.i}`}/></svg><h3>{f.t}</h3><p>{f.d}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <Faq items={FAQ} titulo="Lo que suelen preguntar en hostelería." fondo="navy" />
+  <Cierre />
+</Base>

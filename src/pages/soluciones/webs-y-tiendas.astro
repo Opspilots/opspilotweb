@@ -1,0 +1,92 @@
+---
+import Base from '../../layouts/Base.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import CordobaSoluciona from '../../components/pantallas/CordobaSoluciona.astro';
+import ObraFacil from '../../components/pantallas/ObraFacil.astro';
+import Faq from '../../components/Faq.astro';
+import Cierre from '../../components/Cierre.astro';
+import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../../lib/sitio';
+
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }, { nombre: 'Webs y tiendas', path: '/soluciones/webs-y-tiendas/' }];
+// Respuestas sacadas de los artículos publicados (checklist-tu-web-trabaja-para-ti y como-pedir-presupuesto-de-software)
+// y del proceso de la portada. Nada de plazos ni precios que no estén ya publicados.
+const FAQ = [
+  { q: '¿Cuánto cuesta una web o una tienda online?', a: 'Depende de cuántas páginas hagan falta y de si vendes en línea. Te damos un precio cerrado por escrito antes de empezar, después de una primera conversación de 30 minutos en la que entendemos tu negocio. Desconfía de cualquier cifra cerrada antes de que alguien conozca lo que haces.' },
+  { q: '¿Cómo sé si mi web actual está funcionando bien?', a: 'Revisa diez puntos: carga en menos de 3 segundos en el móvil con datos, teléfono o WhatsApp visibles sin bajar, se ve bien en el móvil, un objetivo claro por página, explica qué haces en la primera pantalla, sin enlaces rotos, aparece en Google por tu negocio más tu ciudad, tiene certificado SSL, el formulario funciona y se actualizó en el último año. Si falla en tres o más, está perdiendo clientes.' },
+  { q: '¿De quién es la web cuando la terminamos?', a: 'Tuya. El dueño del código y de los datos al terminar tiene que ser siempre el cliente, y así lo dejamos por escrito en la propuesta.' },
+  { q: '¿Por qué una página por servicio y por zona?', a: 'Porque la gente no busca «reformas» a secas: busca «reforma de baño en Puente Genil». Una página propia para cada búsqueda real, con su título y su texto, llega mucho mejor que una portada genérica que intenta hablar de todo. Es lo que hicimos en Córdoba Soluciona, con 114 páginas locales.' },
+  { q: '¿Puedo vender por WhatsApp en lugar de con pago en línea?', a: 'Sí. Si tu venta se cierra hablando, la tienda puede dejar el pedido o el presupuesto ya escrito en un mensaje de WhatsApp, como hace la calculadora de ObraFácil. El pago en línea se añade solo si te encaja.' },
+];
+const servicio = {
+  '@type': 'Service',
+  name: 'Diseño web y tiendas online',
+  serviceType: 'Diseño y desarrollo web',
+  provider: { '@id': ORG_ID },
+  areaServed: [{ '@type': 'City', name: 'Córdoba' }, { '@type': 'Country', name: 'España' }],
+  url: `${SITE_URL}/soluciones/webs-y-tiendas/`,
+};
+---
+<Base title="Diseño web y tiendas online en Córdoba · OpsPilot"
+  description="Webs que traen clientes y tiendas online que venden: una página por servicio y por zona, catálogo con carrito y WhatsApp. Hechas a mano en Córdoba."
+  path="/soluciones/webs-y-tiendas/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
+  <CabeceraPagina sobre="Webs y tiendas online" titulo="Una web que trabaja para ti."
+    entrada="No una plantilla bonita: una web pensada para lo que busca tu cliente, rápida en el móvil, con tu propia forma de hablar y conectada con tu WhatsApp."
+    migas={M}>
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, quiero una web nueva. Os cuento:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu web</a>
+      <a class="enlace" href="/diseno-web-cordoba/">Diseño web en Córdoba <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    </div>
+  </CabeceraPagina>
+
+  <section class="s-navy" aria-labelledby="t-local">
+    <div class="wrap">
+      <p class="etiqueta">Captar clientes</p>
+      <h2 id="t-local" class="h2">Una página para cada cosa que te buscan.</h2>
+      <div class="bloque">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Web · Córdoba y provincia</p>
+          <h3>Córdoba Soluciona: 114 páginas locales de verdad.</h3>
+          <p>23 pueblos, 11 barrios de la capital y 5 tipos de reforma. Cada combinación que alguien busca tiene su página, con su título, su texto y su forma de pedir presupuesto.</p>
+          <p>Elige un pueblo y una reforma en la pantalla: lo que ves es la página que existe.</p>
+          <a class="enlace enlace-claro" href="https://cordobasoluciona.es" rel="noopener">Ver la web <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+        </div>
+        <div class="caso-pantalla"><CordobaSoluciona /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-hondo" aria-labelledby="t-tienda">
+    <div class="wrap">
+      <p class="etiqueta">Vender</p>
+      <h2 id="t-tienda" class="h2">Una tienda que resuelve la duda antes de que te llamen.</h2>
+      <div class="bloque bloque-inv">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Tienda · Puente Genil</p>
+          <h3>ObraFácil: la placa, cuántas te hacen falta y el pedido.</h3>
+          <p>Quien mira una placa decorativa no sabe cuántas le entran en su pared. La tienda lo calcula con la medida real de la placa, dibuja cómo se colocan y deja el pedido o el WhatsApp ya escritos.</p>
+          <p>Prueba con tu pared en la pantalla.</p>
+          <a class="enlace enlace-claro" href="https://obrafacil2025.es" rel="noopener">Entrar en la tienda <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+        </div>
+        <div class="caso-pantalla"><ObraFacil /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-papel" aria-labelledby="t-incluye">
+    <div class="wrap">
+      <p class="etiqueta">Qué incluye</p>
+      <h2 id="t-incluye" class="h2">Lo que lleva una web nuestra.</h2>
+      <div class="producto-ficha">
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg><h3>Una página por búsqueda real</h3><p>Por servicio y por zona, con su título y su texto propios. Nada de copiar y pegar la misma página cambiando el pueblo.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-shopping-cart"/></svg><h3>Catálogo y pedido, si vendes</h3><p>Fichas con categorías y disponibilidad que editas tú, pedido con envío o recogida y confirmación al cliente.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg><h3>Contacto que llega ordenado</h3><p>Formulario y WhatsApp con el mensaje ya escrito: te llega qué quiere, dónde y cómo localizarle, no un «hola» suelto.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg><h3>Rápida y medida</h3><p>La medimos en el móvil antes de entregarla. Una web lenta pierde clientes antes de que vean nada.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg><h3>Tuya de verdad</h3><p>El código y los datos son tuyos al terminar. Por escrito.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-sparkles"/></svg><h3>Con tu personalidad</h3><p>Hecha a mano a partir de tu marca, tu local y tu forma de hablar. Que nadie pueda confundirla con la de tu competencia.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <Faq items={FAQ} titulo="Lo que suelen preguntarnos sobre webs." />
+  <Cierre />
+</Base>

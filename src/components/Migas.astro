@@ -1,0 +1,11 @@
+---
+interface Props { items: { nombre: string; path: string }[]; claro?: boolean }
+const { items, claro = false } = Astro.props;
+---
+<nav class:list={['migas', { 'migas-claro': claro }]} aria-label="Estás en">
+  <ol>
+    {items.map((it, i) => (
+      <li>{i < items.length - 1 ? <a href={it.path}>{it.nombre}</a> : <span aria-current="page">{it.nombre}</span>}</li>
+    ))}
+  </ol>
+</nav>

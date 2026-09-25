@@ -1,0 +1,162 @@
+<section class="problemas" aria-labelledby="t-problemas">
+    <div class="wrap">
+      <p class="etiqueta">Lo que vemos cada semana</p>
+      <h2 id="t-problemas" class="h2">Las herramientas que usas no fueron pensadas para&nbsp;ti.</h2>
+      <p class="ruta-aviso" data-ruta-aviso="problemas" aria-live="polite" hidden></p>
+      <div class="chips" data-chips-problemas hidden></div>
+
+      <div class="mesa" data-mesa>
+        <!-- ─── 01 · cuatro sitios ─── -->
+        <div class="par activo">
+          <button class="problema" type="button" aria-pressed="true" aria-controls="w-sitios" data-corto="Cuatro sitios">
+            <span class="problema-n" aria-hidden="true">01</span>
+            <span class="problema-t">Tu información vive en cuatro sitios</span>
+            <span class="problema-p">Cuatro apps que nunca cuadran entre sí. Buscas el mismo dato tres veces al día.</span>
+          </button>
+          <figure class="ventana pv" id="w-sitios" data-pv>
+            <div class="v-barra pv-barra">
+              <span class="puntos" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="pv-tit">Pedido 0412</span>
+              <span class="seg" role="group" aria-label="Cómo se ve"><button type="button" aria-pressed="true" data-cara="hoy">Hoy</button><button type="button" aria-pressed="false" data-cara="sis">Con un sistema</button></span>
+            </div>
+            <div class="pv-cara pv-hoy">
+              <div class="escritorio">
+                <div class="app app-correo">
+                  <p class="app-bar"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>Correo</p>
+                  <div class="correo-fila"><span class="av">OF</span><span><b>Obra calle Feria</b><small>Re: pedido 0412 · 09:14</small><em>Perfecto, al final son <mark class="choque">12 placas</mark>.</em></span></div>
+                </div>
+                <div class="app app-hoja">
+                  <p class="app-bar"><svg class="ico" aria-hidden="true"><use href="#i-file-spreadsheet"/></svg>pedidos.xlsx</p>
+                  <table class="mini-hoja"><tr><th>Pedido</th><th>Material</th><th>Ud</th></tr><tr><td>0411</td><td>Perfil oro</td><td>6</td></tr><tr class="sel"><td>0412</td><td>Placa 260×122</td><td><mark class="choque">14</mark></td></tr></table>
+                </div>
+                <div class="app app-chat">
+                  <p class="app-bar"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>WhatsApp</p>
+                  <p class="bur bur-el">¿Me confirmas si eran <mark class="choque">12 o 14</mark>? El lunes empieza el alicatado<small>11:02</small></p>
+                  <p class="bur bur-yo">Lo miro y te digo<small>11:20 <svg class="ico" aria-hidden="true"><use href="#i-check-check"/></svg></small></p>
+                </div>
+                <div class="app app-pdf">
+                  <p class="app-bar"><svg class="ico" aria-hidden="true"><use href="#i-paperclip"/></svg>pedido_0412_final_v2.pdf</p>
+                  <div class="pdf-hoja"><i></i><i></i><p>Cantidad: <mark class="choque">10 ud</mark></p><i></i></div>
+                </div>
+                <p class="alerta"><svg class="ico" aria-hidden="true"><use href="#i-circle-alert"/></svg>3 cantidades distintas para el mismo pedido</p>
+              </div>
+            </div>
+            <div class="pv-cara pv-sis">
+              <div class="ficha">
+                <div class="ficha-cab"><span><small>Pedido</small><b>0412 · Obra calle Feria</b></span><span class="chip chip-ok"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Confirmado</span></div>
+                <dl class="ficha-datos">
+                  <div><dt>Material</dt><dd>Placa 260×122</dd></div>
+                  <div><dt>Cantidad</dt><dd class="dato-uno">12 ud</dd></div>
+                  <div><dt>Entrega</dt><dd>Lunes</dd></div>
+                </dl>
+                <ol class="linea">
+                  <li><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span><b>09:14 · Correo del cliente</b>«al final son 12» → cantidad actualizada</span></li>
+                  <li><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg><span><b>11:02 · WhatsApp enlazado al pedido</b>respondido con el dato de la ficha</span></li>
+                  <li><svg class="ico" aria-hidden="true"><use href="#i-refresh-cw"/></svg><span><b>11:02 · Hoja y albarán</b>se rehacen solos con las 12 ud</span></li>
+                  <li><svg class="ico" aria-hidden="true"><use href="#i-file-check-2"/></svg><span><b>11:03 · Pedido al almacén</b>sale con la cantidad buena, una sola vez</span></li>
+                </ol>
+              </div>
+            </div>
+            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>El mismo pedido y tres respuestas distintas. ¿Cuál es la buena?</span><span data-nota-sis hidden>Un solo dato. El correo, el chat y la hoja lo leen del mismo sitio.</span></figcaption>
+          </figure>
+        </div>
+
+        <!-- ─── 02 · el Excel que se rompe ─── -->
+        <div class="par">
+          <button class="problema" type="button" aria-pressed="false" aria-controls="w-excel" data-corto="El Excel">
+            <span class="problema-n" aria-hidden="true">02</span>
+            <span class="problema-t">Lo que factura lo llevas en un Excel que se rompe</span>
+            <span class="problema-p">Presupuestos y comisiones en una hoja que peta al primer descuido. Un clic y adiós.</span>
+          </button>
+          <figure class="ventana pv" id="w-excel" data-pv>
+            <div class="v-barra pv-barra">
+              <span class="puntos" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="pv-tit">presupuestos_FINAL (3).xlsx</span>
+              <span class="seg" role="group" aria-label="Cómo se ve"><button type="button" aria-pressed="true" data-cara="hoy">Hoy</button><button type="button" aria-pressed="false" data-cara="sis">Con un sistema</button></span>
+            </div>
+            <div class="pv-cara pv-hoy">
+              <div class="xl">
+                <p class="xl-cinta" aria-hidden="true"><span>Archivo</span><span class="on">Inicio</span><span>Insertar</span><span>Fórmulas</span><span>Datos</span></p>
+                <p class="xl-fx"><span class="xl-ref">D2</span><span class="xl-f">fx</span><code>=B2*C2+Comisiones!#¡REF!</code></p>
+                <table class="xl-tabla">
+                  <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead>
+                  <tbody>
+                    <tr><th>1</th><td class="h">Cliente</td><td class="h">Presupuesto</td><td class="h">%</td><td class="h">Comisión</td><td class="h">Estado</td></tr>
+                    <tr><th>2</th><td>Obra calle Feria</td><td class="n">4.850,00 €</td><td class="n">8 %</td><td class="err sel">#¡REF!</td><td>Enviado</td></tr>
+                    <tr><th>3</th><td>Local centro</td><td class="n">12.300,00 €</td><td class="n">6 %</td><td class="err">#¡VALOR!</td><td>¿?</td></tr>
+                    <tr><th>4</th><td>Baño y cocina</td><td class="err">#¡REF!</td><td class="n">8 %</td><td class="err">#¡REF!</td><td>Aceptado</td></tr>
+                    <tr><th>5</th><td>Reforma ático</td><td class="n">7.920,00 €</td><td class="n"></td><td class="n">633,60 €</td><td>Cobrado?</td></tr>
+                    <tr><th>6</th><td class="h">TOTAL</td><td class="err">#¡REF!</td><td></td><td class="err">#¡REF!</td><td></td></tr>
+                  </tbody>
+                </table>
+                <p class="xl-hojas" aria-hidden="true"><span class="on">Presupuestos</span><span>Comisiones (2)</span><span>Hoja3</span><span>copia de Presupuestos</span></p>
+                <div class="xl-dialogo" role="presentation"><p><svg class="ico" aria-hidden="true"><use href="#i-circle-alert"/></svg><b>La hoja no responde</b></p><p>Si cierras ahora, puedes perder los cambios de hoy.</p><p class="xl-bots"><span>Esperar</span><span class="on">Cerrar sin guardar</span></p></div>
+              </div>
+            </div>
+            <div class="pv-cara pv-sis">
+              <div class="lista-app">
+                <p class="la-cab"><b>Presupuestos</b><span class="chip">4 activos</span></p>
+                <table class="la-tabla">
+                  <thead><tr><th>Cliente</th><th>Importe</th><th>Comisión</th><th>Estado</th></tr></thead>
+                  <tbody>
+                    <tr><td>Obra calle Feria</td><td>4.850,00 €</td><td>388,00 €</td><td><span class="est est-env">Enviado</span></td></tr>
+                    <tr><td>Local centro</td><td>12.300,00 €</td><td>738,00 €</td><td><span class="est est-ace">Aceptado</span></td></tr>
+                    <tr><td>Baño y cocina</td><td>9.640,00 €</td><td>771,20 €</td><td><span class="est est-ace">Aceptado</span></td></tr>
+                    <tr><td>Reforma ático</td><td>7.920,00 €</td><td>633,60 €</td><td><span class="est est-cob">Cobrado</span></td></tr>
+                  </tbody>
+                  <tfoot><tr><td>Total</td><td>34.710,00 €</td><td>2.530,80 €</td><td></td></tr></tfoot>
+                </table>
+                <p class="la-nota"><svg class="ico" aria-hidden="true"><use href="#i-history"/></svg>La comisión se calcula sola al aceptar, y cada cambio queda registrado.</p>
+              </div>
+            </div>
+            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Alguien borró una fila de «Comisiones» y se llevó por delante todas las fórmulas.</span><span data-nota-sis hidden>Las mismas cuatro obras. Los totales cuadran porque no los escribe nadie a mano.</span></figcaption>
+          </figure>
+        </div>
+
+        <!-- ─── 03 · cinco pestañas ─── -->
+        <div class="par">
+          <button class="problema" type="button" aria-pressed="false" aria-controls="w-pestanas" data-corto="Cinco pestañas">
+            <span class="problema-n" aria-hidden="true">03</span>
+            <span class="problema-t">Tu equipo cambia de pestaña cada cinco minutos</span>
+            <span class="problema-p">Cinco herramientas para un solo trabajo. Y ninguna se habla con la otra.</span>
+          </button>
+          <figure class="ventana pv" id="w-pestanas" data-pv>
+            <div class="v-barra pv-barra">
+              <span class="puntos" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="pv-tit">Una llamada del cliente</span>
+              <span class="seg" role="group" aria-label="Cómo se ve"><button type="button" aria-pressed="true" data-cara="hoy">Hoy</button><button type="button" aria-pressed="false" data-cara="sis">Con un sistema</button></span>
+            </div>
+            <div class="pv-cara pv-hoy">
+              <div class="nav" data-pestanas>
+                <p class="nav-tabs" aria-hidden="true">
+                  <span class="on"><i style="--c:#D2463B">C</i>Correo</span><span><i style="--c:#2F6FDB">B</i>Banco</span><span><i style="--c:#1F9D6B">A</i>Agenda</span><span><i style="--c:#25A45B">W</i>WhatsApp Web</span><span><i style="--c:#1D7A45">H</i>Hoja</span>
+                </p>
+                <p class="nav-url"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg><span data-nav-url>¿dónde apunté lo del cliente de ayer?</span></p>
+                <div class="nav-paneles">
+                  <div class="np on"><p class="np-f"><b>Obra calle Feria</b><span>Re: fechas de la obra</span></p><p class="np-f">Proveedor<span>Albarán de ayer</span></p><p class="np-f">Obra calle Feria<span>Re: Re: presupuesto</span></p><p class="np-f">Gestoría<span>Te falta una factura</span></p><p class="np-f">Obra calle Feria<span>Fotos del baño</span></p></div>
+                  <div class="np"><p class="np-f">Transferencia recibida<span>ref. «obra feria 1/2»</span></p><p class="np-f">Recibo luz nave<span>cargo</span></p><p class="np-f">Proveedor azulejos<span>cargo</span></p><p class="np-f">¿Pagó el segundo plazo?<span>no aparece</span></p></div>
+                  <div class="np"><p class="np-f"><b>12:30</b>Llamar a Obra calle Feria</p><p class="np-f"><b>16:00</b>Visita local centro</p><p class="np-f"><b>Lunes</b>Empieza el alicatado</p></div>
+                  <div class="np"><p class="np-f"><b>Obra calle Feria</b><span>¿Me confirmas si eran 12 o 14?</span></p><p class="np-f">Local centro<span>Audio de 2:14</span></p><p class="np-f">Fontanero<span>Mañana no puedo</span></p><p class="np-f">Baño y cocina<span>Foto</span></p></div>
+                  <div class="np"><p class="np-f">Pedido 0412<span>14 ud</span></p><p class="np-f">Cobros<span>#¡REF!</span></p><p class="np-f">Obras en curso<span>hoja 3 de 7</span></p></div>
+                </div>
+                <p class="nav-cuenta"><span data-nav-n>1</span> de 5 pestañas para contestar una llamada</p>
+              </div>
+            </div>
+            <div class="pv-cara pv-sis">
+              <div class="panel-hoy">
+                <p class="ph-cab"><span class="av">OF</span><span><b>Obra calle Feria</b><small>Llamada entrante · todo lo del cliente en una pantalla</small></span></p>
+                <div class="ph-grid">
+                  <div class="ph-w"><p class="ph-t"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>Último correo</p><p>Re: fechas de la obra · ayer</p></div>
+                  <div class="ph-w"><p class="ph-t"><svg class="ico" aria-hidden="true"><use href="#i-credit-card"/></svg>Cobros</p><p>1.º plazo cobrado · 2.º pendiente</p></div>
+                  <div class="ph-w"><p class="ph-t"><svg class="ico" aria-hidden="true"><use href="#i-calendar-days"/></svg>Agenda</p><p>Lunes · empieza el alicatado</p></div>
+                  <div class="ph-w"><p class="ph-t"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>WhatsApp</p><p>«¿12 o 14?» → 12 ud, según el pedido</p></div>
+                </div>
+                <p class="ph-acc"><span class="pri"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg>Confirmar 12 ud por WhatsApp</span><span><svg class="ico" aria-hidden="true"><use href="#i-calendar-check"/></svg>Mover la visita</span><span><svg class="ico" aria-hidden="true"><use href="#i-receipt"/></svg>Recordar 2.º plazo</span></p>
+              </div>
+            </div>
+            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Cinco pestañas abiertas para contestar una sola llamada.</span><span data-nota-sis hidden>Suena el teléfono y ya tienes delante todo lo de ese cliente.</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>

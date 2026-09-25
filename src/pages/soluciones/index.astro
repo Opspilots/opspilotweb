@@ -1,0 +1,88 @@
+---
+import Base from '../../layouts/Base.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import PlanVuelo from '../../components/PlanVuelo.astro';
+import Cierre from '../../components/Cierre.astro';
+import { SECTORS } from '../../data/sectors';
+import { LINEAS, migas, SITE_URL } from '../../lib/sitio';
+
+// Cada sector de la web anterior cae en una de las tres líneas. Se conserva su id como ancla
+// (/soluciones/#reformas…) para no romper enlaces antiguos.
+const LINEA_DE: Record<string, number> = { asesorias: 1, energia: 1, reformas: 1, agencias: 2, hosteleria: 1, pymes: 2, medida: 1 };
+
+const PUERTAS = [
+  {
+    ...LINEAS[0],
+    frase: 'Una web que trae clientes y una tienda que vende sola.',
+    incluye: ['Una página por cada servicio y cada zona', 'Tienda con catálogo, carrito y pedido', 'WhatsApp y formularios que llegan ordenados'],
+    caso: 'Córdoba Soluciona', dato: '114 páginas locales, una por pueblo, barrio y reforma',
+  },
+  {
+    ...LINEAS[1],
+    frase: 'El programa que tu negocio necesitaba y no existía.',
+    incluye: ['Clientes, presupuestos y facturación en un sitio', 'Una pantalla con lo que hay que atender hoy', 'Cada persona ve y toca solo lo suyo'],
+    caso: 'PresupuesYa', dato: 'nuestro software de presupuestos de obra, en producción',
+  },
+  {
+    ...LINEAS[2],
+    frase: 'Lo que hoy haces a mano, que lo haga el sistema.',
+    incluye: ['Respuestas y recordatorios que salen solos', 'Datos que entran una vez y viajan solos', 'Documentos generados sin copiar y pegar'],
+    caso: 'PresupuesYa', dato: 'dictas la partida y la IA la crea y la descompone',
+  },
+];
+const itemList = {
+  '@type': 'ItemList',
+  name: 'Soluciones de OpsPilot',
+  itemListElement: LINEAS.map((l, i) => ({ '@type': 'ListItem', position: i + 1, name: l.label, url: `${SITE_URL}${l.href}` })),
+};
+---
+<Base title="Webs, software a medida y automatización · OpsPilot"
+  description="Tres formas de poner orden en tu negocio: webs y tiendas que venden, software a medida y automatización de lo repetitivo. Desde Córdoba, con precio cerrado."
+  path="/soluciones/" jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }]), itemList]}>
+  <CabeceraPagina sobre="Soluciones" titulo="Tres formas de poner orden en tu negocio."
+    entrada="Da igual por dónde empieces: una web que traiga clientes, un sistema que junte lo que hoy vive en cuatro sitios o quitarte de encima lo repetitivo. Elige la puerta y te enseñamos cómo lo haríamos."
+    migas={[{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }]} />
+
+  <section class="s-navy" aria-labelledby="t-puertas">
+    <div class="wrap">
+      <p class="etiqueta">Tres líneas</p>
+      <h2 id="t-puertas" class="h2">¿Qué te hace falta ahora?</h2>
+      <div class="puertas">
+        {PUERTAS.map((p) => (
+          <a class="puerta" href={p.href}>
+            <span class="puerta-ico"><svg class="ico" aria-hidden="true"><use href={`#i-${p.icono}`}/></svg></span>
+            <h3>{p.label}</h3>
+            <p>{p.frase}</p>
+            <ul>{p.incluye.map((x) => <li>{x}</li>)}</ul>
+            <p class="puerta-caso">Ya funcionando<br><b>{p.caso}</b> · {p.dato}</p>
+            <span class="puerta-ir">Ver {p.label.toLowerCase()} <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="s-papel" aria-labelledby="t-sectores">
+    <div class="wrap">
+      <p class="etiqueta">Sectores</p>
+      <h2 id="t-sectores" class="h2">Por sector: qué línea te toca.</h2>
+      <p class="lead">Cada sector cae en una de las tres líneas. Si el tuyo no está, cuéntanos cómo trabajas: lo que importa es tu proceso, no la etiqueta.</p>
+      <div class="sectores">
+        {SECTORS.map((s) => {
+          const l = LINEAS[LINEA_DE[s.id] ?? 1];
+          return (
+            <article class="sector" id={s.id}>
+              <span class="sector-linea">{l.label}</span>
+              <h3>{s.title}</h3>
+              <p>{s.who}</p>
+              <a href={l.href}>Cómo lo haríamos <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <PlanVuelo />
+  <Cierre />
+</Base>

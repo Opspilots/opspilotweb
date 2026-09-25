@@ -1,10 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- OpsPilot mark: arco verde abierto hacia arriba (sonrisa/hull) -->
-  <path
-    d="M 41.5 15.55 A 19 19 0 1 1 13.29 35.30"
-    stroke="#45C77D"
-    stroke-width="8"
-    stroke-linecap="butt"
-    fill="none"
-  />
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><style>.a{fill:#0F1620}@media (prefers-color-scheme:dark){.a{fill:#fff}}</style><path class="a" d="M2.69 58.09A48.0 48.0 0 0 1 93.54 29.79L76.92 35.01A30.81 30.81 0 0 0 19.35 53.17Z"/><path fill="#51CB8A" d="M96.14 36.77A48.0 48.0 0 0 1 4.59 65.55L20.97 60.34A30.81 30.81 0 0 0 79.74 41.92Z"/></svg>

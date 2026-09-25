@@ -1,0 +1,127 @@
+---
+// Plantilla común. SEO por página: title ≤ 60, description ≤ 155, canonical con barra final,
+// Open Graph y un @graph JSON-LD (Organization + WebSite + lo propio de la página).
+// PUBLIC_NOINDEX=1 en la construcción de revisión: noindex en todas las páginas.
+import iconos from '../components/iconos.html?raw';
+import { NAV, LINEAS, grafoBase, SITE_URL, PHONE, CONTACT_EMAIL, BRAND_NAME } from '../lib/sitio';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  jsonld?: Record<string, unknown>[];
+  ogType?: 'website' | 'article';
+  image?: string;
+  noindex?: boolean;
+  clase?: string;
+}
+const { title, description, path, jsonld = [], ogType = 'website', image = '/images/og-image.png', noindex = false, clase = '' } = Astro.props;
+const canonical = `${SITE_URL}${path}`;
+const sinIndexar = noindex || import.meta.env.PUBLIC_NOINDEX === '1';
+const grafo = { '@context': 'https://schema.org', '@graph': [...grafoBase(), ...jsonld] };
+const actual = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+const aro = `<symbol id="aro" viewBox="0 0 100 100"><path style="fill:var(--arco-alto,#fff)" d="M2.69 58.09A48.0 48.0 0 0 1 93.54 29.79L76.92 35.01A30.81 30.81 0 0 0 19.35 53.17Z"/><path style="fill:var(--arco-bajo,#51CB8A)" d="M96.14 36.77A48.0 48.0 0 0 1 4.59 65.55L20.97 60.34A30.81 30.81 0 0 0 79.74 41.92Z"/></symbol>`;
+---
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+{sinIndexar && <meta name="robots" content="noindex, nofollow">}
+<title>{title}</title>
+<meta name="description" content={description}>
+<link rel="canonical" href={canonical}>
+<meta name="theme-color" content="#0F1620">
+<meta property="og:type" content={ogType}>
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content={BRAND_NAME}>
+<meta property="og:url" content={canonical}>
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:image" content={`${SITE_URL}${image}`}>
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" href="/fonts/bricolage-var-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/b612mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/opspilot.css">
+<script is:inline>document.documentElement.classList.add('js')</script>
+<script type="application/ld+json" set:html={JSON.stringify(grafo)} />
+<script is:inline defer data-domain="opspilot.es" src="https://plausible.io/js/script.js"></script>
+</head>
+<body class={clase}>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><Fragment set:html={aro + iconos} /></svg>
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="cab">
+  <div class="wrap cab-in">
+    <a class="marca" href="/" aria-label="OpsPilot, inicio">
+      <svg class="marca-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+      <span>OpsPilot</span>
+    </a>
+    <nav class="menu" aria-label="Principal">
+      {NAV.map((n) => <a href={n.href} aria-current={actual(n.href) ? 'page' : undefined}>{n.label}</a>)}
+    </nav>
+    <a class="btn btn-verde btn-cab" href="/contacto/">Empieza ahora</a>
+    <details class="menu-movil">
+      <summary aria-label="Abrir el menú"><svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg></summary>
+      <div class="menu-movil-panel">
+        {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
+        <p class="menu-movil-t">Soluciones</p>
+        {LINEAS.map((l) => <a class="sub" href={l.href}><svg class="ico" aria-hidden="true"><use href={`#i-${l.icono}`}/></svg>{l.label}</a>)}
+        <a class="btn btn-verde" href="/contacto/">Empieza ahora</a>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main id="contenido">
+  <slot />
+</main>
+
+<footer class="pie">
+  <div class="wrap pie-in pie-in-5">
+    <div class="pie-marca">
+      <a class="marca" href="/" aria-label="OpsPilot, inicio">
+        <svg class="marca-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+        <span>OpsPilot</span>
+      </a>
+      <p>Software a medida, webs y tiendas online desde Córdoba para pymes de toda España.</p>
+      <address>
+        <a href={`tel:${PHONE.e164}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>{PHONE.display}</a>
+        <a href={`mailto:${CONTACT_EMAIL}`}><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>{CONTACT_EMAIL}</a>
+        <span>Córdoba, Andalucía · España</span>
+      </address>
+    </div>
+    <div>
+      <p class="pie-tit">Soluciones</p>
+      <ul class="pie-links">{LINEAS.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </div>
+    <div>
+      <p class="pie-tit">Productos</p>
+      <ul class="pie-links">
+        <li><a href="/productos/presupuesya/">PresupuesYa</a></li>
+        <li><a href="/productos/erp-hosteleria/">ERP para hostelería</a></li>
+        <li><a href="/productos/">Todos los productos</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="pie-tit">OpsPilot</p>
+      <ul class="pie-links">
+        <li><a href="/casos/">Casos</a></li>
+        <li><a href="/recursos/">Recursos</a></li>
+        <li><a href="/contacto/">Contacto</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="pie-tit">En Córdoba</p>
+      <ul class="pie-links">
+        <li><a href="/desarrollo-software-cordoba/">Desarrollo de software en Córdoba</a></li>
+        <li><a href="/diseno-web-cordoba/">Diseño web en Córdoba</a></li>
+      </ul>
+    </div>
+  </div>
+  <p class="wrap pie-legal">© 2026 OpsPilot · <a href="/aviso-legal/">Aviso legal</a> · <a href="/privacidad/">Privacidad</a> · <a href="/cookies/">Cookies</a></p>
+</footer>
+<script is:inline src="/js/opspilot.js" defer></script>
+</body>
+</html>

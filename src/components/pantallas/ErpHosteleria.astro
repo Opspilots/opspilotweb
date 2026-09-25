@@ -1,0 +1,35 @@
+---
+// ERP Hostelería (erp.mcpopspilot.org): su paleta (THEME_ERP de src/data/products.ts).
+// Lógica real de lo que el producto anuncia: cada comanda descuenta los ingredientes de su receta,
+// el stock avisa al bajar del mínimo y el cobro suma a la caja. Carta, precios y stock: de ejemplo.
+---
+<div class="ventana t-erp" data-erp>
+  <div class="erp-app">
+    <nav class="erp-lado" aria-label="ERP Hostelería">
+      <p class="erp-logo"><i aria-hidden="true"></i>ERP Hostelería</p>
+      <p class="on"><svg class="ico" aria-hidden="true"><use href="#i-utensils-crossed"/></svg>Sala</p>
+      <p><svg class="ico" aria-hidden="true"><use href="#i-package"/></svg>Inventario</p>
+      <p><svg class="ico" aria-hidden="true"><use href="#i-calendar-days"/></svg>Reservas</p>
+      <p><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg>Turnos</p>
+      <p><svg class="ico" aria-hidden="true"><use href="#i-banknote"/></svg>Caja</p>
+    </nav>
+    <div class="erp-sala">
+      <p class="erp-top"><b>Sala</b><span class="chip chip-erp">Demo · datos de ejemplo</span></p>
+      <div class="erp-mesas" role="group" aria-label="Mesas" data-erp-mesas></div>
+      <p class="erp-sub">Carta · toca para añadir a la mesa</p>
+      <div class="erp-carta" data-erp-carta></div>
+    </div>
+    <div class="erp-comanda">
+      <p class="erp-cab"><b data-erp-mesa-t>Mesa 3</b><span data-erp-estado>Ocupada</span></p>
+      <ul class="erp-lineas" data-erp-lineas aria-live="polite"></ul>
+      <p class="erp-total"><span>Total</span><b data-erp-total>0 €</b></p>
+      <button type="button" class="erp-cobrar" data-erp-cobrar><svg class="ico" aria-hidden="true"><use href="#i-credit-card"/></svg>Cobrar</button>
+      <div class="erp-inv">
+        <p class="erp-sub">Stock que descuenta cada comanda</p>
+        <ul data-erp-stock></ul>
+      </div>
+      <p class="erp-caja"><span>Caja de hoy</span><b data-erp-caja>0 €</b><small data-erp-tickets>0 tickets</small></p>
+    </div>
+  </div>
+  <p class="toast" data-toast-erp role="status"></p>
+</div>

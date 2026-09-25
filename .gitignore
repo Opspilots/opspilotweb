@@ -44,3 +44,6 @@ blob-report/
 # ...y los baselines de Playwright también: son la referencia contra la que se
 # compara el refactor, así que tienen que viajar con el repo.
 !e2e/__screenshots__/**/*.png
+
+# Astro
+.astro/

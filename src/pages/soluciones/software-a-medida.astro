@@ -1,0 +1,80 @@
+---
+import Base from '../../layouts/Base.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import Problemas from '../../components/Problemas.astro';
+import PresupuesYa from '../../components/pantallas/PresupuesYa.astro';
+import EnergyDeal from '../../components/pantallas/EnergyDeal.astro';
+import Faq from '../../components/Faq.astro';
+import Cierre from '../../components/Cierre.astro';
+import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../../lib/sitio';
+
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }, { nombre: 'Software a medida', path: '/soluciones/software-a-medida/' }];
+// Respuestas de los artículos publicados cuando-pedir-software-a-medida-vs-estandar,
+// como-pedir-presupuesto-de-software, migrar-de-excel-a-sistema-pyme y senales-pyme-necesita-sistema-de-gestion.
+const FAQ = [
+  { q: '¿Cuándo compensa el software a medida frente a uno estándar?', a: 'Cuando tu proceso tiene reglas propias que ningún software estándar cubre, ni configurándolo, y esas reglas son el motivo real por el que ganas o pierdes dinero. Si un estándar resuelve el 80 % con una configuración razonable, ese 20 % restante rara vez justifica construir desde cero, y te lo diremos.' },
+  { q: '¿Cuánto tarda y cuánto cuesta?', a: 'En rangos orientativos: un proceso simple puede resolverse en 6 a 8 semanas, uno con varias integraciones en 3 o 4 meses, y un proyecto con varios módulos conectados puede llevar más. El precio te lo damos cerrado y por escrito cuando conocemos tu proceso, nunca antes.' },
+  { q: '¿Hay que parar el negocio para cambiar de Excel a un sistema?', a: 'No, si se hace por fases. Lo antiguo sigue funcionando en paralelo mientras lo nuevo se valida con datos reales, y solo se apaga el Excel cuando el sistema ya ha demostrado que funciona con tu operativa de verdad.' },
+  { q: '¿De quién es el código y los datos al terminar?', a: 'Tuyos. Es la primera pregunta que conviene hacer a cualquiera que te presupueste software, y la respuesta correcta siempre es la misma.' },
+  { q: '¿Qué pasa si mis procesos cambian después?', a: 'Es la pregunta más importante y la que menos se hace. Un desarrollo bien planteado incluye margen para evolucionar, no solo la foto del proceso del día de la firma. Lo hablamos antes de empezar, no cuando ya necesites el cambio.' },
+];
+const servicio = {
+  '@type': 'Service',
+  name: 'Desarrollo de software a medida',
+  serviceType: 'Desarrollo de software a medida para pymes',
+  provider: { '@id': ORG_ID },
+  areaServed: [{ '@type': 'City', name: 'Córdoba' }, { '@type': 'Country', name: 'España' }],
+  url: `${SITE_URL}/soluciones/software-a-medida/`,
+};
+---
+<Base title="Software a medida para pymes en Córdoba · OpsPilot"
+  description="Software a medida para pymes: clientes, presupuestos, facturación y operativa en un solo sistema. Precio cerrado, por fases y sin parar tu negocio."
+  path="/soluciones/software-a-medida/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
+  <CabeceraPagina sobre="Software a medida" titulo="El programa que tu negocio necesitaba y no existía."
+    entrada="Cuando ningún programa del mercado encaja con cómo trabajas, lo construimos alrededor de tu proceso: un único sitio para lo que hoy vive en cuatro, con lo que hay que atender hoy a la vista."
+    migas={M}>
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, necesito un sistema interno. Os cuento:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu proceso</a>
+      <a class="enlace" href="/desarrollo-software-cordoba/">Desarrollo de software en Córdoba <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    </div>
+  </CabeceraPagina>
+
+  <Problemas />
+
+  <section class="s-hondo" aria-labelledby="t-py">
+    <div class="wrap">
+      <p class="etiqueta">Nuestro producto</p>
+      <h2 id="t-py" class="h2">Así construimos software: PresupuesYa.</h2>
+      <div class="bloque">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Producto propio · Reformas</p>
+          <h3>El presupuesto de obra, en minutos y no en horas.</h3>
+          <p>Lo diseñamos y lo mantenemos nosotros para reformistas e instaladores. Dictas la partida y la IA la descompone en material, mano de obra y medios. El cliente firma desde el móvil y, al aceptar, sale el plan de obra.</p>
+          <p>Es la misma forma de trabajar que llevamos a cada proyecto a medida: tu vocabulario, tus números y tus pasos, no los de un programa genérico.</p>
+          <a class="enlace enlace-claro" href="/productos/presupuesya/">Ver PresupuesYa <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+        </div>
+        <div class="caso-pantalla"><PresupuesYa /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-navy" aria-labelledby="t-ed">
+    <div class="wrap">
+      <p class="etiqueta">Para un cliente</p>
+      <h2 id="t-ed" class="h2">Un CRM que sabe qué es un CUPS.</h2>
+      <div class="bloque bloque-inv">
+        <div class="bloque-texto">
+          <p class="bloque-meta">App a medida · Energía</p>
+          <h3>Para un agente comercial al que ningún CRM le servía.</h3>
+          <p>Compara y vende tarifas de luz y gas de varias comercializadoras. Las tarifas se mueven en días y un cliente empresa tarda semanas en firmar, así que cada comparativa se congela tal cual se hizo. Y las comisiones tienen estado, para que cerrar el mes sea una consulta y no una discusión.</p>
+          <p>Guarda la comparativa en la pantalla, pulsa «Llegan tarifas nuevas» y mira qué pasa.</p>
+          <a class="enlace enlace-claro" href="/casos/">Ver todos los casos <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+        </div>
+        <div class="caso-pantalla"><EnergyDeal /></div>
+      </div>
+    </div>
+  </section>
+
+  <Faq items={FAQ} titulo="Lo que suelen preguntarnos sobre software a medida." />
+  <Cierre />
+</Base>

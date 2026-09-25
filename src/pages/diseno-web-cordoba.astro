@@ -1,0 +1,97 @@
+---
+import Base from '../layouts/Base.astro';
+import CabeceraPagina from '../components/CabeceraPagina.astro';
+import CordobaSoluciona from '../components/pantallas/CordobaSoluciona.astro';
+import Faq from '../components/Faq.astro';
+import Cierre from '../components/Cierre.astro';
+import { migas, faqSchema, SERVICIO_LOCAL, WA } from '../lib/sitio';
+
+// Página local (plan .seo/02-plan-local-cordoba.md, fase 3): 700-900 palabras propias.
+// Datos: casos publicados (cases.ts), sitemap de cordobasoluciona.es (25-sep) y el checklist publicado.
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Diseño web en Córdoba', path: '/diseno-web-cordoba/' }];
+const FAQ = [
+  { q: '¿Cuánto cuesta una página web en Córdoba?', a: 'Depende de cuántas páginas necesites y de si vas a vender en línea. Te damos un precio cerrado y por escrito después de una primera conversación, antes de empezar, con lo que incluye y lo que no.' },
+  { q: '¿Me ayudáis a salir en Google en mi pueblo o en mi barrio?', a: 'Sí, y empieza por la estructura: una página propia para cada búsqueda real («reforma de baño en Lucena», «tienda de placas en Puente Genil»), la ficha de Google bien completada y el mismo nombre, dirección y teléfono en todas partes. Lo que no te vamos a prometer es un puesto concreto en Google: nadie honesto puede.' },
+  { q: '¿Puedo actualizar yo la web después?', a: 'Lo que cambia a menudo (productos, ofertas, obras nuevas) se deja preparado para que lo cambies tú sin tocar código. Lo que no cambia casi nunca, no hace falta que lo toques.' },
+  { q: '¿La web será mía?', a: 'Sí: el código, el dominio y los datos son tuyos al terminar.' },
+];
+---
+<Base title="Diseño web en Córdoba: webs y tiendas que venden · OpsPilot"
+  description="Diseño web en Córdoba hecho a mano: una página por servicio y zona para salir en Google y tiendas con catálogo y WhatsApp. Casos en Córdoba y Puente Genil."
+  path="/diseno-web-cordoba/" jsonld={[migas(M), SERVICIO_LOCAL, faqSchema(FAQ)]}>
+  <CabeceraPagina sobre="Córdoba" titulo="Diseño web en Córdoba que trae clientes."
+    entrada="Webs y tiendas online hechas a mano, con tu marca y tu forma de hablar, pensadas para lo que busca la gente de Córdoba y su provincia."
+    migas={M}>
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, soy de Córdoba y quiero una web nueva:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu web</a>
+      <a class="enlace" href="/soluciones/webs-y-tiendas/">Webs y tiendas <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    </div>
+  </CabeceraPagina>
+
+  <section class="s-papel" aria-label="Diseño web en Córdoba">
+    <div class="wrap lectura-in">
+      <div class="prosa">
+        <h2>Una web que se encuentra y que convence</h2>
+        <p>Una web bonita que nadie encuentra no trae clientes. Y una web que aparece en Google pero no explica en la primera pantalla qué haces, dónde y cómo contactarte, tampoco. Por eso trabajamos las dos cosas a la vez: la estructura para que te encuentren y el diseño para que, cuando lleguen, te llamen a ti y no al siguiente resultado.</p>
+        <p>Cada web la hacemos a mano, a partir de tu marca, tu local y tu forma de hablar. Nada de plantillas que comparten tres negocios de la misma calle: la idea es que tu cliente te reconozca aunque tape el logo.</p>
+
+        <h2>Qué hace que una web de Córdoba salga en Google</h2>
+        <p>En una búsqueda local, la gente no escribe «reformas» a secas: escribe «reforma de baño en Montilla» o «reformas en Ciudad Jardín». Una web de una sola página, por bien diseñada que esté, compite mal por esas búsquedas. Lo que funciona es tener una página propia para cada combinación real de servicio y zona, con su título, su texto y su forma de pedir presupuesto, sin copiar y pegar la misma página cambiando el nombre del pueblo.</p>
+        <p>A eso se suman tres cosas fuera de la web que pesan tanto como la web: la ficha de Google bien completada (categoría correcta, horario, fotos y reseñas), el mismo nombre, dirección y teléfono en todos los directorios, y una web rápida en el móvil. La mayoría de tus visitantes entra desde el móvil con datos; si tarda más de 3 segundos, muchos se van antes de ver nada.</p>
+
+        <h2>Webs que ya funcionan en Córdoba</h2>
+        <ul>
+          <li><b>Córdoba Soluciona</b>, nuestra marca de reformas: 145 páginas, 114 de ellas locales, una por cada pueblo, barrio y tipo de reforma que se busca: 23 pueblos y 11 barrios de la capital. Pruébalo en la pantalla de abajo.</li>
+          <li><b>J.R. Rodríguez e Hijos</b>, reformas en Córdoba capital: una página por servicio y ciudad (baños, cocinas, reformas integrales y locales comerciales), galería de antes y después y presupuesto por formulario o WhatsApp con el mensaje ya escrito.</li>
+          <li><b>ObraFácil</b>, en Puente Genil: una tienda online de placas decorativas con carrito, galería de antes y después y una calculadora que dice cuántas placas te entran en la pared.</li>
+        </ul>
+
+        <h2>Qué lleva una web nuestra</h2>
+        <ul>
+          <li>Una página por cada servicio y cada zona en la que trabajas.</li>
+          <li>Tienda con catálogo, carrito y pedido, si vendes en línea; o el pedido directo a tu WhatsApp si vendes hablando.</li>
+          <li>Formularios y WhatsApp que te llegan ordenados: qué quiere el cliente, dónde y cómo localizarle.</li>
+          <li>Preguntas frecuentes que responden por escrito lo que hoy contestas una y otra vez por teléfono.</li>
+          <li>Medida en el móvil antes de entregarla, con los datos de marcado que Google lee.</li>
+        </ul>
+
+        <h2>Cómo hacemos una web, paso a paso</h2>
+        <ol>
+          <li><b>Leemos tu negocio, no tu sector.</b> Tu web actual, tu ficha de Google, tus reseñas y tu local. Lo que repiten tus clientes en las reseñas suele ser lo que la web tiene que decir en grande.</li>
+          <li><b>Decidimos cómo se va a ver antes de maquetar.</b> Colores medidos de tu marca, tu logo tal cual es, tu forma de hablar y la idea que hará que tu web no se parezca a la de tu competencia.</li>
+          <li><b>La construimos a mano</b>, con una página por cada búsqueda que importa y el contenido que nos das. Lo que falta se marca como pendiente, no se inventa.</li>
+          <li><b>La medimos en el móvil</b> antes de enseñártela: velocidad, que se lea bien y que nada se rompa.</li>
+          <li><b>La publicamos sin perder lo que ya tienes.</b> Si tu web actual ya sale en Google, las direcciones antiguas se redirigen a las nuevas para no perder posicionamiento.</li>
+        </ol>
+
+        <h2>Antes de pedir presupuesto: revisa tu web actual</h2>
+        <p>Diez puntos rápidos: carga en menos de 3 segundos en el móvil con datos, teléfono o WhatsApp visibles sin bajar, se ve bien en el móvil, un objetivo claro por página, explica qué haces en la primera pantalla, sin enlaces rotos, aparece en Google por tu negocio más tu ciudad, tiene certificado SSL, el formulario funciona y se ha actualizado en el último año. Si falla en tres o más, está perdiendo clientes. Lo tienes entero en el <a href="/recursos/checklist-tu-web-trabaja-para-ti/">checklist de una web que trabaja para ti</a>.</p>
+      </div>
+      <aside class="lateral">
+        <div class="lateral-caja">
+          <p class="etiqueta">Sin compromiso</p>
+          <p><b>Mándanos tu web actual.</b> Te decimos qué cambiaríamos primero y cuánto cuesta.</p>
+          <a class="btn btn-verde" href={WA('Hola OpsPilot, esta es mi web actual: ')}>Mandar mi web</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="s-navy" aria-labelledby="t-cs">
+    <div class="wrap">
+      <p class="etiqueta">Pruébalo</p>
+      <h2 id="t-cs" class="h2">Elige un pueblo y una reforma.</h2>
+      <div class="bloque">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Córdoba Soluciona</p>
+          <h3>Cada búsqueda real, con su página.</h3>
+          <p>Lo que aparece es la página que existe: su dirección, cómo se ve en el buscador y su titular.</p>
+        </div>
+        <div class="caso-pantalla"><CordobaSoluciona /></div>
+      </div>
+    </div>
+  </section>
+
+  <Faq items={FAQ} titulo="Preguntas sobre diseño web en Córdoba." />
+  <Cierre />
+</Base>

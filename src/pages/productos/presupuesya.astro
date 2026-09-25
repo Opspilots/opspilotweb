@@ -1,0 +1,88 @@
+---
+import Base from '../../layouts/Base.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import PresupuesYa from '../../components/pantallas/PresupuesYa.astro';
+import Faq from '../../components/Faq.astro';
+import Cierre from '../../components/Cierre.astro';
+import { migas, faqSchema, ORG_ID } from '../../lib/sitio';
+
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Productos', path: '/productos/' }, { nombre: 'PresupuesYa', path: '/productos/presupuesya/' }];
+// Funciones: las que publica presupuesya.es y el artículo presupuestador-obra-bc3.
+// No se repiten las cifras de actividad de su portada (no constan como verificadas).
+const FUNCIONES = [
+  { i: 'mic', t: 'Partidas con IA, también por voz', d: 'Dictas el trabajo y la IA crea las partidas con su descomposición en material, mano de obra y medios.' },
+  { i: 'shield-check', t: 'Firma digital con validez legal', d: 'El cliente firma desde el móvil con verificación por SMS (eIDAS). Sin imprimir ni esperar.' },
+  { i: 'users', t: 'Portal del cliente', d: 'El cliente ve su presupuesto, lo acepta y sigue la obra sin llamarte para preguntar.' },
+  { i: 'clipboard-list', t: 'Control de materiales', d: 'Registras los albaranes con el móvil, se leen solos y comparas lo comprado con lo presupuestado.' },
+  { i: 'calendar-days', t: 'Plan de obra con IA', d: 'Al aceptar el presupuesto, la IA prepara el plan de ejecución por etapas.' },
+  { i: 'layout-grid', t: 'Packs por gremio y BC3', d: 'Catálogo propio y packs reutilizables. Importa y exporta BC3/FIEBDC, el formato estándar español.' },
+];
+const PASOS = [
+  { t: 'Toma las medidas', d: 'En la visita, con el móvil: medidas y lo que hay que hacer.' },
+  { t: 'Revisa el presupuesto', d: 'La IA propone las partidas; tú ajustas cantidades y precios.' },
+  { t: 'El cliente firma', d: 'Le llega el presupuesto con tu logo y lo firma desde el móvil.' },
+  { t: 'Obra en marcha', d: 'Plan de obra, materiales y seguimiento en el mismo sitio.' },
+];
+// Del artículo presupuestador-obra-bc3 (publicado).
+const FAQ = [
+  { q: '¿Qué es el formato BC3/FIEBDC y por qué importa?', a: 'BC3 (estándar FIEBDC) es el formato español para intercambiar presupuestos de obra entre programas y agentes: constructoras, arquitectos y aparejadores. PresupuesYa lo importa y lo exporta, así que puedes intercambiar mediciones sin rehacer nada a mano.' },
+  { q: '¿Cómo ayuda a saber si una obra es rentable?', a: 'Con el control de materiales: cada compra queda imputada a su obra en el momento, y la comparación entre lo presupuestado y lo real está disponible mientras la obra sigue abierta, cuando todavía se puede corregir el margen.' },
+  { q: '¿Puede firmar el cliente los presupuestos?', a: 'Sí, desde un enlace en el móvil y con verificación por SMS, con trazabilidad y sin imprimir nada.' },
+];
+const app = {
+  '@type': 'SoftwareApplication',
+  name: 'PresupuesYa',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  url: 'https://presupuesya.es/',
+  description: 'Software de presupuestos de obra para reformistas e instaladores: partidas con IA, firma digital eIDAS, portal del cliente, control de materiales y plan de obra.',
+  publisher: { '@id': ORG_ID },
+};
+---
+<Base title="PresupuesYa: presupuestos de obra con IA · OpsPilot"
+  description="PresupuesYa, nuestro software de presupuestos de obra: partidas con IA por voz, firma digital eIDAS, portal del cliente, control de materiales y BC3."
+  path="/productos/presupuesya/" jsonld={[migas(M), app, faqSchema(FAQ)]}>
+  <CabeceraPagina sobre="Producto propio · reformas e instalaciones" titulo="El presupuesto de obra, en minutos y no en horas."
+    entrada="PresupuesYa es nuestro software para reformistas, fontaneros y electricistas: de la visita al presupuesto firmado sin pasar por la calculadora, el Excel y el Word."
+    migas={M}>
+    <div class="acciones">
+      <a class="btn btn-tinta" href="https://presupuesya.es" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>Ir a presupuesya.es</a>
+      <a class="enlace" href="/soluciones/software-a-medida/">¿Necesitas algo a medida? <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    </div>
+  </CabeceraPagina>
+
+  <section class="s-hondo" aria-labelledby="t-pruebalo">
+    <div class="wrap">
+      <p class="etiqueta">Pruébalo aquí</p>
+      <h2 id="t-pruebalo" class="h2">Dicta una partida y mándala a firmar.</h2>
+      <div class="bloque">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Así funciona</p>
+          <h3>Un presupuesto de baño, de principio a fin.</h3>
+          <ul class="lista-ok">
+            <li><svg class="ico" aria-hidden="true"><use href="#i-mic"/></svg><span>Pulsa el micrófono: la partida aparece con su descomposición.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-file-text"/></svg><span>Toca cualquier partida para ver en qué se va cada euro.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg><span>«Enviar a firmar»: el cliente firma y sale el plan de obra.</span></li>
+          </ul>
+          <p>Los importes son de ejemplo; los cálculos, de verdad.</p>
+        </div>
+        <div class="caso-pantalla"><PresupuesYa /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-papel" aria-labelledby="t-func">
+    <div class="wrap">
+      <p class="etiqueta">Funciones</p>
+      <h2 id="t-func" class="h2">Todo lo que necesita un presupuesto de obra.</h2>
+      <div class="producto-ficha">
+        {FUNCIONES.map((f) => <div class="pf"><svg class="ico" aria-hidden="true"><use href={`#i-${f.i}`}/></svg><h3>{f.t}</h3><p>{f.d}</p></div>)}
+      </div>
+      <h2 class="h2" style="margin-top:clamp(3rem,6vw,5rem)">De la visita al presupuesto, en cuatro pasos.</h2>
+      <ol class="pasos">{PASOS.map((p) => <li><h3>{p.t}</h3><p>{p.d}</p></li>)}</ol>
+    </div>
+  </section>
+
+  <Faq items={FAQ} titulo="Lo que suelen preguntar los reformistas." fondo="navy" />
+  <Cierre />
+</Base>

@@ -1,0 +1,21 @@
+---
+// Preguntas frecuentes. La página que lo usa añade faqSchema(items) a su JSON-LD.
+interface Props { items: { q: string; a: string }[]; titulo?: string; id?: string; fondo?: 'papel' | 'navy' }
+const { items, titulo = 'Lo que suelen preguntarnos', id = 't-faq', fondo = 'papel' } = Astro.props;
+---
+<section class:list={['faq-sec', `s-${fondo}`]} aria-labelledby={id}>
+  <div class="wrap faq-in">
+    <div>
+      <p class="etiqueta">Preguntas</p>
+      <h2 id={id} class="h2">{titulo}</h2>
+    </div>
+    <div class="faq">
+      {items.map((it) => (
+        <details>
+          <summary>{it.q}<svg class="ico" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+          <p>{it.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
