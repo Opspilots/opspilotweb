@@ -10,7 +10,7 @@
 @font-face{font-family:'B612 Mono';src:url('../fonts/b612mono-700.woff2') format('woff2');font-weight:700;font-display:swap}
 
 :root{
-  --verde:#51CB8A; --verde-h:#2E9E63; --verde-s:#DDF4E7;
+  --verde:#51CB8A; --verde-h:#1F7A4A; --verde-s:#DDF4E7;
   --navy:#0F1620; --hondo:#0A0E14; --papel:#EDECE8;
   --ambar:#E8A563;          /* SOLO señal pequeña: foco del teclado */
   --rojo:#C8372D; --rojo-s:#FCEBEA;
@@ -973,10 +973,10 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .erp-inv ul{list-style:none;display:grid;gap:.3rem}
 .erp-inv li{display:grid;grid-template-columns:1fr auto;gap:.2rem .5rem;font-size:.72rem}
 .erp-inv li b{font:500 .68rem/1 var(--mono)}
-.erp-inv li i{grid-column:1/-1;height:.3rem;border-radius:99rem;background:var(--e-r);overflow:hidden;position:relative}
-.erp-inv li i::after{content:"";position:absolute;inset:0;right:auto;width:var(--p);background:var(--e-a);transition:width .4s var(--curva)}
+.erp-inv li i{grid-column:1/-1;display:block;height:.3rem;border-radius:99rem;background:var(--e-r);overflow:hidden}
+.erp-inv li em{display:block;height:100%;background:var(--e-a);transform-origin:0 50%;transition:transform .4s var(--curva)}
 .erp-inv li.bajo b{color:#FF6B6B}
-.erp-inv li.bajo i::after{background:#FF6B6B}
+.erp-inv li.bajo em{background:#FF6B6B}
 .erp-caja{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:.1rem .5rem;margin-top:auto;padding:.55rem .6rem;border-radius:.4rem;background:var(--e-s);font-size:.74rem;color:var(--e-m)}
 .erp-caja b{color:#fff;font-size:1rem}
 .erp-caja small{grid-column:1/-1;font:500 .62rem/1 var(--mono)}

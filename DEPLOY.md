@@ -20,16 +20,18 @@ Construcción de revisión que no se indexa: `PUBLIC_NOINDEX=1 npm run build`.
 Igual que antes: `.github/workflows/deploy.yml` construye en cada push a `main` y sube `dist/` por
 rsync a `/var/www/opspilotweb/dist/` (nginx, VPS de ObraFácil). **Mergear a main = publicar.**
 
-## Qué tocar en nginx (una vez, en la ventana del merge)
+## nginx: no hace falta tocarlo (revisado en solo lectura el 25-sep)
 
-1. **404 de verdad.** Astro genera `dist/404.html`: `error_page 404 /404.html;` y
-   `try_files $uri $uri/ =404;` (cada ruta es una carpeta con su index.html). Así una URL inventada deja
-   de devolver la portada con 200 (bloqueo señalado en .seo/02).
-2. **301 de las direcciones antiguas.** Astro ya genera páginas de redirección (ver `astro.config.mjs`) para
-   /servicios/, /precios/, /diagnostico/, /services/, /cases/, /pricing/, /resources/, /contact/, /demo/ y
-   /product/, pero para Google es mejor un 301 en nginx: `location = /servicios/ { return 301 /contacto/; }`.
-3. CSS y JS no llevan hash en el nombre: si cambian, subir la versión en `src/layouts/Base.astro`
-   (`/css/opspilot.css?v=2`) o dejar esos ficheros con caché corta.
+La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta a ella:
+- `error_page 404 /404/index.html` + `try_files $uri $uri/ =404`: `scripts/postbuild.mjs` copia
+  `dist/404.html` a `dist/404/index.html`.
+- 301 de /services, /servicios, /contact, /demo, /diagnostico, /pricing y /precios → /contacto/;
+  /cases → /casos/; /resources y /product → /recursos/. Las redirecciones de `astro.config.mjs`
+  apuntan al mismo sitio (solo actúan si algún día cambia el servidor).
+- `.css`/`.js` con `Cache-Control: public, immutable` 30 días: como estos ficheros no llevan hash en
+  el nombre, `src/layouts/Base.astro` les añade `?v=<hash del contenido>`. **Ojo con fuentes e
+  imágenes**: también son inmutables; si se cambia una, cambiar su NOMBRE, no sobrescribirla.
+- `.html` sin caché: cada despliegue se ve al momento.
 
 ## Dónde está cada cosa
 

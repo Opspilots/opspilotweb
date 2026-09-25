@@ -6,7 +6,7 @@
   "description": "opspilot.es · web de marketing (Astro, HTML estático). Identidad «horizonte artificial».",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/postbuild.mjs",
     "preview": "astro preview",
     "check": "node scripts/revisar.mjs"
   },

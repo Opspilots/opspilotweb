@@ -30,7 +30,7 @@ const relacionados = RESOURCES.filter((x) => x.slug !== r.slug && x.cat === r.ca
 // El título del <title> no pasa de 60 caracteres: si el del artículo es largo, va sin la marca.
 const titulo = r.title.length <= 49 ? `${r.title} · OpsPilot` : r.title;
 ---
-<Base title={titulo} description={r.desc} path={path} ogType="article" image={r.cover ?? '/images/og-image.png'}
+<Base title={titulo} description={r.desc} path={path} ogType="article" image={r.cover ?? '/images/og-horizonte.png'}
   jsonld={[migas(M), articulo, ...(faq.length ? [faqSchema(faq)] : [])]}>
   <CabeceraPagina sobre={r.cat} titulo={r.title} migas={M} horizonte={false}>
     <p class="prosa-meta">

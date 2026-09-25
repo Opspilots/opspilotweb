@@ -558,21 +558,35 @@
     var toast = $('[data-toast-erp]', erp);
     function aviso(t) { toast.textContent = t; toast.classList.add('on'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('on'); }, 2200); }
     var suma = function (m) { return m.reduce(function (s, x) { return s + x.p; }, 0); };
+    /* Se construye UNA vez; después solo se actualiza lo que cambia (nada de innerHTML en cada paso:
+       la demo repintando todo disparaba el trabajo de maquetación). */
+    var cajaMesas = $('[data-erp-mesas]', erp), cajaStock = $('[data-erp-stock]', erp), lineas = $('[data-erp-lineas]', erp);
+    cajaMesas.innerHTML = mesas.map(function (m, i) { return '<button type="button" data-m="' + i + '">M' + (i + 1) + '<small></small></button>'; }).join('');
+    var botonesMesa = $$('button', cajaMesas);
+    botonesMesa.forEach(function (b) { b.addEventListener('click', function () { sel = +b.dataset.m; pintar(); }); });
+    var claves = Object.keys(STOCK);
+    cajaStock.innerHTML = claves.map(function (k) { return '<li data-k="' + k + '"><span></span><b></b><i><em></em></i></li>'; }).join('');
+    var filasStock = $$('li', cajaStock);
     function pintar() {
-      $('[data-erp-mesas]', erp).innerHTML = mesas.map(function (m, i) {
-        return '<button type="button" data-m="' + i + '" class="' + (m.length ? 'ocupada' : '') + '" aria-pressed="' + (i === sel) + '">M' + (i + 1) + '<small>' + (m.length ? eur(suma(m)) : 'libre') + '</small></button>';
-      }).join('');
-      $$('[data-erp-mesas] button', erp).forEach(function (b) { b.addEventListener('click', function () { sel = +b.dataset.m; pintar(); }); });
+      botonesMesa.forEach(function (b, i) {
+        var m = mesas[i];
+        b.classList.toggle('ocupada', m.length > 0);
+        b.setAttribute('aria-pressed', i === sel ? 'true' : 'false');
+        b.lastChild.textContent = m.length ? eur(suma(m)) : 'libre';
+      });
       var m = mesas[sel];
       $('[data-erp-mesa-t]', erp).textContent = 'Mesa ' + (sel + 1);
       $('[data-erp-estado]', erp).textContent = m.length ? 'Ocupada' : 'Libre';
-      $('[data-erp-lineas]', erp).innerHTML = m.length ? m.map(function (x) { return '<li><span>' + x.n + '</span><b>' + eur(x.p) + '</b></li>'; }).join('') : '<li class="vacia">Sin comanda. Añade platos de la carta.</li>';
+      lineas.innerHTML = m.length ? m.map(function (x) { return '<li><span>' + x.n + '</span><b>' + eur(x.p) + '</b></li>'; }).join('') : '<li class="vacia">Sin comanda. Añade platos de la carta.</li>';
       $('[data-erp-total]', erp).textContent = eur(suma(m));
       $('[data-erp-cobrar]', erp).disabled = !m.length;
-      $('[data-erp-stock]', erp).innerHTML = Object.keys(STOCK).map(function (k) {
-        var s = STOCK[k], bajo = s[0] < s[1];
-        return '<li class="' + (bajo ? 'bajo' : '') + '"><span>' + NOM[k] + (bajo ? ' · pedir' : '') + '</span><b>' + num2(Math.max(0, s[0]), 2) + ' ' + s[2] + '</b><i style="--p:' + Math.max(0, Math.min(100, s[0] / INI[k] * 100)) + '%"></i></li>';
-      }).join('');
+      filasStock.forEach(function (li) {
+        var k = li.dataset.k, s = STOCK[k], bajo = s[0] < s[1];
+        li.classList.toggle('bajo', bajo);
+        li.firstChild.textContent = NOM[k] + (bajo ? ' · pedir' : '');
+        li.children[1].textContent = num2(Math.max(0, s[0]), 2) + ' ' + s[2];
+        li.querySelector('em').style.transform = 'scaleX(' + Math.max(0, Math.min(1, s[0] / INI[k])) + ')';
+      });
       $('[data-erp-caja]', erp).textContent = eur(caja);
       $('[data-erp-tickets]', erp).textContent = tickets + (tickets === 1 ? ' ticket cobrado' : ' tickets cobrados');
     }

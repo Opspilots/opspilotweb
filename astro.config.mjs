@@ -32,7 +32,7 @@ export default defineConfig({
     '/resources/': '/recursos/',
     '/contact/': '/contacto/',
     '/demo/': '/contacto/',
-    '/product/': '/productos/',
+    '/product/': '/recursos/',
   },
   integrations: [
     sitemap({

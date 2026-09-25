@@ -4,6 +4,14 @@
 // PUBLIC_NOINDEX=1 en la construcción de revisión: noindex en todas las páginas.
 import iconos from '../components/iconos.html?raw';
 import { NAV, LINEAS, grafoBase, SITE_URL, PHONE, CONTACT_EMAIL, BRAND_NAME } from '../lib/sitio';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+
+// nginx sirve .css y .js con «Cache-Control: public, immutable» 30 días. Como estos ficheros no
+// llevan hash en el nombre, la versión va en la URL: cambia sola cuando cambia el contenido.
+const version = (ruta: string) => createHash('sha256').update(readFileSync(new URL(`../../public${ruta}`, import.meta.url))).digest('hex').slice(0, 10);
+const CSS = `/css/opspilot.css?v=${version('/css/opspilot.css')}`;
+const JS = `/js/opspilot.js?v=${version('/js/opspilot.js')}`;
 
 interface Props {
   title: string;
@@ -15,7 +23,7 @@ interface Props {
   noindex?: boolean;
   clase?: string;
 }
-const { title, description, path, jsonld = [], ogType = 'website', image = '/images/og-image.png', noindex = false, clase = '' } = Astro.props;
+const { title, description, path, jsonld = [], ogType = 'website', image = '/images/og-horizonte.png', noindex = false, clase = '' } = Astro.props;
 const canonical = `${SITE_URL}${path}`;
 const sinIndexar = noindex || import.meta.env.PUBLIC_NOINDEX === '1';
 const grafo = { '@context': 'https://schema.org', '@graph': [...grafoBase(), ...jsonld] };
@@ -41,9 +49,10 @@ const aro = `<symbol id="aro" viewBox="0 0 100 100"><path style="fill:var(--arco
 <meta property="og:image" content={`${SITE_URL}${image}`}>
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/bricolage-var-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/b612mono-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/opspilot.css">
+<link rel="stylesheet" href={CSS}>
 <script is:inline>document.documentElement.classList.add('js')</script>
 <script type="application/ld+json" set:html={JSON.stringify(grafo)} />
 <script is:inline defer data-domain="opspilot.es" src="https://plausible.io/js/script.js"></script>
@@ -122,6 +131,6 @@ const aro = `<symbol id="aro" viewBox="0 0 100 100"><path style="fill:var(--arco
   </div>
   <p class="wrap pie-legal">© 2026 OpsPilot · <a href="/aviso-legal/">Aviso legal</a> · <a href="/privacidad/">Privacidad</a> · <a href="/cookies/">Cookies</a></p>
 </footer>
-<script is:inline src="/js/opspilot.js" defer></script>
+<script is:inline src={JS} defer></script>
 </body>
 </html>
