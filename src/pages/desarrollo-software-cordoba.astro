@@ -1,0 +1,112 @@
+---
+import Base from '../layouts/Base.astro';
+import CabeceraPagina from '../components/CabeceraPagina.astro';
+import PresupuesYa from '../components/pantallas/PresupuesYa.astro';
+import Faq from '../components/Faq.astro';
+import Cierre from '../components/Cierre.astro';
+import { migas, faqSchema, SERVICIO_LOCAL, WA } from '../lib/sitio';
+
+// Página local (plan .seo/02-plan-local-cordoba.md, fase 3): 700-900 palabras propias.
+// Solo hechos comprobables: casos publicados (cases.ts), productos en producción y el proceso publicado.
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Desarrollo de software en Córdoba', path: '/desarrollo-software-cordoba/' }];
+const FAQ = [
+  { q: '¿Solo trabajáis con empresas de Córdoba?', a: 'No. Estamos en Córdoba y trabajamos con pymes de toda España; la mayor parte del trabajo se hace a distancia sin problema. Pero muchos de nuestros proyectos son de aquí: la tienda de ObraFácil en Puente Genil, la web de J.R. Rodríguez en Córdoba capital o Córdoba Soluciona, que llega a 23 pueblos de la provincia.' },
+  { q: '¿Cuánto cuesta un software a medida?', a: 'Depende del alcance, y por eso no damos una cifra antes de conocer tu proceso. Lo que sí hacemos es darte un precio cerrado y por escrito después de la primera conversación, con lo que incluye y lo que no.' },
+  { q: '¿Cuánto se tarda?', a: 'En rangos orientativos: un proceso simple, de 6 a 8 semanas; uno con varias integraciones, de 3 a 4 meses; un sistema con varios módulos conectados, más. El plazo concreto va en la propuesta.' },
+  { q: '¿De quién es el código al terminar?', a: 'Tuyo, igual que los datos. Es la primera pregunta que conviene hacer a cualquier empresa de desarrollo, y la respuesta correcta siempre es la misma.' },
+  { q: '¿Y después de entregarlo?', a: 'Nos quedamos. Montamos tu sistema y seguimos ahí cuando nos necesites; cómo y cuánto cuesta el mantenimiento se acuerda por escrito antes de empezar, no después.' },
+];
+---
+<Base title="Desarrollo de software a medida en Córdoba · OpsPilot"
+  description="Empresa de desarrollo de software en Córdoba: software a medida, ERP, CRM y automatización para pymes. Precio cerrado, por fases y con casos publicados."
+  path="/desarrollo-software-cordoba/" jsonld={[migas(M), SERVICIO_LOCAL, faqSchema(FAQ)]}>
+  <CabeceraPagina sobre="Córdoba" titulo="Desarrollo de software a medida en Córdoba."
+    entrada="Somos un equipo de Córdoba que construye el software que tu negocio necesita y no encuentra en el mercado: sistemas internos, productos para sectores concretos, automatizaciones y webs."
+    migas={M}>
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, soy de Córdoba y quería contaros un proyecto:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu proyecto</a>
+      <a class="enlace" href="/soluciones/software-a-medida/">Software a medida <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    </div>
+  </CabeceraPagina>
+
+  <section class="s-papel" aria-label="Desarrollo de software en Córdoba">
+    <div class="wrap lectura-in">
+      <div class="prosa">
+        <h2>Software hecho alrededor de cómo trabajas</h2>
+        <p>La mayoría de las pymes que nos llaman tienen el mismo síntoma: la información vive en cuatro sitios que no cuadran entre sí. Un programa para facturar, un Excel para los presupuestos, el correo para los pedidos y WhatsApp para todo lo demás. Cada herramienta funciona por separado; el problema está en los huecos entre ellas, que es donde se pierden los datos, el tiempo y a veces el margen.</p>
+        <p>Nuestro trabajo es cerrar esos huecos. Unas veces con un sistema a medida que junta clientes, presupuestos y facturación en un solo sitio; otras con una automatización que evita copiar lo mismo tres veces; y otras con un producto que ya tenemos hecho para tu sector. Lo que no hacemos es venderte un programa genérico y pedirte que cambies tu forma de trabajar para que encaje.</p>
+
+        <h2>Qué construimos</h2>
+        <ul>
+          <li><b>Sistemas internos a medida</b>: clientes, presupuestos, facturación, agenda o inventario, conectados entre sí y con una pantalla de lo que hay que atender hoy. <a href="/soluciones/software-a-medida/">Ver software a medida</a>.</li>
+          <li><b>Productos para sectores concretos</b>, en producción: <a href="/productos/presupuesya/">PresupuesYa</a> para presupuestos de obra y un <a href="/productos/erp-hosteleria/">ERP para hostelería</a>.</li>
+          <li><b>Automatizaciones</b>: WhatsApp que responde lo repetitivo, presupuestos que se generan solos, datos que entran una sola vez. <a href="/soluciones/automatizacion/">Ver automatización</a>.</li>
+          <li><b>Webs y tiendas online</b> que traen clientes, con una página por cada servicio y cada zona. <a href="/diseno-web-cordoba/">Ver diseño web en Córdoba</a>.</li>
+        </ul>
+
+        <h2>Hecho en Córdoba y funcionando en Córdoba</h2>
+        <p>Buena parte de lo que hemos construido está aquí mismo y se puede comprobar entrando:</p>
+        <ul>
+          <li><b>ObraFácil, en Puente Genil</b>: una tienda online de placas decorativas con una calculadora que dice cuántas placas te entran en la pared, a partir de la medida real de cada placa.</li>
+          <li><b>J.R. Rodríguez e Hijos, en Córdoba capital</b>: una web de reformas con una página propia por servicio y ciudad, galería de antes y después y presupuesto por formulario o WhatsApp.</li>
+          <li><b>Córdoba Soluciona</b>, nuestra marca de reformas: 114 páginas locales, una por cada combinación de pueblo, barrio y tipo de reforma, en 23 pueblos y 11 barrios de la capital.</li>
+          <li><b>PresupuesYa</b>, nuestro software para reformistas: partidas con IA, firma digital del cliente y plan de obra.</li>
+        </ul>
+        <p>Todos están en <a href="/casos/">casos</a>, con una pantalla que puedes tocar.</p>
+
+        <h2>Cómo trabajamos</h2>
+        <ol>
+          <li><b>Te escuchamos.</b> 30 minutos para entender tu negocio a fondo, sin tecnicismos.</li>
+          <li><b>Encontramos el cuello de botella.</b> Qué procesos te frenan de verdad y cuáles ni tocar.</li>
+          <li><b>Te proponemos algo concreto.</b> Plan claro, precio cerrado y plazos definidos desde el día uno.</li>
+          <li><b>Lo construimos y nos quedamos.</b> Montamos tu sistema y seguimos ahí cuando nos necesites.</li>
+        </ol>
+        <p>Si vienes de Excel, no hace falta parar el negocio: lo nuevo convive con lo antiguo hasta que demuestra que funciona con tus datos reales, y solo entonces se apaga la hoja.</p>
+
+        <h2>Qué necesitamos de ti para empezar</h2>
+        <p>Menos de lo que parece. No hace falta que traigas un documento técnico ni que sepas qué tecnología quieres: eso es cosa nuestra. Lo que nos sirve de verdad es entender tu día a día:</p>
+        <ul>
+          <li>Cómo trabajas hoy, paso a paso, desde que entra un cliente o un pedido hasta que se cobra.</li>
+          <li>Qué herramientas usas y dónde vive cada dato: el Excel de presupuestos, el programa de facturación, el correo, el grupo de WhatsApp.</li>
+          <li>Un par de ejemplos reales: un presupuesto, un albarán, una hoja que se rompe a menudo.</li>
+          <li>Quién va a usar el sistema y qué necesita ver cada persona.</li>
+        </ul>
+        <p>De esa primera conversación te llevas algo útil aunque no sigamos: qué procesos te están costando dinero, cuáles no merece la pena tocar y, si encaja, una propuesta con alcance, precio cerrado y plazo por escrito.</p>
+
+        <h2>Cuándo compensa un software a medida</h2>
+        <p>Cuando tu proceso tiene reglas propias que ningún programa del mercado cubre, ni configurándolo, y esas reglas son precisamente por lo que ganas o pierdes dinero. Si un programa estándar te resuelve el 80 % con una configuración razonable, te lo diremos: construir desde cero ese 20 % restante rara vez compensa. Lo explicamos con más calma en <a href="/recursos/cuando-pedir-software-a-medida-vs-estandar/">cuándo pedir software a medida o estándar</a>.</p>
+      </div>
+      <aside class="lateral">
+        <div class="lateral-caja">
+          <p class="etiqueta">En 30 minutos</p>
+          <p><b>Cuéntanos cómo trabajas hoy.</b> Te decimos qué haríamos y cuánto cuesta, por escrito.</p>
+          <a class="btn btn-verde" href="/contacto/">Contactar</a>
+        </div>
+        <div class="lateral-caja">
+          <p class="etiqueta">Para leer antes</p>
+          <p><a href="/recursos/como-pedir-presupuesto-de-software/" style="color:#fff">Cómo pedir presupuesto de software</a></p>
+          <p><a href="/recursos/migrar-de-excel-a-sistema-pyme/" style="color:#fff">Migrar de Excel a un sistema</a></p>
+          <p><a href="/recursos/senales-pyme-necesita-sistema-de-gestion/" style="color:#fff">Señales de que necesitas un sistema</a></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="s-hondo" aria-labelledby="t-demo">
+    <div class="wrap">
+      <p class="etiqueta">Así se ve</p>
+      <h2 id="t-demo" class="h2">Un ejemplo que puedes tocar: PresupuesYa.</h2>
+      <div class="bloque">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Software nuestro, en producción</p>
+          <h3>Del dictado al presupuesto firmado.</h3>
+          <p>Pulsa el micrófono, abre una partida para ver su descomposición y mándala a firmar. Es la misma forma de construir que llevamos a cada proyecto a medida.</p>
+        </div>
+        <div class="caso-pantalla"><PresupuesYa /></div>
+      </div>
+    </div>
+  </section>
+
+  <Faq items={FAQ} titulo="Preguntas de empresas de Córdoba." />
+  <Cierre />
+</Base>

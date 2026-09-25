@@ -1,0 +1,85 @@
+---
+import Base from '../../layouts/Base.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import PresupuesYa from '../../components/pantallas/PresupuesYa.astro';
+import Faq from '../../components/Faq.astro';
+import Cierre from '../../components/Cierre.astro';
+import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../../lib/sitio';
+
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }, { nombre: 'Automatización', path: '/soluciones/automatizacion/' }];
+// Las cuatro automatizaciones y sus entregables salen del configurador publicado (src/data/leadFunnel.ts);
+// las respuestas, de los artículos automatiza-tu-negocio-sin-saber-de-tecnologia y asistentes-ia-productivos.
+const TAREAS = [
+  { icono: 'message-circle', t: 'Responder WhatsApp y consultas', antes: 'Consulta', despues: 'Cita en agenda', e: ['Respuestas automáticas a las preguntas que se repiten, escritas con tu tono.', 'Paso a una persona en cuanto la conversación se sale del guion.', 'Las citas que se cierran por chat entran solas en la agenda.'] },
+  { icono: 'file-text', t: 'Generar presupuestos', antes: 'Petición', despues: 'Presupuesto enviado', e: ['Plantillas de presupuesto por tipo de trabajo, con partidas reutilizables.', 'El documento se genera y se envía al cliente en un clic, con tu marca.', 'Aviso cuando un presupuesto lleva días sin respuesta, para que no se enfríe.'] },
+  { icono: 'keyboard', t: 'Meter datos a mano', antes: 'A mano', despues: 'Ficha creada', e: ['Los datos entran una sola vez y viajan solos entre las herramientas que ya usas.', 'Lectura automática de los documentos que hoy tecleas a mano.', 'Un registro de qué se ha creado y cuándo, para revisarlo si algo falla.'] },
+  { icono: 'bell', t: 'Recordatorios y seguimiento', antes: 'Sin seguimiento', despues: 'Aviso enviado', e: ['Avisos automáticos por email o WhatsApp según el momento de cada cliente.', 'Plantillas de mensaje editables, para no reescribir lo mismo cada vez.', 'Historial de qué se ha enviado a quién, sin buscarlo en el móvil.'] },
+];
+const FAQ = [
+  { q: '¿Se puede automatizar un negocio sin saber de tecnología?', a: 'Sí. No necesitas saber programar: necesitas conocer bien tu proceso actual. Nosotros ponemos la parte técnica; tú nos cuentas qué haces cada día y dónde se te va el tiempo.' },
+  { q: '¿Por dónde se empieza?', a: 'Por el proceso repetitivo que más tiempo te roba y menos criterio exige: copiar datos entre hojas, hacer seguimientos, generar el mismo documento cada semana. Se mide cuánto tiempo se va hoy, se automatiza ese y se vuelve a medir un mes después.' },
+  { q: '¿Cuánto se tarda en notarlo?', a: 'Una primera automatización bien elegida suele dar resultado en semanas, no en meses. Esa primera victoria es la que justifica seguir con el resto.' },
+  { q: '¿La IA se equivoca?', a: 'Sí, y lo hace con el mismo tono seguro con el que acierta. Por eso todo lo que afecta a dinero, contratos o datos legales lleva un punto de revisión humana. En PresupuesYa, por ejemplo, la IA propone la partida y la persona la revisa antes de enviarla.' },
+  { q: '¿Cuándo no tiene sentido meter IA todavía?', a: 'Cuando el proceso está mal definido o los datos de partida son un caos. Ahí el primer proyecto no es «meter IA»: es ordenar el proceso. Te lo diremos si es tu caso.' },
+];
+const servicio = {
+  '@type': 'Service',
+  name: 'Automatización de procesos para pymes',
+  serviceType: 'Automatización de procesos e integraciones',
+  provider: { '@id': ORG_ID },
+  areaServed: [{ '@type': 'City', name: 'Córdoba' }, { '@type': 'Country', name: 'España' }],
+  url: `${SITE_URL}/soluciones/automatizacion/`,
+};
+---
+<Base title="Automatización de procesos para pymes · OpsPilot"
+  description="Automatiza lo repetitivo: WhatsApp que responde, presupuestos que se generan solos, datos que entran una vez y recordatorios que salen solos. Desde Córdoba."
+  path="/soluciones/automatizacion/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
+  <CabeceraPagina sobre="Automatización" titulo="Lo que hoy haces a mano, que lo haga el sistema."
+    entrada="Copiar datos de una hoja a otra, contestar lo mismo por WhatsApp, perseguir un presupuesto sin respuesta. Eso lo puede hacer un sistema, con una persona revisando lo que importa."
+    migas={M}>
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, quiero automatizar tareas repetitivas. Os cuento:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos qué se repite</a>
+    </div>
+  </CabeceraPagina>
+
+  <section class="s-navy" aria-labelledby="t-tareas">
+    <div class="wrap">
+      <p class="etiqueta">Lo que más se automatiza</p>
+      <h2 id="t-tareas" class="h2">Cuatro tareas que no deberías hacer a mano.</h2>
+      <div class="producto-ficha">
+        {TAREAS.map((t) => (
+          <div class="pf">
+            <svg class="ico" aria-hidden="true"><use href={`#i-${t.icono}`}/></svg>
+            <h3>{t.t}</h3>
+            <p><b style="color:#fff">{t.antes}</b> → <b style="color:var(--verde)">{t.despues}</b></p>
+            <ul class="lista-ok">{t.e.map((x) => <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>{x}</span></li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="s-hondo" aria-labelledby="t-py">
+    <div class="wrap">
+      <p class="etiqueta">Automatización de verdad</p>
+      <h2 id="t-py" class="h2">Dictas una frase y sale la partida, el presupuesto y el plan de obra.</h2>
+      <div class="bloque">
+        <div class="bloque-texto">
+          <p class="bloque-meta">PresupuesYa · nuestro producto</p>
+          <h3>Tres automatizaciones en una pantalla.</h3>
+          <ul class="lista-ok">
+            <li><svg class="ico" aria-hidden="true"><use href="#i-mic"/></svg><span>La voz se convierte en una partida con su descomposición: material, mano de obra y medios.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg><span>El cliente firma desde el móvil con un código por SMS, con validez eIDAS.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-calendar-days"/></svg><span>Al aceptar, el plan de obra sale solo, por etapas y días.</span></li>
+          </ul>
+          <p>Pulsa el micrófono de la pantalla y mándalo a firmar.</p>
+          <a class="enlace enlace-claro" href="/productos/presupuesya/">Ver PresupuesYa <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+        </div>
+        <div class="caso-pantalla"><PresupuesYa /></div>
+      </div>
+    </div>
+  </section>
+
+  <Faq items={FAQ} titulo="Lo que suelen preguntarnos sobre automatizar." />
+  <Cierre />
+</Base>

@@ -1,0 +1,19 @@
+---
+import Legal from '../components/Legal.astro';
+import { BRAND_NAME } from '../lib/company';
+// Verificado en el código de la web (25-sep): fuentes e iconos servidos desde el propio dominio,
+// sin vídeos ni mapas incrustados, analítica con Plausible (sin cookies) y ninguna cookie propia.
+---
+<Legal title="Política de cookies · OpsPilot" description="opspilot.es no usa cookies propias ni de terceros para publicidad o seguimiento. Analítica con Plausible, que no usa cookies." path="/cookies/" titulo="Política de cookies" nombre="Cookies">
+  <h2>Esta web no usa cookies</h2>
+  <p>{BRAND_NAME} no instala cookies propias ni de terceros para publicidad, perfiles o seguimiento. Por eso no te mostramos un banner de consentimiento.</p>
+  <h2>Qué usamos en su lugar</h2>
+  <ul>
+    <li><b>Analítica</b>: Plausible, que cuenta visitas de forma agregada sin cookies y sin guardar datos personales ni tu dirección IP.</li>
+    <li><b>Fuentes e iconos</b>: se sirven desde nuestro propio dominio, sin llamadas a Google Fonts ni a otros servicios.</li>
+    <li><b>Preferencias</b>: la web no guarda nada en tu navegador; lo que eliges en el configurador o en el chat se pierde al cerrar la página.</li>
+  </ul>
+  <h2>Enlaces externos</h2>
+  <p>Si sales a otra web desde aquí (WhatsApp, las webs de los casos o nuestros productos), esa web puede usar sus propias cookies según su política.</p>
+  <p>Si algún día añadimos algo que use cookies, actualizaremos esta página y te pediremos consentimiento antes.</p>
+</Legal>

@@ -1,0 +1,34 @@
+---
+import Configurador from './Configurador.astro';
+---
+<section class="portada" aria-labelledby="titular">
+    <div class="wrap portada-in">
+      <div class="portada-texto">
+        <h1 id="titular">
+          <span class="sobre">Software a medida en Córdoba</span>
+          <span class="grande">Tu operativa entera en un sistema.</span>
+        </h1>
+        <p class="entrada">Sin plantillas, sin cuotas, sin sorpresas. Contesta tres preguntas y te enseñamos qué construiríamos.</p>
+
+        <Configurador />
+        <p class="portada-alt"><a class="enlace" href="/soluciones/">O mira las soluciones <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a></p>
+      </div>
+
+      <div class="instrumento" aria-hidden="true">
+        <svg class="escala" viewBox="0 0 100 100">
+          <g stroke="currentColor" stroke-linecap="butt">
+            <path stroke-width=".7" d="M50.00 -1.80L50.00 -7.00"/>
+            <path stroke-width=".6" d="M5.14 24.10L1.50 22.00 M24.10 5.14L22.00 1.50 M75.90 5.14L78.00 1.50 M94.86 24.10L98.50 22.00"/>
+            <path stroke-width=".45" d="M32.28 1.32L31.53 -0.74 M41.01 -1.01L40.62 -3.18 M58.99 -1.01L59.38 -3.18 M67.72 1.32L68.47 -0.74 M13.37 13.37L11.82 11.82 M86.63 13.37L88.18 11.82"/>
+          </g>
+        </svg>
+        <div class="actitud">
+          <div class="giro">
+            <div class="suelo"></div>
+            <svg class="indice" viewBox="0 0 100 100"><path d="M50 -1.2L48.6 1.4H51.4Z" fill="#0F1620"/></svg>
+          </div>
+          <svg class="aro" viewBox="0 0 100 100"><use href="#aro"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>

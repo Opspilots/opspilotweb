@@ -1,0 +1,23 @@
+---
+// Pinta los bloques de un recurso (src/lib/resources.ts) tal cual están publicados.
+import type { ResourceBlock } from '../lib/resources';
+interface Props { bloques: ResourceBlock[] }
+const { bloques } = Astro.props;
+// Los enlaces internos antiguos iban sin barra final (/soluciones#reformas): se normalizan
+// a la convención de la web (/soluciones/#reformas) para no pasar por una redirección.
+const norm = (href: string) => {
+  if (!href.startsWith('/')) return href;
+  const [ruta, ancla] = href.split('#');
+  const r = ruta.endsWith('/') ? ruta : `${ruta}/`;
+  return ancla ? `${r}#${ancla}` : r;
+};
+---
+{bloques.map((b) => {
+  if (b.type === 'p') return <p>{b.text}</p>;
+  if (b.type === 'h2') return <h2>{b.text}</h2>;
+  if (b.type === 'ul') return <ul>{b.items.map((i) => <li>{i}</li>)}</ul>;
+  if (b.type === 'ol') return <ol>{b.items.map((i) => <li>{i}</li>)}</ol>;
+  if (b.type === 'note') return <p class="nota-prosa">{b.text}</p>;
+  if (b.type === 'link') return <p><a href={norm(b.href)} rel={b.href.startsWith('http') ? 'noopener' : undefined}>{b.text} →</a></p>;
+  return null;
+})}

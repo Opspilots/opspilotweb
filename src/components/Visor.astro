@@ -1,0 +1,37 @@
+---
+import ObraFacil from './pantallas/ObraFacil.astro';
+import CordobaSoluciona from './pantallas/CordobaSoluciona.astro';
+import PresupuesYa from './pantallas/PresupuesYa.astro';
+---
+<section class="casos" aria-labelledby="t-casos">
+  <div class="wrap">
+    <p class="etiqueta">Casos</p>
+    <h2 id="t-casos" class="h2">Lo que construimos ya está trabajando.</h2>
+    <p class="ruta-aviso" data-ruta-aviso="casos" aria-live="polite" hidden></p>
+    <div class="visor" data-visor>
+      <div class="lista-casos" role="tablist" aria-label="Casos">
+          <button class="caso-tab" type="button" role="tab" id="tab-of" aria-controls="caso-of" aria-selected="true">
+            <span class="caso-corto">Tienda</span><span class="caso-meta">Tienda · Puente Genil</span>
+            <span class="caso-t">Una tienda de Puente Genil que vende placas y te dice cuántas necesitas</span>
+            <span class="caso-p">Pon las medidas de tu pared y mira el pedido montarse.</span>
+          </button>
+          <button class="caso-tab" type="button" role="tab" id="tab-cs" aria-controls="caso-cs" aria-selected="false">
+            <span class="caso-corto">Web</span><span class="caso-meta">Web · Córdoba y provincia</span>
+            <span class="caso-t">Una página por cada pueblo, barrio y reforma de Córdoba</span>
+            <span class="caso-p">Elige pueblo y reforma: la página existe de verdad.</span>
+          </button>
+          <button class="caso-tab" type="button" role="tab" id="tab-py" aria-controls="caso-py" aria-selected="false">
+            <span class="caso-corto">Software</span><span class="caso-meta">Producto propio · Reformas</span>
+            <span class="caso-t">PresupuesYa: el presupuesto de obra en minutos, no en horas</span>
+            <span class="caso-p">Dicta una partida, ábrela y mándala a firmar.</span>
+          </button>
+        </div>
+      <div class="escenario">
+        <div class="caso activo" id="caso-of" role="tabpanel" aria-labelledby="tab-of" data-titulo="ObraFácil · una tienda que te dice cuántas placas necesitas"><ObraFacil /></div>
+        <div class="caso" id="caso-cs" role="tabpanel" aria-labelledby="tab-cs" data-titulo="Córdoba Soluciona · una página por cada pueblo, barrio y reforma"><CordobaSoluciona /></div>
+        <div class="caso" id="caso-py" role="tabpanel" aria-labelledby="tab-py" data-titulo="PresupuesYa · el presupuesto de obra en minutos, no en horas"><PresupuesYa /></div>
+      </div>
+    </div>
+    <p class="casos-mas"><a class="enlace enlace-claro" href="/casos/">Ver todos los casos <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a></p>
+  </div>
+</section>

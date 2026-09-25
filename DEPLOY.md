@@ -1,3 +1,57 @@
+# opspilot.es · construcción y despliegue (Astro, desde el 25-sep-2026)
+
+> La web de marketing pasó de React (vite-react-ssg) a **HTML estático con Astro** en la rama
+> `feat/web-horizonte`. La versión React queda en el historial de git. Lo que sigue a esta sección
+> («Guía de despliegue en Hostinger» y «Despliegue en Nginx») es la guía anterior: la parte de nginx
+> sigue valiendo; la parte de React/Vite/Hostinger ya no.
+
+## Construir y revisar
+
+```bash
+npm ci
+npm run build      # genera dist/: una carpeta con index.html por ruta, CON barra final
+npm run check      # revisa dist/: enlaces rotos, title ≤ 60, description ≤ 155, un h1, canonical, JSON-LD, títulos únicos
+```
+
+Construcción de revisión que no se indexa: `PUBLIC_NOINDEX=1 npm run build`.
+
+## Despliegue
+
+Igual que antes: `.github/workflows/deploy.yml` construye en cada push a `main` y sube `dist/` por
+rsync a `/var/www/opspilotweb/dist/` (nginx, VPS de ObraFácil). **Mergear a main = publicar.**
+
+## nginx: no hace falta tocarlo (revisado en solo lectura el 25-sep)
+
+La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta a ella:
+- `error_page 404 /404/index.html` + `try_files $uri $uri/ =404`: `scripts/postbuild.mjs` copia
+  `dist/404.html` a `dist/404/index.html`.
+- 301 de /services, /servicios, /contact, /demo, /diagnostico, /pricing y /precios → /contacto/;
+  /cases → /casos/; /resources y /product → /recursos/. Las redirecciones de `astro.config.mjs`
+  apuntan al mismo sitio (solo actúan si algún día cambia el servidor).
+- `.css`/`.js` con `Cache-Control: public, immutable` 30 días: como estos ficheros no llevan hash en
+  el nombre, `src/layouts/Base.astro` les añade `?v=<hash del contenido>`. **Ojo con fuentes e
+  imágenes**: también son inmutables; si se cambia una, cambiar su NOMBRE, no sobrescribirla.
+- `.html` sin caché: cada despliegue se ve al momento.
+
+## Dónde está cada cosa
+
+- `src/pages/`: una página por ruta. Se conservan las 22 URLs publicadas y se añaden
+  /soluciones/{webs-y-tiendas,software-a-medida,automatizacion}/, /productos/, /productos/presupuesya/,
+  /productos/erp-hosteleria/ (noindex: decisión del equipo en `src/data/productPages.ts`),
+  /desarrollo-software-cordoba/, /diseno-web-cordoba/, /aviso-legal/, /privacidad/ y /cookies/.
+- `src/components/pantallas/`: réplicas de producto (ObraFácil, Córdoba Soluciona, PresupuesYa, J.R.,
+  EnergyDeal, ERP). Las activa `public/js/opspilot.js` por su `data-*`, una de cada tipo por página.
+- `src/data/`, `src/lib/resources.ts` y `src/lib/company.ts`: el contenido, igual que antes.
+- `public/css/opspilot.css`: el sistema visual «horizonte artificial».
+
+## Pendiente del negocio (bloquea las páginas legales)
+
+`src/lib/company.ts` tiene vacíos LEGAL_NAME, TAX_ID y ADDRESS.street/postalCode. Mientras lo estén,
+/aviso-legal/, /privacidad/ y /cookies/ se publican con los huecos marcados, en noindex y fuera del
+sitemap, y la construcción lo avisa. Al rellenarlos se completan e indexan solas.
+
+---
+
 # Guía de Despliegue en Hostinger
 
 Esta aplicación es una Single Page Application (SPA) construida con React y Vite. Para desplegarla en Hostinger (o cualquier hosting compartido Apache), sigue estos pasos:

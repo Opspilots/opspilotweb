@@ -1,0 +1,66 @@
+---
+import Base from '../../layouts/Base.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import Bloques from '../../components/Bloques.astro';
+import Faq from '../../components/Faq.astro';
+import Cierre from '../../components/Cierre.astro';
+import { RESOURCES, type Resource } from '../../lib/resources';
+import { migas, faqSchema, ORG_ID, SITE_URL, WA } from '../../lib/sitio';
+
+export function getStaticPaths() {
+  return RESOURCES.map((r) => ({ params: { slug: r.slug }, props: { r } }));
+}
+const { r } = Astro.props as { r: Resource };
+const path = `/recursos/${r.slug}/`;
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos', path: '/recursos/' }, { nombre: r.title, path }];
+const fecha = (iso?: string) => (iso ? new Date(iso + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
+const articulo = {
+  '@type': 'Article',
+  headline: r.title,
+  description: r.desc,
+  url: `${SITE_URL}${path}`,
+  ...(r.cover ? { image: `${SITE_URL}${r.cover}` } : {}),
+  ...(r.date ? { datePublished: r.date, dateModified: r.updated ?? r.date } : {}),
+  author: { '@type': 'Organization', name: r.author ?? 'Equipo OpsPilot', '@id': ORG_ID },
+  publisher: { '@id': ORG_ID },
+  inLanguage: 'es-ES',
+};
+const faq = (r.faq ?? []).map((f) => ({ q: f.q, a: f.a }));
+const relacionados = RESOURCES.filter((x) => x.slug !== r.slug && x.cat === r.cat).concat(RESOURCES.filter((x) => x.slug !== r.slug && x.cat !== r.cat)).slice(0, 3);
+// El título del <title> no pasa de 60 caracteres: si el del artículo es largo, va sin la marca.
+const titulo = r.title.length <= 49 ? `${r.title} · OpsPilot` : r.title;
+---
+<Base title={titulo} description={r.desc} path={path} ogType="article" image={r.cover ?? '/images/og-horizonte.png'}
+  jsonld={[migas(M), articulo, ...(faq.length ? [faqSchema(faq)] : [])]}>
+  <CabeceraPagina sobre={r.cat} titulo={r.title} migas={M} horizonte={false}>
+    <p class="prosa-meta">
+      {r.date && <span>{fecha(r.date)}</span>}
+      <span>{r.time} de lectura</span>
+      <span>{r.author ?? 'Equipo OpsPilot'}</span>
+    </p>
+  </CabeceraPagina>
+
+  <section class="s-papel" aria-label="Artículo">
+    <div class="wrap lectura-in">
+      <article class="prosa">
+        {r.cover && <figure class="prosa-portada"><img src={r.cover} alt="" width="1280" height="720" loading="eager" decoding="async"></figure>}
+        <p style="font-size:1.15rem;font-weight:500">{r.desc}</p>
+        <Bloques bloques={r.blocks} />
+      </article>
+      <aside class="lateral">
+        <div class="lateral-caja">
+          <p class="etiqueta">¿Te suena?</p>
+          <p><b>Cuéntanos tu caso en 30 minutos.</b> Te decimos qué haríamos, con precio cerrado y por escrito.</p>
+          <a class="btn btn-verde" href={WA(`Hola OpsPilot, he leído «${r.title}» y quería contaros mi caso:`)}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Escríbenos</a>
+        </div>
+        <div class="lateral-caja">
+          <p class="etiqueta">Sigue leyendo</p>
+          {relacionados.map((x) => <p><a href={`/recursos/${x.slug}/`} style="color:#fff">{x.title}</a></p>)}
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {faq.length > 0 && <Faq items={faq} titulo="Preguntas sobre este tema." fondo="navy" />}
+  <Cierre />
+</Base>

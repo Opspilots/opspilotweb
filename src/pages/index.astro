@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Problemas from '../components/Problemas.astro';
+import PlanVuelo from '../components/PlanVuelo.astro';
+import Visor from '../components/Visor.astro';
+import Cierre from '../components/Cierre.astro';
+import { SERVICIO_LOCAL } from '../lib/sitio';
+---
+<Base title="Software a medida en Córdoba para pymes · OpsPilot"
+  description="Desarrollo de software a medida, webs y tiendas online en Córdoba para pymes de toda España. Precio cerrado y respuesta en menos de 24 h."
+  path="/" jsonld={[SERVICIO_LOCAL]}>
+  <Portada />
+  <Problemas />
+  <PlanVuelo />
+  <Visor />
+  <Cierre />
+</Base>

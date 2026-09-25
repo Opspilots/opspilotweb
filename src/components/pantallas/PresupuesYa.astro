@@ -1,0 +1,34 @@
+---
+// Pantalla de producto (réplica fiel, datos reales). La activa public/js/opspilot.js por su data-atributo.
+---
+<div class="ventana t-py" data-py>
+              <div class="py-app">
+                <nav class="py-lado" aria-label="PresupuesYa">
+                  <p class="py-logo"><i aria-hidden="true">P</i>PresupuesYa</p>
+                  <p class="on"><svg class="ico" aria-hidden="true"><use href="#i-file-text"/></svg>Presupuestos</p>
+                  <p><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg>Clientes</p>
+                  <p><svg class="ico" aria-hidden="true"><use href="#i-hammer"/></svg>Obras</p>
+                  <p><svg class="ico" aria-hidden="true"><use href="#i-clipboard-list"/></svg>Materiales</p>
+                </nav>
+                <div class="py-main">
+                  <p class="py-top"><span><small>Presupuesto 2026-042</small><b>Reforma de baño completa</b></span><span class="py-estado" data-py-estado>Borrador</span><span class="chip chip-py">Demo · importes de ejemplo</span></p>
+                  <div class="py-voz">
+                    <button type="button" class="py-mic" data-py-dictar aria-label="Dictar una partida"><svg class="ico" aria-hidden="true"><use href="#i-mic"/></svg></button>
+                    <p class="py-dicho" data-py-dicho>Pulsa y dicta: «añade sanitarios y grifería, un lote»</p>
+                  </div>
+                  <table class="py-tabla">
+                    <thead><tr><th>Partida</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead>
+                    <tbody data-py-partidas></tbody>
+                  </table>
+                  <dl class="py-tot" data-py-tot></dl>
+                  <div class="py-acc">
+                    <button type="button" class="py-btn" data-py-enviar><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg>Enviar a firmar</button>
+                    <span class="py-pdf"><svg class="ico" aria-hidden="true"><use href="#i-file-check-2"/></svg>PDF con tu logo</span>
+                  </div>
+                </div>
+                <aside class="py-panel">
+                  <p class="py-pest" role="group" aria-label="Panel"><button type="button" aria-pressed="true" data-py-p="desc">Descomposición</button><button type="button" aria-pressed="false" data-py-p="firma">Firma</button><button type="button" aria-pressed="false" data-py-p="plan">Plan de obra</button></p>
+                  <div class="py-p on" data-py-panel="desc"><p class="py-p-t" data-py-desc-t></p><ul class="py-desc" data-py-desc></ul><p class="py-desc-tot" data-py-desc-tot></p></div>
+                  <div class="py-p" data-py-panel="firma"><div class="py-movil"><p class="py-movil-t">Portal del cliente</p><p class="py-movil-sub" data-py-f-sub>Aún no se ha enviado.</p><p class="py-codigo" data-py-codigo aria-live="polite"></p><p class="py-sello" data-py-sello hidden><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg><span><b>Firmado · eIDAS</b><small data-py-huella></small></span></p></div></div>
+                  <div class="py-p" data-py-panel="plan"><p class="py-p-t">Plan de obra con IA</p><p class="py-plan-vacio" data-py-plan-vacio>Se genera al aceptar el presupuesto.</p><ol class="py-plan" data-py-plan></ol></div>
+                </aside>

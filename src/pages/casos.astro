@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import CabeceraPagina from '../components/CabeceraPagina.astro';
+import ObraFacil from '../components/pantallas/ObraFacil.astro';
+import JRRodriguez from '../components/pantallas/JRRodriguez.astro';
+import EnergyDeal from '../components/pantallas/EnergyDeal.astro';
+import PresupuesYa from '../components/pantallas/PresupuesYa.astro';
+import CordobaSoluciona from '../components/pantallas/CordobaSoluciona.astro';
+import Cierre from '../components/Cierre.astro';
+import { CASES } from '../data/cases';
+import { migas, SITE_URL } from '../lib/sitio';
+
+// Textos de los casos: los publicados en src/data/cases.ts, literales. Los productos propios
+// (PresupuesYa y Córdoba Soluciona) se presentan como tales, no como clientes.
+const PANTALLA: Record<string, unknown> = { obrafacil: ObraFacil, 'rodriguez-reformas': JRRodriguez, energydeal: EnergyDeal };
+const LINEA: Record<string, string> = { tienda: 'Tienda online', web: 'Web de captación', app: 'Software a medida' };
+const clientes = CASES.map((c) => ({ ...c, Pantalla: PANTALLA[c.id] as any }));
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Casos', path: '/casos/' }];
+const lista = {
+  '@type': 'ItemList',
+  name: 'Casos de OpsPilot',
+  itemListElement: [...CASES.map((c) => c.title), 'PresupuesYa', 'Córdoba Soluciona'].map((n, i) => ({ '@type': 'ListItem', position: i + 1, name: n })),
+};
+---
+<Base title="Casos: webs, tiendas y software que ya funcionan · OpsPilot"
+  description="Casos reales de OpsPilot: la tienda de ObraFácil en Puente Genil, la web de J.R. Rodríguez en Córdoba, un CRM para energía y nuestros productos. Pruébalos aquí."
+  path="/casos/" jsonld={[migas(M), lista]}>
+  <CabeceraPagina sobre="Casos" titulo="Lo que construimos ya está trabajando."
+    entrada="Empresas reales y productos nuestros, publicados y funcionando. No son capturas: cada pantalla de esta página se puede tocar, y cada una enlaza a la de verdad."
+    migas={M} />
+
+  <section class="s-navy" aria-labelledby="t-clientes">
+    <div class="wrap">
+      <p class="etiqueta">Para clientes</p>
+      <h2 id="t-clientes" class="h2">Tres negocios, tres problemas muy concretos.</h2>
+      {clientes.map((c, i) => (
+        <article class:list={['bloque', { 'bloque-inv': i % 2 === 1 }]} aria-labelledby={`caso-${c.id}`}>
+          <div class="bloque-texto">
+            <p class="bloque-meta">{LINEA[c.serviceLine ?? 'web']} · {c.label}</p>
+            <h3 id={`caso-${c.id}`}>{c.title}</h3>
+            <p>{c.text}</p>
+            <ul class="lista-ok">{c.bullets.map((b) => <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>{b}</span></li>)}</ul>
+            {c.productionLink && <a class="enlace enlace-claro" href={c.productionLink.url} rel="noopener">{c.productionLink.label} <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>}
+          </div>
+          <div class="caso-pantalla"><c.Pantalla /></div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="s-hondo" aria-labelledby="t-propios">
+    <div class="wrap">
+      <p class="etiqueta">Nuestros productos</p>
+      <h2 id="t-propios" class="h2">Lo que construimos para nosotros.</h2>
+      <p class="lead">Productos y marcas que diseñamos, mantenemos y usamos. Son la mejor prueba de cómo trabajamos, porque aquí nadie nos pone límites: solo el resultado.</p>
+      <article class="bloque" aria-labelledby="caso-py">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Producto propio · Software para reformistas</p>
+          <h3 id="caso-py">PresupuesYa: el presupuesto de obra en minutos, no en horas.</h3>
+          <p>Un programa de presupuestos para reformistas, fontaneros y electricistas. Dictas la partida y la IA la crea con su descomposición; el cliente firma desde el móvil con validez eIDAS; al aceptar, sale el plan de obra por etapas. Además lleva portal del cliente, control de materiales con lectura de albaranes y compatibilidad con BC3.</p>
+          <a class="enlace enlace-claro" href="/productos/presupuesya/">Ver PresupuesYa <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+        </div>
+        <div class="caso-pantalla"><PresupuesYa /></div>
+      </article>
+      <article class="bloque bloque-inv" aria-labelledby="caso-cs">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Marca propia · Reformas en Córdoba</p>
+          <h3 id="caso-cs">Córdoba Soluciona: una página por cada pueblo, barrio y reforma.</h3>
+          <p>Una marca local que pone en contacto a quien quiere reformar con el reformista de Córdoba que le toca. Su web tiene 145 páginas, 114 de ellas locales: 23 pueblos, 11 barrios de la capital y 5 tipos de reforma, además de guías de precios. Cada búsqueda real tiene su página.</p>
+          <a class="enlace enlace-claro" href="https://cordobasoluciona.es" rel="noopener">Ver la web <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+        </div>
+        <div class="caso-pantalla"><CordobaSoluciona /></div>
+      </article>
+    </div>
+  </section>
+
+  <Cierre />
+</Base>
