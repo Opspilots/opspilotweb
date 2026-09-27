@@ -1,0 +1,21 @@
+---
+// El configurador (su embudo real) en su propia sección, debajo de la cabecera. Sigue guiando la página:
+// lo que se elige aquí ordena los problemas, los casos y el chat de más abajo (public/js/opspilot.js).
+import Configurador from './Configurador.astro';
+interface Props { titulo?: string; entrada?: string }
+const {
+  titulo = '¿No sabes por dónde empezar? Tres preguntas.',
+  entrada = 'Elige lo que necesitas y te enseñamos qué construiríamos. Lo que elijas ordena el resto de la página: verás primero el problema y el caso que más se parecen al tuyo.',
+} = Astro.props;
+---
+<section class="propuesta" id="propuesta" aria-labelledby="t-propuesta">
+  <div class="wrap propuesta-in">
+    <div class="propuesta-texto">
+      <p class="etiqueta">Tu propuesta</p>
+      <h2 id="t-propuesta" class="h2">{titulo}</h2>
+      <p class="lead">{entrada}</p>
+      <p class="propuesta-nota"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Al final te llevamos a WhatsApp con tu propuesta ya escrita. Nada se envía sin que lo decidas tú.</p>
+    </div>
+    <Configurador />
+  </div>
+</section>

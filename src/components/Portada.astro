@@ -1,17 +1,25 @@
 ---
-import Configurador from './Configurador.astro';
+// Portada (v5, 27-sep): el objetivo de la web es que el cliente escriba, así que la primera pantalla es
+// mensaje + contacto y cabe entera en cualquier ancho. El configurador baja a su sección (Propuesta.astro).
+import { WA, PHONE } from '../lib/sitio';
 ---
-<section class="portada" aria-labelledby="titular">
+<section class="portada portada-inicio" aria-labelledby="titular">
     <div class="wrap portada-in">
       <div class="portada-texto">
         <h1 id="titular">
           <span class="sobre">Software a medida en Córdoba</span>
           <span class="grande">Tu operativa entera en un sistema.</span>
         </h1>
-        <p class="entrada">Sin plantillas, sin cuotas, sin sorpresas. Contesta tres preguntas y te enseñamos qué construiríamos.</p>
-
-        <Configurador />
-        <p class="portada-alt"><a class="enlace" href="/soluciones/">O mira las soluciones <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a></p>
+        <p class="entrada">Sin plantillas, sin cuotas, sin sorpresas. Cuéntanos cómo trabajas y te decimos qué construiríamos, con precio cerrado.</p>
+        <div class="acciones">
+          <a class="btn btn-tinta" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+          <a class="btn btn-linea" href={`tel:${PHONE.e164}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>{PHONE.display}</a>
+        </div>
+        <ul class="promesa">
+          <li><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>Respuesta en menos de 24 h</li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Precio cerrado, por escrito</li>
+        </ul>
+        <p class="portada-alt"><a class="enlace" href="#propuesta">¿No sabes por dónde empezar? Tres preguntas <svg class="ico" aria-hidden="true"><use href="#i-chevron-down"/></svg></a></p>
       </div>
 
       <div class="instrumento" aria-hidden="true">
