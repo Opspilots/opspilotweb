@@ -8,13 +8,21 @@ import PresupuesYa from '../components/pantallas/PresupuesYa.astro';
 import CordobaSoluciona from '../components/pantallas/CordobaSoluciona.astro';
 import Cierre from '../components/Cierre.astro';
 import { CASES } from '../data/cases';
-import { migas, SITE_URL } from '../lib/sitio';
+import { migas, SITE_URL, WA } from '../lib/sitio';
 
 // Textos de los casos: los publicados en src/data/cases.ts, literales. Los productos propios
 // (PresupuesYa y Córdoba Soluciona) se presentan como tales, no como clientes.
 const PANTALLA: Record<string, unknown> = { obrafacil: ObraFacil, 'rodriguez-reformas': JRRodriguez, energydeal: EnergyDeal };
 const LINEA: Record<string, string> = { tienda: 'Tienda online', web: 'Web de captación', app: 'Software a medida' };
-const clientes = CASES.map((c) => ({ ...c, Pantalla: PANTALLA[c.id] as any }));
+// v6: el texto publicado, literal, partido en párrafos de dos frases (en móvil eran bloques de 14-17 líneas).
+// Solo se corta tras un punto precedido de minúscula: «J.R. Rodríguez» no es fin de frase.
+const parrafos = (txt: string) => {
+  const frases = txt.split(/(?<=[a-záéíóúüñ»)]\.)\s+(?=[A-ZÁÉÍÓÚÑ¿«])/);
+  const out: string[] = [];
+  for (let i = 0; i < frases.length; i += 2) out.push(frases.slice(i, i + 2).join(' '));
+  return out;
+};
+const clientes = CASES.map((c) => ({ ...c, Pantalla: PANTALLA[c.id] as any, parrafos: parrafos(c.text) }));
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Casos', path: '/casos/' }];
 const lista = {
   '@type': 'ItemList',
@@ -26,7 +34,11 @@ const lista = {
   description="Casos reales de OpsPilot: la tienda de ObraFácil en Puente Genil, la web de J.R. Rodríguez en Córdoba, un CRM para energía y nuestros productos. Pruébalos aquí."
   path="/casos/" jsonld={[migas(M), lista]}>
   <CabeceraPagina sobre="Casos" titulo="Lo que construimos ya está trabajando."
-    entrada="Empresas reales y productos nuestros, publicados y funcionando. No son capturas: cada pantalla de esta página se puede tocar, y cada una enlaza a la de verdad." />
+    entrada="Empresas reales y productos nuestros, publicados y funcionando. No son capturas: cada pantalla de esta página se puede tocar, y cada una enlaza a la de verdad.">
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, he visto vuestros casos y el mío se parece. Os cuento:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos el tuyo</a>
+    </div>
+  </CabeceraPagina>
 
   <section class="s-navy" aria-labelledby="t-clientes">
     <div class="wrap">
@@ -37,7 +49,7 @@ const lista = {
           <div class="bloque-texto">
             <p class="bloque-meta">{LINEA[c.serviceLine ?? 'web']} · {c.label}</p>
             <h3 id={`caso-${c.id}`}>{c.title}</h3>
-            <p>{c.text}</p>
+            {c.parrafos.map((p) => <p>{p}</p>)}
             <ul class="lista-ok">{c.bullets.map((b) => <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>{b}</span></li>)}</ul>
             {c.productionLink && <a class="enlace enlace-claro" href={c.productionLink.url} rel="noopener">{c.productionLink.label} <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>}
           </div>
