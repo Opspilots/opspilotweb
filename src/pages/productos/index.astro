@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import Cierre from '../../components/Cierre.astro';
-import { migas, SITE_URL } from '../../lib/sitio';
+import { migas, SITE_URL, WA } from '../../lib/sitio';
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Productos', path: '/productos/' }];
 // Solo productos en producción (availability 'live' en src/data/products.ts). Fiscalidad sigue fuera
@@ -23,8 +23,11 @@ const lista = {
   description="Software propio en producción: PresupuesYa para presupuestos de obra, un ERP para hostelería y EnergyDeal para comerciales de energía. Con la aplicación real."
   path="/productos/" jsonld={[migas(M), lista]}>
   <CabeceraPagina sobre="Productos" titulo="Software que ya está funcionando."
-    entrada="Lo que aprendemos haciendo software a medida lo convertimos en productos para sectores concretos. Están en producción y se pueden probar."
-    migas={M} />
+    entrada="Lo que aprendemos haciendo software a medida lo convertimos en productos para sectores concretos. Están en producción y se pueden probar.">
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, me interesa uno de vuestros productos. Os cuento mi negocio:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Pregúntanos cuál te encaja</a>
+    </div>
+  </CabeceraPagina>
   <section class="s-navy" aria-labelledby="t-prod">
     <div class="wrap">
       <p class="etiqueta">En producción</p>

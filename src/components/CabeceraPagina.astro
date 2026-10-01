@@ -1,20 +1,17 @@
 ---
-// Cabecera de página interior: la firma (el horizonte del aro) en pequeño a la derecha,
-// cielo verde y suelo navy. Nada dentro del aro.
-import Migas from './Migas.astro';
+// Cabecera única de las páginas interiores (v5, 27-sep, revisión de Pelayo): la misma escala y los mismos
+// márgenes en todas, el horizonte siempre y todo dentro de la primera pantalla. Sin migas visibles:
+// la ruta la sigue leyendo Google en el BreadcrumbList del JSON-LD de cada página.
 interface Props {
   sobre: string;
   titulo: string;
   entrada?: string;
-  migas: { nombre: string; path: string }[];
-  horizonte?: boolean;
 }
-const { sobre, titulo, entrada, migas, horizonte = true } = Astro.props;
+const { sobre, titulo, entrada } = Astro.props;
 ---
 <section class="portada portada-sub" aria-labelledby="titular">
   <div class="wrap portada-in">
     <div class="portada-texto">
-      <Migas items={migas} />
       <h1 id="titular">
         <span class="sobre">{sobre}</span>
         <span class="grande grande-sub">{titulo}</span>
@@ -22,13 +19,11 @@ const { sobre, titulo, entrada, migas, horizonte = true } = Astro.props;
       {entrada && <p class="entrada">{entrada}</p>}
       <slot />
     </div>
-    {horizonte && (
-      <div class="instrumento instrumento-sub" aria-hidden="true">
-        <div class="actitud">
-          <div class="giro"><div class="suelo"></div></div>
-          <svg class="aro" viewBox="0 0 100 100"><use href="#aro"/></svg>
-        </div>
+    <div class="instrumento instrumento-sub" aria-hidden="true">
+      <div class="actitud">
+        <div class="giro"><div class="suelo"></div></div>
+        <svg class="aro" viewBox="0 0 100 100"><use href="#aro"/></svg>
       </div>
-    )}
+    </div>
   </div>
 </section>

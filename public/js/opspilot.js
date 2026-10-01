@@ -114,7 +114,7 @@
     if (nec === 'automatizar') { r.caso = 'py'; r.problema = 1; r.cerca = true; }
     pagina.ruta = r;
     var ap = $('[data-ruta-aviso="problemas"]'), ac = $('[data-ruta-aviso="casos"]');
-    var cambiar = ' <a href="#titular">cambiar</a>';
+    var cambiar = ' <a href="#propuesta">cambiar</a>';
     if (r.problema !== null && ap) {
       ap.innerHTML = '<span class="ruta-et">Tu ruta</span> Has elegido <b>' + etiqueta + '</b>: empieza por el que más te va a sonar.' + cambiar;
       ap.hidden = false; if (pagina.problema) pagina.problema(r.problema);
@@ -258,6 +258,9 @@
     var outN = $('[data-piezas]', of), outD = $('[data-detalle]', of), outT = $('[data-total]', of);
     var anadir = $('[data-anadir]', of), anadirT = $('[data-anadir-t]', of), wa = $('[data-of-wa]', of);
     var carro = $('[data-carro]', of), carroN = $('[data-carro-n]', of), toast = $('[data-toast]', of);
+    /* Topes: las medidas, las que su propio HTML declara (max del input); el carrito, lo que tiene sentido
+       en una demo. Más allá, el pedido se prepara por WhatsApp. */
+    var MAXW = +inA.max || 30, MAXH = +inH.max || 10, MAX_CARRO = 200;
     var n = 0, enCarro = 0, tt;
     var num = function (el) { return parseFloat(String(el.value).replace(',', '.')) || 0; };
     var el = function (tag, at) { var x = document.createElementNS(NS, tag); for (var k in at) x.setAttribute(k, at[k]); return x; };
@@ -266,6 +269,11 @@
       while (svg.firstChild) svg.removeChild(svg.firstChild);
       var w = num(inA), h = num(inH);
       if (w <= 0 || h <= 0) { n = 0; outN.textContent = '—'; outD.textContent = 'Pon el ancho y el alto'; outT.textContent = '—'; anadir.disabled = true; return; }
+      if (w > MAXW || h > MAXH) {
+        n = 0; outN.textContent = '—'; outD.textContent = 'Hasta ' + MAXW + ' m de ancho y ' + MAXH + ' m de alto. Para más, te lo calculamos por WhatsApp.'; outT.textContent = '—'; anadir.disabled = true;
+        wa.href = 'https://wa.me/?text=' + encodeURIComponent('Hola, quiero presupuesto de Calacatta Oro para una pared de ' + dec(w) + ' × ' + dec(h) + ' m.');
+        return;
+      }
       var cols = Math.ceil(w / PW - EPS), rows = Math.ceil(h / PH - EPS); n = cols * rows;
       var corte = Math.abs(cols * PW - w) > .005 || Math.abs(rows * PH - h) > .005;
       outN.textContent = n + (n === 1 ? ' placa' : ' placas');
@@ -291,7 +299,9 @@
     }
     function aviso(t) { toast.textContent = t; toast.classList.add('on'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('on'); }, 2200); }
     anadir.addEventListener('click', function () {
-      if (!n) return; enCarro += n; carroN.textContent = enCarro;
+      if (!n) return;
+      if (enCarro + n > MAX_CARRO) { aviso('Más de ' + MAX_CARRO + ' placas: te preparamos el pedido por WhatsApp'); return; }
+      enCarro += n; carroN.textContent = enCarro;
       carro.classList.remove('bump'); void carro.offsetWidth; carro.classList.add('bump');
       aviso('Añadido: ' + n + ' × Calacatta Oro · ' + eur(n * PRECIO));
     });
@@ -489,7 +499,8 @@
   var ed = $('[data-ed]');
   if (ed) (function () {
     var KW = 10, KWH = 10000;
-    var ofertas = [['Oferta A', .0891, .1342, '12 meses'], ['Oferta B', .0763, .1419, 'Sin permanencia'], ['Oferta C', .1027, .1275, '24 meses']];
+    var BASE = [['Oferta A', .0891, .1342, '12 meses'], ['Oferta B', .0763, .1419, 'Sin permanencia'], ['Oferta C', .1027, .1275, '24 meses']];
+    var ofertas = BASE.map(function (o) { return o.slice(); });
     var coste = function (o) { return o[1] * KW * 365 + o[2] * KWH; };
     var fmt = num2;
     var tbody = $('[data-ed-tabla] tbody', ed), snap = $('[data-snap]', ed), guardado = null, ronda = 0;
@@ -518,13 +529,17 @@
     });
     $('[data-mover]', ed).addEventListener('click', function () {
       ronda++;
-      var f = [[1.06, 1.04], [1.09, 1.07], [.97, 1.05]];
-      ofertas = ofertas.map(function (o, i) { var k = f[(i + ronda) % 3]; return [o[0], Math.round(o[1] * k[0] * 10000) / 10000, Math.round(o[2] * k[1] * 10000) / 10000, o[3]]; });
+      /* las tarifas nuevas oscilan alrededor de las de partida (±9 %): por muchas veces que se pulse, no se disparan */
+      var f = [[1.06, 1.04], [1.09, 1.07], [.97, 1.05], [.94, .97]];
+      ofertas = BASE.map(function (o, i) { var k = f[(i + ronda) % f.length]; return [o[0], Math.round(o[1] * k[0] * 10000) / 10000, Math.round(o[2] * k[1] * 10000) / 10000, o[3]]; });
       tabla(true);
       $('[data-snap-d]', ed).textContent = guardado ? 'Las tarifas han cambiado ' + ronda + (ronda === 1 ? ' vez' : ' veces') + ' desde que la guardaste. Lo guardado sigue idéntico: la huella no cambia.' : '';
     });
     var estados = $$('[data-estado]', ed), i = 0, lista = $('[data-log]', ed);
-    function log(que, txt) { var li = document.createElement('li'); li.innerHTML = '<b>' + hora() + ' ' + que + '</b> ' + txt; lista.insertBefore(li, lista.firstChild); }
+    function log(que, txt) {
+      var li = document.createElement('li'); li.innerHTML = '<b>' + hora() + ' ' + que + '</b> ' + txt; lista.insertBefore(li, lista.firstChild);
+      while (lista.children.length > 6) lista.removeChild(lista.lastChild);
+    }
     var btnA = $('[data-avanzar]', ed);
     btnA.addEventListener('click', function () {
       estados[i].classList.remove('on'); i = (i + 1) % estados.length; estados[i].classList.add('on');
@@ -553,11 +568,16 @@
     var STOCK = { tomate: [6, 2, 'kg'], pan: [4, 1.2, 'kg'], aceite: [5, 1, 'l'], lomo: [3, 1, 'kg'], rabo: [4, 1.5, 'kg'] };
     var NOM = { tomate: 'Tomate', pan: 'Pan', aceite: 'Aceite de oliva', lomo: 'Lomo', rabo: 'Rabo de toro' };
     var INI = {}; Object.keys(STOCK).forEach(function (k) { INI[k] = STOCK[k][0]; });
-    var mesas = [[], [], [{ n: 'Salmorejo', p: 6.5 }, { n: 'Flamenquín', p: 9 }], [], [{ n: 'Rabo de toro', p: 14.5 }], [], [], []];
+    /* Cada mesa guarda platos agrupados (2 × Salmorejo) y tiene un tope: la comanda no crece sin fin
+       y el stock nunca baja de cero (un plato sin ingredientes se desactiva hasta reponer). */
+    var MAX_UDS = 20;
+    var mesas = [[], [], [{ n: 'Salmorejo', p: 6.5, q: 1 }, { n: 'Flamenquín', p: 9, q: 1 }], [], [{ n: 'Rabo de toro', p: 14.5, q: 1 }], [], [], []];
     var sel = 2, caja = 0, tickets = 0, tt;
     var toast = $('[data-toast-erp]', erp);
     function aviso(t) { toast.textContent = t; toast.classList.add('on'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('on'); }, 2200); }
-    var suma = function (m) { return m.reduce(function (s, x) { return s + x.p; }, 0); };
+    var suma = function (m) { return Math.round(m.reduce(function (s, x) { return s + x.p * x.q; }, 0) * 100) / 100; };
+    var uds = function (m) { return m.reduce(function (s, x) { return s + x.q; }, 0); };
+    var falta = function (c) { return Object.keys(c.r).filter(function (k) { return STOCK[k][0] < c.r[k]; }); };
     /* Se construye UNA vez; después solo se actualiza lo que cambia (nada de innerHTML en cada paso:
        la demo repintando todo disparaba el trabajo de maquetación). */
     var cajaMesas = $('[data-erp-mesas]', erp), cajaStock = $('[data-erp-stock]', erp), lineas = $('[data-erp-lineas]', erp);
@@ -577,9 +597,15 @@
       var m = mesas[sel];
       $('[data-erp-mesa-t]', erp).textContent = 'Mesa ' + (sel + 1);
       $('[data-erp-estado]', erp).textContent = m.length ? 'Ocupada' : 'Libre';
-      lineas.innerHTML = m.length ? m.map(function (x) { return '<li><span>' + x.n + '</span><b>' + eur(x.p) + '</b></li>'; }).join('') : '<li class="vacia">Sin comanda. Añade platos de la carta.</li>';
+      lineas.innerHTML = m.length ? m.map(function (x) { return '<li><span>' + (x.q > 1 ? x.q + ' × ' : '') + x.n + '</span><b>' + eur(Math.round(x.p * x.q * 100) / 100) + '</b></li>'; }).join('') : '<li class="vacia">Sin comanda. Añade platos de la carta.</li>';
       $('[data-erp-total]', erp).textContent = eur(suma(m));
       $('[data-erp-cobrar]', erp).disabled = !m.length;
+      var llena = uds(m) >= MAX_UDS;
+      botonesCarta.forEach(function (b, i) {
+        var sin = falta(CARTA[i]).length > 0;
+        b.disabled = sin || llena;
+        b.lastChild.textContent = sin ? 'agotado' : eur(CARTA[i].p);
+      });
       filasStock.forEach(function (li) {
         var k = li.dataset.k, s = STOCK[k], bajo = s[0] < s[1];
         li.classList.toggle('bajo', bajo);
@@ -591,27 +617,34 @@
       $('[data-erp-tickets]', erp).textContent = tickets + (tickets === 1 ? ' ticket cobrado' : ' tickets cobrados');
     }
     function anadir(i) {
-      var c = CARTA[i], bajan = [];
-      mesas[sel].push({ n: c.n, p: c.p });
-      Object.keys(c.r).forEach(function (k) { var antes = STOCK[k][0] >= STOCK[k][1]; STOCK[k][0] = Math.round((STOCK[k][0] - c.r[k]) * 1000) / 1000; if (antes && STOCK[k][0] < STOCK[k][1]) bajan.push(NOM[k]); });
+      var c = CARTA[i], bajan = [], m = mesas[sel], sin = falta(c);
+      if (uds(m) >= MAX_UDS) { aviso('Mesa ' + (sel + 1) + ' completa (' + MAX_UDS + ' platos): cóbrala para seguir'); return false; }
+      if (sin.length) { aviso('Sin ' + sin.map(function (k) { return NOM[k].toLowerCase(); }).join(' ni ') + ' para ' + c.n.toLowerCase() + ': pide al proveedor'); pintar(); return false; }
+      var linea = m.filter(function (x) { return x.n === c.n; })[0];
+      if (linea) linea.q++; else m.push({ n: c.n, p: c.p, q: 1 });
+      Object.keys(c.r).forEach(function (k) { var antes = STOCK[k][0] >= STOCK[k][1]; STOCK[k][0] = Math.max(0, Math.round((STOCK[k][0] - c.r[k]) * 1000) / 1000); if (antes && STOCK[k][0] < STOCK[k][1]) bajan.push(NOM[k]); });
       pintar();
       if (bajan.length) aviso('Stock bajo: ' + bajan.join(', ') + ' · al pedido del proveedor');
+      return true;
     }
+    function reponer() { Object.keys(STOCK).forEach(function (k) { STOCK[k][0] = INI[k]; }); pintar(); aviso('Pedido del proveedor recibido: stock repuesto'); }
     function cobrar() {
       var m = mesas[sel]; if (!m.length) return;
       caja = Math.round((caja + suma(m)) * 100) / 100; tickets++;
       aviso('Mesa ' + (sel + 1) + ' cobrada · ' + eur(suma(m))); mesas[sel] = []; pintar();
     }
     $('[data-erp-carta]', erp).innerHTML = CARTA.map(function (c, i) { return '<button type="button" data-c="' + i + '"><span>' + c.n + '</span><b>' + eur(c.p) + '</b></button>'; }).join('');
-    $$('[data-erp-carta] button', erp).forEach(function (b) { b.addEventListener('click', function () { anadir(+b.dataset.c); }); });
+    var botonesCarta = $$('[data-erp-carta] button', erp);
+    botonesCarta.forEach(function (b) { b.addEventListener('click', function () { anadir(+b.dataset.c); }); });
     $('[data-erp-cobrar]', erp).addEventListener('click', cobrar);
+    $('[data-erp-reponer]', erp).addEventListener('click', reponer);
     pintar();
     demo(erp, async function (ctx) {
       await espera(1200); if (!ctx.vivo()) return;
       sel = [0, 3, 5, 6][Math.floor(Math.random() * 4)]; pintar(); await espera(800);
       for (var k = 0; k < 3; k++) { if (!ctx.vivo()) return; anadir(Math.floor(Math.random() * CARTA.length)); await espera(900); }
       if (!ctx.vivo()) return; await espera(900); cobrar(); await espera(1500);
-      Object.keys(STOCK).forEach(function (k) { if (STOCK[k][0] < STOCK[k][1] * .6) STOCK[k][0] = INI[k]; });
+      if (Object.keys(STOCK).some(function (k) { return STOCK[k][0] < STOCK[k][1] * .6; })) reponer();
     });
   })();
 
@@ -620,7 +653,8 @@
   if (chat) (function () {
     var hilo = $('[data-hilo]', chat), texto = $('input[name="text"]', chat), estadoC = $('[data-chat-estado]', chat), turno = 0;
     var FRENO = { manual: 'Pierdo tiempo en tareas manuales', visibilidad: 'No tengo visibilidad de mi negocio', webDebil: 'Mi web no representa lo que hago', empezar: 'No sé por dónde empezar' };
-    var abajo = function () { hilo.scrollTop = hilo.scrollHeight; };
+    /* el hilo guarda los últimos 8 mensajes: por muchas respuestas que se toquen, no crece sin fin */
+    var abajo = function () { var ms = $$('.msg', hilo); for (var i = 0; i < ms.length - 8; i++) ms[i].remove(); hilo.scrollTop = hilo.scrollHeight; };
     chat.addEventListener('change', async function (e) {
       if (e.target.name !== 'freno') return;
       var k = e.target.value, yo = ++turno, x = receta('guia', k);

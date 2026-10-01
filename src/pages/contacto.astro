@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import CabeceraPagina from '../components/CabeceraPagina.astro';
-import Configurador from '../components/Configurador.astro';
+import Propuesta from '../components/Propuesta.astro';
 import { migas, PHONE, CONTACT_EMAIL, WA, BRAND_NAME, LEGAL_NAME } from '../lib/sitio';
 import { FORMSUBMIT_ENDPOINT, FORM_PROCESSOR } from '../lib/company';
 
@@ -12,9 +12,12 @@ const contacto = { '@type': 'ContactPage', name: 'Contacto · OpsPilot', url: 'h
   description="Escríbenos por WhatsApp, llámanos o déjanos tu mensaje. Te respondemos en menos de 24 horas con una propuesta concreta y precio cerrado. Desde Córdoba."
   path="/contacto/" jsonld={[migas(M), contacto]}>
   <CabeceraPagina sobre="Contacto" titulo="Cuéntanos tu problema."
-    entrada="Te respondemos en menos de 24 horas. Primero te escuchamos 30 minutos, sin tecnicismos; después te decimos qué haríamos y cuánto cuesta, por escrito."
-    migas={M}>
-    <Configurador />
+    entrada="Te respondemos en menos de 24 horas. Primero te escuchamos 30 minutos, sin tecnicismos; después te decimos qué haríamos y cuánto cuesta, por escrito.">
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Escríbenos por WhatsApp</a>
+      <a class="btn btn-linea" href={`tel:${PHONE.e164}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>{PHONE.display}</a>
+      <a class="enlace" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+    </div>
   </CabeceraPagina>
 
   <section class="s-navy" aria-labelledby="t-canales">
@@ -43,6 +46,7 @@ const contacto = { '@type': 'ContactPage', name: 'Contacto · OpsPilot', url: 'h
       </form>
     </div>
   </section>
+  <Propuesta titulo="¿Prefieres que te guiemos? Tres preguntas." entrada="Si aún no sabes cómo contarlo, elige lo que necesitas y te enseñamos qué construiríamos." />
   <script is:inline>
     (function () {
       var f = document.querySelector('[data-formu]'); if (!f) return;

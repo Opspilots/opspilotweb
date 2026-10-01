@@ -13,7 +13,7 @@ if (faltan.length) console.warn(`[legal] ${path}: faltan ${faltan.join(', ')} en
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre, path }];
 ---
 <Base title={title} description={description} path={path} noindex={faltan.length > 0} jsonld={[migas(M)]}>
-  <CabeceraPagina sobre="Legal" titulo={titulo} migas={M} horizonte={false} />
+  <CabeceraPagina sobre="Legal" titulo={titulo} />
   <section class="s-papel" aria-label={titulo}>
     <div class="wrap">
       {faltan.length > 0 && <p class="aviso-noindex">Faltan datos de la empresa ({faltan.join(', ')}). Esta página no se indexa hasta completarlos.</p>}

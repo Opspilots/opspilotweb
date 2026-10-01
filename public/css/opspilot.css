@@ -67,7 +67,8 @@ main{overflow-x:clip}
 .menu{display:flex;gap:1.75rem;margin-left:auto;font:400 .8rem/1 var(--mono);text-transform:uppercase;letter-spacing:.12em}
 .menu a{text-decoration:none;color:var(--gris);padding:.5rem 0}
 .menu a:hover{color:#fff}
-.btn-cab{padding:.75rem 1.05rem;font-size:.95rem}
+.btn-cab{padding:.75rem 1.05rem;font-size:.95rem;white-space:nowrap}
+@media (min-width:768px) and (max-width:900px){.cab-in{gap:1.2rem}.menu{gap:1.1rem;letter-spacing:.08em}}
 
 /* ═══ VENTANA: la réplica de pantalla ═══ */
 .ventana{position:relative;background:var(--ui-bg);color:var(--ui-ink);border-radius:.8rem;box-shadow:var(--sombra-v);font-size:.9rem;line-height:1.4;isolation:isolate}
@@ -99,7 +100,7 @@ main{overflow-x:clip}
 .portada-in{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:2rem;padding-block:clamp(2.5rem,6vh,4.5rem) clamp(3rem,6vh,4.5rem)}
 .portada-texto{position:relative;z-index:2}
 .sobre{display:block;font:700 .82rem/1.2 var(--mono);text-transform:uppercase;letter-spacing:.16em;margin-bottom:1.35rem}
-.grande{display:block;font-weight:800;font-size:clamp(2.85rem,1.1rem + 5vw,6rem);line-height:.92;letter-spacing:-.045em;max-width:11.5ch;text-wrap:balance}
+.grande{display:block;font-weight:800;font-size:clamp(2.6rem,1.2rem + 4.2vw,5.4rem);line-height:1;letter-spacing:-.012em;max-width:12ch;text-wrap:balance}
 .entrada{font-size:clamp(1.06rem,1rem + .35vw,1.24rem);line-height:1.5;max-width:31rem;margin-top:1.4rem}
 .portada-alt{margin-top:1.2rem;font-size:.95rem}
 
@@ -179,8 +180,8 @@ main{overflow-x:clip}
 
 /* ─── piezas comunes de sección ─── */
 .etiqueta{font:700 .78rem/1 var(--mono);text-transform:uppercase;letter-spacing:.18em;color:var(--verde);margin-bottom:1.1rem}
-.h2{font-weight:760;font-size:clamp(2rem,1.05rem + 3.1vw,3.65rem);line-height:1;letter-spacing:-.035em;max-width:17ch;text-wrap:balance}
-section{padding-block:clamp(4.5rem,11vw,8.5rem)}
+.h2{font-weight:760;font-size:clamp(1.95rem,1.1rem + 2.7vw,3.4rem);line-height:1.06;letter-spacing:-.01em;max-width:20ch;text-wrap:balance}
+section{padding-block:clamp(3rem,6vw,5rem)}
 
 /* ═══ 2 · PROBLEMAS ═══ */
 .problemas{background:var(--navy);padding-top:clamp(3.5rem,7vw,5.5rem)}
@@ -454,7 +455,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .cierre{position:relative;overflow:hidden;isolation:isolate;background:var(--verde);color:var(--navy);padding-bottom:0}
 .cierre-in{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start;gap:2rem;padding-bottom:clamp(4rem,9vw,7rem)}
 .cierre-texto{position:relative;z-index:2}
-.h2-cierre{font-weight:800;font-size:clamp(2.2rem,1rem + 3.6vw,4.2rem);line-height:.98;letter-spacing:-.04em;max-width:15ch;text-wrap:balance}
+.h2-cierre{font-weight:800;font-size:clamp(2.1rem,1.1rem + 3.1vw,3.9rem);line-height:1.04;letter-spacing:-.012em;max-width:16ch;text-wrap:balance}
 .cierre-aro{position:relative;width:min(30vw,24rem);aspect-ratio:1;justify-self:center;margin-top:clamp(12rem,22vw,18rem)}
 .chat{max-width:30rem;margin-top:2rem;background:#EFEAE2}
 .chat-barra{background:var(--navy)}
@@ -785,19 +786,54 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .pie-legal a{color:inherit}
 @media (max-width:1020px){.pie-in-5{grid-template-columns:1fr 1fr}.pie-marca{grid-column:1/-1}}
 @media (max-width:767px){.pie-in-5{grid-template-columns:1fr 1fr;gap:1.8rem 1rem}}
-/* migas */
-.migas ol{list-style:none;display:flex;flex-wrap:wrap;gap:.3rem;font:400 .74rem/1.3 var(--mono);margin-bottom:1.2rem}
-.migas li+li::before{content:"›";margin-right:.3rem;opacity:.6}
-.migas a{color:inherit;text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
-.migas-claro{color:var(--gris)}
-/* cabecera de página interior */
-.portada-sub .portada-in{min-height:0;padding-block:clamp(2rem,5vh,3.5rem) clamp(3rem,7vh,5rem)}
-.grande-sub{font-size:clamp(2.4rem,1.2rem + 4vw,4.8rem);max-width:14ch}
-.instrumento-sub{--s:min(30vw,52svh,26rem);align-self:end;margin:2rem 0 calc(var(--s) * -.3)}
-.portada-sub .portada-in{align-items:start}
-.portada-sub{padding-bottom:0}
-.portada-sub .acciones{display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center;margin-top:1.6rem}
-@media (max-width:767px){.instrumento-sub{--s:min(62vw,16rem);margin:2rem auto 2.4rem}}
+/* ═══ v5 · cabeceras (revisión de Pelayo, 27-sep): UNA escala para todas y siempre dentro de la
+   primera pantalla. La portada es mensaje + contacto; el configurador baja a .propuesta. ═══ */
+.portada .acciones{display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center;margin-top:1.6rem}
+.btn-linea{background:none;color:var(--navy);box-shadow:inset 0 0 0 1.5px var(--navy)}
+.btn-linea:hover{background:rgb(15 22 32/.08)}
+.promesa{list-style:none;display:flex;flex-wrap:wrap;gap:.55rem 1.3rem;margin-top:1.4rem;font:400 .78rem/1.3 var(--mono);letter-spacing:.02em}
+.promesa li{display:inline-flex;align-items:center;gap:.45rem}
+.promesa .ico{width:1rem;height:1rem}
+/* portada: la primera pantalla entera, ni más ni menos */
+.portada-inicio .portada-in{min-height:min(calc(100svh - var(--cab)),52rem);align-items:center;padding-block:clamp(2rem,5vh,3.5rem)}
+/* el texto arriba: el suelo del horizonte baja hacia la izquierda y no debe tapar la promesa */
+.portada-inicio .portada-texto{align-self:start;padding-top:clamp(.5rem,3vh,2rem)}
+.portada-alt{width:fit-content}
+.portada-alt .enlace{display:inline;text-wrap:balance}
+/* portátiles bajos (1280 × 720, 1366 × 768): el aro, algo menor, para que el suelo no alcance el texto */
+@media (min-width:1021px) and (max-height:800px){
+  .portada-inicio .instrumento{--s:min(30vw,calc(100svh - var(--cab) - 12.5rem),28rem)}
+  .portada-inicio .grande{font-size:clamp(2.6rem,8.4svh,4.6rem)}
+  .portada-inicio .portada-texto{padding-top:0}
+}
+.portada-alt .enlace .ico{display:inline-block;vertical-align:-.2em;margin-left:.25rem}
+.portada-inicio .portada-in{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}
+/* el aro abajo: así la línea del suelo pasa por debajo del texto (lo comprueba el medidor de choques) */
+.portada-inicio .instrumento{--s:min(34vw,calc(100svh - var(--cab) - 10rem),32rem);align-self:end;margin-bottom:clamp(0rem,2vh,1.5rem)}
+/* páginas interiores: misma altura mínima, misma letra, mismo horizonte */
+.portada-sub .portada-in{grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);align-items:center;min-height:min(22rem,calc(100svh - var(--cab)));padding-block:clamp(2.25rem,5vh,3.5rem)}
+.grande-sub{font-size:clamp(2.2rem,1.35rem + 2.6vw,3.9rem);max-width:19ch}
+.instrumento-sub{--s:min(22vw,38svh,19rem);align-self:end;margin:1.5rem 0 calc(var(--s) * -.3 - clamp(2.25rem,5vh,3.5rem))}
+.portada-sub .entrada{max-width:36rem}
+@media (max-width:1020px){
+  .portada-inicio .portada-in{grid-template-columns:minmax(0,1fr);min-height:0;padding-block:2.25rem 0}
+  .portada-inicio .instrumento{--s:min(66vw,20rem);align-self:center;margin:2.5rem auto 2.5rem}
+}
+@media (max-width:767px){
+  .portada-inicio .instrumento{--s:min(66vw,17rem)}
+  .portada .acciones .btn{flex:1 1 12rem}
+  .portada-sub .portada-in{grid-template-columns:minmax(0,1fr);min-height:0;padding-block:2rem 0}
+  .instrumento-sub{--s:min(46vw,12rem);margin:1.75rem 0 calc(var(--s) * -.3) auto}
+}
+/* la propuesta (configurador) en su sección */
+.propuesta{background:var(--papel);color:var(--navy)}
+.propuesta .etiqueta{color:var(--navy)}
+.propuesta .lead{color:var(--gris-papel)}
+.propuesta-in{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1fr);gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.propuesta .cfg-marco{margin-top:0;justify-self:end;width:100%}
+.propuesta-nota{display:flex;gap:.55rem;align-items:flex-start;max-width:34rem;margin-top:1.4rem;font-size:.92rem;color:var(--gris-papel)}
+.propuesta-nota .ico{margin-top:.15rem;color:var(--verde-h)}
+@media (max-width:1020px){.propuesta-in{grid-template-columns:minmax(0,1fr)}.propuesta .cfg-marco{justify-self:start;margin-top:.5rem}}
 /* secciones */
 .s-navy{background:var(--navy);color:var(--texto-claro)}
 .s-hondo{background:var(--hondo);color:var(--texto-claro)}
@@ -811,18 +847,22 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .casos-mas{margin-top:1rem}
 /* bloque: texto + pantalla */
 .bloque{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(2rem,5vw,4.5rem);align-items:start;margin-top:clamp(2.5rem,5vw,4rem)}
-.bloque+.bloque{margin-top:clamp(4rem,8vw,7rem)}
+.bloque+.bloque{margin-top:clamp(3.5rem,6vw,5.5rem)}
 .bloque-inv{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}
 .bloque-inv>.bloque-texto{order:2}
-.bloque-texto h3{font-weight:760;font-size:clamp(1.4rem,1.1rem + 1vw,2rem);line-height:1.08;letter-spacing:-.025em;text-wrap:balance}
+.bloque-texto h3{font-weight:760;font-size:clamp(1.4rem,1.1rem + 1vw,2rem);line-height:1.1;letter-spacing:-.018em;text-wrap:balance}
 .s-navy .bloque-texto h3,.s-hondo .bloque-texto h3{color:#fff}
 .bloque-texto p{margin-top:.8rem;max-width:52ch}
 .bloque-meta{font:700 .7rem/1 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--verde);margin-bottom:.8rem}
 .s-papel .bloque-meta{color:var(--verde-h)}
 .bloque-texto .enlace{margin-top:1.1rem}
-.caso-pantalla{position:relative;padding-bottom:6.5rem}
+.caso-pantalla{position:relative}
+/* v6: en las subpáginas la nota va en el flujo, colgada del borde de la pantalla: absoluta pisaba el caso siguiente entre 768 y 1020 px y asomaba ~120 px en escritorio */
+.caso-pantalla .nota-caso{position:relative;top:auto;right:auto;bottom:auto;display:block;width:max-content;max-width:min(21rem,100%);margin:-2.2rem -1rem 0 auto}
+/* v5: al lado de un texto largo, la pantalla acompaña la lectura en vez de dejar un hueco debajo */
+@media (min-width:1021px) and (min-height:700px){.bloque .caso-pantalla{position:sticky;top:calc(var(--cab) + 1.5rem)}}
 @media (max-width:1020px){.bloque,.bloque-inv{grid-template-columns:minmax(0,1fr)}.bloque-inv>.bloque-texto{order:0}}
-@media (max-width:767px){.caso-pantalla{padding-bottom:0}}
+@media (max-width:767px){.caso-pantalla .nota-caso{margin:-.6rem .8rem 0 auto}}
 /* lista con marca */
 .lista-ok{list-style:none;display:grid;gap:.6rem;margin-top:1.1rem}
 .lista-ok li{display:flex;gap:.6rem;align-items:flex-start}
@@ -864,7 +904,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 /* prosa (artículos, páginas locales y legales) */
 .prosa{max-width:44rem}
 .prosa>*+*{margin-top:1rem}
-.prosa h2{font-weight:760;font-size:clamp(1.5rem,1.2rem + 1vw,2.1rem);line-height:1.1;letter-spacing:-.025em;margin-top:2.4rem;text-wrap:balance}
+.prosa h2{font-weight:760;font-size:clamp(1.5rem,1.2rem + 1vw,2.1rem);line-height:1.12;letter-spacing:-.018em;margin-top:2.4rem;text-wrap:balance}
 .prosa h3{font-weight:720;font-size:1.2rem;margin-top:1.6rem}
 .prosa p,.prosa li{line-height:1.65}
 .prosa ul,.prosa ol{padding-left:1.3rem;display:grid;gap:.45rem}
@@ -885,20 +925,22 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 @media (max-width:1020px){.lectura-in{grid-template-columns:minmax(0,1fr)}.lateral{position:static}}
 /* recursos */
 .recursos-filtro{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:2rem}
-.recursos-filtro button{border:1.5px solid rgb(15 22 32/.18);background:#fff;border-radius:99rem;padding:.5rem .85rem;font-weight:650;font-size:.86rem;color:var(--navy)}
+.recursos-filtro button{border:1.5px solid rgb(15 22 32/.18);background:#fff;border-radius:.35rem;padding:.5rem .85rem;font-weight:650;font-size:.86rem;color:var(--navy)}
 .recursos-filtro button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
-.recursos-rej{display:grid;grid-template-columns:repeat(auto-fill,minmax(19rem,1fr));gap:1.2rem;margin-top:1.6rem}
-.recurso{display:flex;flex-direction:column;border-radius:.9rem;background:#fff;border:1px solid rgb(15 22 32/.08);overflow:hidden;text-decoration:none;color:var(--navy);transition:transform .25s var(--curva),box-shadow .25s}
-.recurso:hover{transform:translateY(-3px);box-shadow:0 20px 40px -24px rgb(15 22 32/.45)}
-.recurso-img{aspect-ratio:16/9;background:#dcdad4}
-.recurso-img img{width:100%;height:100%;object-fit:cover}
-.recurso-sin{display:grid;place-items:center;aspect-ratio:16/9;background:var(--navy)}
-.recurso-sin svg{width:28%;height:auto}
-.recurso-c{padding:1rem 1.1rem 1.2rem;display:grid;gap:.45rem}
-.recurso-cat{font:700 .64rem/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--verde-h)}
-.recurso h3{font-weight:720;font-size:1.12rem;line-height:1.2;letter-spacing:-.01em}
-.recurso p{font-size:.9rem;color:var(--gris-papel)}
-.recurso-t{font:400 .72rem/1 var(--mono);color:var(--gris-papel)}
+/* v6: índice en filas, como un cuaderno de vuelo; la portada solo en las guías que la tienen (antes: rejilla de tarjetas iguales con el logo de relleno en 12 de 17) */
+.cuaderno{list-style:none;margin-top:1.6rem;border-top:1.5px solid var(--navy)}
+.cuaderno-fila{border-bottom:1px solid rgb(15 22 32/.14)}
+.cuaderno-fila a{display:grid;grid-template-columns:3rem minmax(0,1fr) 11rem;gap:1.5rem;align-items:center;padding:1.35rem .25rem;text-decoration:none;color:var(--navy);transition:background-color .2s}
+.cuaderno-fila a:hover{background:rgb(15 22 32/.04)}
+.cuaderno-fila a:hover h3{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
+.cuaderno-n{align-self:start;padding-top:.3rem;font:700 .9rem/1 var(--mono);color:var(--verde-h)}
+.cuaderno-c{display:grid;gap:.4rem;grid-column:2}
+.cuaderno-cat{font:400 .76rem/1.2 var(--mono);color:var(--gris-papel)}
+.cuaderno-fila h3{font-weight:720;font-size:clamp(1.15rem,1rem + .5vw,1.4rem);line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+.cuaderno-fila p{font-size:.95rem;color:var(--gris-papel);max-width:62ch}
+.cuaderno-img{grid-column:3;aspect-ratio:16/9;border-radius:.35rem;overflow:hidden;background:#dcdad4}
+.cuaderno-img img{width:100%;height:100%;object-fit:cover}
+@media (max-width:767px){.cuaderno-fila a{grid-template-columns:2.1rem minmax(0,1fr);gap:.9rem;padding-inline:0}.cuaderno-img{display:none}}
 /* contacto */
 .contacto-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2rem,5vw,4rem);align-items:start}
 .canales{display:grid;gap:.7rem;margin-top:1.4rem}
@@ -957,7 +999,13 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .erp-carta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem}
 .erp-carta button{display:flex;justify-content:space-between;gap:.4rem;align-items:center;padding:.5rem .6rem;border-radius:.4rem;border:1px solid var(--e-l);background:var(--e-r);color:var(--e-t);font:600 .74rem/1.2 var(--display);text-align:left}
 .erp-carta button b{font:500 .7rem/1 var(--mono);color:var(--e-a);white-space:nowrap}
-.erp-carta button:hover{border-color:var(--e-a)}
+.erp-carta button:hover:not(:disabled){border-color:var(--e-a)}
+.erp-carta button:disabled{opacity:.45;cursor:not-allowed}
+.erp-carta button:disabled b{color:var(--e-m)}
+.erp-sub-acc{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.erp-reponer{display:inline-flex;align-items:center;gap:.3rem;border:1px solid var(--e-l);background:var(--e-s);color:var(--e-t);border-radius:99rem;padding:.3rem .5rem;font:600 .6rem/1 var(--display);letter-spacing:0;text-transform:none;white-space:nowrap}
+.erp-reponer .ico{width:.75rem;height:.75rem;color:var(--e-a)}
+.erp-reponer:hover{border-color:var(--e-a)}
 .erp-comanda{padding:.85rem;display:flex;flex-direction:column;gap:.5rem;min-width:0}
 .erp-cab{display:flex;justify-content:space-between;align-items:center}
 .erp-cab span{font:500 .62rem/1 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--e-a)}

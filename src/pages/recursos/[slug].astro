@@ -32,7 +32,7 @@ const titulo = r.title.length <= 49 ? `${r.title} · OpsPilot` : r.title;
 ---
 <Base title={titulo} description={r.desc} path={path} ogType="article" image={r.cover ?? '/images/og-horizonte.png'}
   jsonld={[migas(M), articulo, ...(faq.length ? [faqSchema(faq)] : [])]}>
-  <CabeceraPagina sobre={r.cat} titulo={r.title} migas={M} horizonte={false}>
+  <CabeceraPagina sobre={r.cat} titulo={r.title}>
     <p class="prosa-meta">
       {r.date && <span>{fecha(r.date)}</span>}
       <span>{r.time} de lectura</span>

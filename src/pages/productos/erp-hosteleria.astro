@@ -5,7 +5,7 @@ import ErpHosteleria from '../../components/pantallas/ErpHosteleria.astro';
 import Faq from '../../components/Faq.astro';
 import Cierre from '../../components/Cierre.astro';
 import { getProductPage } from '../../data/productPages';
-import { migas, faqSchema, ORG_ID } from '../../lib/sitio';
+import { migas, faqSchema, ORG_ID, WA } from '../../lib/sitio';
 
 // Metadatos y decisión de indexar: los de src/data/productPages.ts (el equipo la dejó en noindex).
 const PAGINA = getProductPage('erp-hosteleria')!;
@@ -35,10 +35,10 @@ const app = {
 <Base title={PAGINA.title} description={PAGINA.description} path="/productos/erp-hosteleria/"
   noindex={PAGINA.noindex} jsonld={[migas(M), app, faqSchema(FAQ)]}>
   <CabeceraPagina sobre="Producto · restaurantes y bares" titulo={PAGINA.h1}
-    entrada="Todo lo que hoy llevas con un TPV por un lado, un Excel de compras por otro y un grupo de WhatsApp para los turnos, en un solo sistema conectado."
-    migas={M}>
+    entrada="Todo lo que hoy llevas con un TPV por un lado, un Excel de compras por otro y un grupo de WhatsApp para los turnos, en un solo sistema conectado.">
     <div class="acciones">
-      <a class="btn btn-tinta" href="https://erp.mcpopspilot.org" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>Ver la aplicación</a>
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, tengo un bar o restaurante y quiero ver el ERP con mis datos:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Pídenos una demo</a>
+      <a class="btn btn-linea" href="https://erp.mcpopspilot.org" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>Ver la aplicación</a>
     </div>
   </CabeceraPagina>
 
