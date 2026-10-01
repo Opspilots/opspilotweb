@@ -813,7 +813,10 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 /* páginas interiores: misma altura mínima, misma letra, mismo horizonte */
 .portada-sub .portada-in{grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);align-items:center;min-height:min(22rem,calc(100svh - var(--cab)));padding-block:clamp(2.25rem,5vh,3.5rem)}
 .grande-sub{font-size:clamp(2.2rem,1.35rem + 2.6vw,3.9rem);max-width:19ch}
-.instrumento-sub{--s:min(22vw,38svh,19rem);align-self:end;margin:1.5rem 0 calc(var(--s) * -.3 - clamp(2.25rem,5vh,3.5rem))}
+/* v6.1 (1-oct, fundador): el aro es el logo y se ve ENTERO. Sigue en el mismo sitio respecto al texto (el horizonte pasa por su centro y no debe pisar el texto); lo que crece es el fondo de la cabecera, el 30 % que antes quedaba fuera */
+.portada-sub{--s-sub:min(22vw,38svh,19rem)}
+.portada-sub .portada-in{padding-bottom:calc(clamp(2.25rem,5vh,3.5rem) + var(--s-sub) * .3)}
+.instrumento-sub{--s:var(--s-sub);align-self:end;margin:1.5rem 0 calc(var(--s) * -.3 - clamp(2.25rem,5vh,3.5rem))}
 .portada-sub .entrada{max-width:36rem}
 @media (max-width:1020px){
   .portada-inicio .portada-in{grid-template-columns:minmax(0,1fr);min-height:0;padding-block:2.25rem 0}
@@ -823,7 +826,9 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .portada-inicio .instrumento{--s:min(66vw,17rem)}
   .portada .acciones .btn{flex:1 1 12rem}
   .portada-sub .portada-in{grid-template-columns:minmax(0,1fr);min-height:0;padding-block:2rem 0}
-  .instrumento-sub{--s:min(46vw,12rem);margin:1.75rem 0 calc(var(--s) * -.3) auto}
+  .portada-sub{--s-sub:min(40vw,11rem)}
+  .portada-sub .portada-in{padding-bottom:0}
+  .instrumento-sub{margin:1.5rem 0 1rem auto}
 }
 /* la propuesta (configurador) en su sección */
 .propuesta{background:var(--papel);color:var(--navy)}
