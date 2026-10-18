@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import Cierre from '../../components/Cierre.astro';
 import { RESOURCES } from '../../lib/resources';
+import { HERRAMIENTAS } from '../../data/herramientas';
 import { migas, SITE_URL, WA } from '../../lib/sitio';
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos', path: '/recursos/' }];
@@ -26,12 +27,27 @@ const blog = {
 <Base title="Recursos: guías de software y digitalización · OpsPilot"
   description="Guías, casos prácticos y checklists para digitalizar una pyme sin tecnicismos: cuándo pedir software a medida, cómo migrar de Excel, qué automatizar primero."
   path="/recursos/" jsonld={[migas(M), blog]}>
-  <CabeceraPagina sobre="Recursos" titulo="Guías para digitalizar tu negocio, sin tecnicismos."
+  <CabeceraPagina sobre="Recursos" titulo="Herramientas y guías gratis para tu negocio, sin tecnicismos."
     entrada="Lo que explicamos en las primeras conversaciones, por escrito y gratis. Para decidir con criterio antes de gastar un euro.">
     <div class="acciones">
       <a class="enlace" href={WA('Hola OpsPilot, tengo una duda que no está en vuestras guías:')} rel="noopener">¿Tu duda no está aquí? Pregúntanosla <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
     </div>
   </CabeceraPagina>
+  <section class="s-papel" aria-labelledby="t-gratis">
+    <div class="wrap">
+      <p class="etiqueta">Herramientas gratis</p>
+      <h2 id="t-gratis" class="h2">Resuélvelo ahora, sin registrarte.</h2>
+      <ul class="hz-otras">
+        {HERRAMIENTAS.map((o) => (
+          <li><a href={`/herramientas/${o.slug}/`}>
+            <span class="hz-otras-ico"><svg class="ico" aria-hidden="true"><use href={`#i-${o.icono}`}/></svg></span>
+            <span><small>«{o.busqueda}»</small><b>{o.nombre}</b></span>
+            <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
   <section class="s-navy" aria-labelledby="t-empieza">
     <div class="wrap">
       <p class="etiqueta">Empieza por aquí</p>

@@ -1,0 +1,80 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+---
+<HerramientaPagina slug="calcular-iva-irpf-factura"
+  title="Calcular IVA e IRPF de una factura: calculadora gratis"
+  description="Calcula el IVA y la retención de IRPF de tu factura de autónomo: base, IVA, IRPF y total. O al revés: cuánto facturar para cobrar lo que quieres."
+  h1="Calcular IVA e IRPF de una factura: calculadora para autónomos."
+  entrada="Pon la base y te sale la factura entera. O pon lo que quieres cobrar y te sale la base. Con los tipos de IVA y de retención que se usan en España."
+  faq={[
+    { q: '¿Cuándo tengo que poner retención de IRPF en la factura?', a: 'Cuando eres profesional (actividades de la sección segunda del IAE: arquitectos, abogados, diseñadores, consultores…) y facturas a una empresa o a otro autónomo. A un particular no se le aplica retención. Si tu actividad es empresarial (un comercio, la mayoría de oficios), en general tampoco lleva retención, salvo casos concretos de estimación objetiva.' },
+    { q: '¿Cuándo puedo aplicar el 7 % de IRPF en vez del 15 %?', a: 'Si empiezas tu actividad profesional, puedes aplicar el 7 % el año de inicio y los dos siguientes, siempre que no hayas ejercido una actividad profesional en el año anterior. Tienes que comunicárselo a tu cliente.' },
+    { q: '¿El IRPF se calcula sobre la base o sobre el total con IVA?', a: 'Sobre la base imponible, sin IVA. El total de la factura es base + IVA − retención.' },
+    { q: '¿Qué IVA lleva una reforma de vivienda?', a: 'Puede llevar el 10 % si es la renovación o reparación de la vivienda de un particular, la obra empieza al menos dos años después de construida y los materiales que pones tú no superan el 40 % de la base. Si no se cumple, va al 21 %.' },
+    { q: '¿Esta calculadora sustituye a mi gestor?', a: 'No. Hace bien las cuentas con los tipos generales, pero los casos especiales (recargo de equivalencia, módulos, operaciones intracomunitarias) los tiene que ver tu gestoría.' },
+  ]}
+  salida={{ titulo: 'Facturas que se hacen solas.', texto: 'Si cada mes rehaces las mismas facturas a mano, te montamos un sistema que las saca del presupuesto aceptado, sin reescribir nada.', href: '/soluciones/automatizacion/', boton: 'Ver automatización' }}>
+
+  <form slot="herramienta" class="ventana hz" data-iva onsubmit="return false" aria-label="Calculadora de IVA e IRPF">
+    <div class="v-barra">
+      <svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+      <span class="v-titulo">Calculadora de factura<small>IVA e IRPF · España</small></span>
+    </div>
+    <div class="hz-cuerpo hz-2col">
+      <div class="hz-campos">
+        <fieldset class="hz-modo"><legend class="sr">Qué quieres calcular</legend>
+          <div class="hz-ops hz-seg">
+            <label><input type="radio" name="modo" value="base" checked /><span>Tengo la base</span></label>
+            <label><input type="radio" name="modo" value="neto" /><span>Sé lo que quiero cobrar</span></label>
+          </div>
+        </fieldset>
+        <label class="hz-campo"><span data-etq-importe>Base imponible (sin IVA)</span><span class="hz-euros"><input type="number" inputmode="decimal" min="0" step="0.01" value="1000" data-importe /><b>€</b></span></label>
+        <fieldset><legend>IVA</legend>
+          <div class="hz-ops">
+            <label><input type="radio" name="iva" value="21" checked /><span>21 % general</span></label>
+            <label><input type="radio" name="iva" value="10" /><span>10 % reducido</span></label>
+            <label><input type="radio" name="iva" value="4" /><span>4 % superreducido</span></label>
+            <label><input type="radio" name="iva" value="0" /><span>Exento</span></label>
+          </div>
+        </fieldset>
+        <fieldset><legend>Retención de IRPF</legend>
+          <div class="hz-ops">
+            <label><input type="radio" name="irpf" value="0" checked /><span>Sin retención</span></label>
+            <label><input type="radio" name="irpf" value="15" /><span>15 % profesional</span></label>
+            <label><input type="radio" name="irpf" value="7" /><span>7 % nuevo autónomo</span></label>
+          </div>
+          <small class="hz-ayuda">La retención solo va si eres profesional y facturas a una empresa o a otro autónomo. A particulares, sin retención.</small>
+        </fieldset>
+      </div>
+      <div class="hz-resultado hz-factura" aria-live="polite">
+        <p class="hz-res-t">Tu factura</p>
+        <dl>
+          <div><dt>Base imponible</dt><dd data-base>1.000,00 €</dd></div>
+          <div><dt data-etq-iva>IVA 21 %</dt><dd data-cuota-iva>+210,00 €</dd></div>
+          <div><dt data-etq-irpf>Retención IRPF 0 %</dt><dd data-cuota-irpf>0,00 €</dd></div>
+          <div class="hz-total"><dt>Total de la factura</dt><dd data-total>1.210,00 €</dd></div>
+        </dl>
+        <p class="hz-nota-p" data-explica>Cobras 1.210,00 €. De ahí, 210,00 € de IVA son para Hacienda (los declaras en el trimestral).</p>
+        <button type="button" class="btn btn-linea hz-copiar" data-copiar><svg class="ico" aria-hidden="true"><use href="#i-file-text"/></svg>Copiar el desglose</button>
+      </div>
+    </div>
+  </form>
+
+  <h2>Cómo se calcula una factura con IVA e IRPF</h2>
+  <p>Una factura de autónomo se construye siempre igual: <b>total = base imponible + IVA − retención de IRPF</b>. El IVA y la retención se calculan los dos sobre la base, nunca sobre el total.</p>
+  <ul>
+    <li><b>Base imponible</b>: lo que cobras por tu trabajo, sin impuestos.</li>
+    <li><b>IVA</b>: se suma. Lo cobras, pero no es tuyo: lo ingresas a Hacienda cada trimestre.</li>
+    <li><b>Retención de IRPF</b>: se resta. Te la descuenta tu cliente y la ingresa él a cuenta de tu renta.</li>
+  </ul>
+  <h3>Ejemplo</h3>
+  <p>Un diseñador factura 1.000 € a una empresa, con IVA del 21 % y retención del 15 %: 1.000 + 210 − 150 = <b>1.060 €</b>. Si en vez de a una empresa le factura a un particular, no hay retención: <b>1.210 €</b>.</p>
+  <h2>Qué tipo de IVA y de retención te toca</h2>
+  <ul>
+    <li><b>IVA 21 %</b>: el general; la mayoría de servicios y productos.</li>
+    <li><b>IVA 10 %</b>: hostelería, transporte de viajeros y, con condiciones, reformas de vivienda de particulares.</li>
+    <li><b>IVA 4 %</b>: productos de primera necesidad, libros, medicamentos de uso humano.</li>
+    <li><b>IRPF 15 %</b>: profesionales que facturan a empresas o autónomos. <b>7 %</b> el año en que empiezas y los dos siguientes.</li>
+  </ul>
+  <p class="nota-prosa">Fuentes: Ley 37/1992 del IVA (art. 90 y 91), Ley 35/2006 del IRPF (art. 101) y Reglamento del IRPF (art. 95). Para casos especiales, consulta a tu gestoría o la <a href="https://sede.agenciatributaria.gob.es" rel="noopener">sede de la Agencia Tributaria</a>.</p>
+</HerramientaPagina>

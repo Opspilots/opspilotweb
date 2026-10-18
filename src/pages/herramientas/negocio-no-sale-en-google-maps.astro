@@ -1,0 +1,73 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+import { WA } from '../../lib/sitio';
+// Cada pregunta, sus respuestas con su peso (0 mal · 1 a medias · 2 bien) y el arreglo si falla.
+// Gravedad: «bloquea» = sin esto no apareces; «frena» = apareces menos. Fuente de los factores: ayuda de Google.
+const P = [
+  { id: 'ficha', q: '¿Tienes ficha de Google (Perfil de Empresa)?', d: 'La que sale en el mapa con tu horario, tus fotos y tus reseñas.', o: [['Sí', 2], ['No', 0], ['No lo sé', 0]] },
+  { id: 'verif', q: '¿Está verificada?', d: 'En business.google.com, si te pide «Verificar», no lo está.', o: [['Sí', 2], ['No', 0], ['No lo sé', 0]] },
+  { id: 'nombre', q: 'Si buscas en Google el nombre exacto de tu negocio, ¿sale tu ficha a la derecha o en el mapa?', o: [['Sí', 2], ['No', 0]] },
+  { id: 'cat', q: '¿La categoría principal de tu ficha es exactamente lo que más vendes?', d: 'Por ejemplo, «Empresa de reformas» y no solo «Contratista».', o: [['Sí', 2], ['No', 0], ['No lo sé', 0]] },
+  { id: 'cerca', q: 'Estando cerca de tu negocio, si buscas lo que haces (sin tu nombre), ¿sales entre los primeros del mapa?', o: [['Sí', 2], ['Más abajo', 1], ['No salgo', 0]] },
+  { id: 'resenas', q: '¿Cuántas reseñas tienes?', o: [['Ninguna', 0], ['De 1 a 9', 0], ['De 10 a 19', 1], ['20 o más', 2]] },
+  { id: 'recientes', q: '¿Te han dejado alguna reseña en los últimos 3 meses?', o: [['Sí', 2], ['No', 0]] },
+  { id: 'completa', q: '¿Tu ficha tiene horario, fotos de tu trabajo y descripción?', o: [['Todo', 2], ['Algo', 1], ['Casi nada', 0]] },
+  { id: 'nap', q: '¿Tu web, tu ficha y tus redes dicen el mismo nombre, dirección y teléfono?', o: [['Sí', 2], ['No', 0], ['No lo sé', 0]] },
+];
+---
+<HerramientaPagina slug="negocio-no-sale-en-google-maps"
+  title="Mi negocio no sale en Google Maps: diagnóstico gratis"
+  description="¿Tu negocio no sale en Google Maps? Responde 9 preguntas y te decimos qué falla, por qué y qué arreglar primero. Gratis y sin registrarte."
+  h1="¿Por qué mi negocio no sale en Google Maps? Diagnóstico gratis."
+  entrada="Nueve preguntas sobre tu ficha de Google. Te decimos qué te está dejando fuera del mapa y qué arreglar primero, en orden."
+  faq={[
+    { q: '¿Cuánto tarda en salir un negocio en Google Maps?', a: 'Tras crear la ficha hay que verificarla; Google puede tardar desde unos minutos hasta varios días según el método de verificación. Una vez verificada, salir por tu nombre suele ser rápido; salir arriba por lo que haces depende de la relevancia, la distancia y la prominencia, y eso se trabaja durante semanas.' },
+    { q: '¿Salir en Google Maps cuesta dinero?', a: 'No. Crear y mantener el Perfil de Empresa de Google es gratis. Lo que se paga son los anuncios (aparecer marcado como «Patrocinado»), que son otra cosa.' },
+    { q: 'Tengo la dirección oculta porque voy a casa del cliente, ¿puedo salir?', a: 'Sí. Google permite los negocios de zona de servicio: ocultas la dirección y marcas los municipios donde trabajas. Lo que no hay que hacer es poner una dirección falsa: es motivo de suspensión.' },
+    { q: '¿Por qué salgo al buscar desde mi casa y no desde otro pueblo?', a: 'Porque la distancia es uno de los tres factores de Google: el mapa enseña sobre todo lo que está cerca de quien busca. Para que te encuentren en otros pueblos ayudan la web con una página por zona y la reputación (reseñas).' },
+    { q: '¿Comprar reseñas ayuda?', a: 'No. Va contra las normas de Google, que retira reseñas falsas y puede restringir la ficha. Lo que funciona es pedirla a cada cliente contento con un enlace directo, justo al terminar el trabajo.' },
+  ]}
+  salida={{ titulo: 'Te la dejamos al día.', texto: 'Ficha completa, reseñas respondidas y una web que diga qué haces y dónde. Desde 500 €, con precio cerrado.', href: WA('Hola OpsPilot, he hecho el diagnóstico de Google Maps y mi negocio no sale. Os cuento:'), boton: 'Que lo revisen' }}>
+
+  <form slot="herramienta" class="ventana hz" data-mapsdiag onsubmit="return false" aria-label="Diagnóstico: por qué no sales en Google Maps">
+    <div class="v-barra">
+      <svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+      <span class="v-titulo">Diagnóstico de tu ficha en Google Maps<small>9 preguntas · 2 minutos</small></span>
+      <span class="hz-cuenta" data-cuenta>0 de 9</span>
+    </div>
+    <div class="hz-cuerpo hz-2col">
+      <ol class="hz-preguntas">
+        {P.map((p) => (
+          <li><fieldset>
+            <legend>{p.q}{p.d && <small>{p.d}</small>}</legend>
+            <div class="hz-ops">{p.o.map(([t, v]) => <label><input type="radio" name={p.id} value={v} /><span>{t}</span></label>)}</div>
+          </fieldset></li>
+        ))}
+      </ol>
+      <div class="hz-resultado" aria-live="polite" data-resultado>
+        <p class="hz-res-t">Tu resultado</p>
+        <p class="hz-nota"><b data-nota>—</b><span data-veredicto>Contesta y aquí verás qué te deja fuera del mapa.</span></p>
+        <ol class="hz-arreglos" data-arreglos></ol>
+        <a class="btn btn-tinta" data-enviar hidden href={WA('Hola OpsPilot, he hecho el diagnóstico de Google Maps.')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Mandar mi resultado</a>
+      </div>
+    </div>
+  </form>
+
+  <h2>Por qué un negocio no sale en Google Maps</h2>
+  <p>Google decide qué negocios enseña en el mapa con tres cosas, y lo dice en su propia ayuda: <b>relevancia</b> (si tu ficha encaja con lo que se busca), <b>distancia</b> (lo cerca que estás de quien busca) y <b>prominencia</b> (lo conocido que eres: reseñas, menciones, tu web). Casi todos los casos de «no salgo» caen en uno de estos cuatro grupos:</p>
+  <ol>
+    <li><b>No hay ficha o no está verificada.</b> Sin verificar, la ficha puede no mostrarse o no dejarte editarla. Es lo primero que hay que mirar.</li>
+    <li><b>La ficha está suspendida.</b> Si no sales ni buscando tu nombre exacto, es la sospecha principal. Suele venir de una dirección que no cumple las normas o de un nombre con palabras de relleno.</li>
+    <li><b>La categoría no es la buena.</b> La categoría principal pesa mucho en la relevancia: si eres «Empresa de reformas» y pones otra cosa, compites en otra búsqueda.</li>
+    <li><b>Te falta prominencia.</b> Pocas reseñas, ninguna reciente, ficha sin fotos ni horario, y una web que dice otra dirección o otro teléfono. Es lo más habitual en negocios pequeños, y lo que más se nota cuando se arregla.</li>
+  </ol>
+  <h2>Qué hacer, en orden</h2>
+  <ol>
+    <li>Entra en <a href="https://business.google.com" rel="noopener">business.google.com</a> con tu cuenta y comprueba que la ficha existe y está verificada.</li>
+    <li>Pon como categoría principal lo que más vendes, y añade secundarias para el resto.</li>
+    <li>Completa horario, teléfono, web, descripción y al menos 10 fotos reales de tu trabajo.</li>
+    <li>Pide una reseña a cada cliente contento con el enlace directo de tu ficha, y contesta a todas.</li>
+    <li>Revisa que tu web, tu ficha y tus redes digan exactamente el mismo nombre, dirección y teléfono.</li>
+  </ol>
+  <p class="nota-prosa">Fuente de los tres factores: ayuda oficial de Google, «Mejorar tu posicionamiento local en Google» (<a href="https://support.google.com/business/answer/7091?hl=es" rel="noopener">support.google.com/business/answer/7091</a>).</p>
+</HerramientaPagina>
