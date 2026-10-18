@@ -1176,3 +1176,114 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .rc-ventana .nota-caso{display:none}
 .s-verde .lead{color:var(--navy);opacity:.85}
 .sectores-fila small{white-space:nowrap}
+
+/* ═══ v12 · herramientas gratis: cada una dentro de su ventana, como las pantallas de la web ═══ */
+.hz-gratis{display:flex;gap:.5rem;align-items:center;margin-top:1.2rem;font-size:.92rem;font-weight:600}
+.hz-sec{padding-top:clamp(2.5rem,5vw,4rem)}
+.hz-explica{padding-top:0}
+.hz{background:#FBFBF9;max-width:none}
+.hz-cuenta{margin-left:auto;font:700 .66rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--gris)}
+.hz-cuerpo{display:grid;gap:1.1rem;padding:clamp(1rem,2.5vw,1.6rem)}
+.hz-2col{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}
+@media (max-width:900px){.hz-2col{grid-template-columns:minmax(0,1fr)}}
+.hz-preguntas{list-style:none;display:grid;gap:1.05rem}
+.hz legend{float:left;width:100%;font:720 1rem/1.3 var(--display);color:var(--ui-ink);margin-bottom:.55rem;padding:0}
+.hz legend small{display:block;font-weight:400;font-size:.84rem;color:var(--ui-mut);margin-top:.1rem}
+.hz legend+*{clear:both}
+.hz-ops{display:flex;flex-wrap:wrap;gap:.4rem}
+.hz-ops label{position:relative;cursor:pointer}
+.hz-ops input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.hz-ops span{display:inline-block;padding:.55rem .8rem;background:#fff;border:1.5px solid var(--ui-line);border-radius:.45rem;font-weight:620;font-size:.9rem;color:var(--ui-ink);transition:border-color .15s,background-color .15s,color .15s}
+.hz-ops label:hover span{border-color:var(--navy)}
+.hz-ops input:checked+span{background:var(--navy);border-color:var(--navy);color:#fff}
+.hz-ops input:focus-visible+span{outline:3px solid var(--ambar);outline-offset:2px}
+.hz-resultado{position:sticky;top:calc(var(--cab) + 1rem);background:var(--navy);color:var(--texto-claro);border-radius:.7rem;padding:1.2rem 1.25rem}
+@media (max-width:900px){.hz-resultado{position:static}}
+.hz-res-t{font:700 .7rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--verde);margin-bottom:.8rem}
+.hz-nota{display:grid;gap:.4rem}
+.hz-nota b{font:800 2.6rem/1 var(--display);letter-spacing:-.03em;color:#fff}
+.hz-nota span{color:var(--texto-claro)}
+.hz-arreglos{list-style:none;display:grid;gap:.7rem;margin:1rem 0}
+.hz-arreglos:empty{display:none}
+.hz-arreglos li{display:grid;gap:.15rem;padding-left:.85rem;border-left:3px solid var(--verde)}
+.hz-arreglos li.g3{border-left-color:#FF8A7A}
+.hz-arreglos b{color:#fff}
+.hz-arreglos span{font-size:.9rem;color:#B9C4CF}
+.hz-campos{display:grid;gap:1.1rem}
+.hz-campo{display:grid;gap:.35rem;font-weight:700;color:var(--ui-ink)}
+.hz-campo small{font-weight:400;color:var(--ui-mut);font-size:.84rem}
+.hz-euros{display:flex;align-items:center;gap:.5rem}
+.hz-euros input{width:100%;max-width:12rem;padding:.7rem .8rem;border:1.5px solid var(--ui-line-2);border-radius:.45rem;font:700 1.15rem/1 var(--display);background:#fff;color:var(--ui-ink)}
+.hz-euros input:focus{outline:none;border-color:var(--navy)}
+.hz-euros b{color:var(--ui-mut)}
+.hz-ayuda{display:block;margin-top:.5rem;color:var(--ui-mut);font-size:.84rem;clear:both}
+.hz-factura dl{display:grid;gap:.1rem}
+.hz-factura dl div,.pz-totales div{display:flex;justify-content:space-between;gap:1rem;padding:.55rem 0;border-bottom:1px solid rgb(255 255 255/.1)}
+.hz-factura dd{margin:0;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+.hz-total dt{font-weight:800;color:#fff}
+.hz-factura .hz-total dd{font:800 1.6rem/1 var(--display);color:var(--verde)}
+.hz-nota-p{margin-top:.9rem;font-size:.92rem}
+.hz-copiar{margin-top:1rem;color:#fff;box-shadow:inset 0 0 0 1.5px rgb(255 255 255/.5)}
+.hz-doble{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem;align-items:start}
+@media (max-width:900px){.hz-doble{grid-template-columns:minmax(0,1fr)}}
+.hz-mini{position:static}
+.hz-grande{display:grid;gap:.2rem;margin-bottom:.6rem}
+.hz-grande b{font:800 2.4rem/1 var(--display);letter-spacing:-.03em;color:var(--verde)}
+.hz-aviso{margin-top:.6rem;padding:.6rem .7rem;border-radius:.5rem;background:rgb(232 165 99/.14);color:#F3D3B0;font-size:.9rem}
+.hz-aviso:empty{display:none}
+.hz-otras{list-style:none;display:grid;gap:.6rem;margin-top:1.6rem}
+.hz-otras a{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:1rem;align-items:center;padding:1rem 1.1rem;border-radius:.7rem;background:#fff;border:1px solid rgb(15 22 32/.1);text-decoration:none;color:var(--navy);transition:border-color .2s}
+.hz-otras a:hover{border-color:var(--navy)}
+.hz-otras-ico{display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:.6rem;background:var(--verde-s);color:var(--verde-h)}
+.hz-otras small{display:block;color:var(--gris-papel);font-size:.85rem}
+.hz-otras b{font-size:1.08rem}
+/* plantilla de presupuesto: una hoja que se edita en su sitio y se imprime limpia */
+.pz-hoja{background:#fff;color:#16212B;margin:clamp(.8rem,2vw,1.4rem);padding:clamp(1rem,3vw,2rem);border:1px solid var(--ui-line);border-radius:.4rem}
+.pz input,.pz select,.pz textarea{font:inherit;color:inherit;background:transparent;border:1px dashed transparent;border-radius:.25rem;padding:.25rem .35rem;width:100%}
+.pz input:hover,.pz textarea:hover,.pz select:hover{border-color:var(--ui-line-2)}
+.pz input:focus,.pz textarea:focus,.pz select:focus{outline:none;border-color:var(--navy);background:#F7F8FA}
+.pz-cab{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding-bottom:1rem;border-bottom:2px solid #16212B}
+@media (max-width:620px){.pz-cab{grid-template-columns:minmax(0,1fr)}}
+.pz-et{font:700 .66rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ui-mut);margin:0 0 .3rem .35rem}
+.pz-big{font-weight:800!important;font-size:1.1rem!important}
+.pz-fila2{display:flex;gap:.6rem}
+.pz-fila2 label{display:flex;align-items:center;gap:.3rem;font-size:.85rem;color:var(--ui-mut);flex:1}
+.pz-titulo{font:800 1.5rem/1.2 var(--display)!important;margin:1rem 0 .6rem}
+.pz-tabla{width:100%;border-collapse:collapse;font-size:.92rem}
+.pz-tabla th{text-align:left;font:700 .66rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ui-mut);padding:.5rem .35rem;border-bottom:1px solid var(--ui-line)}
+.pz-tabla td{padding:.2rem .1rem;border-bottom:1px solid #EEF0F3;vertical-align:middle}
+.pz-tabla td:nth-child(2){width:4.5rem}.pz-tabla td:nth-child(3),.pz-tabla td:nth-child(4){width:6.5rem}
+.pz-imp{text-align:right;font-weight:700;white-space:nowrap;width:7rem;padding-right:.4rem!important}
+.pz-quitar{border:0;background:none;color:#B4482F;font-size:1.3rem;line-height:1;padding:.2rem .5rem;cursor:pointer}
+.pz-mas{margin-top:.8rem}
+.pz-pie{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:1.5rem;margin-top:1.4rem}
+@media (max-width:620px){.pz-pie{grid-template-columns:minmax(0,1fr)}.pz-tabla{font-size:.8rem}.pz-tabla td:nth-child(3),.pz-tabla td:nth-child(4){width:4.5rem}}
+.pz-totales{display:grid}
+.pz-totales div{border-bottom-color:#EEF0F3}
+.pz-totales dd{margin:0;font-weight:700}
+.pz-totales select{width:auto;display:inline}
+.pz-totales .hz-total dd{font:800 1.4rem/1 var(--display)}
+.pz-acciones{display:flex;flex-wrap:wrap;gap:.8rem 1.2rem;align-items:center;padding:0 clamp(.8rem,2vw,1.4rem) clamp(.8rem,2vw,1.4rem)}
+.pz-totales dt{color:inherit}
+.pz-totales .hz-total dt{color:#16212B}
+#pz-print{display:none}
+@media print{
+  body > *:not(#pz-print){display:none!important}
+  #pz-print{display:block}
+  #pz-print .pz-hoja{margin:0;border:0;padding:0}
+  #pz-print .pz-txt{display:block;padding:.15rem 0}
+  #pz-print .pz-condiciones .pz-txt{white-space:pre-wrap}
+  #pz-print .pz-fila2 .pz-txt,#pz-print .pz-totales .pz-txt,#pz-print td .pz-txt{display:inline}
+  #pz-print .pz-tabla td{padding:.35rem .3rem}
+  #pz-print .pz-pie{break-inside:avoid}
+}
+
+.pz-acciones .enlace{background:none;border:0;color:var(--navy);cursor:pointer;padding:0}
+@media (max-width:620px){
+  /* móvil: cada partida en su ficha, la descripción a lo ancho */
+  .pz-tabla thead{display:none}
+  .pz-tabla tbody tr{display:grid;grid-template-columns:4.2rem minmax(0,1fr) minmax(0,1fr) auto auto;align-items:center;gap:.15rem .3rem;padding:.45rem 0;border-bottom:1px solid #EEF0F3}
+  .pz-tabla td{border:0;width:auto!important;padding:0}
+  .pz-tabla td:first-child{grid-column:1 / -1}
+  .pz-tabla td:first-child input{font-weight:650}
+}

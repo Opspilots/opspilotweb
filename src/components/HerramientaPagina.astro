@@ -1,0 +1,68 @@
+---
+// Página de herramienta gratis: cabecera con la búsqueda que resuelve, la herramienta (slot «herramienta»),
+// la explicación para quien quiere entenderla (slot por defecto, con fuentes), preguntas, otras herramientas
+// y una salida natural a lo que hacemos. Datos estructurados: WebApplication gratuita + FAQ + migas.
+import Base from '../layouts/Base.astro';
+import CabeceraPagina from './CabeceraPagina.astro';
+import Faq from './Faq.astro';
+import Cierre from './Cierre.astro';
+import { HERRAMIENTAS, herramienta } from '../data/herramientas';
+import { migas, faqSchema, ORG_ID, SITE_URL } from '../lib/sitio';
+interface Props {
+  slug: string; title: string; description: string; h1: string; entrada: string;
+  faq: { q: string; a: string }[];
+  salida: { titulo: string; texto: string; href: string; boton: string };
+}
+const { slug, title, description, h1, entrada, faq, salida } = Astro.props;
+const h = herramienta(slug);
+const path = `/herramientas/${slug}/`;
+const app = {
+  '@type': 'WebApplication', name: h.nombre, url: `${SITE_URL}${path}`, description,
+  applicationCategory: 'BusinessApplication', operatingSystem: 'Cualquiera (navegador)', inLanguage: 'es-ES',
+  isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, provider: { '@id': ORG_ID },
+};
+const otras = HERRAMIENTAS.filter((x) => x.slug !== slug);
+---
+<Base title={title} description={description} path={path}
+  jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Herramientas', path: '/herramientas/' }, { nombre: h.nombre, path }]), app, faqSchema(faq)]}>
+  <CabeceraPagina titulo={h1} entrada={entrada}>
+    <p class="hz-gratis"><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Gratis, sin registrarte. Lo que escribes no sale de tu navegador.</p>
+  </CabeceraPagina>
+
+  <section class="s-papel hz-sec" id="herramienta" aria-label={h.nombre}>
+    <div class="wrap"><slot name="herramienta" /></div>
+  </section>
+
+  <section class="s-papel hz-explica" aria-label="Cómo funciona">
+    <div class="wrap lectura-in">
+      <article class="prosa"><slot /></article>
+      <aside class="lateral">
+        <div class="lateral-caja">
+          <p class="etiqueta">Y si quieres no hacerlo a mano</p>
+          <p><b>{salida.titulo}</b> {salida.texto}</p>
+          <a class="btn btn-verde" href={salida.href}>{salida.boton}</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Faq items={faq} titulo="Preguntas que nos hacen sobre esto." fondo="navy" />
+
+  <section class="s-papel" aria-labelledby="t-otras">
+    <div class="wrap">
+      <p class="etiqueta">Otras herramientas gratis</p>
+      <h2 id="t-otras" class="h2">También te puede servir.</h2>
+      <ul class="hz-otras">
+        {otras.map((o) => (
+          <li><a href={`/herramientas/${o.slug}/`}>
+            <span class="hz-otras-ico"><svg class="ico" aria-hidden="true"><use href={`#i-${o.icono}`}/></svg></span>
+            <span><small>«{o.busqueda}»</small><b>{o.nombre}</b></span>
+            <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+  <Cierre />
+  <script is:inline src="/js/herramientas.js" defer></script>
+</Base>
