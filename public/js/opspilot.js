@@ -109,9 +109,10 @@
     var etiqueta = NEC_LABEL[nec];
     if (nec === 'guia') { if (!sub) return; var m = REMAP[sub]; nec = m[0]; sub = m[1]; }
     var r = { etiqueta: etiqueta, caso: null, problema: null, cerca: false };
-    if (nec === 'web') { r.caso = sub === 'comercio' ? 'of' : 'cs'; }
-    if (nec === 'sistema') { r.caso = 'py'; r.problema = sub === 'facturacion' ? 1 : 0; }
-    if (nec === 'automatizar') { r.caso = 'py'; r.problema = 1; r.cerca = true; }
+    /* v12: el problema 0 es «te buscan en Google y sale otro»; los de sistema van detrás */
+    if (nec === 'web') { r.caso = sub === 'comercio' ? 'of' : 'cs'; r.problema = 0; }
+    if (nec === 'sistema') { r.caso = 'py'; r.problema = sub === 'facturacion' ? 2 : 1; }
+    if (nec === 'automatizar') { r.caso = 'py'; r.problema = 2; r.cerca = true; }
     pagina.ruta = r;
     var ap = $('[data-ruta-aviso="problemas"]'), ac = $('[data-ruta-aviso="casos"]');
     var cambiar = ' <a href="#propuesta">cambiar</a>';

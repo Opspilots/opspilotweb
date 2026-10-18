@@ -1,0 +1,90 @@
+---
+// Los casos como un recorrido: al bajar, la sección entera pasa con una transición suave al color de cada
+// cliente y su web real se desplaza dentro de la ventana. Sin JS, cada caso lleva su color fijo.
+// Solo datos medidos, con fuente y fecha (Radar de Search Console del 13-oct-2026).
+interface Props { cabecera?: boolean }
+const { cabecera = true } = Astro.props;
+const casos = [
+  {
+    id: 'cordoba-soluciona', nombre: 'Córdoba Soluciona', donde: 'Reformistas de Córdoba y provincia',
+    bg: '#2F5E3B', fg: '#FBFAF5', ac: '#FFC9A8',
+    titulo: 'Una web de reformistas que la gente encuentra cuando busca en Google.',
+    texto: 'Reúne a reformistas de la provincia. Hicimos una página por cada barrio y pueblo, y guías con precios, ayudas y licencias: lo que la gente busca antes de llamar a nadie.',
+    datos: [{ cifra: '92', que: 'visitas desde Google en 28 días; las guías de ayudas y de licencias, las que más', fuente: 'Search Console, 13-sep a 10-oct-2026' }],
+    url: 'https://cordobasoluciona.es/', dominio: 'cordobasoluciona.es', img: '/img/casos/cordoba-tall.webp',
+  },
+  {
+    id: 'obrafacil', nombre: 'ObraFácil', donde: 'Placas decorativas · ctra. de Puente Genil a Herrera',
+    bg: '#111111', fg: '#FFFFFF', ac: '#F5D800',
+    titulo: 'Tienda online y panel de pedidos para un almacén con reparto propio.',
+    texto: 'Antes vendían por TikTok, WhatsApp y teléfono. Ahora la tienda calcula cuántas placas lleva cada pared, y los pedidos, el reparto, las facturas y el stock están en un solo panel.',
+    datos: [
+      { cifra: '958', que: 'visitas desde Google en 28 días; el mes anterior, 485', fuente: 'Search Console, 13-sep a 10-oct-2026' },
+      { cifra: '5,0', que: 'en Google, con 4 reseñas', fuente: 'Su ficha de Google, 13-oct-2026' },
+    ],
+    url: 'https://obrafacil2025.es/', dominio: 'obrafacil2025.es', img: '/img/casos/obrafacil-tall.webp',
+  },
+  {
+    id: 'jr-rodriguez', nombre: 'J.R. Rodríguez Reformas', donde: 'Reformas en Córdoba, 15 años',
+    bg: '#2F3130', fg: '#F3F4EE', ac: '#9CA67B',
+    titulo: 'Web nueva para una empresa de reformas, con sus obras reales.',
+    texto: 'Pasamos su web de WordPress a una más rápida, con sus obras de verdad y una página por tipo de reforma, y cuidamos su ficha de Google.',
+    datos: [
+      { cifra: '22 → 17,8', que: 'posición media en Google, en un mes', fuente: 'Search Console, 13-sep a 10-oct-2026 frente al mes anterior' },
+      { cifra: '5,0', que: 'en Google, con 4 reseñas, todas respondidas', fuente: 'Su ficha de Google, 13-oct-2026' },
+    ],
+    url: 'https://rodriguezreformas.es/', dominio: 'rodriguezreformas.es', img: '/img/casos/jr-tall.webp',
+  },
+  {
+    id: 'maderas-yeadel', nombre: 'Maderas Yeadel', donde: 'Carpintería en Córdoba y provincia',
+    bg: '#302D2A', fg: '#FAF8F5', ac: '#C49A72',
+    titulo: 'Una marca de carpintería hecha desde cero, con precio antes de la visita.',
+    texto: 'Empezó sin logo. Le hicimos la marca y una web que da precio orientativo de puertas, armarios, cocinas y suelos antes de ir a medir, para que llame quien ya sabe lo que quiere gastar.',
+    datos: [{ cifra: '276', que: 'veces que salió en Google en sus dos primeras semanas: carpintería, armarios a medida, montaje de muebles', fuente: 'Search Console, 29-sep a 10-oct-2026' }],
+    url: 'https://maderasyeadel.es/', dominio: 'maderasyeadel.es', img: '/img/casos/yeadel-tall.webp',
+  },
+  {
+    id: 'presupuesya', nombre: 'PresupuesYa', donde: 'Programa propio para reformistas',
+    bg: '#0B0B0B', fg: '#F4EFE6', ac: '#E8A020',
+    titulo: 'Programa de presupuestos para reformistas, hecho por nosotros.',
+    texto: 'Con los precios de cada reformista, el PDF con su logo y la firma del cliente en el móvil. Importa y exporta BC3, el formato del sector.',
+    datos: [],
+    url: 'https://presupuesya.es/', dominio: 'presupuesya.es', img: '/img/casos/presupuesya-tall.webp',
+  },
+];
+---
+<section class="recorrido" id="casos" data-recorrido aria-labelledby="t-recorrido">
+  <div class:list={['wrap recorrido-cab', { 'sr': !cabecera }]}>
+    <p class="etiqueta">Casos</p>
+    <h2 id="t-recorrido" class="h2">Lo que hemos hecho para negocios de Córdoba y alrededores.</h2>
+    <p class="lead">Webs y herramientas en marcha. Entra en cada una y compara con lo que te contamos.</p>
+  </div>
+  {casos.map((c, i) => (
+    <article class="rc" id={`caso-${c.id}`} data-rc style={`--bg:${c.bg};--fg:${c.fg};--ac:${c.ac}`} aria-labelledby={`t-${c.id}`}>
+      <div class="wrap rc-in">
+        <div class="rc-texto">
+          <p class="rc-n">{String(i + 1).padStart(2, '0')} / {String(casos.length).padStart(2, '0')}</p>
+          <h3 class="rc-nombre">{c.nombre}</h3>
+          <p class="rc-donde">{c.donde}</p>
+          <p class="rc-titulo" id={`t-${c.id}`}>{c.titulo}</p>
+          <p class="rc-p">{c.texto}</p>
+          {c.datos.length > 0 && (
+            <dl class="rc-datos">
+              {c.datos.map((d) => (
+                <div><dt>{d.cifra}</dt><dd>{d.que}<small>{d.fuente}</small></dd></div>
+              ))}
+            </dl>
+          )}
+          <a class="enlace rc-ir" href={c.url} rel="noopener">Entrar en su web <svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
+        </div>
+        <div class="rc-ventana">
+          <div class="ventana">
+            <div class="v-barra pv-barra"><span class="puntos" aria-hidden="true"><i></i><i></i><i></i></span><span class="pv-tit">{c.dominio}</span></div>
+            <div class="rc-vista"><img src={c.img} width="960" height="3467" alt={`La web de ${c.nombre}, de arriba abajo`} loading="lazy" decoding="async" /></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  ))}
+</section>
+<script is:inline src="/js/recorrido.js" defer></script>

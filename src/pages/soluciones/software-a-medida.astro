@@ -6,6 +6,7 @@ import PresupuesYa from '../../components/pantallas/PresupuesYa.astro';
 import EnergyDeal from '../../components/pantallas/EnergyDeal.astro';
 import Faq from '../../components/Faq.astro';
 import Cierre from '../../components/Cierre.astro';
+import PorQue from '../../components/PorQue.astro';
 import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../../lib/sitio';
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }, { nombre: 'Software a medida', path: '/soluciones/software-a-medida/' }];
@@ -30,7 +31,7 @@ const servicio = {
 <Base title="Software a medida para pymes en Córdoba · OpsPilot"
   description="Software a medida para pymes: clientes, presupuestos, facturación y operativa en un solo sistema. Precio cerrado, por fases y sin parar tu negocio."
   path="/soluciones/software-a-medida/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
-  <CabeceraPagina sobre="Software a medida" titulo="El programa que tu negocio necesitaba y no existía."
+  <CabeceraPagina sobre="Software a medida" titulo="Software a medida: el programa que tu negocio necesitaba y no existía."
     entrada="Cuando ningún programa del mercado encaja con cómo trabajas, lo construimos alrededor de tu proceso: un único sitio para lo que hoy vive en cuatro, con lo que hay que atender hoy a la vista.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, necesito un sistema interno. Os cuento:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu proceso</a>
@@ -74,6 +75,7 @@ const servicio = {
     </div>
   </section>
 
+  <PorQue />
   <Faq items={FAQ} titulo="Lo que suelen preguntarnos sobre software a medida." />
   <Cierre />
 </Base>

@@ -572,8 +572,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .chips{display:none}
 /* ═══ v4 · A: en móvil, una pantalla cada vez (sin quitar nada) ═══ */
 @media (max-width:767px){
-  .js .chips:not([hidden]){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem;margin-top:1.6rem;position:sticky;top:calc(var(--cab) + .4rem);z-index:5}
-  .chips button{display:grid;gap:.2rem;justify-items:center;padding:.55rem .3rem .6rem;border:0;border-radius:.5rem;background:#1F2A37;color:var(--gris);font:700 .8rem/1.15 var(--display);text-align:center}
+  .js .chips:not([hidden]){display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem;margin-top:1.6rem;position:sticky;top:calc(var(--cab) + .4rem);z-index:5}
+  .chips button{display:grid;gap:.2rem;justify-items:center;align-content:start;padding:.55rem .2rem .6rem;border:0;border-radius:.5rem;background:#1F2A37;color:var(--gris);font:700 .74rem/1.15 var(--display);text-align:center}
   .chips button small{font:700 .62rem/1 var(--mono);letter-spacing:.12em;color:var(--gris)}
   .chips button[aria-pressed="true"]{background:var(--verde);color:var(--navy)}
   .chips button[aria-pressed="true"] small{color:var(--navy)}
@@ -1035,3 +1035,144 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .erp-caja small{grid-column:1/-1;font:500 .62rem/1 var(--mono)}
 [data-toast-erp]{background:var(--e-a);color:var(--e-bg)}
 @media (max-width:1020px){.erp-app{grid-template-columns:minmax(0,1fr)}.erp-lado{display:none}.erp-sala{border-right:0;border-bottom:1px solid var(--e-l)}}
+
+/* ═══ v12 · Recorrido de casos: al bajar, la sección pasa suave al color de cada cliente y su web real se
+   desplaza dentro de la ventana (técnica del portfolio). Sin JS, cada caso lleva su color. ═══ */
+.recorrido{padding-block:0;background:var(--rc-bg,var(--navy));color:var(--rc-fg,var(--texto-claro));transition:background-color .9s var(--curva),color .9s var(--curva)}
+.recorrido-cab{padding-block:clamp(3.5rem,7vw,5.5rem) clamp(1rem,3vw,2rem)}
+.recorrido .h2{color:inherit}
+.recorrido .lead{opacity:.85}
+.rc{background:var(--bg);color:var(--fg)}
+.rc-vivo .rc{background:transparent;color:inherit}
+.rc-in{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(2rem,5vw,4.5rem);align-items:center;min-height:min(100svh,56rem);padding-block:clamp(3rem,7vh,5rem)}
+@media (max-width:1020px){.rc-in{grid-template-columns:minmax(0,1fr);min-height:0}}
+.rc-texto{transition:opacity .6s var(--curva),transform .6s var(--curva)}
+/* sin atenuar los tramos inactivos: bajaba el contraste por debajo de AA */
+.rc-n{font:700 .74rem/1 var(--mono);letter-spacing:.16em;color:var(--ac);margin-bottom:1rem}
+.rc-vivo .rc-n{color:var(--rc-ac,var(--ac))}
+.rc-nombre{font-weight:800;font-size:clamp(2.4rem,1.3rem + 3.6vw,4.6rem);line-height:.98;letter-spacing:-.025em}
+.rc-donde{font:400 .82rem/1.4 var(--mono);opacity:.9;margin-top:.7rem}
+.rc-titulo{font-weight:700;font-size:clamp(1.25rem,1.05rem + .7vw,1.6rem);line-height:1.2;letter-spacing:-.012em;margin-top:1.6rem;max-width:30ch;text-wrap:balance}
+.rc-p{margin-top:.8rem;max-width:46ch;opacity:.86}
+.rc-datos{margin-top:1.5rem;display:grid;gap:.9rem;max-width:30rem}
+.rc-datos div{display:grid;grid-template-columns:auto 1fr;gap:.2rem 1rem;align-items:baseline;padding-top:.9rem;border-top:1px solid color-mix(in srgb,currentColor 22%,transparent)}
+.rc-datos dt{font-weight:800;font-size:clamp(1.8rem,1.3rem + 1.4vw,2.6rem);line-height:1;letter-spacing:-.03em;color:var(--ac);white-space:nowrap}
+.rc-vivo .rc-datos dt{color:var(--rc-ac,var(--ac))}
+.rc-datos dd{margin:0;font-size:.95rem;line-height:1.35}
+.rc-datos small{display:block;font:400 .72rem/1.3 var(--mono);opacity:.85;margin-top:.25rem}
+.rc-ir{margin-top:1.6rem;color:inherit}
+.rc-ventana .ventana{overflow:hidden}
+.rc-vista{position:relative;aspect-ratio:16/10.5;overflow:hidden;background:#fff;border-radius:0 0 .8rem .8rem}
+.rc-vista img{position:absolute;left:0;top:0;width:100%;height:auto;will-change:transform}
+@media (prefers-reduced-motion:reduce){.recorrido,.rc-texto{transition:none}}
+
+
+/* ═══ v12 · problema 01: la réplica del mapa de Google (hoy no sales / con OpsPilot sí) ═══ */
+.gm{padding:.75rem;background:#fff;min-height:100%}
+.gm-busca{display:flex;align-items:center;gap:.55rem;padding:.65rem .9rem;border-radius:99rem;background:#fff;box-shadow:0 1px 3px rgb(10 14 20/.18),0 0 0 1px var(--ui-line);font-size:.9rem;color:var(--ui-ink)}
+.gm-busca .ico{color:var(--ui-mut)}
+.gm-mapa{position:relative;height:4.6rem;margin:.55rem 0;border-radius:.5rem;background:#E8EEE6;background-image:linear-gradient(90deg,transparent 48%,#fff 48% 52%,transparent 52%),linear-gradient(0deg,transparent 46%,#fff 46% 51%,transparent 51%),linear-gradient(28deg,transparent 60%,#F6E7B9 60% 63%,transparent 63%);overflow:hidden}
+.gm-mapa i{position:absolute;width:1.05rem;height:1.05rem;margin:-1.05rem 0 0 -.52rem;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#D9473B;box-shadow:0 2px 4px rgb(0 0 0/.25)}
+.gm-mapa i.gm-tu{background:var(--verde-h);width:1.35rem;height:1.35rem;margin:-1.35rem 0 0 -.68rem}
+.gm-mapa i.gm-lejos{opacity:.45}
+.gm-lista{list-style:none;display:grid;gap:.35rem}
+.gm-lista li{display:grid;gap:.05rem;padding:.42rem .65rem;border:1px solid var(--ui-line);border-radius:.5rem;background:#fff}
+.gm-lista b{font-size:.92rem;color:#1A4FB0}
+.gm-lista span{font-size:.78rem;color:var(--ui-mut)}
+.gm-lista li.gm-yo{border-color:var(--verde-h);box-shadow:0 0 0 2px var(--verde-s)}
+.gm-lista li.gm-yo b{color:var(--ui-ink)}
+.gm-lista em{display:flex;gap:.4rem;margin-top:.35rem;font-style:normal}
+.gm-lista em span{font:650 .74rem/1 var(--display);color:var(--verde-h);border:1px solid var(--verde-s);background:#F3FBF6;padding:.35rem .55rem;border-radius:99rem}
+.gm-tu-no{display:flex;gap:.5rem;align-items:flex-start;margin-top:.5rem;padding:.6rem .7rem;border-radius:.5rem;background:var(--rojo-s);color:#8E2A22;font-size:.82rem;line-height:1.35}
+.gm-tu-no .ico{flex:none;margin-top:.1rem}
+
+/* ═══ v12 · «Por qué con nosotros»: lo habitual frente a cómo lo hacemos, fila a fila ═══ */
+.porque-cab{max-width:46rem}
+.porque-tabla{margin-top:clamp(2rem,4vw,3rem);border-top:2px solid var(--verde)}
+.pq-fila{display:grid;grid-template-columns:minmax(0,.55fr) minmax(0,1fr) minmax(0,1.25fr);gap:.4rem 2rem;padding:1.15rem 0;border-bottom:1px solid rgb(255 255 255/.1);align-items:baseline}
+.pq-cab{padding:.8rem 0;font:700 .72rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gris)}
+.pq-cab span:last-child{display:flex;align-items:center;gap:.5rem;color:var(--verde)}
+.pq-cab .v-aro{width:1.1rem;height:1.1rem}
+.pq-tema{font:700 .78rem/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--gris)}
+.pq-suele{color:var(--gris);font-size:1rem}
+.pq-nos{color:#fff;font-weight:650;font-size:clamp(1.05rem,1rem + .3vw,1.2rem);line-height:1.35}
+.porque-pie{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.5rem;margin-top:clamp(2rem,4vw,3rem)}
+.porque-pie p{color:var(--gris)}
+.pq-movil{display:none}
+@media (max-width:767px){
+  /* móvil: una línea por diferencia y el botón a la vista desde la primera (revisión de Pelayo) */
+  .porque-tabla{display:none}
+  .pq-movil{display:grid;gap:.55rem;list-style:none;margin-top:1.4rem}
+  .pq-movil li{display:flex;gap:.6rem;align-items:flex-start;color:#fff;font-weight:620;line-height:1.3}
+  .pq-movil .ico{color:var(--verde);margin-top:.15rem}
+  .porque-pie{margin-top:1.4rem}
+  .porque-pie .btn{width:100%}
+}
+
+/* v12 · móvil: la primera pantalla con menos texto y el aro a la vista (agobiaba: todo texto y nada visual) */
+@media (max-width:767px){
+  .portada-inicio .entrada-mas,.portada-inicio .promesa,.portada-inicio .portada-alt{display:none}
+  .portada-inicio .entrada{margin-top:1rem}
+  .portada-inicio .acciones{flex-wrap:nowrap;margin-top:1.3rem}
+  .portada-inicio .acciones .btn{flex:1 1 auto}
+  .portada-inicio .acciones .btn-tel{flex:0 0 auto;padding-inline:1.1rem}
+  .portada-inicio .btn-tel .tel-num{display:none}
+  .portada-inicio .instrumento{margin:1.6rem auto 2rem}
+}
+
+/* v12 · el H1 de la portada lleva la palabra clave (sin la línea fina de encima): más largo, algo más pequeño */
+.portada-inicio .grande{font-size:clamp(2.2rem,1rem + 3.2vw,4.3rem);max-width:17ch}
+@media (min-width:1021px) and (max-height:800px){.portada-inicio .grande{font-size:clamp(2.2rem,6.6svh,3.7rem)}}
+@media (max-width:767px){
+  /* móvil: titular y entrada, después el aro y los botones debajo (revisión de Pelayo) */
+  .portada-inicio .portada-texto{display:contents}
+  .portada-inicio .grande{order:1;position:relative;z-index:2;font-size:clamp(1.95rem,8.6vw,2.5rem)}
+  .portada-inicio .entrada{order:2;position:relative;z-index:2}
+  .portada-inicio .instrumento{order:3;margin:1.4rem auto .4rem}
+  .portada-inicio .acciones{order:4;position:relative;z-index:2;margin:0 0 2rem}
+  .portada-inicio .acciones .btn-tinta{background:var(--verde);color:var(--navy)}
+  .portada-inicio .acciones .btn-linea{color:#fff;box-shadow:inset 0 0 0 1.5px rgb(255 255 255/.7)}
+}
+/* v12 · cierre: en el móvil, las cuatro respuestas del chat en 2 y 2 */
+@media (max-width:767px){
+  .chat-resp{display:grid;grid-template-columns:1fr 1fr}
+  .chat-resp span{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:.7rem;padding:.55rem .5rem;line-height:1.2}
+}
+
+/* ═══ v12 · tramos (soluciones, productos): el síntoma en palabras del dueño y la lista de lo que lleva ═══ */
+.rc-n span{color:inherit;opacity:.75;letter-spacing:.06em}
+.rc-sintoma{font-weight:650;font-size:clamp(1.05rem,1rem + .3vw,1.2rem);line-height:1.3;opacity:.92;margin:-.2rem 0 .9rem;max-width:32ch}
+.rc-lista{list-style:none;display:grid;gap:.45rem;margin-top:1.1rem;max-width:40ch}
+.rc-lista li{display:flex;gap:.55rem;align-items:flex-start;line-height:1.35}
+.rc-lista .ico{flex:none;margin-top:.15rem;color:var(--ac)}
+.rc-vivo .rc-lista .ico{color:var(--rc-ac,var(--ac))}
+.rc-ventana .nota-caso{max-width:none}
+/* soluciones: el índice de sectores como una fila de etiquetas, no siete tarjetas iguales */
+.sectores-fila{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.4rem;list-style:none}
+.sectores-fila a{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem .9rem;border-radius:99rem;border:1.5px solid rgb(15 22 32/.18);background:#fff;color:var(--navy);text-decoration:none;font-weight:650;font-size:.95rem;transition:border-color .15s}
+.sectores-fila a:hover{border-color:var(--navy)}
+.sectores-fila small{font:700 .64rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--verde-h)}
+
+/* ═══ v12 · recursos: «empieza por aquí», la situación del dueño y la guía que le toca ═══ */
+.empieza{list-style:none;margin-top:clamp(1.8rem,4vw,2.8rem);border-top:2px solid var(--verde)}
+.empieza a{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:.6rem 2rem;align-items:center;padding:1.3rem 0;border-bottom:1px solid rgb(255 255 255/.1);text-decoration:none;color:#fff}
+.empieza-sit{font-weight:760;font-size:clamp(1.25rem,1rem + 1vw,1.8rem);line-height:1.15;letter-spacing:-.015em}
+.empieza-guia{display:grid;gap:.3rem;color:var(--texto-claro);font-weight:600}
+.empieza-guia small{font:700 .7rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--verde)}
+.empieza .ico{width:1.4rem;height:1.4rem;color:var(--verde);transition:transform .2s var(--curva)}
+.empieza a:hover .ico{transform:translateX(4px)}
+.empieza a:hover .empieza-sit{color:var(--verde)}
+@media (max-width:767px){.empieza a{grid-template-columns:minmax(0,1fr) auto}.empieza-guia{grid-column:1}.empieza .ico{grid-row:1 / span 2;grid-column:2}}
+
+/* v12 · «qué incluye»: ficha técnica en dos columnas con filetes, no tarjetas iguales en rejilla */
+.producto-ficha{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(2rem,5vw,4.5rem);border-top:2px solid currentColor;margin-top:clamp(1.8rem,4vw,2.6rem)}
+.pf{display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:.15rem .9rem;padding:1.2rem 0;border:0;border-bottom:1px solid rgb(15 22 32/.12);border-radius:0;background:none}
+.s-navy .pf,.s-hondo .pf{background:none;border-bottom-color:rgb(255 255 255/.1)}
+.pf>.ico{grid-row:span 2;width:1.6rem;height:1.6rem;margin-top:.2rem}
+.pf h3{margin-top:0;font-size:clamp(1.1rem,1rem + .4vw,1.3rem);letter-spacing:-.01em}
+.pf p{margin-top:0;font-size:.98rem}
+@media (max-width:767px){.producto-ficha{grid-template-columns:minmax(0,1fr)}.pf p{font-size:.92rem}}
+/* v12 · en los tramos el texto ya cuenta la pieza: la nota flotante de la pantalla sobra (y se escapaba) */
+.rc-ventana .nota-caso{display:none}
+.s-verde .lead{color:var(--navy);opacity:.85}
+.sectores-fila small{white-space:nowrap}

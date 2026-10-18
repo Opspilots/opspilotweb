@@ -4,6 +4,8 @@ import CabeceraPagina from '../components/CabeceraPagina.astro';
 import CordobaSoluciona from '../components/pantallas/CordobaSoluciona.astro';
 import Faq from '../components/Faq.astro';
 import Cierre from '../components/Cierre.astro';
+import PorQue from '../components/PorQue.astro';
+import Recorrido from '../components/Recorrido.astro';
 import { migas, faqSchema, SERVICIO_LOCAL, WA } from '../lib/sitio';
 
 // Página local (plan .seo/02-plan-local-cordoba.md, fase 3): 700-900 palabras propias.
@@ -19,7 +21,7 @@ const FAQ = [
 <Base title="Diseño de páginas web en Córdoba que traen clientes · OpsPilot"
   description="Páginas web en Córdoba hechas a mano: una página por servicio y zona para salir en Google, y tiendas con pedido por WhatsApp. Casos reales en Córdoba."
   path="/diseno-web-cordoba/" jsonld={[migas(M), SERVICIO_LOCAL, faqSchema(FAQ)]}>
-  <CabeceraPagina sobre="Córdoba" titulo="Diseño web en Córdoba que trae clientes."
+  <CabeceraPagina sobre="Córdoba" titulo="Diseño web en Córdoba para que tu negocio salga en Google y te llamen."
     entrada="Webs y tiendas online hechas a mano, con tu marca y tu forma de hablar, pensadas para lo que busca la gente de Córdoba y su provincia.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, soy de Córdoba y quiero una web nueva:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu web</a>
@@ -27,6 +29,24 @@ const FAQ = [
     </div>
   </CabeceraPagina>
 
+
+  <section class="s-navy" aria-labelledby="t-cs">
+    <div class="wrap">
+      <p class="etiqueta">Pruébalo</p>
+      <h2 id="t-cs" class="h2">Elige un pueblo y una reforma.</h2>
+      <div class="bloque">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Córdoba Soluciona</p>
+          <h3>Cada búsqueda real, con su página.</h3>
+          <p>Lo que aparece es la página que existe: su dirección, cómo se ve en el buscador y su titular.</p>
+        </div>
+        <div class="caso-pantalla"><CordobaSoluciona /></div>
+      </div>
+    </div>
+  </section>
+
+  <Recorrido />
+  <PorQue />
   <section class="s-papel" aria-label="Diseño web en Córdoba">
     <div class="wrap lectura-in">
       <div class="prosa">
@@ -75,22 +95,6 @@ const FAQ = [
       </aside>
     </div>
   </section>
-
-  <section class="s-navy" aria-labelledby="t-cs">
-    <div class="wrap">
-      <p class="etiqueta">Pruébalo</p>
-      <h2 id="t-cs" class="h2">Elige un pueblo y una reforma.</h2>
-      <div class="bloque">
-        <div class="bloque-texto">
-          <p class="bloque-meta">Córdoba Soluciona</p>
-          <h3>Cada búsqueda real, con su página.</h3>
-          <p>Lo que aparece es la página que existe: su dirección, cómo se ve en el buscador y su titular.</p>
-        </div>
-        <div class="caso-pantalla"><CordobaSoluciona /></div>
-      </div>
-    </div>
-  </section>
-
   <Faq items={FAQ} titulo="Preguntas sobre diseño web en Córdoba." />
   <Cierre />
 </Base>

@@ -1,0 +1,59 @@
+---
+// Tramos: la misma técnica del recorrido de casos para cualquier página. Al bajar, la sección pasa suave al
+// color de cada tramo, y cada tramo enseña algo real a la derecha: la web del cliente en su ventana (img) o la
+// pantalla interactiva de un producto (slot con nombre `v-<id>`). Sin JS, cada tramo lleva su color.
+export interface Tramo {
+  id: string; nombre: string; donde?: string; sintoma?: string;
+  bg: string; fg: string; ac: string;
+  titulo: string; texto: string;
+  lista?: string[];
+  datos?: { cifra: string; que: string; fuente?: string }[];
+  enlace?: { url: string; texto: string; externo?: boolean };
+  img?: string; dominio?: string;
+}
+interface Props { tramos: Tramo[]; etiqueta?: string; titulo?: string; lead?: string; idSeccion?: string }
+const { tramos, etiqueta, titulo, lead, idSeccion = 'tramos' } = Astro.props;
+const visuales: Record<string, string> = {};
+for (const t of tramos) {
+  const n = `v-${t.id}`;
+  if (Astro.slots.has(n)) visuales[t.id] = await Astro.slots.render(n);
+}
+---
+<section class="recorrido" id={idSeccion} data-recorrido aria-label={titulo ?? 'Recorrido'}>
+  {titulo && (
+    <div class="wrap recorrido-cab">
+      {etiqueta && <p class="etiqueta">{etiqueta}</p>}
+      <h2 class="h2">{titulo}</h2>
+      {lead && <p class="lead">{lead}</p>}
+    </div>
+  )}
+  {tramos.map((c, i) => (
+    <article class="rc" id={`tramo-${c.id}`} data-rc style={`--bg:${c.bg};--fg:${c.fg};--ac:${c.ac}`} aria-labelledby={`tt-${c.id}`}>
+      <div class="wrap rc-in">
+        <div class="rc-texto">
+          <p class="rc-n">{String(i + 1).padStart(2, '0')} / {String(tramos.length).padStart(2, '0')}{c.donde && <span> · {c.donde}</span>}</p>
+          {c.sintoma && <p class="rc-sintoma">«{c.sintoma}»</p>}
+          <h3 class="rc-nombre" id={`tt-${c.id}`}>{c.nombre}</h3>
+          <p class="rc-titulo">{c.titulo}</p>
+          <p class="rc-p">{c.texto}</p>
+          {c.lista && <ul class="rc-lista">{c.lista.map((x) => <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>{x}</li>)}</ul>}
+          {c.datos && c.datos.length > 0 && (
+            <dl class="rc-datos">{c.datos.map((d) => <div><dt>{d.cifra}</dt><dd>{d.que}{d.fuente && <small>{d.fuente}</small>}</dd></div>)}</dl>
+          )}
+          {c.enlace && <a class="enlace rc-ir" href={c.enlace.url} rel={c.enlace.externo ? 'noopener' : undefined}>{c.enlace.texto} <svg class="ico" aria-hidden="true"><use href={c.enlace.externo ? '#i-arrow-up-right' : '#i-chevron-right'}/></svg></a>}
+        </div>
+        <div class="rc-ventana">
+          {visuales[c.id]
+            ? <Fragment set:html={visuales[c.id]} />
+            : c.img && (
+              <div class="ventana">
+                <div class="v-barra pv-barra"><span class="puntos" aria-hidden="true"><i></i><i></i><i></i></span><span class="pv-tit">{c.dominio}</span></div>
+                <div class="rc-vista"><img src={c.img} width="960" height="3467" alt={`La web de ${c.nombre}, de arriba abajo`} loading="lazy" decoding="async" /></div>
+              </div>
+            )}
+        </div>
+      </div>
+    </article>
+  ))}
+</section>
+<script is:inline src="/js/recorrido.js" defer></script>
