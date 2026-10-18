@@ -1,0 +1,56 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+---
+<HerramientaPagina slug="calcular-margen-y-precio"
+  title="Cómo calcular el margen y cuánto cobrar: calculadora"
+  description="Calcula el precio de venta con el margen que quieres ganar, o tu precio por hora con tus gastos reales. Con el error típico de margen y recargo explicado."
+  h1="Cómo calcular el margen y cuánto cobrar: calculadora de precio."
+  entrada="Dos cuentas que deciden si un negocio gana dinero: a qué precio vender un producto para ganar lo que quieres, y cuánto cobrar por hora sin perder dinero."
+  faq={[
+    { q: '¿Qué diferencia hay entre margen y recargo?', a: 'El margen se calcula sobre el precio de venta y el recargo sobre el coste. Si algo te cuesta 100 € y le sumas un 30 % (recargo), lo vendes a 130 € y tu margen es del 23 %, no del 30 %. Para ganar un 30 % de margen hay que venderlo a 142,86 €.' },
+    { q: '¿Cómo se calcula el precio de venta con un margen?', a: 'Precio de venta = coste / (1 − margen). Con un coste de 100 € y un margen del 30 %: 100 / 0,70 = 142,86 € sin IVA.' },
+    { q: '¿Por qué no puedo facturar las 40 horas de la semana?', a: 'Porque parte del tiempo no se cobra: presupuestos, desplazamientos, compras, papeles, llamadas. En un oficio es normal que entre el 25 % y el 40 % de las horas no sean facturables. Si calculas el precio como si las cobraras todas, pierdes dinero sin darte cuenta.' },
+    { q: '¿El precio por hora lleva IVA?', a: 'La calculadora te da el precio sin IVA, que es lo que es tuyo. Al facturar, súmale el IVA que te toque.' },
+  ]}
+  salida={{ titulo: 'Saber qué te deja cada trabajo.', texto: 'Si llevas los costes en una libreta, te hacemos una herramienta que te dice el margen real de cada obra o cada pedido.', href: '/soluciones/software-a-medida/', boton: 'Ver software a medida' }}>
+
+  <div slot="herramienta" class="hz-doble">
+    <form class="ventana hz" data-margen onsubmit="return false" aria-label="Precio de venta con margen">
+      <div class="v-barra"><svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg><span class="v-titulo">Precio de un producto<small>coste + margen que quieres</small></span></div>
+      <div class="hz-cuerpo">
+        <label class="hz-campo"><span>Lo que te cuesta (sin IVA)</span><span class="hz-euros"><input type="number" inputmode="decimal" min="0" step="0.01" value="100" data-coste /><b>€</b></span></label>
+        <label class="hz-campo"><span>Margen que quieres ganar</span><span class="hz-euros"><input type="number" inputmode="decimal" min="0" max="95" step="1" value="30" data-pct /><b>%</b></span></label>
+        <div class="hz-resultado hz-mini" aria-live="polite">
+          <p class="hz-grande"><b data-pv>142,86 €</b><span>precio de venta sin IVA</span></p>
+          <p data-pv-iva>Con IVA del 21 %: 172,86 €</p>
+          <p class="hz-aviso" data-aviso>Ojo: si solo le sumas un 30 % al coste (130,00 €), tu margen real es del 23,1 %.</p>
+        </div>
+      </div>
+    </form>
+
+    <form class="ventana hz" data-hora onsubmit="return false" aria-label="Precio por hora">
+      <div class="v-barra"><svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg><span class="v-titulo">Cuánto cobrar por hora<small>con tus gastos reales</small></span></div>
+      <div class="hz-cuerpo">
+        <label class="hz-campo"><span>Lo que quieres ganar al mes, limpio</span><span class="hz-euros"><input type="number" inputmode="decimal" min="0" step="50" value="1800" data-sueldo /><b>€</b></span></label>
+        <label class="hz-campo"><span>Gastos del negocio al mes</span><small>cuota de autónomo, local, furgoneta, gestoría, seguros…</small><span class="hz-euros"><input type="number" inputmode="decimal" min="0" step="10" value="900" data-gastos /><b>€</b></span></label>
+        <label class="hz-campo"><span>Horas de trabajo a la semana</span><span class="hz-euros"><input type="number" inputmode="decimal" min="1" max="80" step="1" value="40" data-horas /><b>h</b></span></label>
+        <label class="hz-campo"><span>Horas que no puedes cobrar</span><small>presupuestos, desplazamientos, papeles</small><span class="hz-euros"><input type="number" inputmode="decimal" min="0" max="90" step="5" value="30" data-improd /><b>%</b></span></label>
+        <div class="hz-resultado hz-mini" aria-live="polite">
+          <p class="hz-grande"><b data-ph>—</b><span>por hora, sin IVA</span></p>
+          <p data-ph-txt></p>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <h2>Margen y recargo no son lo mismo</h2>
+  <p>Es el error de precio más común en un negocio pequeño. <b>El margen se calcula sobre el precio de venta; el recargo, sobre el coste.</b> Si compras algo a 100 € y lo vendes a 130 €, le has puesto un 30 % de recargo, pero tu margen es del 23 % (30 de 130). Quien cree que gana un 30 % y gana un 23 % pierde dinero en cada venta sin saberlo.</p>
+  <ul>
+    <li><b>Margen</b> = (precio de venta − coste) / precio de venta</li>
+    <li><b>Precio para un margen</b> = coste / (1 − margen)</li>
+    <li><b>Recargo</b> = (precio de venta − coste) / coste</li>
+  </ul>
+  <h2>Cómo calcular tu precio por hora</h2>
+  <p>Suma lo que quieres ganar y lo que te cuesta el negocio cada mes, y divídelo entre las horas que <b>de verdad</b> vas a poder cobrar. La calculadora cuenta 4,33 semanas al mes y descuenta las horas que se van en presupuestos, desplazamientos y papeles.</p>
+  <p class="nota-prosa">Es una cuenta orientativa antes de impuestos: no incluye el IRPF que pagarás en tu renta. Para afinarla con tu caso, habla con tu gestoría.</p>
+</HerramientaPagina>

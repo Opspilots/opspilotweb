@@ -1,0 +1,78 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+---
+<HerramientaPagina slug="plantilla-presupuesto-obra"
+  title="Plantilla de presupuesto de obra gratis en PDF"
+  description="Plantilla de presupuesto de obras y reformas gratis: añade tus partidas, el IVA correcto y descárgalo en PDF. Sin registrarte, desde el navegador."
+  h1="Plantilla de presupuesto de obra gratis: rellénala y descárgala en PDF."
+  entrada="Tus datos, los del cliente y las partidas con su medición y precio. Calcula subtotales, IVA y total, y lo guardas en PDF para mandarlo por WhatsApp."
+  faq={[
+    { q: '¿Qué tiene que llevar un presupuesto de obra?', a: 'Tus datos y NIF, los del cliente, la fecha y la validez, la descripción de cada partida con su unidad, medición y precio, el IVA aplicado y el total. Conviene añadir la forma de pago, el plazo de ejecución y qué no incluye.' },
+    { q: '¿Una reforma lleva IVA del 10 % o del 21 %?', a: 'El 10 % si es la renovación o reparación de la vivienda de un particular, la obra empieza al menos dos años después de construida y los materiales que pones tú no pasan del 40 % de la base. En locales, obra nueva o si no se cumplen esas condiciones, el 21 %.' },
+    { q: '¿Se guarda lo que escribo?', a: 'Solo en tu navegador, para que no lo pierdas si cierras la página. No se envía a ningún sitio. Puedes borrarlo con el botón «Empezar de cero».' },
+    { q: '¿Cómo lo paso a PDF?', a: 'Pulsa «Descargar en PDF» y elige «Guardar como PDF» en la ventana de impresión. En el móvil, la opción aparece al compartir o imprimir.' },
+    { q: '¿Y si hago muchos presupuestos a la semana?', a: 'Entonces te compensa una herramienta: con PresupuesYa dictas la partida, se descompone sola, guardas tus precios y el cliente firma desde el móvil.' },
+  ]}
+  salida={{ titulo: 'Presupuestos en minutos, no de noche.', texto: 'PresupuesYa: dictas la partida, tus precios se guardan, el PDF sale con tu logo y el cliente firma en el móvil.', href: '/productos/presupuesya/', boton: 'Ver PresupuesYa' }}>
+
+  <form slot="herramienta" class="ventana hz pz" data-presu onsubmit="return false" aria-label="Plantilla de presupuesto de obra">
+    <div class="v-barra hz-noprint">
+      <svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+      <span class="v-titulo">Presupuesto de obra<small>se guarda solo en tu navegador</small></span>
+    </div>
+    <div class="pz-hoja">
+      <div class="pz-cab">
+        <div><p class="pz-et">De</p>
+          <input class="pz-big" data-k="emp" placeholder="Tu empresa o tu nombre" aria-label="Tu empresa" />
+          <input data-k="empnif" placeholder="NIF" aria-label="Tu NIF" />
+          <input data-k="empdir" placeholder="Dirección" aria-label="Tu dirección" />
+          <input data-k="emptel" placeholder="Teléfono y correo" aria-label="Tu teléfono" />
+        </div>
+        <div><p class="pz-et">Para</p>
+          <input class="pz-big" data-k="cli" placeholder="Nombre del cliente" aria-label="Cliente" />
+          <input data-k="clidir" placeholder="Dirección de la obra" aria-label="Dirección de la obra" />
+          <div class="pz-fila2">
+            <label>Nº <input data-k="num" value="2026-001" aria-label="Número de presupuesto" /></label>
+            <label>Fecha <input type="date" data-k="fecha" aria-label="Fecha" /></label>
+          </div>
+        </div>
+      </div>
+      <input class="pz-titulo" data-k="titulo" value="Reforma de baño" aria-label="Título del presupuesto" />
+      <table class="pz-tabla">
+        <thead><tr><th>Partida</th><th>Ud</th><th>Cantidad</th><th>Precio</th><th>Importe</th><th class="hz-noprint"><span class="sr">Quitar</span></th></tr></thead>
+        <tbody data-partidas></tbody>
+      </table>
+      <button type="button" class="btn btn-linea hz-noprint pz-mas" data-mas><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Añadir partida</button>
+      <div class="pz-pie">
+        <div class="pz-condiciones">
+          <p class="pz-et">Condiciones</p>
+          <textarea data-k="cond" rows="4" aria-label="Condiciones">Validez del presupuesto: 30 días.
+Forma de pago: 40 % al empezar, 60 % al terminar.
+No incluye: lo que no aparece en las partidas.</textarea>
+        </div>
+        <dl class="pz-totales">
+          <div><dt>Base imponible</dt><dd data-tbase>0,00 €</dd></div>
+          <div><dt>IVA <select data-k="iva" aria-label="Tipo de IVA"><option value="21">21 %</option><option value="10">10 %</option><option value="0">Exento</option></select></dt><dd data-tiva>0,00 €</dd></div>
+          <div class="hz-total"><dt>Total</dt><dd data-ttotal>0,00 €</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="pz-acciones hz-noprint">
+      <button type="button" class="btn btn-tinta" data-pdf><svg class="ico" aria-hidden="true"><use href="#i-file-text"/></svg>Descargar en PDF</button>
+      <button type="button" class="btn btn-linea" data-ejemplo>Cargar un ejemplo</button>
+      <button type="button" class="enlace" data-borrar>Empezar de cero</button>
+    </div>
+  </form>
+
+  <h2>Cómo hacer un presupuesto de obra, paso a paso</h2>
+  <ol>
+    <li><b>Mide antes de presupuestar.</b> Metros cuadrados de suelo y de pared, metros lineales, unidades. Un presupuesto sin medición es una estimación.</li>
+    <li><b>Divide la obra en partidas</b>, en el orden en que se hacen: demoliciones, fontanería, electricidad, albañilería, revestimientos, carpintería, pintura, limpieza.</li>
+    <li><b>Pon a cada partida su unidad, su cantidad y su precio</b>, con mano de obra y material incluidos. Así el cliente entiende qué paga y tú sabes qué te deja cada parte.</li>
+    <li><b>Aplica el IVA que toca:</b> el 10 % en reformas de vivienda de particulares si se cumplen las condiciones, el 21 % en el resto.</li>
+    <li><b>Escribe lo que no incluye</b>, la validez y la forma de pago. Es lo que evita discusiones después.</li>
+  </ol>
+  <h2>El IVA en un presupuesto de reforma</h2>
+  <p>Una reforma de vivienda puede llevar el <b>10 % de IVA</b> cuando la contrata un particular para su casa, la vivienda tiene más de dos años y los materiales que aportas no superan el 40 % de la base imponible. Si alguna condición falla (un local, una obra nueva, más material), el tipo es el 21 %.</p>
+  <p class="nota-prosa">Fuente: Ley 37/1992 del IVA, artículo 91.Uno.2.10º. Ante la duda, confírmalo con tu gestoría antes de mandarlo.</p>
+</HerramientaPagina>
