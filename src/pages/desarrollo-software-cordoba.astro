@@ -4,6 +4,8 @@ import CabeceraPagina from '../components/CabeceraPagina.astro';
 import PresupuesYa from '../components/pantallas/PresupuesYa.astro';
 import Faq from '../components/Faq.astro';
 import Cierre from '../components/Cierre.astro';
+import PorQue from '../components/PorQue.astro';
+import Recorrido from '../components/Recorrido.astro';
 import { migas, faqSchema, SERVICIO_LOCAL, WA } from '../lib/sitio';
 
 // Página local (plan .seo/02-plan-local-cordoba.md, fase 3): 700-900 palabras propias.
@@ -20,7 +22,7 @@ const FAQ = [
 <Base title="Desarrollo de software a medida en Córdoba · OpsPilot"
   description="Empresa de desarrollo de software en Córdoba: software a medida, ERP, CRM y automatización para pymes. Precio cerrado, por fases y con casos publicados."
   path="/desarrollo-software-cordoba/" jsonld={[migas(M), SERVICIO_LOCAL, faqSchema(FAQ)]}>
-  <CabeceraPagina sobre="Córdoba" titulo="Desarrollo de software a medida en Córdoba."
+  <CabeceraPagina sobre="Córdoba" titulo="Desarrollo de software a medida en Córdoba, para lo que ningún programa resuelve."
     entrada="Somos un equipo de Córdoba que construye el software que tu negocio necesita y no encuentra en el mercado: sistemas internos, productos para sectores concretos, automatizaciones y webs.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, soy de Córdoba y quería contaros un proyecto:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu proyecto</a>
@@ -28,6 +30,24 @@ const FAQ = [
     </div>
   </CabeceraPagina>
 
+
+  <section class="s-hondo" aria-labelledby="t-demo">
+    <div class="wrap">
+      <p class="etiqueta">Así se ve</p>
+      <h2 id="t-demo" class="h2">Un ejemplo que puedes tocar: PresupuesYa.</h2>
+      <div class="bloque">
+        <div class="bloque-texto">
+          <p class="bloque-meta">Software nuestro, en producción</p>
+          <h3>Del dictado al presupuesto firmado.</h3>
+          <p>Pulsa el micrófono, abre una partida para ver su descomposición y mándala a firmar. Es la misma forma de construir que llevamos a cada proyecto a medida.</p>
+        </div>
+        <div class="caso-pantalla"><PresupuesYa /></div>
+      </div>
+    </div>
+  </section>
+
+  <Recorrido />
+  <PorQue />
   <section class="s-papel" aria-label="Desarrollo de software en Córdoba">
     <div class="wrap lectura-in">
       <div class="prosa">
@@ -90,22 +110,6 @@ const FAQ = [
       </aside>
     </div>
   </section>
-
-  <section class="s-hondo" aria-labelledby="t-demo">
-    <div class="wrap">
-      <p class="etiqueta">Así se ve</p>
-      <h2 id="t-demo" class="h2">Un ejemplo que puedes tocar: PresupuesYa.</h2>
-      <div class="bloque">
-        <div class="bloque-texto">
-          <p class="bloque-meta">Software nuestro, en producción</p>
-          <h3>Del dictado al presupuesto firmado.</h3>
-          <p>Pulsa el micrófono, abre una partida para ver su descomposición y mándala a firmar. Es la misma forma de construir que llevamos a cada proyecto a medida.</p>
-        </div>
-        <div class="caso-pantalla"><PresupuesYa /></div>
-      </div>
-    </div>
-  </section>
-
   <Faq items={FAQ} titulo="Preguntas de empresas de Córdoba." />
   <Cierre />
 </Base>

@@ -7,6 +7,8 @@ import EnergyDeal from '../components/pantallas/EnergyDeal.astro';
 import PresupuesYa from '../components/pantallas/PresupuesYa.astro';
 import CordobaSoluciona from '../components/pantallas/CordobaSoluciona.astro';
 import Cierre from '../components/Cierre.astro';
+import Recorrido from '../components/Recorrido.astro';
+import PorQue from '../components/PorQue.astro';
 import { CASES } from '../data/cases';
 import { migas, SITE_URL, WA } from '../lib/sitio';
 
@@ -33,17 +35,19 @@ const lista = {
 <Base title="Casos: webs, tiendas y software que ya funcionan · OpsPilot"
   description="Casos reales de OpsPilot: la tienda de ObraFácil en Puente Genil, la web de J.R. Rodríguez en Córdoba, un CRM para energía y nuestros productos. Pruébalos aquí."
   path="/casos/" jsonld={[migas(M), lista]}>
-  <CabeceraPagina sobre="Casos" titulo="Lo que construimos ya está trabajando."
+  <CabeceraPagina sobre="Casos" titulo="Casos reales: webs y herramientas para negocios de Córdoba."
     entrada="Empresas reales y productos nuestros, publicados y funcionando. No son capturas: cada pantalla de esta página se puede tocar, y cada una enlaza a la de verdad.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, he visto vuestros casos y el mío se parece. Os cuento:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos el tuyo</a>
     </div>
   </CabeceraPagina>
 
+  <Recorrido cabecera={false} />
+
   <section class="s-navy" aria-labelledby="t-clientes">
     <div class="wrap">
-      <p class="etiqueta">Para clientes</p>
-      <h2 id="t-clientes" class="h2">Tres negocios, tres problemas muy concretos.</h2>
+      <p class="etiqueta">En detalle</p>
+      <h2 id="t-clientes" class="h2">Pruébalos: tres negocios, tres problemas muy concretos.</h2>
       {clientes.map((c, i) => (
         <article class:list={['bloque', { 'bloque-inv': i % 2 === 1 }]} aria-labelledby={`caso-${c.id}`}>
           <div class="bloque-texto">
@@ -85,5 +89,6 @@ const lista = {
     </div>
   </section>
 
+  <PorQue />
   <Cierre />
 </Base>

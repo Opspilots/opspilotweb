@@ -5,6 +5,7 @@ import CordobaSoluciona from '../../components/pantallas/CordobaSoluciona.astro'
 import ObraFacil from '../../components/pantallas/ObraFacil.astro';
 import Faq from '../../components/Faq.astro';
 import Cierre from '../../components/Cierre.astro';
+import PorQue from '../../components/PorQue.astro';
 import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../../lib/sitio';
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }, { nombre: 'Webs y tiendas', path: '/soluciones/webs-y-tiendas/' }];
@@ -29,7 +30,7 @@ const servicio = {
 <Base title="Diseño web y tiendas online en Córdoba · OpsPilot"
   description="Webs que traen clientes y tiendas online que venden: una página por servicio y por zona, catálogo con carrito y WhatsApp. Hechas a mano en Córdoba."
   path="/soluciones/webs-y-tiendas/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
-  <CabeceraPagina sobre="Webs y tiendas online" titulo="Una web que trabaja para ti."
+  <CabeceraPagina sobre="Webs y tiendas online" titulo="Webs y tiendas online que trabajan para tu negocio."
     entrada="No una plantilla bonita: una web pensada para lo que busca tu cliente, rápida en el móvil, con tu propia forma de hablar y conectada con tu WhatsApp.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, quiero una web nueva. Os cuento:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu web</a>
@@ -86,6 +87,7 @@ const servicio = {
     </div>
   </section>
 
+  <PorQue />
   <Faq items={FAQ} titulo="Lo que suelen preguntarnos sobre webs." />
   <Cierre />
 </Base>

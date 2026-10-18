@@ -4,6 +4,7 @@ import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import PresupuesYa from '../../components/pantallas/PresupuesYa.astro';
 import Faq from '../../components/Faq.astro';
 import Cierre from '../../components/Cierre.astro';
+import PorQue from '../../components/PorQue.astro';
 import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../../lib/sitio';
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }, { nombre: 'Automatización', path: '/soluciones/automatizacion/' }];
@@ -34,7 +35,7 @@ const servicio = {
 <Base title="Automatización de procesos para pymes · OpsPilot"
   description="Automatiza lo repetitivo: WhatsApp que responde, presupuestos que se generan solos, datos que entran una vez y recordatorios que salen solos. Desde Córdoba."
   path="/soluciones/automatizacion/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
-  <CabeceraPagina sobre="Automatización" titulo="Lo que hoy haces a mano, que lo haga el sistema."
+  <CabeceraPagina sobre="Automatización" titulo="Automatización para pymes: lo que haces a mano, que lo haga el sistema."
     entrada="Copiar datos de una hoja a otra, contestar lo mismo por WhatsApp, perseguir un presupuesto sin respuesta. Eso lo puede hacer un sistema, con una persona revisando lo que importa.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, quiero automatizar tareas repetitivas. Os cuento:')}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos qué se repite</a>
@@ -79,6 +80,7 @@ const servicio = {
     </div>
   </section>
 
+  <PorQue />
   <Faq items={FAQ} titulo="Lo que suelen preguntarnos sobre automatizar." />
   <Cierre />
 </Base>

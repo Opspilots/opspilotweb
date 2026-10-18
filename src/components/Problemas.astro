@@ -1,15 +1,54 @@
 <section class="problemas" aria-labelledby="t-problemas">
     <div class="wrap">
       <p class="etiqueta">Lo que vemos cada semana</p>
-      <h2 id="t-problemas" class="h2">Las herramientas que usas no fueron pensadas para&nbsp;ti.</h2>
+      <h2 id="t-problemas" class="h2">Cuatro cosas que vemos cada semana en negocios de aquí.</h2>
       <p class="ruta-aviso" data-ruta-aviso="problemas" aria-live="polite" hidden></p>
       <div class="chips" data-chips-problemas hidden></div>
 
       <div class="mesa" data-mesa>
-        <!-- ─── 01 · cuatro sitios ─── -->
+        <!-- ─── 01 · no te encuentran ─── -->
         <div class="par activo">
-          <button class="problema" type="button" aria-pressed="true" aria-controls="w-sitios" data-corto="Cuatro sitios">
+          <button class="problema" type="button" aria-pressed="true" aria-controls="w-google" data-corto="No te encuentran">
             <span class="problema-n" aria-hidden="true">01</span>
+            <span class="problema-t">Te buscan en Google y sale otro</span>
+            <span class="problema-p">Tienes web, pero cuando alguien busca lo que haces en tu pueblo, en el mapa salen tres y tú no.</span>
+          </button>
+          <figure class="ventana pv" id="w-google" data-pv>
+            <div class="v-barra pv-barra">
+              <span class="puntos" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="pv-tit">Google Maps · móvil</span>
+              <span class="seg" role="group" aria-label="Cómo se ve"><button type="button" aria-pressed="true" data-cara="hoy">Hoy</button><button type="button" aria-pressed="false" data-cara="sis">Con OpsPilot</button></span>
+            </div>
+            <div class="pv-cara pv-hoy">
+              <div class="gm">
+                <p class="gm-busca"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>carpintería cerca de mí</p>
+                <div class="gm-mapa" aria-hidden="true"><i style="left:22%;top:38%"></i><i style="left:58%;top:24%"></i><i style="left:74%;top:62%"></i><i class="gm-tu gm-lejos" style="left:40%;top:78%"></i></div>
+                <ol class="gm-lista">
+                  <li><b>Otra carpintería</b><span>4,7 ★ (63) · Abierto · 1,2 km</span></li>
+                  <li><b>Otra más</b><span>4,5 ★ (41) · Abierto · 2,0 km</span></li>
+                </ol>
+                <p class="gm-tu-no"><svg class="ico" aria-hidden="true"><use href="#i-circle-alert"/></svg>Tu negocio no sale entre los primeros: 3 reseñas, la última de hace 2 años.</p>
+              </div>
+            </div>
+            <div class="pv-cara pv-sis">
+              <div class="gm">
+                <p class="gm-busca"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>carpintería cerca de mí</p>
+                <div class="gm-mapa" aria-hidden="true"><i class="gm-tu" style="left:40%;top:44%"></i><i style="left:58%;top:24%"></i><i style="left:74%;top:62%"></i></div>
+                <ol class="gm-lista">
+                  <li class="gm-yo"><b>Tu negocio</b><span>4,9 ★ (27) · Abierto · fotos de tus trabajos</span><em><span>Llamar</span><span>Cómo llegar</span><span>Web</span></em></li>
+                  <li><b>Otra carpintería</b><span>4,7 ★ (63) · Abierto · 1,2 km</span></li>
+                  <li><b>Otra más</b><span>4,5 ★ (41) · Abierto · 2,0 km</span></li>
+                </ol>
+              </div>
+            </div>
+            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Tener web no basta: casi todo el que busca cerca elige entre los tres primeros del mapa.</span><span data-nota-sis hidden>Ficha completa, reseñas al día y una web que dice qué haces y dónde. Así se sube al mapa.</span></figcaption>
+          </figure>
+        </div>
+
+        <!-- ─── 02 · cuatro sitios ─── -->
+        <div class="par">
+          <button class="problema" type="button" aria-pressed="false" aria-controls="w-sitios" data-corto="Cuatro sitios">
+            <span class="problema-n" aria-hidden="true">02</span>
             <span class="problema-t">Tu información vive en cuatro sitios</span>
             <span class="problema-p">Cuatro apps que nunca cuadran entre sí. Buscas el mismo dato tres veces al día.</span>
           </button>
@@ -64,7 +103,7 @@
         <!-- ─── 02 · el Excel que se rompe ─── -->
         <div class="par">
           <button class="problema" type="button" aria-pressed="false" aria-controls="w-excel" data-corto="El Excel">
-            <span class="problema-n" aria-hidden="true">02</span>
+            <span class="problema-n" aria-hidden="true">03</span>
             <span class="problema-t">Lo que factura lo llevas en un Excel que se rompe</span>
             <span class="problema-p">Presupuestos y comisiones en una hoja que peta al primer descuido. Un clic y adiós.</span>
           </button>
@@ -116,7 +155,7 @@
         <!-- ─── 03 · cinco pestañas ─── -->
         <div class="par">
           <button class="problema" type="button" aria-pressed="false" aria-controls="w-pestanas" data-corto="Cinco pestañas">
-            <span class="problema-n" aria-hidden="true">03</span>
+            <span class="problema-n" aria-hidden="true">04</span>
             <span class="problema-t">Tu equipo cambia de pestaña cada cinco minutos</span>
             <span class="problema-p">Cinco herramientas para un solo trabajo. Y ninguna se habla con la otra.</span>
           </button>

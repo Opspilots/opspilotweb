@@ -3,7 +3,8 @@
 // márgenes en todas, el horizonte siempre y todo dentro de la primera pantalla. Sin migas visibles:
 // la ruta la sigue leyendo Google en el BreadcrumbList del JSON-LD de cada página.
 interface Props {
-  sobre: string;
+  /** ya no se pinta (v12, revisión de Pelayo): el H1 lleva la palabra clave. Se mantiene por compatibilidad */
+  sobre?: string;
   titulo: string;
   entrada?: string;
 }
@@ -12,10 +13,7 @@ const { sobre, titulo, entrada } = Astro.props;
 <section class="portada portada-sub" aria-labelledby="titular">
   <div class="wrap portada-in">
     <div class="portada-texto">
-      <h1 id="titular">
-        <span class="sobre">{sobre}</span>
-        <span class="grande grande-sub">{titulo}</span>
-      </h1>
+      <h1 id="titular" class="grande grande-sub">{titulo}</h1>
       {entrada && <p class="entrada">{entrada}</p>}
       <slot />
     </div>

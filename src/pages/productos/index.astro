@@ -2,7 +2,12 @@
 import Base from '../../layouts/Base.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import Cierre from '../../components/Cierre.astro';
+import PorQue from '../../components/PorQue.astro';
 import { migas, SITE_URL, WA } from '../../lib/sitio';
+import Tramos, { type Tramo } from '../../components/Tramos.astro';
+import PresupuesYa from '../../components/pantallas/PresupuesYa.astro';
+import ErpHosteleria from '../../components/pantallas/ErpHosteleria.astro';
+import EnergyDeal from '../../components/pantallas/EnergyDeal.astro';
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Productos', path: '/productos/' }];
 // Solo productos en producción (availability 'live' en src/data/products.ts). Fiscalidad sigue fuera
@@ -13,6 +18,32 @@ const PRODUCTOS = [
   { n: 'ERP para hostelería', meta: 'Restaurantes y bares', frase: 'TPV con mesas y comandas, inventario que se descuenta solo, reservas, turnos y cierre de caja.', href: '/productos/erp-hosteleria/', icono: 'utensils-crossed', externo: false },
   { n: 'EnergyDeal', meta: 'Energía', frase: 'CRM para vender luz y gas: comparativas congeladas, cartera por CIF y CUPS y comisiones con estado.', href: 'https://energydeal.es', icono: 'zap', externo: true },
 ];
+const TRAMOS: Tramo[] = [
+  {
+    id: 'presupuesya', nombre: 'PresupuesYa', donde: 'Reformas e instalaciones', sintoma: 'Los presupuestos los hago de noche, en Excel.',
+    bg: '#0E0E0E', fg: '#F4EFE6', ac: '#DD9717',
+    titulo: 'El presupuesto de obra, en minutos y no en horas.',
+    texto: 'Para reformistas, fontaneros y electricistas. Dictas la partida, la IA la crea con su descomposición y el cliente firma desde el móvil.',
+    lista: ['Partidas dictadas o desde tus precios', 'PDF con tu logo y firma del cliente en el móvil', 'Importa y exporta BC3, el formato del sector', 'Margen real de cada obra'],
+    enlace: { url: '/productos/presupuesya/', texto: 'Ver PresupuesYa' },
+  },
+  {
+    id: 'erp', nombre: 'ERP para hostelería', donde: 'Restaurantes y bares', sintoma: 'Cierro caja y no sé qué me ha dejado cada plato.',
+    bg: '#0D131C', fg: '#E9EEF4', ac: '#00FF6A',
+    titulo: 'TPV, comandas, stock y caja en un solo sistema.',
+    texto: 'Cada comanda descuenta los ingredientes de su receta, el stock avisa cuando baja y el cobro suma a la caja. Pruébalo: pide un plato.',
+    lista: ['Mesas y comandas desde el móvil', 'Inventario que se descuenta solo', 'Reservas, turnos y cierre de caja'],
+    enlace: { url: '/productos/erp-hosteleria/', texto: 'Ver ERP para hostelería' },
+  },
+  {
+    id: 'energydeal', nombre: 'EnergyDeal', donde: 'Comerciales de luz y gas', sintoma: 'Comparo tarifas en Excel y pierdo comisiones.',
+    bg: '#132A66', fg: '#F2F6FF', ac: '#9DBBFF',
+    titulo: 'Un CRM que sabe qué es un CUPS.',
+    texto: 'Para agentes y comercializadoras: la comparativa se guarda tal como se le enseñó al cliente, la cartera va por CIF y CUPS y cada comisión tiene su estado.',
+    lista: ['Comparativas congeladas, sin discusiones después', 'Cartera por CIF y CUPS', 'Comisiones con estado: pendiente, validada, pagada'],
+    enlace: { url: 'https://energydeal.es', texto: 'Ir a energydeal.es', externo: true },
+  },
+];
 const lista = {
   '@type': 'ItemList',
   name: 'Productos de OpsPilot',
@@ -22,28 +53,28 @@ const lista = {
 <Base title="Productos: software vertical que ya funciona · OpsPilot"
   description="Software propio en producción: PresupuesYa para presupuestos de obra, un ERP para hostelería y EnergyDeal para comerciales de energía. Con la aplicación real."
   path="/productos/" jsonld={[migas(M), lista]}>
-  <CabeceraPagina sobre="Productos" titulo="Software que ya está funcionando."
-    entrada="Lo que aprendemos haciendo software a medida lo convertimos en productos para sectores concretos. Están en producción y se pueden probar.">
+  <CabeceraPagina sobre="Productos" titulo="Software propio para sectores concretos, ya funcionando."
+    entrada="Programas para reformistas, hostelería y energía, en producción. Puedes probarlos aquí mismo, sin registrarte.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, me interesa uno de vuestros productos. Os cuento mi negocio:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Pregúntanos cuál te encaja</a>
     </div>
   </CabeceraPagina>
-  <section class="s-navy" aria-labelledby="t-prod">
-    <div class="wrap">
-      <p class="etiqueta">En producción</p>
-      <h2 id="t-prod" class="h2">Elige tu sector.</h2>
-      <div class="puertas">
-        {PRODUCTOS.map((p) => (
-          <a class="puerta" href={p.href} rel={p.externo ? 'noopener' : undefined}>
-            <span class="puerta-ico"><svg class="ico" aria-hidden="true"><use href={`#i-${p.icono}`}/></svg></span>
-            <p class="bloque-meta" style="margin:0">{p.meta}</p>
-            <h3>{p.n}</h3>
-            <p>{p.frase}</p>
-            <span class="puerta-ir" style="margin-top:auto">{p.externo ? 'Ir a energydeal.es' : `Ver ${p.n}`} <svg class="ico" aria-hidden="true"><use href={p.externo ? '#i-arrow-up-right' : '#i-chevron-right'}/></svg></span>
-          </a>
-        ))}
+  <Tramos tramos={TRAMOS} idSeccion="productos" etiqueta="En producción" titulo="Elige tu sector y pruébalo aquí." lead="No son capturas: cada pantalla funciona. Tócala y verás qué te ahorraría.">
+    <PresupuesYa slot="v-presupuesya" />
+    <ErpHosteleria slot="v-erp" />
+    <EnergyDeal slot="v-energydeal" />
+  </Tramos>
+
+  <section class="s-verde" aria-labelledby="t-amedida">
+    <div class="wrap porque-pie" style="margin-top:0;justify-content:space-between">
+      <div>
+        <h2 id="t-amedida" class="h2">¿Tu sector no está?</h2>
+        <p class="lead">Estos productos nacieron de proyectos a medida. El tuyo puede ser el siguiente.</p>
       </div>
+      <a class="btn btn-tinta" href="/soluciones/software-a-medida/">Ver software a medida <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
     </div>
   </section>
+
+  <PorQue />
   <Cierre />
 </Base>

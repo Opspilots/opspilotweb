@@ -8,6 +8,13 @@ import { migas, SITE_URL, WA } from '../../lib/sitio';
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos', path: '/recursos/' }];
 // Destacados primero y después por fecha, lo más reciente arriba.
 const lista = [...RESOURCES].sort((a, b) => Number(!!b.featured) - Number(!!a.featured) || (b.date ?? '').localeCompare(a.date ?? ''));
+// Por dónde empezar: la situación con las palabras del dueño y la guía que le toca.
+const EMPIEZA = [
+  ['Mi web no me trae clientes.', 'checklist-tu-web-trabaja-para-ti'],
+  ['Lo llevo todo en Excel y se me escapan cosas.', 'migrar-de-excel-a-sistema-pyme'],
+  ['Quiero automatizar, pero no sé qué.', 'automatiza-tu-negocio-sin-saber-de-tecnologia'],
+  ['Voy a pedir presupuesto y no quiero que me timen.', 'como-pedir-presupuesto-de-software'],
+].map(([sit, slug]) => ({ sit, r: RESOURCES.find((x) => x.slug === slug)! })).filter((x) => x.r);
 const CATS = [...new Set(RESOURCES.map((r) => r.cat))];
 const blog = {
   '@type': 'Blog',
@@ -19,15 +26,30 @@ const blog = {
 <Base title="Recursos: guías de software y digitalización · OpsPilot"
   description="Guías, casos prácticos y checklists para digitalizar una pyme sin tecnicismos: cuándo pedir software a medida, cómo migrar de Excel, qué automatizar primero."
   path="/recursos/" jsonld={[migas(M), blog]}>
-  <CabeceraPagina sobre="Recursos" titulo="Para decidir con criterio, sin tecnicismos."
-    entrada="Lo que explicamos una y otra vez en las primeras conversaciones, por escrito: cuándo compensa un software a medida, cómo pedir un presupuesto, qué automatizar primero.">
+  <CabeceraPagina sobre="Recursos" titulo="Guías para digitalizar tu negocio, sin tecnicismos."
+    entrada="Lo que explicamos en las primeras conversaciones, por escrito y gratis. Para decidir con criterio antes de gastar un euro.">
     <div class="acciones">
       <a class="enlace" href={WA('Hola OpsPilot, tengo una duda que no está en vuestras guías:')} rel="noopener">¿Tu duda no está aquí? Pregúntanosla <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
     </div>
   </CabeceraPagina>
+  <section class="s-navy" aria-labelledby="t-empieza">
+    <div class="wrap">
+      <p class="etiqueta">Empieza por aquí</p>
+      <h2 id="t-empieza" class="h2">¿Qué te pasa? Te decimos qué leer primero.</h2>
+      <ol class="empieza">
+        {EMPIEZA.map(({ sit, r }) => (
+          <li><a href={`/recursos/${r.slug}/`}>
+            <span class="empieza-sit">«{sit}»</span>
+            <span class="empieza-guia"><small>{r.cat} · {r.time} de lectura</small>{r.title}</span>
+            <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </a></li>
+        ))}
+      </ol>
+    </div>
+  </section>
   <section class="s-papel" aria-labelledby="t-rec">
     <div class="wrap">
-      <h2 id="t-rec" class="h2">{RESOURCES.length} guías, casos y checklists.</h2>
+      <h2 id="t-rec" class="h2">Todas las guías, casos y checklists.</h2>
       <div class="recursos-filtro" role="group" aria-label="Filtrar por tipo" data-filtro hidden>
         <button type="button" aria-pressed="true" data-cat="">Todo</button>
         {CATS.map((c) => <button type="button" aria-pressed="false" data-cat={c}>{c}</button>)}
