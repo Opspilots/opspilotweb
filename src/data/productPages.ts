@@ -82,7 +82,8 @@ export const PRODUCT_PAGES: readonly ProductPage[] = [
         h1: 'ERP para hostelería: del TPV al cierre de caja',
         description:
             'ERP para restaurantes y bares: TPV con mesas y comandas, inventario y pedidos a proveedores, turnos, reservas y cierre de caja con analítica.',
-        caseSlug: 'caso-hosteleria-tpv-inteligente-margen',
+        // caseSlug retirado el 19-oct-2026: el caso era «ilustrativo» y ahora redirige a
+        // /recursos/erp-hosteleria-tpv-restaurantes/ (astro.config.mjs).
         // ⛔ NOINDEX TEMPORAL — LEER ANTES DE QUITARLO.
         //
         // Esta página cuenta lo mismo que `erp-hosteleria-tpv-restaurantes`

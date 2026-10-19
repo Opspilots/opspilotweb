@@ -1,0 +1,64 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+import { WA } from '../../lib/sitio';
+// Los pasos, en el orden en que se hacen. Lo que se marca se guarda solo en el navegador.
+const PASOS = [
+  { t: 'Entra en business.google.com con tu cuenta de Google', d: 'Busca tu negocio: si ya existe una ficha, reclámala; si no, créala. Usa una cuenta que vaya a seguir siendo tuya, no la de quien te hizo la web.' },
+  { t: 'Pon el nombre real de tu negocio', d: 'El que está en tu rótulo y en tus facturas. Añadir palabras como «reformas baratas Córdoba» va contra las normas y puede acabar en suspensión.' },
+  { t: 'Elige la categoría principal', d: 'Lo que más vendes, lo más concreto posible («Empresa de reformas», «Taller mecánico»). Es de lo que más pesa para salir en la búsqueda correcta. Añade secundarias para el resto.' },
+  { t: 'Dirección o zona de servicio', d: 'Si te visitan, pon la dirección. Si vas tú a casa del cliente, oculta la dirección y marca los municipios donde trabajas. Nunca una dirección que no es la tuya.' },
+  { t: 'Verifica la ficha', d: 'Google te propone el método: vídeo, llamada, SMS, correo o carta. Sin verificar, la ficha puede no salir y no controlas lo que dice.' },
+  { t: 'Horario, incluidos los festivos', d: 'Un horario equivocado es una llamada perdida y una reseña mala. Marca también los horarios especiales de festivos y vacaciones.' },
+  { t: 'Teléfono y web', d: 'El mismo teléfono que en tu web y tus redes, escrito igual. Si no tienes web, pon tu WhatsApp o tu perfil.' },
+  { t: 'Descripción de lo que haces y dónde', d: 'Hasta 750 caracteres. Qué haces, para quién y en qué zona, con tus palabras. Sin enlaces ni promociones.' },
+  { t: 'Fotos reales: logo, fachada y trabajos', d: 'Al menos 10 fotos de tu trabajo, tu local y tu equipo. Las de banco no ayudan: la gente quiere ver lo que va a recibir.' },
+  { t: 'Servicios o productos con precio orientativo', d: 'Cada servicio con una línea de explicación. Ayuda a que te encuentren por lo que haces y filtra las llamadas.' },
+  { t: 'Pide tus primeras reseñas', d: 'A cada cliente contento, justo al terminar, con el enlace directo de tu ficha. Y responde a todas.' },
+  { t: 'Publica algo de vez en cuando', d: 'Un trabajo terminado, un cambio de horario, una novedad. Una ficha viva transmite que el negocio está abierto.' },
+];
+---
+<HerramientaPagina slug="poner-negocio-en-google-maps"
+  title="Cómo poner mi negocio en Google Maps gratis (paso a paso)"
+  description="Pon tu negocio en Google Maps gratis en 12 pasos: crear y verificar el Perfil de Empresa, categoría, horario, fotos y primeras reseñas. Lista que puedes ir marcando."
+  h1="Cómo poner tu negocio en Google Maps, gratis y paso a paso."
+  entrada="Doce pasos en el orden en que se hacen. Ve marcándolos: se quedan guardados en tu navegador para que sigas otro día."
+  faq={[
+    { q: '¿Poner mi negocio en Google Maps cuesta dinero?', a: 'No. El Perfil de Empresa de Google es gratis. Lo que se paga son los anuncios, que salen marcados como patrocinados.' },
+    { q: '¿Puedo salir en Google Maps sin local?', a: 'Sí, como negocio de zona de servicio: ocultas tu dirección y marcas los municipios donde trabajas. Es lo habitual en reformas, fontanería, limpieza o cualquier oficio que va a casa del cliente.' },
+    { q: '¿Cuánto tarda en aparecer?', a: 'Tras verificar, salir buscando tu nombre suele ser rápido. Salir arriba por lo que haces lleva semanas: depende de lo completa que esté la ficha, de las reseñas y de la distancia de quien busca.' },
+    { q: 'Ya existe una ficha de mi negocio que no creé yo, ¿qué hago?', a: 'Reclámala desde la propia ficha («¿Es el propietario de esta empresa?»). Google pedirá verificar que eres el dueño.' },
+    { q: '¿Y si mi ficha sale pero no arriba?', a: 'Haz el diagnóstico gratis de esta web: en dos minutos te dice qué te está frenando y qué arreglar primero.' },
+  ]}
+  salida={{ titulo: 'Te la dejamos hecha.', texto: 'Creamos o arreglamos tu ficha, la conectamos con tu web y la cuidamos cada mes.', href: WA('Hola OpsPilot, quiero que mi negocio salga bien en Google Maps.'), boton: 'Que me la hagan' }}>
+
+  <div slot="herramienta" class="ventana hz" data-checklist="maps">
+    <div class="v-barra">
+      <svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+      <span class="v-titulo">Tu negocio en Google Maps<small>12 pasos · se guarda en tu navegador</small></span>
+      <span class="hz-cuenta" data-hecho>0 de 12</span>
+    </div>
+    <div class="hz-progreso" aria-hidden="true"><i data-barra></i></div>
+    <ol class="hz-pasos">
+      {PASOS.map((p, i) => (
+        <li>
+          <label>
+            <input type="checkbox" data-paso={i} />
+            <span class="hz-paso-n" aria-hidden="true">{i + 1}</span>
+            <span class="hz-paso-t"><b>{p.t}</b><span>{p.d}</span></span>
+          </label>
+        </li>
+      ))}
+    </ol>
+    <p class="hz-fin" data-fin hidden>Hecho. Ahora comprueba cómo te ve Google con el <a href="/herramientas/negocio-no-sale-en-google-maps/">diagnóstico gratis</a>.</p>
+  </div>
+
+  <h2>Por qué merece la pena hacerlo bien</h2>
+  <p>Cuando alguien busca lo que haces «cerca de mí», Google enseña primero el mapa, y en el mapa casi siempre tres negocios. Google elige esos tres con tres criterios que publica en su propia ayuda: <b>relevancia</b> (si tu ficha encaja con lo que se busca), <b>distancia</b> y <b>prominencia</b> (lo conocido que eres, con las reseñas incluidas). Una ficha completa y con reseñas recientes es lo más barato que existe para salir ahí.</p>
+  <h2>Los tres errores que más vemos</h2>
+  <ul>
+    <li><b>Ficha creada por otra persona</b> (un antiguo empleado, quien hizo la web) y que nadie puede editar.</li>
+    <li><b>Nombre con palabras de relleno</b> para posicionar: funciona unos días y acaba en suspensión.</li>
+    <li><b>Horario sin festivos</b>: la gente va, se encuentra cerrado y lo cuenta en una reseña.</li>
+  </ul>
+  <p class="nota-prosa">Fuentes: ayuda oficial de Google, «Mejorar tu posicionamiento local en Google» (<a href="https://support.google.com/business/answer/7091?hl=es" rel="noopener">support.google.com/business/answer/7091</a>) y «Directrices para representar tu negocio en Google» (<a href="https://support.google.com/business/answer/3038177?hl=es" rel="noopener">support.google.com/business/answer/3038177</a>).</p>
+</HerramientaPagina>

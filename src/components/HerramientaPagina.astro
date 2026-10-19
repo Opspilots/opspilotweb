@@ -12,8 +12,10 @@ interface Props {
   slug: string; title: string; description: string; h1: string; entrada: string;
   faq: { q: string; a: string }[];
   salida: { titulo: string; texto: string; href: string; boton: string };
+  /** carga el generador de QR (MIT, Kazuhiko Arase) antes del script de herramientas */
+  qr?: boolean;
 }
-const { slug, title, description, h1, entrada, faq, salida } = Astro.props;
+const { slug, title, description, h1, entrada, faq, salida, qr = false } = Astro.props;
 const h = herramienta(slug);
 const path = `/herramientas/${slug}/`;
 const app = {
@@ -21,7 +23,7 @@ const app = {
   applicationCategory: 'BusinessApplication', operatingSystem: 'Cualquiera (navegador)', inLanguage: 'es-ES',
   isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, provider: { '@id': ORG_ID },
 };
-const otras = HERRAMIENTAS.filter((x) => x.slug !== slug);
+const otras = HERRAMIENTAS.filter((x) => x.slug !== slug && x.grupo === h.grupo).concat(HERRAMIENTAS.filter((x) => x.grupo !== h.grupo)).slice(0, 4);
 ---
 <Base title={title} description={description} path={path}
   jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Herramientas', path: '/herramientas/' }, { nombre: h.nombre, path }]), app, faqSchema(faq)]}>
@@ -64,5 +66,6 @@ const otras = HERRAMIENTAS.filter((x) => x.slug !== slug);
     </div>
   </section>
   <Cierre />
+  {qr && <script is:inline src="/js/qrcode.min.js" defer></script>}
   <script is:inline src="/js/herramientas.js" defer></script>
 </Base>

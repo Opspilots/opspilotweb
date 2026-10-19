@@ -1,0 +1,60 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+import { WA } from '../../lib/sitio';
+---
+<HerramientaPagina slug="enlace-whatsapp" qr
+  title="Crear enlace de WhatsApp con mensaje y QR gratis"
+  description="Crea tu enlace de WhatsApp (wa.me) con el mensaje ya escrito, su código QR y el botón para tu web. Y cómo configurar WhatsApp Business para tu negocio."
+  h1="Crear un enlace de WhatsApp con mensaje: enlace, QR y botón para tu web."
+  entrada="Pon tu número y el mensaje con el que quieres que te escriban. Te sale el enlace, el QR para imprimir y el código del botón para tu web."
+  faq={[
+    { q: '¿Cómo se escribe el número en el enlace?', a: 'Con el prefijo del país y sin el «+», sin espacios, guiones ni ceros delante: para un móvil español, 34 seguido de las 9 cifras. Esta herramienta lo limpia por ti.' },
+    { q: '¿Sirve con WhatsApp normal o hace falta WhatsApp Business?', a: 'El enlace funciona con los dos. WhatsApp Business añade perfil de empresa, horario, mensajes automáticos de bienvenida y ausencia, respuestas rápidas, etiquetas y catálogo. Es gratis y merece la pena.' },
+    { q: '¿Para qué sirve que el mensaje vaya ya escrito?', a: 'Para que te escriban más y mejor. El cliente solo pulsa enviar, y tú sabes desde dónde llega («Hola, os escribo desde la web…») y qué quiere.' },
+    { q: '¿Se guarda mi número?', a: 'No. El enlace y el QR se generan en tu navegador.' },
+  ]}
+  salida={{ titulo: 'Que los WhatsApp lleguen ordenados.', texto: 'Hacemos webs en las que cada botón de WhatsApp lleva el mensaje de esa página: sabes qué quiere el cliente antes de contestar.', href: '/soluciones/webs-y-tiendas/', boton: 'Ver webs y tiendas' }}>
+
+  <form slot="herramienta" class="ventana hz" data-wagen onsubmit="return false" aria-label="Generador de enlace de WhatsApp">
+    <div class="v-barra">
+      <svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+      <span class="v-titulo">Enlace de WhatsApp<small>wa.me · QR · botón</small></span>
+    </div>
+    <div class="hz-cuerpo hz-2col">
+      <div class="hz-campos">
+        <label class="hz-campo"><span>Tu número de WhatsApp</span><small>Si es de España, basta con los 9 números.</small><input class="hz-texto" data-tel inputmode="tel" placeholder="600 12 34 56" /></label>
+        <label class="hz-campo"><span>Mensaje con el que te escribirán</span><textarea class="hz-texto" data-txt rows="3">Hola, os escribo desde vuestra web. Quería información sobre…</textarea></label>
+        <div class="hz-salida">
+          <p class="hz-res-t hz-oscuro">Tu enlace</p>
+          <p class="hz-enlace" data-enlace-wa>Pon tu número.</p>
+          <div class="hz-botones">
+            <button type="button" class="btn btn-tinta" data-copiar-enlace>Copiar enlace</button>
+            <a class="btn btn-linea" data-probar href="#" target="_blank" rel="noopener">Probarlo</a>
+          </div>
+          <p class="hz-res-t hz-oscuro" style="margin-top:1.2rem">Botón para tu web</p>
+          <pre class="hz-codigo" data-codigo></pre>
+          <button type="button" class="btn btn-linea" data-copiar-codigo>Copiar código</button>
+        </div>
+      </div>
+      <div class="hz-resultado hz-qr" aria-live="polite">
+        <p class="hz-res-t">QR para imprimir</p>
+        <div class="hz-qr-caja" data-qr><p>Aquí saldrá tu código QR.</p></div>
+        <div class="hz-botones" data-qr-acciones hidden>
+          <a class="btn btn-verde" data-descargar download="qr-whatsapp.png" href="#">Descargar QR</a>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <h2>Cómo crear un enlace de WhatsApp</h2>
+  <p>WhatsApp tiene una dirección oficial para abrir un chat con cualquier número: <b>wa.me/</b> seguido del número con prefijo de país, y si quieres, <b>?text=</b> con el mensaje. Quien pulsa el enlace abre WhatsApp con tu chat y el mensaje escrito; solo tiene que enviarlo.</p>
+  <h2>WhatsApp Business: lo que conviene dejar configurado</h2>
+  <ol>
+    <li><b>Perfil de empresa</b> con dirección, horario, web y una descripción corta.</li>
+    <li><b>Mensaje de bienvenida</b> para quien te escribe por primera vez, y <b>mensaje de ausencia</b> fuera de horario: nadie se queda sin respuesta.</li>
+    <li><b>Respuestas rápidas</b> para lo que contestas veinte veces: precios, horario, cómo llegar.</li>
+    <li><b>Etiquetas</b> para no perder a nadie: nuevo cliente, presupuesto enviado, pendiente de pago.</li>
+    <li><b>Catálogo</b> con tus productos o servicios y su precio, si vendes.</li>
+  </ol>
+  <p class="nota-prosa">Fuentes: ayuda de WhatsApp sobre el enlace para chatear (<a href="https://faq.whatsapp.com/5913398998672934/?locale=es_ES" rel="noopener">faq.whatsapp.com</a>) y funciones de WhatsApp Business (<a href="https://business.whatsapp.com/products/business-app" rel="noopener">business.whatsapp.com</a>).</p>
+</HerramientaPagina>

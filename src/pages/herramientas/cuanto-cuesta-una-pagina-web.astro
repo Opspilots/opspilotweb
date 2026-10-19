@@ -1,0 +1,86 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+import { WA } from '../../lib/sitio';
+// Precios publicados en sus propias webs, consultados el 18-oct-2026 (investigación de competencia).
+// Se citan tal cual, con lo que dice cada uno sobre el IVA. Revisar cada pocos meses.
+const MERCADO = [
+  { quien: 'Web hecha por ti con una plataforma', precio: '0 € + 10-40 €/mes', nota: 'Tu tiempo, y la cuota de la plataforma y del dominio. Sin nadie que la cuide.', fuente: '' },
+  { quien: 'Webautonomos.es', precio: '15 €/mes + IVA, o 349 € + IVA', nota: 'Web de alquiler sin alta ni permanencia, o en propiedad.', fuente: 'https://webautonomos.es/' },
+  { quien: 'Webcercana.com', precio: '250-400 € + IVA y 40 €/mes + IVA', nota: 'Web sencilla o completa; mantenimiento opcional.', fuente: 'https://webcercana.com/' },
+  { quien: 'GF Publicidad (Córdoba)', precio: 'desde 395 €', nota: 'Precio de entrada publicado en su página de Córdoba.', fuente: 'https://gfpublicidad.es/diseno-web/cordoba/' },
+  { quien: 'Beedigital', precio: 'desde 79,90 €/mes', nota: 'Planes mensuales; SEO local y anuncios se pagan aparte.', fuente: 'https://www.beedigital.es/productos/diseno-web/cordoba/' },
+  { quien: 'Directorio Trustlocal (provincia de Córdoba)', precio: '500-1.500 €', nota: 'Rango de referencia para una web nueva que publica el directorio.', fuente: 'https://trustlocal.es/cordoba/lucena/diseno-web/' },
+];
+---
+<HerramientaPagina slug="cuanto-cuesta-una-pagina-web"
+  title="¿Cuánto cuesta una página web en España en 2026?"
+  description="Precios reales que publican agencias en España para una web de negocio, qué sube el precio y un comparador de presupuestos a 3 años con la cuota incluida."
+  h1="¿Cuánto cuesta una página web en España? Precios reales y comparador."
+  entrada="Lo que publican agencias y plataformas, sin trampas: qué sube el precio, qué conviene que incluya y un comparador para ver lo que pagarás de verdad en tres años."
+  faq={[
+    { q: '¿Cuánto cuesta una web para un negocio pequeño?', a: 'Con precios publicados en octubre de 2026, una web sencilla va de unos 250 a 500 € más una cuota mensual opcional de 15 a 80 €. Una web con varias páginas pensadas para Google o una tienda online sube a varios cientos o miles de euros según el tamaño.' },
+    { q: '¿Qué hace que una web sea más cara?', a: 'El número de páginas (sobre todo si quieres una por servicio y por zona para salir en Google), una tienda con muchos productos, reservas o pagos, que te escriban los textos y te hagan las fotos, y varios idiomas.' },
+    { q: '¿Mejor pagar de una vez o una cuota al mes?', a: 'Depende del total a tres años y de quién es la web al final. Una cuota baja puede salir más cara a la larga, y con algunas webs de alquiler, si dejas de pagar, te quedas sin ella. Usa el comparador.' },
+    { q: '¿Qué tiene que incluir sí o sí?', a: 'Que el dominio esté a tu nombre, que la web sea tuya si te vas, que se vea bien en el móvil, que tu teléfono y tu WhatsApp estén a un toque y que esté conectada con tu ficha de Google.' },
+    { q: '¿Cuánto cuesta con OpsPilot?', a: 'Desde 500 € la web, con tu ficha de Google, y 50 € al mes si quieres que la vigilemos, la mantengamos y te contemos cómo va. Las tiendas y las herramientas a medida, con precio cerrado antes de empezar.' },
+  ]}
+  salida={{ titulo: 'Una web que trabaja, desde 500 €.', texto: 'Con tu ficha de Google y con precio cerrado antes de empezar. Y 50 € al mes si quieres que nos quedemos.', href: WA('Hola OpsPilot, quiero saber cuánto me costaría una web para mi negocio.'), boton: 'Pedir precio cerrado' }}>
+
+  <div slot="herramienta" class="hz-doble">
+    <form class="ventana hz" data-compara onsubmit="return false" aria-label="Comparador de presupuestos de web">
+      <div class="v-barra"><svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg><span class="v-titulo">Compara presupuestos<small>lo que pagas de verdad en 3 años</small></span></div>
+      <div class="hz-cuerpo">
+        {['A', 'B', 'C'].map((l, i) => (
+          <fieldset class="hz-oferta" data-oferta={l}>
+            <legend>Presupuesto {l}</legend>
+            <div class="hz-oferta-campos">
+              <label class="hz-campo"><span>Pago inicial</span><span class="hz-euros"><input type="number" inputmode="decimal" min="0" step="10" value={[500, 250, 0][i]} data-ini /><b>€</b></span></label>
+              <label class="hz-campo"><span>Cuota al mes</span><span class="hz-euros"><input type="number" inputmode="decimal" min="0" step="1" value={[50, 40, 80][i]} data-mes /><b>€</b></span></label>
+            </div>
+            <p class="hz-oferta-total"><b data-tot>—</b><span>en 3 años</span></p>
+            <div class="hz-barra-total" aria-hidden="true"><i data-barra-o></i></div>
+          </fieldset>
+        ))}
+        <p class="hz-ayuda">Pon los presupuestos que te han dado (con o sin IVA, pero todos igual). Antes de decidir, mira qué incluye cada uno en la lista de al lado.</p>
+      </div>
+    </form>
+
+    <div class="ventana hz">
+      <div class="v-barra"><svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg><span class="v-titulo">Antes de firmar, pregunta esto<small>márcalo con cada presupuesto</small></span></div>
+      <ol class="hz-pasos hz-pasos-compactos" data-checklist="web">
+        {[
+          ['¿El dominio va a mi nombre?', 'Si está a nombre de la agencia, el día que te vas pierdes tu dirección web.'],
+          ['¿La web es mía si dejo de pagar?', 'En las webs de alquiler, si dejas la cuota te quedas sin web.'],
+          ['¿Incluye mi ficha de Google?', 'Sin ella, la web sola rara vez trae llamadas.'],
+          ['¿Una página por servicio y por zona?', 'Es lo que hace que te encuentren cuando te buscan en tu pueblo.'],
+          ['¿Quién escribe los textos y hace las fotos?', 'Suele ser lo que más retrasa una web y lo que más la cambia.'],
+          ['¿Qué incluye exactamente la cuota?', 'Cambios, copias de seguridad, vigilancia, informe… o nada.'],
+          ['¿Hay permanencia?', 'Pregunta por escrito cuánto cuesta darse de baja.'],
+        ].map(([t, d], i) => (
+          <li><label><input type="checkbox" data-paso={i} /><span class="hz-paso-n" aria-hidden="true">{i + 1}</span><span class="hz-paso-t"><b>{t}</b><span>{d}</span></span></label></li>
+        ))}
+      </ol>
+    </div>
+  </div>
+
+  <h2>Lo que publican agencias y plataformas</h2>
+  <p>Precios copiados de sus propias webs el 18 de octubre de 2026. Cada uno incluye cosas distintas: compáralos con la lista de preguntas de arriba, no solo por la cifra.</p>
+  <div class="hz-tabla-wrap">
+    <table class="hz-tabla">
+      <thead><tr><th>Quién</th><th>Precio publicado</th><th>Qué dice</th></tr></thead>
+      <tbody>
+        {MERCADO.map((m) => (
+          <tr><td>{m.fuente ? <a href={m.fuente} rel="noopener nofollow">{m.quien}</a> : m.quien}</td><td><b>{m.precio}</b></td><td>{m.nota}</td></tr>
+        ))}
+        <tr class="hz-nosotros"><td>OpsPilot</td><td><b>desde 500 € y 50 €/mes</b></td><td>Web y ficha de Google; la cuota incluye vigilancia, cambios pequeños y un informe al mes. Tiendas y herramientas, con precio cerrado.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>Qué sube el precio de una web</h2>
+  <ul>
+    <li><b>Páginas</b>: una web de una sola página es barata; una con una página por servicio y por zona cuesta más, y es la que sale en Google.</li>
+    <li><b>Tienda online</b>: el número de productos, las variantes y los pagos.</li>
+    <li><b>Contenido</b>: que te escriban los textos y te hagan las fotos.</li>
+    <li><b>Funciones</b>: reservas, presupuestos online, varios idiomas, zona de clientes.</li>
+  </ul>
+</HerramientaPagina>

@@ -1,0 +1,74 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+// Fechas y ámbito comprobados el 19-oct-2026: RD 1007/2023 modificado por el RD-ley 15/2025 (BOE 3-dic-2025)
+// y preguntas frecuentes de la AEAT. El aplazamiento a octubre de 2028 está anunciado (5-oct-2026) pero
+// sin norma publicada: se dice así, sin darlo por hecho. Revisar esta página si sale en el BOE.
+---
+<HerramientaPagina slug="verifactu-me-afecta"
+  title="¿Me afecta Verifactu? Fechas para autónomos y empresas"
+  description="Comprueba en 4 preguntas si te afecta Verifactu y desde cuándo: fechas vigentes para sociedades y autónomos, el aplazamiento anunciado y qué hacer si facturas con Excel."
+  h1="¿Me afecta Verifactu? Compruébalo y mira tus fechas."
+  entrada="Cuatro preguntas sobre cómo facturas. Te decimos si te afecta, desde cuándo según la norma vigente y qué hacer ahora, sin alarmas."
+  faq={[
+    { q: '¿Cuándo entra en vigor Verifactu?', a: 'Según la norma vigente (Real Decreto-ley 15/2025), las sociedades del Impuesto sobre Sociedades deben tener sus sistemas adaptados antes del 1 de enero de 2027, y el resto de obligados, incluidos los autónomos, antes del 1 de julio de 2027. El 5 de octubre de 2026 Hacienda anunció que quiere retrasarlo a octubre de 2028, pero mientras no se publique en el BOE, las fechas que valen son las de 2027.' },
+    { q: 'Si facturo con Excel o Word, ¿me afecta?', a: 'Según la Agencia Tributaria, no te afecta si usas la hoja de cálculo o el procesador de texto solo para escribir los datos, expedir e imprimir la factura y guardarla. Si ese Excel tiene fórmulas, macros o funciones que hacen de programa de facturación, conviene consultarlo con tu gestoría.' },
+    { q: '¿Y si hago las facturas a mano en un talonario?', a: 'Tampoco te afecta: el reglamento solo se aplica a quien usa un sistema informático para facturar.' },
+    { q: '¿Qué tengo que hacer si uso un programa de facturación?', a: 'Pedir a tu proveedor que te confirme que su programa cumple el reglamento (tiene que tener una «declaración responsable») y actualizarlo antes de tu fecha. No hace falta comprar nada nuevo si el tuyo ya está adaptado.' },
+    { q: '¿Afecta en el País Vasco y Navarra?', a: 'No de la misma forma: allí rige su propia normativa foral (en el País Vasco, TicketBAI). Esta herramienta está pensada para el territorio común.' },
+  ]}
+  salida={{ titulo: 'Facturas en orden, y sin hacerlas a mano.', texto: 'Si facturas desde el presupuesto aceptado, te montamos un sistema que lo hace solo y cumple con lo que pide Hacienda.', href: '/soluciones/automatizacion/', boton: 'Ver automatización' }}>
+
+  <form slot="herramienta" class="ventana hz" data-verifactu onsubmit="return false" aria-label="¿Me afecta Verifactu?">
+    <div class="v-barra">
+      <svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+      <span class="v-titulo">¿Te afecta Verifactu?<small>norma vigente · revisado el 19-oct-2026</small></span>
+    </div>
+    <div class="hz-cuerpo hz-2col">
+      <ol class="hz-preguntas">
+        <li><fieldset><legend>¿Dónde tributas?</legend><div class="hz-ops">
+          <label><input type="radio" name="terr" value="comun" /><span>Resto de España</span></label>
+          <label><input type="radio" name="terr" value="foral" /><span>País Vasco o Navarra</span></label>
+        </div></fieldset></li>
+        <li><fieldset><legend>¿Cómo haces tus facturas?</legend><div class="hz-ops">
+          <label><input type="radio" name="como" value="programa" /><span>Con un programa o una app</span></label>
+          <label><input type="radio" name="como" value="excel" /><span>En Excel o Word, a mano</span></label>
+          <label><input type="radio" name="como" value="talonario" /><span>En talonario, a boli</span></label>
+        </div></fieldset></li>
+        <li><fieldset><legend>¿Estás en el SII?</legend><small class="hz-ayuda" style="margin:0 0 .5rem">El Suministro Inmediato de Información: lo usan sobre todo empresas que facturan más de 6 millones.</small><div class="hz-ops">
+          <label><input type="radio" name="sii" value="no" /><span>No</span></label>
+          <label><input type="radio" name="sii" value="si" /><span>Sí</span></label>
+        </div></fieldset></li>
+        <li><fieldset><legend>¿Eres autónomo o sociedad?</legend><div class="hz-ops">
+          <label><input type="radio" name="forma" value="autonomo" /><span>Autónomo</span></label>
+          <label><input type="radio" name="forma" value="sociedad" /><span>Sociedad (SL, SA…)</span></label>
+        </div></fieldset></li>
+      </ol>
+      <div class="hz-resultado" aria-live="polite">
+        <p class="hz-res-t">Tu resultado</p>
+        <p class="hz-veredicto" data-vf-veredicto>Contesta y aquí verás si te afecta.</p>
+        <p class="hz-vf-texto" data-vf-texto></p>
+        <ol class="hz-linea" aria-label="Calendario">
+          <li data-hito="soc"><b>1 ene 2027</b><span>Sociedades del Impuesto sobre Sociedades</span></li>
+          <li data-hito="aut"><b>1 jul 2027</b><span>Autónomos y resto de obligados</span></li>
+          <li class="hz-anuncio"><b>oct 2028</b><span>Aplazamiento anunciado por Hacienda, pendiente de BOE</span></li>
+        </ol>
+      </div>
+    </div>
+  </form>
+
+  <h2>Qué es Verifactu, en dos frases</h2>
+  <p>Es el nombre con el que se conoce el reglamento que obliga a que los <b>programas de facturación</b> guarden cada factura de forma que no se pueda manipular después, y puedan enviarla a Hacienda. No es un programa de Hacienda ni un impuesto nuevo: es un requisito para el software con el que facturas.</p>
+  <h2>A quién afecta y a quién no</h2>
+  <ul>
+    <li><b>Afecta</b> a autónomos y empresas del territorio común que facturan con un programa o una aplicación.</li>
+    <li><b>No afecta</b> a quien factura a mano en talonario, ni a quien usa Excel o Word solo para escribir, imprimir y guardar las facturas.</li>
+    <li><b>No afecta</b> a quien ya está en el SII, ni en el País Vasco y Navarra, que tienen su propia normativa.</li>
+  </ul>
+  <h2>Qué hacer ahora</h2>
+  <ol>
+    <li>Si usas un programa: pregunta a tu proveedor si está adaptado y pide su declaración responsable.</li>
+    <li>Si usas Excel con fórmulas o plantillas que numeran solas: coméntalo con tu gestoría.</li>
+    <li>No compres nada por miedo: con las fechas vigentes tienes hasta 2027, y Hacienda ha anunciado otro retraso.</li>
+  </ol>
+  <p class="nota-prosa">Fuentes: Real Decreto 1007/2023, modificado por el Real Decreto-ley 15/2025 (BOE de 3 de diciembre de 2025); preguntas frecuentes de la Agencia Tributaria sobre los sistemas informáticos de facturación (<a href="https://sede.agenciatributaria.gob.es/Sede/iva/sistemas-informaticos-facturacion-verifactu/preguntas-frecuentes/cuestiones-generales-ambitos-aplicacion.html" rel="noopener">sede.agenciatributaria.gob.es</a>); anuncio del aplazamiento a 2028 recogido por la prensa el 5 de octubre de 2026 (<a href="https://www.eleconomista.es/economia/noticias/14018805/10/26/hacienda-vuelve-a-retrasar-la-entrada-en-vigor-de-verifactu-hasta-octubre-de-2028.html" rel="noopener">elEconomista</a>). Revisado el 19 de octubre de 2026.</p>
+</HerramientaPagina>
