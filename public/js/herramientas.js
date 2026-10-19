@@ -296,19 +296,4 @@
     vf.addEventListener('change', pintar);
   })();
 
-  /* ─── comparador de presupuestos de web a 3 años ─── */
-  var cp = $('[data-compara]');
-  if (cp) (function () {
-    function pintar() {
-      var ofs = $$('[data-oferta]', cp).map(function (o) { return { o: o, t: Math.max(0, num($('[data-ini]', o))) + Math.max(0, num($('[data-mes]', o))) * 36 }; });
-      var max = Math.max.apply(null, ofs.map(function (x) { return x.t; })) || 1;
-      var min = Math.min.apply(null, ofs.map(function (x) { return x.t; }));
-      ofs.forEach(function (x) {
-        $('[data-tot]', x.o).textContent = eur(x.t);
-        $('[data-barra-o]', x.o).style.transform = 'scaleX(' + (x.t / max) + ')';
-        x.o.classList.toggle('barata', x.t === min);
-      });
-    }
-    cp.addEventListener('input', pintar); pintar();
-  })();
 })();

@@ -39,10 +39,12 @@ export default defineConfig({
     '/recursos/caso-asesoria-archivo-digital-cliente-web/': '/soluciones/software-a-medida/',
     '/recursos/caso-hosteleria-tpv-inteligente-margen/': '/recursos/erp-hosteleria-tpv-restaurantes/',
     '/recursos/caso-agencia-servicios-pipeline-automatizado/': '/recursos/gestion-leads-agencia-sin-crm/',
+    // 19-oct-2026: retirada la herramienta de precio de una web (decisión del fundador)
+    '/herramientas/cuanto-cuesta-una-pagina-web/': '/soluciones/webs-y-tiendas/',
   },
   integrations: [
     sitemap({
-      filter: (page) => !/\/(servicios|precios|diagnostico|services|cases|pricing|resources|contact|demo|product)\/$/.test(page) && !page.includes('/recursos/caso-') && !page.includes('/404') && !fueraDelSitemap.some((p) => page.endsWith(p)),
+      filter: (page) => !/\/(servicios|precios|diagnostico|services|cases|pricing|resources|contact|demo|product)\/$/.test(page) && !page.includes('/recursos/caso-') && !page.includes('/cuanto-cuesta-una-pagina-web/') && !page.includes('/404') && !fueraDelSitemap.some((p) => page.endsWith(p)),
     }),
   ],
 });

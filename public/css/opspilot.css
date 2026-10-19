@@ -1340,23 +1340,6 @@ textarea.hz-texto{resize:vertical}
 .hz-linea li.tuyo b{color:var(--ambar)}
 .hz-linea .hz-anuncio{opacity:.75}
 .hz-linea .hz-anuncio::before{background:none;border:2px dashed #8E9BAA;width:6px;height:6px}
-/* comparador de presupuestos */
-.hz-oferta{border:1.5px solid var(--ui-line);border-radius:.6rem;padding:.9rem 1rem;transition:border-color .2s}
-.hz-oferta.barata{border-color:var(--verde-h)}
-.hz-oferta legend{font:800 1rem/1 var(--display);margin-bottom:.6rem}
-.hz-oferta-campos{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;clear:both}
-.hz-oferta-total{display:flex;align-items:baseline;gap:.5rem;margin:.8rem 0 .4rem}
-.hz-oferta-total b{font:800 1.6rem/1 var(--display);letter-spacing:-.02em;color:var(--ui-ink)}
-.hz-oferta-total span{color:var(--ui-mut);font-size:.88rem}
-.hz-oferta.barata .hz-oferta-total b{color:var(--verde-h)}
-.hz-barra-total{height:8px;border-radius:99rem;background:#EEF0F3;overflow:hidden}
-.hz-barra-total i{display:block;height:100%;background:var(--navy);transform-origin:0 50%;transition:transform .4s var(--curva)}
-.hz-oferta.barata .hz-barra-total i{background:var(--verde)}
-.hz-tabla-wrap{overflow-x:auto;margin-top:1rem}
-.hz-tabla{width:100%;border-collapse:collapse;font-size:.95rem;min-width:34rem}
-.hz-tabla th{text-align:left;font:700 .68rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gris-papel);padding:.6rem .5rem;border-bottom:2px solid var(--navy)}
-.hz-tabla td{padding:.75rem .5rem;border-bottom:1px solid rgb(15 22 32/.1);vertical-align:top}
-.hz-nosotros td{background:var(--verde-s)}
 /* índice agrupado */
 .hz-grupo+.hz-grupo{margin-top:clamp(2.2rem,4vw,3.2rem)}
 .hz-grupo h3{font-weight:760;font-size:clamp(1.3rem,1.1rem + .6vw,1.7rem);color:#fff;letter-spacing:-.015em}
