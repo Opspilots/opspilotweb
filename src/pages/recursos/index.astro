@@ -3,12 +3,14 @@ import Base from '../../layouts/Base.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import Cierre from '../../components/Cierre.astro';
 import { RESOURCES } from '../../lib/resources';
-import { HERRAMIENTAS } from '../../data/herramientas';
+import { HERRAMIENTAS, GRUPOS } from '../../data/herramientas';
 import { migas, SITE_URL, WA } from '../../lib/sitio';
 
-const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos', path: '/recursos/' }];
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos gratis', path: '/recursos/' }];
 // Destacados primero y después por fecha, lo más reciente arriba.
-const lista = [...RESOURCES].sort((a, b) => Number(!!b.featured) - Number(!!a.featured) || (b.date ?? '').localeCompare(a.date ?? ''));
+// Orden: lo que sirve a un pequeño negocio primero (checklist, guías, artículos) y los productos al final.
+const ORDEN = ['Checklist', 'Guía', 'Artículo', 'Producto'];
+const lista = [...RESOURCES].sort((a, b) => ORDEN.indexOf(a.cat) - ORDEN.indexOf(b.cat) || Number(!!b.featured) - Number(!!a.featured) || (b.date ?? '').localeCompare(a.date ?? ''));
 // Por dónde empezar: la situación con las palabras del dueño y la guía que le toca.
 const EMPIEZA = [
   ['Mi web no me trae clientes.', 'checklist-tu-web-trabaja-para-ti'],
@@ -16,7 +18,7 @@ const EMPIEZA = [
   ['Quiero automatizar, pero no sé qué.', 'automatiza-tu-negocio-sin-saber-de-tecnologia'],
   ['Voy a pedir presupuesto y no quiero que me timen.', 'como-pedir-presupuesto-de-software'],
 ].map(([sit, slug]) => ({ sit, r: RESOURCES.find((x) => x.slug === slug)! })).filter((x) => x.r);
-const CATS = [...new Set(RESOURCES.map((r) => r.cat))];
+const CATS = ORDEN.filter((c) => RESOURCES.some((r) => r.cat === c));
 const blog = {
   '@type': 'Blog',
   name: 'Recursos de OpsPilot',
@@ -24,8 +26,8 @@ const blog = {
   blogPost: lista.map((r) => ({ '@type': 'BlogPosting', headline: r.title, url: `${SITE_URL}/recursos/${r.slug}/`, ...(r.date ? { datePublished: r.date } : {}) })),
 };
 ---
-<Base title="Recursos: guías de software y digitalización · OpsPilot"
-  description="Guías, casos prácticos y checklists para digitalizar una pyme sin tecnicismos: cuándo pedir software a medida, cómo migrar de Excel, qué automatizar primero."
+<Base title="Recursos gratis para pequeños negocios · OpsPilot"
+  description="Herramientas y guías gratis para pequeños negocios: Google Maps, reseñas, WhatsApp, presupuestos, IVA e IRPF, Verifactu y cómo digitalizarte sin tecnicismos."
   path="/recursos/" jsonld={[migas(M), blog]}>
   <CabeceraPagina sobre="Recursos" titulo="Herramientas y guías gratis para tu negocio, sin tecnicismos."
     entrada="Lo que explicamos en las primeras conversaciones, por escrito y gratis. Para decidir con criterio antes de gastar un euro.">
@@ -36,16 +38,23 @@ const blog = {
   <section class="s-papel" aria-labelledby="t-gratis">
     <div class="wrap">
       <p class="etiqueta">Herramientas gratis</p>
-      <h2 id="t-gratis" class="h2">Resuélvelo ahora, sin registrarte.</h2>
-      <ul class="hz-otras">
-        {HERRAMIENTAS.map((o) => (
-          <li><a href={`/herramientas/${o.slug}/`}>
-            <span class="hz-otras-ico"><svg class="ico" aria-hidden="true"><use href={`#i-${o.icono}`}/></svg></span>
-            <span><small>«{o.busqueda}»</small><b>{o.nombre}</b></span>
-            <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
-          </a></li>
+      <h2 id="t-gratis" class="h2">Resuélvelo ahora, en dos minutos.</h2>
+      <div class="rec-grupos">
+        {GRUPOS.map((g) => (
+          <div>
+            <h3 class="rec-grupo-t">{g.titulo}</h3>
+            <ul class="hz-otras">
+              {HERRAMIENTAS.filter((o) => o.grupo === g.id).map((o) => (
+                <li><a href={`/herramientas/${o.slug}/`}>
+                  <span class="hz-otras-ico"><svg class="ico" aria-hidden="true"><use href={`#i-${o.icono}`}/></svg></span>
+                  <span><small>«{o.busqueda}»</small><b>{o.nombre}</b></span>
+                  <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+                </a></li>
+              ))}
+            </ul>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   </section>
   <section class="s-navy" aria-labelledby="t-empieza">
@@ -65,7 +74,7 @@ const blog = {
   </section>
   <section class="s-papel" aria-labelledby="t-rec">
     <div class="wrap">
-      <h2 id="t-rec" class="h2">Todas las guías, casos y checklists.</h2>
+      <h2 id="t-rec" class="h2">Guías para leer con calma.</h2>
       <div class="recursos-filtro" role="group" aria-label="Filtrar por tipo" data-filtro hidden>
         <button type="button" aria-pressed="true" data-cat="">Todo</button>
         {CATS.map((c) => <button type="button" aria-pressed="false" data-cat={c}>{c}</button>)}
