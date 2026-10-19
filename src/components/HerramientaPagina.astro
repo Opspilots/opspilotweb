@@ -26,7 +26,7 @@ const app = {
 const otras = HERRAMIENTAS.filter((x) => x.slug !== slug && x.grupo === h.grupo).concat(HERRAMIENTAS.filter((x) => x.grupo !== h.grupo)).slice(0, 4);
 ---
 <Base title={title} description={description} path={path}
-  jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Herramientas', path: '/herramientas/' }, { nombre: h.nombre, path }]), app, faqSchema(faq)]}>
+  jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos gratis', path: '/recursos/' }, { nombre: h.nombre, path }]), app, faqSchema(faq)]}>
   <CabeceraPagina titulo={h1} entrada={entrada}>
     <p class="hz-gratis"><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Gratis, sin registrarte. Lo que escribes no sale de tu navegador.</p>
   </CabeceraPagina>

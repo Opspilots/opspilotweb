@@ -10,8 +10,7 @@ export const NAV = [
   { href: '/soluciones/', label: 'Soluciones' },
   { href: '/casos/', label: 'Casos' },
   { href: '/productos/', label: 'Productos' },
-  { href: '/herramientas/', label: 'Gratis' },
-  { href: '/recursos/', label: 'Recursos' },
+  { href: '/recursos/', label: 'Recursos gratis' },
 ] as const;
 
 export const LINEAS = [
