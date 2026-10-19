@@ -8,13 +8,12 @@ export interface Herramienta {
   busqueda: string;
   frase: string;
   icono: string;
-  grupo: 'google' | 'dinero' | 'antes';
+  grupo: 'google' | 'dinero';
 }
 
 export const GRUPOS = [
   { id: 'google', titulo: 'Que te encuentren y te elijan' },
   { id: 'dinero', titulo: 'Papeles, precios y facturas' },
-  { id: 'antes', titulo: 'Antes de contratar a nadie' },
 ] as const;
 
 export const HERRAMIENTAS: Herramienta[] = [
@@ -27,7 +26,6 @@ export const HERRAMIENTAS: Herramienta[] = [
   { slug: 'responder-resenas', nombre: 'Respuestas a reseñas de Google', busqueda: '¿Cómo respondo a una reseña negativa?', frase: 'Elige el caso y te sale una respuesta con tu nombre, lista para copiar.', icono: 'messages-square', grupo: 'google' },
   { slug: 'enlace-whatsapp', nombre: 'Enlace de WhatsApp con mensaje y QR', busqueda: '¿Cómo hago que me escriban por WhatsApp desde la web?', frase: 'Tu enlace wa.me con el mensaje escrito, su QR y el botón para tu web.', icono: 'message-circle', grupo: 'google' },
   { slug: 'verifactu-me-afecta', nombre: '¿Te afecta Verifactu?', busqueda: '¿Verifactu me afecta? ¿Cuándo?', frase: 'Cuatro preguntas y te decimos si te afecta, desde cuándo y qué hacer.', icono: 'shield-check', grupo: 'dinero' },
-  { slug: 'cuanto-cuesta-una-pagina-web', nombre: '¿Cuánto cuesta una página web en España?', busqueda: '¿Cuánto cuesta una página web?', frase: 'Precios publicados por agencias y un comparador de presupuestos a tres años.', icono: 'globe', grupo: 'antes' },
 ];
 
 export const herramienta = (slug: string) => HERRAMIENTAS.find((h) => h.slug === slug)!;
