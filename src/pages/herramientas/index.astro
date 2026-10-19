@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import Cierre from '../../components/Cierre.astro';
-import { HERRAMIENTAS } from '../../data/herramientas';
+import { HERRAMIENTAS, GRUPOS } from '../../data/herramientas';
 import { migas, SITE_URL } from '../../lib/sitio';
 const lista = {
   '@type': 'ItemList', name: 'Herramientas gratis para pequeños negocios',
@@ -10,7 +10,7 @@ const lista = {
 };
 ---
 <Base title="Herramientas gratis para pequeños negocios · OpsPilot"
-  description="Herramientas gratis para autónomos y pequeños negocios: diagnóstico de Google Maps, plantilla de presupuesto de obra, calculadora de IVA e IRPF y de margen."
+  description="Herramientas gratis para autónomos y pequeños negocios: Google Maps, reseñas, WhatsApp, presupuestos, IVA e IRPF, margen, Verifactu y precio de una web."
   path="/herramientas/" jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Herramientas', path: '/herramientas/' }]), lista]}>
   <CabeceraPagina titulo="Herramientas gratis para pequeños negocios."
     entrada="Para lo que te preguntas cada semana: por qué no sales en Google, cuánto poner de IVA, cuánto cobrar, cómo hacer un presupuesto. Sin registrarte." />
@@ -18,15 +18,20 @@ const lista = {
     <div class="wrap">
       <p class="etiqueta">Elige por lo que te pasa</p>
       <h2 id="t-hz" class="h2">¿Qué necesitas resolver hoy?</h2>
-      <ol class="empieza">
-        {HERRAMIENTAS.map((h) => (
-          <li><a href={`/herramientas/${h.slug}/`}>
-            <span class="empieza-sit">«{h.busqueda}»</span>
-            <span class="empieza-guia"><small>Herramienta gratis</small>{h.nombre}. {h.frase}</span>
-            <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
-          </a></li>
-        ))}
-      </ol>
+      {GRUPOS.map((g) => (
+        <div class="hz-grupo">
+          <h3>{g.titulo}</h3>
+          <ol class="empieza">
+            {HERRAMIENTAS.filter((h) => h.grupo === g.id).map((h) => (
+              <li><a href={`/herramientas/${h.slug}/`}>
+                <span class="empieza-sit">«{h.busqueda}»</span>
+                <span class="empieza-guia"><small>Gratis</small>{h.nombre}. {h.frase}</span>
+                <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+              </a></li>
+            ))}
+          </ol>
+        </div>
+      ))}
       <p class="lead" style="margin-top:2rem">¿Prefieres leerlo con calma? <a class="enlace enlace-claro" href="/recursos/">Guías sin tecnicismos <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a></p>
     </div>
   </section>

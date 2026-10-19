@@ -150,10 +150,165 @@
         t.className = el.className + ' pz-txt'; t.textContent = v; el.replaceWith(t);
       });
       $$('.hz-noprint', hoja).forEach(function (x) { x.remove(); });
-      var cont = document.createElement('div'); cont.id = 'pz-print'; cont.appendChild(hoja);
+      var cont = document.createElement('div'); cont.id = 'pz-print'; cont.className = 'solo-imprimir'; cont.appendChild(hoja);
       document.body.appendChild(cont);
       window.print();
       setTimeout(function () { cont.remove(); }, 500);
     });
+  })();
+
+  /* ─── común: QR (generador MIT de Kazuhiko Arase, /js/qrcode.min.js) en un canvas descargable ─── */
+  function pintarQR(caja, texto, descargar) {
+    if (!window.qrcode) return false;
+    var q = window.qrcode(0, 'M'); q.addData(texto); q.make();
+    var n = q.getModuleCount(), m = 4, t = 10, c = document.createElement('canvas');
+    c.width = c.height = (n + m * 2) * t;
+    var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.fillStyle = '#0F1620';
+    for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (q.isDark(r, k)) x.fillRect((k + m) * t, (r + m) * t, t, t);
+    c.setAttribute('role', 'img'); c.setAttribute('aria-label', 'Código QR de ' + texto);
+    caja.innerHTML = ''; caja.appendChild(c);
+    if (descargar) descargar.href = c.toDataURL('image/png');
+    return c;
+  }
+  var copiar = function (txt, btn) {
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(txt).then(function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o; }, 1600); });
+  };
+
+  /* ─── listas que se van marcando (Google Maps paso a paso, preguntas antes de firmar) ─── */
+  $$('[data-checklist]').forEach(function (cl) {
+    var KEY = 'opspilot-check-' + cl.dataset.checklist, cajas = $$('input[type=checkbox]', cl);
+    var hecho = $('[data-hecho]', cl), barra = $('[data-barra]', cl), fin = $('[data-fin]', cl);
+    var marcadas = []; try { marcadas = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
+    cajas.forEach(function (c, i) { c.checked = marcadas.indexOf(i) > -1; });
+    function pintar() {
+      var on = cajas.filter(function (c) { return c.checked; }).length;
+      if (hecho) hecho.textContent = on + ' de ' + cajas.length;
+      if (barra) barra.style.transform = 'scaleX(' + (on / cajas.length) + ')';
+      if (fin) fin.hidden = on < cajas.length;
+      try { localStorage.setItem(KEY, JSON.stringify(cajas.map(function (c, i) { return c.checked ? i : -1; }).filter(function (i) { return i > -1; }))); } catch (e) {}
+    }
+    cl.addEventListener('change', pintar); pintar();
+  });
+
+  /* ─── reseñas: enlace + QR + cartel + mensajes ─── */
+  var rs = $('[data-resenas]');
+  if (rs) (function () {
+    var neg = $('[data-negocio]', rs), en = $('[data-enlace]', rs), est = $('[data-estado]', rs), qr = $('[data-qr]', rs), acc = $('[data-qr-acciones]', rs);
+    var msgs = $('[data-mensajes]', rs), msg = $('[data-msg]', rs), wa = $('[data-wa]', rs), url = '';
+    var MSG = [
+      'Hola, te escribimos de {n}. Gracias por confiar en nosotros. Si te ha gustado el trabajo, nos ayudaría mucho que lo contaras en Google, es un minuto: {u}',
+      'Hola, te escribimos de {n}. ¿Qué tal todo después de ayer? Si estás contento, una reseña en Google nos ayuda a que nos encuentren otros vecinos: {u}',
+      'Hola, te escribimos de {n}. Llevamos tiempo trabajando juntos y nos ayudaría mucho tu opinión en Google. Aquí tienes el enlace directo: {u} ¡Gracias!'
+    ];
+    var normal = function (v) {
+      v = v.trim(); if (!v) return '';
+      if (/^ChIJ[\w-]{10,}$/.test(v)) return 'https://search.google.com/local/writereview?placeid=' + v;
+      if (!/^https?:\/\//.test(v)) v = 'https://' + v;
+      try { var h = new URL(v).hostname; return /(^|\.)(g\.page|google\.[a-z.]+|goo\.gl)$/.test(h) ? v : ''; } catch (e) { return ''; }
+    };
+    function pintar() {
+      url = normal(en.value);
+      var nombre = neg.value.trim();
+      if (!en.value.trim()) { est.textContent = 'Pega tu enlace y aquí aparece todo lo demás.'; msgs.hidden = true; acc.hidden = true; return; }
+      if (!url) { est.textContent = 'Ese enlace no parece de Google. Usa el de «Pedir reseñas» de tu ficha, o tu Place ID (empieza por ChIJ).'; msgs.hidden = true; acc.hidden = true; return; }
+      est.textContent = 'Listo: este enlace abre directamente la ventana para escribir la reseña' + (nombre ? ' de ' + nombre : '') + '.';
+      if (pintarQR(qr, url, $('[data-descargar]', rs))) acc.hidden = false;
+      var t = MSG[+radio(rs, 'tono')].replace('{n}', nombre || 'nuestro negocio').replace('{u}', url);
+      msg.textContent = t; wa.href = 'https://wa.me/?text=' + encodeURIComponent(t); msgs.hidden = false;
+    }
+    rs.addEventListener('input', pintar); rs.addEventListener('change', pintar);
+    $('[data-copiar-msg]', rs).addEventListener('click', function (e) { copiar(msg.textContent, e.currentTarget); });
+    $('[data-cartel]', rs).addEventListener('click', function () {
+      var c = $('canvas', qr); if (!c) return;
+      var d = document.createElement('div'); d.className = 'solo-imprimir hz-cartel';
+      d.innerHTML = '<p class="hz-cartel-t">¿Te ha gustado?</p><p class="hz-cartel-s">Cuéntalo en Google. Es un minuto y nos ayuda mucho.</p><img alt="" src="' + c.toDataURL('image/png') + '"><p class="hz-cartel-n"></p><p class="hz-cartel-p">Apunta con la cámara del móvil al código</p>';
+      $('.hz-cartel-n', d).textContent = neg.value.trim();
+      document.body.appendChild(d); window.print(); setTimeout(function () { d.remove(); }, 500);
+    });
+  })();
+
+  /* ─── respuestas a reseñas ─── */
+  var rp = $('[data-respuestas]');
+  if (rp) (function () {
+    var R = {
+      5: [['¡Muchas gracias, {c}! Nos alegra mucho que hayas quedado contento con {t}. Aquí nos tienes para lo que necesites. {f}', 'Gracias a ti, {c}, por confiar en nosotros para {t}. Da gusto trabajar así. Un saludo. {f}'], 'Corta y personal. Nombrar el trabajo ayuda a que otros sepan qué haces.'],
+      4: [['Gracias por tu reseña, {c}. Nos alegra que te gustara {t}. Si hay algo que podamos mejorar para la próxima, cuéntanoslo: lo tendremos en cuenta. {f}', 'Muchas gracias, {c}. Nos quedamos con lo bueno de {t} y con las ganas de llegar a las cinco estrellas la próxima vez. {f}'], 'Agradece y deja la puerta abierta a saber qué faltó.'],
+      3: [['Gracias por contarlo, {c}. Sentimos que {t} no fuera del todo como esperabas. Nos gustaría saber qué podemos mejorar: escríbenos o llámanos y lo hablamos. {f}', 'Gracias por tu opinión, {c}. Queremos que quedes contento del todo con {t}: cuéntanos qué pasó y vemos cómo solucionarlo. {f}'], 'Una reseña de tres estrellas suele ser recuperable: invita a hablar en privado.'],
+      retraso: [['{c}, tienes razón: {t} se alargó más de lo que te dijimos, y lo sentimos. No es como queremos trabajar. Escríbenos y te explicamos qué pasó. {f}', 'Sentimos el retraso con {t}, {c}. Ya hemos cambiado cómo planificamos para que no se repita. Si quieres, lo hablamos por teléfono. {f}'], 'Reconoce el retraso sin excusas largas y explica qué cambias.'],
+      precio: [['Gracias por tu opinión, {c}. Entendemos que el precio de {t} te pareció alto. Damos el presupuesto cerrado y por escrito antes de empezar; si quieres, lo repasamos juntos partida a partida. {f}', '{c}, gracias por contarlo. Nuestro precio incluye materiales y garantía, pero entendemos que cada uno lo valora distinto. Si quieres, lo hablamos en privado. {f}'], 'No discutas la cifra en público: explica qué incluye y ofrece repasarlo en privado.'],
+      trato: [['{c}, sentimos mucho cómo te sentiste. No es la forma en que queremos tratar a nadie. Nos gustaría saber qué pasó exactamente: llámanos o escríbenos y lo hablamos. {f}', 'Lamentamos lo que cuentas, {c}. Nos importa mucho cómo atendemos y queremos entenderlo bien: escríbenos, por favor. {f}'], 'Pide perdón por cómo se sintió, sin entrar a discutir quién dijo qué.'],
+      calidad: [['{c}, sentimos que {t} no quedara como esperabas. Queremos revisarlo contigo: llámanos y pasamos a verlo. {f}', 'Gracias por avisarnos, {c}. Si algo de {t} no está bien, lo revisamos sin compromiso. Escríbenos y quedamos. {f}'], 'Ofrecer ir a verlo convence a quien lee más que cualquier explicación.'],
+      falsa: [['Hola, {c}. No encontramos tu nombre entre nuestros clientes ni ningún trabajo que coincida con lo que cuentas. Si has trabajado con nosotros, escríbenos y lo aclaramos. {f}', 'Hola, {c}. No tenemos registrado ningún trabajo que coincida con esta reseña. Si se trata de un error, escríbenos y lo revisamos con gusto. {f}'], 'Responde con calma y denúnciala desde tu Perfil de Empresa como contenido que incumple las normas.']
+    };
+    var v = 0, out = $('[data-respuesta]', rp), con = $('[data-consejo]', rp), mot = $('[data-motivos]', rp);
+    function pintar() {
+      var e = radio(rp, 'est'); mot.hidden = e !== '1';
+      var x = R[e === '1' ? radio(rp, 'mot') : e];
+      var c = $('[data-cliente]', rp).value.trim(), t = $('[data-trabajo]', rp).value.trim() || 'el trabajo', f = $('[data-firma]', rp).value.trim();
+      var txt = x[0][v % x[0].length].replace(/\{t\}/g, t).replace(/\{f\}/g, f ? '— ' + f : '');
+      txt = c ? txt.replace(/\{c\}/g, c) : txt.replace(/,? ?\{c\}/g, '').replace(/^, ?/, '').replace(/ ,/g, ',');
+      txt = txt.replace(/\s+/g, ' ').trim().replace(/^[a-záéíóúñ]/, function (m) { return m.toUpperCase(); });
+      out.textContent = txt; con.textContent = x[1];
+    }
+    rp.addEventListener('input', pintar); rp.addEventListener('change', function () { v = 0; pintar(); });
+    $('[data-otra]', rp).addEventListener('click', function () { v++; pintar(); });
+    $('[data-copiar-r]', rp).addEventListener('click', function (e) { copiar(out.textContent, e.currentTarget); });
+    pintar();
+  })();
+
+  /* ─── enlace de WhatsApp ─── */
+  var wg = $('[data-wagen]');
+  if (wg) (function () {
+    var tel = $('[data-tel]', wg), txt = $('[data-txt]', wg), en = $('[data-enlace-wa]', wg), cod = $('[data-codigo]', wg), qr = $('[data-qr]', wg), acc = $('[data-qr-acciones]', wg), url = '';
+    function pintar() {
+      var n = tel.value.replace(/[^\d]/g, '').replace(/^00/, '');
+      if (n.length === 9 && /^[6789]/.test(n)) n = '34' + n;
+      if (n.length < 10) { en.textContent = 'Pon tu número.'; cod.textContent = ''; acc.hidden = true; url = ''; return; }
+      url = 'https://wa.me/' + n + (txt.value.trim() ? '?text=' + encodeURIComponent(txt.value.trim()) : '');
+      en.textContent = url; $('[data-probar]', wg).href = url;
+      cod.textContent = '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-block;padding:12px 18px;border-radius:8px;background:#25D366;color:#fff;font-weight:700;text-decoration:none">Escríbenos por WhatsApp</a>';
+      if (pintarQR(qr, url, $('[data-descargar]', wg))) acc.hidden = false;
+    }
+    wg.addEventListener('input', pintar);
+    $('[data-copiar-enlace]', wg).addEventListener('click', function (e) { if (url) copiar(url, e.currentTarget); });
+    $('[data-copiar-codigo]', wg).addEventListener('click', function (e) { if (url) copiar(cod.textContent, e.currentTarget); });
+    pintar();
+  })();
+
+  /* ─── ¿Te afecta Verifactu? (norma vigente: RD-ley 15/2025) ─── */
+  var vf = $('[data-verifactu]');
+  if (vf) (function () {
+    var ver = $('[data-vf-veredicto]', vf), tx = $('[data-vf-texto]', vf);
+    function poner(res, a, b) { ver.textContent = a; tx.textContent = b; vf.dataset.res = res; }
+    function pintar() {
+      var t = radio(vf, 'terr'), c = radio(vf, 'como'), s = radio(vf, 'sii'), f = radio(vf, 'forma');
+      $$('[data-hito]', vf).forEach(function (h) { h.classList.remove('tuyo'); });
+      if (t === 'foral') return poner('no', 'No con esta norma.', 'En el País Vasco y Navarra rige su propia normativa foral (en el País Vasco, TicketBAI). Consúltalo con tu gestoría.');
+      if (c === 'talonario') return poner('no', 'No te afecta.', 'Si haces las facturas a mano, sin ningún programa, el reglamento no se te aplica.');
+      if (c === 'excel') return poner('no', 'En principio, no te afecta.', 'Si usas Excel o Word solo para escribir, imprimir y guardar las facturas, la Agencia Tributaria dice que no te afecta. Si tu plantilla numera sola o tiene macros, coméntalo con tu gestoría.');
+      if (s === 'si') return poner('no', 'No te afecta.', 'Quien ya cumple con el SII queda fuera de este reglamento.');
+      if (!t || !c || !s || !f) return poner('', 'Sigue contestando.', '');
+      var soc = f === 'sociedad';
+      $('[data-hito="' + (soc ? 'soc' : 'aut') + '"]', vf).classList.add('tuyo');
+      poner('si', 'Sí te afecta: antes del ' + (soc ? '1 de enero de 2027' : '1 de julio de 2027') + '.', 'Es la fecha de la norma vigente. Pide a tu proveedor que te confirme que su programa está adaptado (su «declaración responsable») y actualízalo antes. Hacienda ha anunciado que quiere retrasarlo a octubre de 2028, pero aún no está en el BOE.');
+    }
+    vf.addEventListener('change', pintar);
+  })();
+
+  /* ─── comparador de presupuestos de web a 3 años ─── */
+  var cp = $('[data-compara]');
+  if (cp) (function () {
+    function pintar() {
+      var ofs = $$('[data-oferta]', cp).map(function (o) { return { o: o, t: Math.max(0, num($('[data-ini]', o))) + Math.max(0, num($('[data-mes]', o))) * 36 }; });
+      var max = Math.max.apply(null, ofs.map(function (x) { return x.t; })) || 1;
+      var min = Math.min.apply(null, ofs.map(function (x) { return x.t; }));
+      ofs.forEach(function (x) {
+        $('[data-tot]', x.o).textContent = eur(x.t);
+        $('[data-barra-o]', x.o).style.transform = 'scaleX(' + (x.t / max) + ')';
+        x.o.classList.toggle('barata', x.t === min);
+      });
+    }
+    cp.addEventListener('input', pintar); pintar();
   })();
 })();

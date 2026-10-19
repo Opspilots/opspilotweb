@@ -33,10 +33,16 @@ export default defineConfig({
     '/contact/': '/contacto/',
     '/demo/': '/contacto/',
     '/product/': '/recursos/',
+    // 19-oct-2026: fuera los casos «ilustrativos» (inventados); cada uno a lo real más cercano
+    '/recursos/caso-reformas-de-excel-a-sistema/': '/productos/presupuesya/',
+    '/recursos/caso-energydeal-comercializadora-excel/': '/recursos/energydeal-crm-energetico/',
+    '/recursos/caso-asesoria-archivo-digital-cliente-web/': '/soluciones/software-a-medida/',
+    '/recursos/caso-hosteleria-tpv-inteligente-margen/': '/recursos/erp-hosteleria-tpv-restaurantes/',
+    '/recursos/caso-agencia-servicios-pipeline-automatizado/': '/recursos/gestion-leads-agencia-sin-crm/',
   },
   integrations: [
     sitemap({
-      filter: (page) => !/\/(servicios|precios|diagnostico|services|cases|pricing|resources|contact|demo|product)\/$/.test(page) && !page.includes('/404') && !fueraDelSitemap.some((p) => page.endsWith(p)),
+      filter: (page) => !/\/(servicios|precios|diagnostico|services|cases|pricing|resources|contact|demo|product)\/$/.test(page) && !page.includes('/recursos/caso-') && !page.includes('/404') && !fueraDelSitemap.some((p) => page.endsWith(p)),
     }),
   ],
 });

@@ -1,0 +1,68 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+import { WA } from '../../lib/sitio';
+---
+<HerramientaPagina slug="responder-resenas"
+  title="Cómo responder a reseñas negativas: ejemplos gratis"
+  description="Ejemplos de respuesta a reseñas de Google, buenas y negativas: retraso, precio, trato, calidad o reseña falsa. Elige el caso y copia la respuesta con tu nombre."
+  h1="Cómo responder a reseñas en Google: ejemplos listos para copiar."
+  entrada="Elige las estrellas y lo que pasó. Te sale una respuesta con el nombre del cliente y el tuyo, corta y sin discutir. Cámbiala a tu manera antes de publicarla."
+  faq={[
+    { q: '¿Hay que responder también a las reseñas buenas?', a: 'Sí. Quien te compara lee las respuestas: un negocio que contesta a todas transmite que está pendiente. Basta una frase personal; mejor si nombras el trabajo.' },
+    { q: '¿Qué no hay que poner nunca en una respuesta?', a: 'Datos personales del cliente (dirección, importe, detalles de su casa), acusaciones o discusiones. La respuesta la lee todo el mundo durante años: escríbela para el próximo cliente, no para ganar al que se queja.' },
+    { q: '¿Puedo borrar una reseña negativa?', a: 'No. Solo puedes denunciarla desde tu Perfil de Empresa si incumple las normas de Google (por ejemplo, si no es un cliente, es spam o contiene insultos). Google la revisa y decide.' },
+    { q: '¿En cuánto tiempo hay que responder?', a: 'Cuanto antes, mejor: idealmente en uno o dos días. Una reseña negativa sin respuesta durante semanas pesa más que la propia queja.' },
+  ]}
+  salida={{ titulo: 'Que nadie se quede sin respuesta.', texto: 'Dentro del mantenimiento te avisamos de cada reseña nueva y te dejamos la respuesta preparada.', href: WA('Hola OpsPilot, quiero ayuda con las reseñas de mi negocio.'), boton: 'Cuéntanos tu caso' }}>
+
+  <form slot="herramienta" class="ventana hz" data-respuestas onsubmit="return false" aria-label="Generador de respuestas a reseñas">
+    <div class="v-barra">
+      <svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+      <span class="v-titulo">Responder a una reseña<small>elige el caso · copia y ajusta</small></span>
+    </div>
+    <div class="hz-cuerpo hz-2col">
+      <div class="hz-campos">
+        <fieldset><legend>¿Cuántas estrellas?</legend>
+          <div class="hz-ops hz-estrellas">
+            <label><input type="radio" name="est" value="5" checked /><span>5 ★</span></label>
+            <label><input type="radio" name="est" value="4" /><span>4 ★</span></label>
+            <label><input type="radio" name="est" value="3" /><span>3 ★</span></label>
+            <label><input type="radio" name="est" value="1" /><span>1-2 ★</span></label>
+          </div>
+        </fieldset>
+        <fieldset data-motivos hidden><legend>¿De qué se queja?</legend>
+          <div class="hz-ops">
+            <label><input type="radio" name="mot" value="retraso" checked /><span>Retraso</span></label>
+            <label><input type="radio" name="mot" value="precio" /><span>Precio</span></label>
+            <label><input type="radio" name="mot" value="trato" /><span>Trato</span></label>
+            <label><input type="radio" name="mot" value="calidad" /><span>Calidad del trabajo</span></label>
+            <label><input type="radio" name="mot" value="falsa" /><span>No es cliente nuestro</span></label>
+          </div>
+        </fieldset>
+        <label class="hz-campo"><span>Nombre del cliente</span><input class="hz-texto" data-cliente placeholder="María" /></label>
+        <label class="hz-campo"><span>Qué le hiciste (opcional)</span><input class="hz-texto" data-trabajo placeholder="la reforma del baño" /></label>
+        <label class="hz-campo"><span>Tu firma</span><input class="hz-texto" data-firma placeholder="Antonio, de Reformas García" /></label>
+      </div>
+      <div class="hz-resultado" aria-live="polite">
+        <p class="hz-res-t">Tu respuesta</p>
+        <p class="hz-respuesta" data-respuesta></p>
+        <p class="hz-consejo" data-consejo></p>
+        <div class="hz-botones">
+          <button type="button" class="btn btn-verde" data-copiar-r>Copiar respuesta</button>
+          <button type="button" class="btn hz-blanco" data-otra>Otra versión</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <h2>Cómo responder a una reseña negativa</h2>
+  <ol>
+    <li><b>Agradece y nombra el problema</b>, sin excusas largas: quien lee quiere ver que lo has entendido.</li>
+    <li><b>Explica en una frase</b> lo que pasó o lo que vas a cambiar, si lo hay.</li>
+    <li><b>Lleva la conversación a privado</b>: un teléfono o un «escríbenos». Los detalles no se discuten en público.</li>
+    <li><b>Firma con tu nombre.</b> Una respuesta de una persona se lee distinta a la de «la dirección».</li>
+  </ol>
+  <h2>Y si la reseña es falsa</h2>
+  <p>Responde con calma diciendo que no encuentras a esa persona entre tus clientes, y denúnciala desde tu Perfil de Empresa como contenido que incumple las normas. No acuses a nadie en público: el próximo cliente solo verá a alguien discutiendo.</p>
+  <p class="nota-prosa">Fuentes: ayuda de Google, «Leer y responder a reseñas» (<a href="https://support.google.com/business/answer/3474050?hl=es" rel="noopener">support.google.com/business/answer/3474050</a>) y normas de contenido de las reseñas (<a href="https://support.google.com/contributionpolicy/answer/7400114?hl=es" rel="noopener">support.google.com/contributionpolicy/answer/7400114</a>).</p>
+</HerramientaPagina>

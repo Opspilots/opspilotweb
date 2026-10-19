@@ -1266,10 +1266,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .pz-acciones{display:flex;flex-wrap:wrap;gap:.8rem 1.2rem;align-items:center;padding:0 clamp(.8rem,2vw,1.4rem) clamp(.8rem,2vw,1.4rem)}
 .pz-totales dt{color:inherit}
 .pz-totales .hz-total dt{color:#16212B}
-#pz-print{display:none}
 @media print{
-  body > *:not(#pz-print){display:none!important}
-  #pz-print{display:block}
   #pz-print .pz-hoja{margin:0;border:0;padding:0}
   #pz-print .pz-txt{display:block;padding:.15rem 0}
   #pz-print .pz-condiciones .pz-txt{white-space:pre-wrap}
@@ -1286,4 +1283,92 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .pz-tabla td{border:0;width:auto!important;padding:0}
   .pz-tabla td:first-child{grid-column:1 / -1}
   .pz-tabla td:first-child input{font-weight:650}
+}
+
+/* ═══ v12 · herramientas, tanda 2 ═══ */
+.hz-texto{width:100%;padding:.7rem .8rem;border:1.5px solid var(--ui-line-2);border-radius:.45rem;font:500 1rem/1.4 var(--display);background:#fff;color:var(--ui-ink)}
+.hz-texto:focus{outline:none;border-color:var(--navy)}
+textarea.hz-texto{resize:vertical}
+.hz-estado{font-size:.92rem;color:var(--ui-mut);margin:0}
+.hz-oscuro{color:var(--verde-h)!important;margin-bottom:.6rem!important}
+.hz-msg{background:#E7F6DD;color:#16291A;border-radius:.7rem .7rem .7rem .15rem;padding:.8rem .9rem;margin:.8rem 0;font-size:.95rem;line-height:1.45}
+.hz-botones{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}
+.hz-blanco{background:#fff;color:var(--navy)}
+.hz-qr-caja{display:grid;place-items:center;min-height:14rem;border-radius:.6rem;background:#fff;color:var(--ui-mut);padding:.8rem;text-align:center}
+.hz-qr-caja canvas{width:100%;max-width:15rem;height:auto;image-rendering:pixelated}
+/* pasos que se van marcando */
+.hz-progreso{height:4px;background:rgb(15 22 32/.08)}
+.hz-progreso i{display:block;height:100%;background:var(--verde);transform-origin:0 50%;transform:scaleX(0);transition:transform .5s var(--curva)}
+.hz-pasos{list-style:none;padding:.6rem clamp(.8rem,2vw,1.4rem) 1rem}
+.hz-pasos li{border-bottom:1px solid var(--ui-line)}
+.hz-pasos li:last-child{border-bottom:0}
+.hz-pasos label{display:grid;grid-template-columns:2.4rem minmax(0,1fr);gap:.2rem .9rem;padding:.95rem 0;cursor:pointer;position:relative}
+.hz-pasos input{position:absolute;opacity:0;pointer-events:none}
+.hz-paso-n{display:grid;place-items:center;width:2.2rem;height:2.2rem;border-radius:50%;border:2px solid var(--ui-line-2);font:800 .95rem/1 var(--display);color:var(--ui-mut);transition:all .25s var(--curva)}
+.hz-pasos input:checked+.hz-paso-n{background:var(--verde);border-color:var(--verde);color:var(--navy)}
+.hz-pasos input:checked+.hz-paso-n::before{content:"✓";font-size:1.05rem}
+.hz-pasos input:checked+.hz-paso-n{font-size:0}
+.hz-pasos input:focus-visible+.hz-paso-n{outline:3px solid var(--ambar);outline-offset:2px}
+.hz-paso-t{display:grid;gap:.2rem}
+.hz-paso-t b{font-size:1.02rem;color:var(--ui-ink)}
+.hz-paso-t span{font-size:.92rem;color:var(--ui-mut);line-height:1.45}
+.hz-pasos input:checked~.hz-paso-t b{text-decoration:line-through;text-decoration-color:var(--verde);text-decoration-thickness:2px;color:var(--ui-mut)}
+.hz-pasos-compactos label{padding:.75rem 0}
+.hz-fin{margin:0 clamp(.8rem,2vw,1.4rem) 1.2rem;padding:.9rem 1rem;border-radius:.6rem;background:var(--verde-s);color:#1B6B43;font-weight:600}
+.hz-fin a{color:inherit}
+/* respuestas */
+.hz-respuesta{background:#fff;color:var(--ui-ink);border-radius:.6rem;padding:1rem;line-height:1.5;margin:0}
+.hz-consejo{margin-top:.8rem;font-size:.9rem;color:#B9C4CF}
+.hz-consejo::before{content:"Consejo · ";font-weight:700;color:var(--verde)}
+/* enlace de WhatsApp */
+.hz-salida{border-top:1px solid var(--ui-line);padding-top:1rem}
+.hz-enlace{font:400 .86rem/1.4 var(--mono);word-break:break-all;color:var(--ui-ink);background:#fff;border:1px solid var(--ui-line);border-radius:.45rem;padding:.6rem .7rem;margin:0}
+.hz-codigo{font:400 .74rem/1.45 var(--mono);white-space:pre-wrap;word-break:break-all;background:var(--navy);color:#C9D3DC;border-radius:.45rem;padding:.7rem;margin:0 0 .6rem;max-height:9rem;overflow:auto}
+.hz-codigo:empty{display:none}
+/* Verifactu */
+.hz-veredicto{font:800 1.5rem/1.15 var(--display);color:#fff;margin:0}
+[data-res="si"] .hz-veredicto{color:var(--ambar)}
+[data-res="no"] .hz-veredicto{color:var(--verde)}
+.hz-vf-texto{margin:.6rem 0 0;font-size:.95rem}
+.hz-vf-texto:empty{display:none}
+.hz-linea{list-style:none;display:grid;gap:0;margin-top:1.2rem;border-left:2px solid rgb(255 255 255/.18);padding-left:1rem}
+.hz-linea li{position:relative;display:grid;gap:.1rem;padding:.55rem 0}
+.hz-linea li::before{content:"";position:absolute;left:calc(-1rem - 6px);top:.85rem;width:10px;height:10px;border-radius:50%;background:#3A4652}
+.hz-linea b{color:#fff}
+.hz-linea span{font-size:.88rem;color:#B9C4CF}
+.hz-linea li.tuyo::before{background:var(--ambar);box-shadow:0 0 0 4px rgb(232 165 99/.25)}
+.hz-linea li.tuyo b{color:var(--ambar)}
+.hz-linea .hz-anuncio{opacity:.75}
+.hz-linea .hz-anuncio::before{background:none;border:2px dashed #8E9BAA;width:6px;height:6px}
+/* comparador de presupuestos */
+.hz-oferta{border:1.5px solid var(--ui-line);border-radius:.6rem;padding:.9rem 1rem;transition:border-color .2s}
+.hz-oferta.barata{border-color:var(--verde-h)}
+.hz-oferta legend{font:800 1rem/1 var(--display);margin-bottom:.6rem}
+.hz-oferta-campos{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;clear:both}
+.hz-oferta-total{display:flex;align-items:baseline;gap:.5rem;margin:.8rem 0 .4rem}
+.hz-oferta-total b{font:800 1.6rem/1 var(--display);letter-spacing:-.02em;color:var(--ui-ink)}
+.hz-oferta-total span{color:var(--ui-mut);font-size:.88rem}
+.hz-oferta.barata .hz-oferta-total b{color:var(--verde-h)}
+.hz-barra-total{height:8px;border-radius:99rem;background:#EEF0F3;overflow:hidden}
+.hz-barra-total i{display:block;height:100%;background:var(--navy);transform-origin:0 50%;transition:transform .4s var(--curva)}
+.hz-oferta.barata .hz-barra-total i{background:var(--verde)}
+.hz-tabla-wrap{overflow-x:auto;margin-top:1rem}
+.hz-tabla{width:100%;border-collapse:collapse;font-size:.95rem;min-width:34rem}
+.hz-tabla th{text-align:left;font:700 .68rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gris-papel);padding:.6rem .5rem;border-bottom:2px solid var(--navy)}
+.hz-tabla td{padding:.75rem .5rem;border-bottom:1px solid rgb(15 22 32/.1);vertical-align:top}
+.hz-nosotros td{background:var(--verde-s)}
+/* índice agrupado */
+.hz-grupo+.hz-grupo{margin-top:clamp(2.2rem,4vw,3.2rem)}
+.hz-grupo h3{font-weight:760;font-size:clamp(1.3rem,1.1rem + .6vw,1.7rem);color:#fff;letter-spacing:-.015em}
+/* imprimir: solo lo que la herramienta prepara (presupuesto, cartel) */
+.solo-imprimir{display:none}
+.hz-cartel{text-align:center;font-family:var(--display);color:#0F1620}
+.hz-cartel img{width:60%;margin:1.5rem auto}
+.hz-cartel-t{font-size:2.6rem;font-weight:800;margin:0}
+.hz-cartel-s{font-size:1.3rem;margin:.6rem 0 0}
+.hz-cartel-n{font-size:1.5rem;font-weight:800;margin:0}
+.hz-cartel-p{font-size:1rem;color:#5E6776;margin:.4rem 0 0}
+@media print{
+  body > *:not(.solo-imprimir){display:none!important}
+  .solo-imprimir{display:block!important}
 }

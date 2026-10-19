@@ -1,0 +1,65 @@
+---
+import HerramientaPagina from '../../components/HerramientaPagina.astro';
+import { WA } from '../../lib/sitio';
+---
+<HerramientaPagina slug="pedir-resenas-google" qr
+  title="Cómo conseguir reseñas en Google: enlace y QR gratis"
+  description="Consigue reseñas en Google sin comprarlas: crea tu enlace directo, un código QR para el mostrador, un cartel para imprimir y el mensaje listo para WhatsApp."
+  h1="Cómo conseguir reseñas en Google: tu enlace, tu QR y el mensaje listo."
+  entrada="Pega el enlace de reseñas de tu ficha y te sale el QR para el mostrador, un cartel para imprimir y tres mensajes para mandar por WhatsApp."
+  faq={[
+    { q: '¿Dónde está mi enlace para pedir reseñas?', a: 'En tu Perfil de Empresa: busca tu negocio en Google con tu cuenta iniciada y pulsa «Pedir reseñas» (o «Compartir formulario de reseña»). Te da un enlace corto que puedes copiar.' },
+    { q: '¿Puedo dar un descuento a cambio de una reseña?', a: 'No. Las normas de Google prohíben ofrecer dinero, descuentos o regalos a cambio de reseñas, y también pedirlas solo a quien sabes que va a hablar bien. Se pueden retirar las reseñas e incluso restringir la ficha.' },
+    { q: '¿Cuándo es mejor pedirla?', a: 'Justo al terminar, cuando el cliente está contento: al entregar el trabajo, al cobrar o al día siguiente como mucho. Con el enlace directo, el cliente tarda menos de un minuto.' },
+    { q: '¿Cuántas reseñas necesito?', a: 'No hay una cifra oficial, pero mucha gente descarta negocios con muy pocas y mira sobre todo las recientes. Una buena meta es llegar a 20 y que sigan entrando cada mes.' },
+    { q: '¿Se guarda mi enlace?', a: 'No. El QR y los mensajes se generan en tu navegador; no se envía nada.' },
+  ]}
+  salida={{ titulo: 'Que las reseñas entren solas.', texto: 'Te montamos el aviso automático que pide la reseña al terminar cada trabajo, y cuidamos tu ficha cada mes.', href: WA('Hola OpsPilot, quiero conseguir más reseñas en Google.'), boton: 'Cuéntanos tu caso' }}>
+
+  <div slot="herramienta" class="ventana hz" data-resenas>
+    <div class="v-barra">
+      <svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
+      <span class="v-titulo">Pedir reseñas en Google<small>enlace · QR · cartel · mensajes</small></span>
+    </div>
+    <div class="hz-cuerpo hz-2col">
+      <div class="hz-campos">
+        <label class="hz-campo"><span>Nombre de tu negocio</span><input class="hz-texto" data-negocio placeholder="Por ejemplo, Reformas García" /></label>
+        <label class="hz-campo"><span>Tu enlace de reseñas</span><small>El de «Pedir reseñas» de tu ficha (g.page/r/…), o tu Place ID.</small><input class="hz-texto" data-enlace placeholder="https://g.page/r/…/review" inputmode="url" /></label>
+        <p class="hz-estado" data-estado>Pega tu enlace y aquí aparece todo lo demás.</p>
+        <div class="hz-mensajes" data-mensajes hidden>
+          <p class="hz-res-t hz-oscuro">Mensajes para WhatsApp</p>
+          <div class="hz-ops hz-seg" data-tono>
+            <label><input type="radio" name="tono" value="0" checked /><span>Al terminar</span></label>
+            <label><input type="radio" name="tono" value="1" /><span>Al día siguiente</span></label>
+            <label><input type="radio" name="tono" value="2" /><span>Cliente de siempre</span></label>
+          </div>
+          <p class="hz-msg" data-msg></p>
+          <div class="hz-botones">
+            <a class="btn btn-tinta" data-wa href="#" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Abrir en WhatsApp</a>
+            <button type="button" class="btn btn-linea" data-copiar-msg>Copiar</button>
+          </div>
+        </div>
+      </div>
+      <div class="hz-resultado hz-qr" aria-live="polite">
+        <p class="hz-res-t">Tu QR para el mostrador</p>
+        <div class="hz-qr-caja" data-qr><p>Aquí saldrá tu código QR.</p></div>
+        <div class="hz-botones" data-qr-acciones hidden>
+          <a class="btn btn-verde" data-descargar download="qr-resenas.png" href="#">Descargar QR</a>
+          <button type="button" class="btn hz-blanco" data-cartel>Imprimir cartel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Cómo conseguir reseñas en Google sin comprarlas</h2>
+  <ol>
+    <li><b>Ten el enlace a mano.</b> Con el enlace directo, el cliente cae en la ventana de escribir la reseña: un toque y cinco estrellas. Sin enlace tiene que buscarte, y no lo hace.</li>
+    <li><b>Pídela en el momento bueno:</b> al entregar el trabajo o al cobrar, cuando el cliente está contento.</li>
+    <li><b>Pídela a todos</b>, no solo a quien sabes que hablará bien: elegir a quién se la pides va contra las normas de Google.</li>
+    <li><b>Pon el QR donde se espera:</b> en el mostrador, en la factura, en la furgoneta, en la tarjeta.</li>
+    <li><b>Responde a todas</b>, también a las buenas. Quien te está comparando lee tus respuestas.</li>
+  </ol>
+  <h2>Lo que no hay que hacer</h2>
+  <p>Ofrecer descuentos o regalos a cambio, comprar reseñas o escribirlas tú. Google las detecta, las retira y puede limitar tu ficha. Además, la gente nota una lista de cinco estrellas sin texto.</p>
+  <p class="nota-prosa">Fuente: normas de Google sobre contenido prohibido en reseñas (<a href="https://support.google.com/contributionpolicy/answer/7400114?hl=es" rel="noopener">support.google.com/contributionpolicy/answer/7400114</a>).</p>
+</HerramientaPagina>
