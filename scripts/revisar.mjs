@@ -53,6 +53,13 @@ for (const archivo of paginas) {
     if (url.startsWith('//')) continue;
     if (!existe(url)) errores.push(`${ruta}: enlace roto ${url}`);
   }
+  // srcset (las capturas de móvil de <picture> van aquí): cada candidato «ruta [descriptor]» debe existir
+  for (const m of html.matchAll(/srcset="([^"]*)"/g)) {
+    for (const cand of m[1].split(',')) {
+      const url = cand.trim().split(/\s+/)[0];
+      if (url.startsWith('/') && !url.startsWith('//') && !existe(url)) errores.push(`${ruta}: imagen de srcset rota ${url}`);
+    }
+  }
   for (const m of html.matchAll(/href="#([^"]+)"/g)) {
     const id = m[1];
     if (id.startsWith('i-') || id === 'aro') continue;

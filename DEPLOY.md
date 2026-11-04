@@ -29,7 +29,9 @@ La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta 
   /cases → /casos/; /resources y /product → /recursos/. Las redirecciones de `astro.config.mjs`
   apuntan al mismo sitio (solo actúan si algún día cambia el servidor).
 - `.css`/`.js` con `Cache-Control: public, immutable` 30 días: como estos ficheros no llevan hash en
-  el nombre, `src/layouts/Base.astro` les añade `?v=<hash del contenido>`. **Ojo con fuentes e
+  el nombre, se les añade `?v=<hash del contenido>` con `version()` de `src/lib/version.ts`: lo usan
+  `src/layouts/Base.astro` (`opspilot.css` y `opspilot.js`) y `Recorrido.astro` / `Tramos.astro` (`recorrido.js`);
+  un `.css`/`.js` nuevo que se cargue con `<link>` o `<script>` tiene que pasar por esa función. **Ojo con fuentes e
   imágenes**: también son inmutables; si se cambia una, cambiar su NOMBRE, no sobrescribirla.
 - `.html` sin caché: cada despliegue se ve al momento.
 
