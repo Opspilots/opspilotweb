@@ -6,6 +6,7 @@
   if (window.__recorrido || !('IntersectionObserver' in window)) return;
   window.__recorrido = true;
   var reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var movil = matchMedia('(max-width: 767px)');
   var vistas = [];
   Array.prototype.forEach.call(document.querySelectorAll('[data-recorrido]'), function (r) {
     var casos = Array.prototype.slice.call(r.querySelectorAll('[data-rc]'));
@@ -39,6 +40,9 @@
          a partir de ahí baja, y termina cuando la ventana sale por arriba */
       var p = Math.min(1, Math.max(0, (vh * .45 - b.top) / (vh * .45 + b.height * .6)));
       var sobra = o.img.offsetHeight - o.v.clientHeight;
+      /* en móvil la captura no corre a más de 2 veces la velocidad del dedo (más rápido no se lee): se recorre el
+         principio de la captura y ya. Escritorio: la captura entera, como siempre */
+      if (movil.matches) sobra = Math.min(sobra, 2 * (vh * .45 + b.height * .6));
       if (sobra > 0) o.img.style.transform = 'translate3d(0,' + (-p * sobra).toFixed(1) + 'px,0)';
     });
   }

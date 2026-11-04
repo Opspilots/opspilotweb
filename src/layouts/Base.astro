@@ -4,12 +4,9 @@
 // PUBLIC_NOINDEX=1 en la construcción de revisión: noindex en todas las páginas.
 import iconos from '../components/iconos.html?raw';
 import { NAV, LINEAS, grafoBase, SITE_URL, PHONE, CONTACT_EMAIL, BRAND_NAME } from '../lib/sitio';
-import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { version } from '../lib/version';
 
-// nginx sirve .css y .js con «Cache-Control: public, immutable» 30 días. Como estos ficheros no
-// llevan hash en el nombre, la versión va en la URL: cambia sola cuando cambia el contenido.
-const version = (ruta: string) => createHash('sha256').update(readFileSync(new URL(`../../public${ruta}`, import.meta.url))).digest('hex').slice(0, 10);
+// nginx sirve .css y .js con «Cache-Control: public, immutable» 30 días: la versión va en la URL.
 const CSS = `/css/opspilot.css?v=${version('/css/opspilot.css')}`;
 const JS = `/js/opspilot.js?v=${version('/js/opspilot.js')}`;
 
@@ -71,12 +68,16 @@ const aro = `<symbol id="aro" viewBox="0 0 100 100"><path style="fill:var(--arco
       {NAV.map((n) => <a href={n.href} aria-current={actual(n.href) ? 'page' : undefined}>{n.label}</a>)}
     </nav>
     <a class="btn btn-verde btn-cab" href="/contacto/">Empieza ahora</a>
+    <a class="cab-llamar" href={`tel:${PHONE.e164}`} aria-label={`Llamar al ${PHONE.display}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span>Llamar</span></a>
     <details class="menu-movil">
       <summary aria-label="Abrir el menú"><svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg></summary>
       <div class="menu-movil-panel">
-        {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
-        <p class="menu-movil-t">Soluciones</p>
-        {LINEAS.map((l) => <a class="sub" href={l.href}><svg class="ico" aria-hidden="true"><use href={`#i-${l.icono}`}/></svg>{l.label}</a>)}
+        {NAV.map((n) => (
+          <>
+            <a href={n.href}>{n.label}</a>
+            {n.href === '/soluciones/' && LINEAS.map((l) => <a class="sub" href={l.href}><svg class="ico" aria-hidden="true"><use href={`#i-${l.icono}`}/></svg>{l.label}</a>)}
+          </>
+        ))}
         <a class="btn btn-verde" href="/contacto/">Empieza ahora</a>
       </div>
     </details>

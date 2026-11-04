@@ -681,4 +681,16 @@
       io.observe(n);
     });
   }
+
+  /* ═══ Menú móvil: Escape lo cierra y devuelve el foco al botón que lo abrió ═══ */
+  (function () {
+    var menu = $('details.menu-movil');
+    if (!menu) return;
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || !menu.open) return;
+      menu.open = false;
+      var boton = $('summary', menu);
+      if (boton) boton.focus();
+    });
+  })();
 })();

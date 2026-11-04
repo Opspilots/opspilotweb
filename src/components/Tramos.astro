@@ -2,6 +2,7 @@
 // Tramos: la misma técnica del recorrido de casos para cualquier página. Al bajar, la sección pasa suave al
 // color de cada tramo, y cada tramo enseña algo real a la derecha: la web del cliente en su ventana (img) o la
 // pantalla interactiva de un producto (slot con nombre `v-<id>`). Sin JS, cada tramo lleva su color.
+import { version } from '../lib/version';
 export interface Tramo {
   id: string; nombre: string; donde?: string; sintoma?: string;
   bg: string; fg: string; ac: string;
@@ -10,9 +11,13 @@ export interface Tramo {
   datos?: { cifra: string; que: string; fuente?: string }[];
   enlace?: { url: string; texto: string; externo?: boolean };
   img?: string; dominio?: string;
+  /** captura de móvil (webp, 780 px de ancho y `imgMovilAlto` ≤ 3800 de alto) que se sirve en ≤ 767 px en lugar de `img` */
+  imgMovil?: string; imgMovilAlto?: number;
 }
 interface Props { tramos: Tramo[]; etiqueta?: string; titulo?: string; lead?: string; idSeccion?: string }
 const { tramos, etiqueta, titulo, lead, idSeccion = 'tramos' } = Astro.props;
+const MOVIL = { w: 780, media: '(max-width: 767px)' };
+const RECORRIDO_JS = `/js/recorrido.js?v=${version('/js/recorrido.js')}`;
 const visuales: Record<string, string> = {};
 for (const t of tramos) {
   const n = `v-${t.id}`;
@@ -48,7 +53,10 @@ for (const t of tramos) {
             : c.img && (
               <div class="ventana">
                 <div class="v-barra pv-barra"><span class="puntos" aria-hidden="true"><i></i><i></i><i></i></span><span class="pv-tit">{c.dominio}</span></div>
-                <div class="rc-vista"><img src={c.img} width="960" height="3467" alt={`La web de ${c.nombre}, de arriba abajo`} loading="lazy" decoding="async" /></div>
+                <div class="rc-vista"><picture>
+                  {c.imgMovil && <source media={MOVIL.media} srcset={c.imgMovil} width={MOVIL.w} height={c.imgMovilAlto} type="image/webp" />}
+                  <img src={c.img} width="960" height="3467" alt={`La web de ${c.nombre}, de arriba abajo`} loading="lazy" decoding="async" />
+                </picture></div>
               </div>
             )}
         </div>
@@ -56,4 +64,4 @@ for (const t of tramos) {
     </article>
   ))}
 </section>
-<script is:inline src="/js/recorrido.js" defer></script>
+<script is:inline src={RECORRIDO_JS} defer></script>

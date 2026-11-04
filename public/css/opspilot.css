@@ -180,7 +180,7 @@ main{overflow-x:clip}
 
 /* ─── piezas comunes de sección ─── */
 .etiqueta{font:700 .78rem/1 var(--mono);text-transform:uppercase;letter-spacing:.18em;color:var(--verde);margin-bottom:1.1rem}
-.h2{font-weight:760;font-size:clamp(1.95rem,1.1rem + 2.7vw,3.4rem);line-height:1.06;letter-spacing:-.01em;max-width:20ch;text-wrap:balance}
+.h2{font-weight:760;font-size:clamp(1.9rem,1rem + 2.1vw,3rem);line-height:1.06;letter-spacing:-.01em;max-width:20ch;text-wrap:balance}
 section{padding-block:clamp(3rem,6vw,5rem)}
 
 /* ═══ 2 · PROBLEMAS ═══ */
@@ -455,7 +455,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .cierre{position:relative;overflow:hidden;isolation:isolate;background:var(--verde);color:var(--navy);padding-bottom:0}
 .cierre-in{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start;gap:2rem;padding-bottom:clamp(4rem,9vw,7rem)}
 .cierre-texto{position:relative;z-index:2}
-.h2-cierre{font-weight:800;font-size:clamp(2.1rem,1.1rem + 3.1vw,3.9rem);line-height:1.04;letter-spacing:-.012em;max-width:16ch;text-wrap:balance}
+.h2-cierre{font-weight:800;font-size:clamp(2rem,1rem + 2.4vw,3.3rem);line-height:1.04;letter-spacing:-.012em;max-width:16ch;text-wrap:balance}
 .cierre-aro{position:relative;width:min(30vw,24rem);aspect-ratio:1;justify-self:center;margin-top:clamp(12rem,22vw,18rem)}
 .chat{max-width:30rem;margin-top:2rem;background:#EFEAE2}
 .chat-barra{background:var(--navy)}
@@ -572,7 +572,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .chips{display:none}
 /* ═══ v4 · A: en móvil, una pantalla cada vez (sin quitar nada) ═══ */
 @media (max-width:767px){
-  .js .chips:not([hidden]){display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem;margin-top:1.6rem;position:sticky;top:calc(var(--cab) + .4rem);z-index:5}
+  /* pestañas fijas (Fase 1): fondo opaco de lado a lado y pegadas a la cabecera, para que no asome el texto que pasa por detrás */
+  .js .chips:not([hidden]){--gutter:clamp(1rem,4vw,2.5rem);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem;margin:1.6rem calc(-1 * var(--gutter)) 0;padding:.4rem var(--gutter);background:var(--navy);position:sticky;top:var(--cab);z-index:5}
   .chips button{display:grid;gap:.2rem;justify-items:center;align-content:start;padding:.55rem .2rem .6rem;border:0;border-radius:.5rem;background:#1F2A37;color:var(--gris);font:700 .74rem/1.15 var(--display);text-align:center}
   .chips button small{font:700 .62rem/1 var(--mono);letter-spacing:.12em;color:var(--gris)}
   .chips button[aria-pressed="true"]{background:var(--verde);color:var(--navy)}
@@ -582,7 +583,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .js .mesa .par.activo{display:block}
   .js .problema{border-left:0;padding:0;cursor:default}
   .js .problema-n{display:none}
-  .js .lista-casos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem;margin-bottom:1.3rem;position:sticky;top:calc(var(--cab) + .4rem);z-index:5}
+  .js .lista-casos{--gutter:clamp(1rem,4vw,2.5rem);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem;margin:0 calc(-1 * var(--gutter)) .9rem;padding:.4rem var(--gutter);background:var(--hondo);position:sticky;top:var(--cab);z-index:5}
   .js .caso-tab{border:0;border-radius:.5rem;background:#1F2A37;padding:.7rem .3rem;text-align:center}
   .js .caso-tab .caso-meta,.js .caso-tab .caso-t,.js .caso-tab .caso-p{display:none}
   .js .caso-tab .caso-corto{display:block;font:700 .82rem/1.15 var(--display)}
@@ -770,16 +771,23 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 /* navegación */
 .menu a[aria-current="page"]{color:#fff;box-shadow:0 2px 0 var(--verde)}
 .menu-movil{display:none;position:relative}
-.menu-movil summary{list-style:none;display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:.45rem;background:#1F2A37;color:#fff;cursor:pointer}
+.menu-movil summary{list-style:none;display:grid;place-items:center;width:2.75rem;height:2.75rem;border-radius:.45rem;background:#1F2A37;color:#fff;cursor:pointer}
 .menu-movil summary::-webkit-details-marker{display:none}
 .menu-movil-panel{position:absolute;right:0;top:calc(100% + .5rem);width:min(82vw,18rem);background:var(--navy);border:1px solid rgb(255 255 255/.1);border-radius:.7rem;padding:.8rem;display:grid;gap:.15rem;box-shadow:0 24px 48px -20px rgb(0 0 0/.7)}
 .menu-movil-panel a{display:flex;align-items:center;gap:.55rem;padding:.65rem .6rem;border-radius:.4rem;text-decoration:none;color:#fff;font-weight:650}
 .menu-movil-panel a:hover{background:#1F2A37}
 .menu-movil-panel .sub{font-weight:500;color:var(--texto-claro);padding-left:.8rem}
 .menu-movil-panel .sub .ico{color:var(--verde)}
-.menu-movil-t{font:700 .64rem/1 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--gris);padding:.7rem .6rem .3rem}
-.menu-movil-panel .btn{margin-top:.5rem;justify-content:center}
-@media (max-width:767px){.menu-movil{display:block;margin-left:auto}.btn-cab{display:none}}
+.menu-movil-panel .btn{margin-top:.5rem;justify-content:center;padding:.95rem 1.3rem}
+.cab-llamar{display:none}
+@media (max-width:767px){
+  .menu-movil{display:block}
+  .btn-cab{display:none}
+  .cab-in{gap:.6rem}
+  /* contacto siempre a mano al bajar: la barra es sticky y este botón (objetivo táctil de 44 px) va junto al menú */
+  .cab-llamar{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:2.75rem;padding:0 .95rem;margin-left:auto;border-radius:.45rem;background:var(--verde);color:var(--navy);font:650 .95rem/1 var(--display);text-decoration:none;white-space:nowrap}
+  .marca{min-height:2.75rem}
+}
 /* pie de 5 columnas */
 .pie-in-5{grid-template-columns:1.5fr 1fr 1fr 1fr 1.2fr}
 .pie-marca address{margin-top:1.2rem}
@@ -812,7 +820,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .portada-inicio .instrumento{--s:min(34vw,calc(100svh - var(--cab) - 10rem),32rem);align-self:end;margin-bottom:clamp(0rem,2vh,1.5rem)}
 /* páginas interiores: misma altura mínima, misma letra, mismo horizonte */
 .portada-sub .portada-in{grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);align-items:center;min-height:min(22rem,calc(100svh - var(--cab)));padding-block:clamp(2.25rem,5vh,3.5rem)}
-.grande-sub{font-size:clamp(2.2rem,1.35rem + 2.6vw,3.9rem);max-width:19ch}
+.grande-sub{font-size:clamp(2.2rem,1.25rem + 2.4vw,3.9rem);max-width:19ch}
 /* v6.1 (1-oct, fundador): el aro es el logo y se ve ENTERO. Sigue en el mismo sitio respecto al texto (el horizonte pasa por su centro y no debe pisar el texto); lo que crece es el fondo de la cabecera, el 30 % que antes quedaba fuera */
 .portada-sub{--s-sub:min(22vw,38svh,19rem)}
 .portada-sub .portada-in{padding-bottom:calc(clamp(2.25rem,5vh,3.5rem) + var(--s-sub) * .3)}
@@ -823,7 +831,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .portada-inicio .instrumento{--s:min(66vw,20rem);align-self:center;margin:2.5rem auto 2.5rem}
 }
 @media (max-width:767px){
-  .portada-inicio .instrumento{--s:min(66vw,17rem)}
+  /* aro acotado (Fase 1): ni más ancho que la mitad de la pantalla ni más de un tercio de su alto, para que no empuje el contenido */
+  .portada-inicio .instrumento{--s:min(52vw,12.5rem,32svh)}
   .portada .acciones .btn{flex:1 1 12rem}
   .portada-sub .portada-in{grid-template-columns:minmax(0,1fr);min-height:0;padding-block:2rem 0}
   .portada-sub{--s-sub:min(40vw,11rem)}
@@ -1050,7 +1059,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 /* sin atenuar los tramos inactivos: bajaba el contraste por debajo de AA */
 .rc-n{font:700 .74rem/1 var(--mono);letter-spacing:.16em;color:var(--ac);margin-bottom:1rem}
 .rc-vivo .rc-n{color:var(--rc-ac,var(--ac))}
-.rc-nombre{font-weight:800;font-size:clamp(2.4rem,1.3rem + 3.6vw,4.6rem);line-height:.98;letter-spacing:-.025em}
+.rc-nombre{font-weight:800;font-size:clamp(2rem,1rem + 2.3vw,3.2rem);line-height:.98;letter-spacing:-.025em}
 .rc-donde{font:400 .82rem/1.4 var(--mono);opacity:.9;margin-top:.7rem}
 .rc-titulo{font-weight:700;font-size:clamp(1.25rem,1.05rem + .7vw,1.6rem);line-height:1.2;letter-spacing:-.012em;margin-top:1.6rem;max-width:30ch;text-wrap:balance}
 .rc-p{margin-top:.8rem;max-width:46ch;opacity:.86}
@@ -1109,14 +1118,18 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .porque-pie .btn{width:100%}
 }
 
-/* v12 · móvil: la primera pantalla con menos texto y el aro a la vista (agobiaba: todo texto y nada visual) */
+/* v12 · móvil: la primera pantalla con menos texto y el aro a la vista (agobiaba: todo texto y nada visual).
+   Fase 1: se recuperan «Respuesta en menos de 24 h», «Desde 500 €» y el enlace a los casos; solo se queda
+   fuera la frase larga de la entrada. El teléfono enseña su número y, si no caben los dos botones en una
+   fila (a 360 px no caben), se apilan a todo el ancho. */
 @media (max-width:767px){
-  .portada-inicio .entrada-mas,.portada-inicio .promesa,.portada-inicio .portada-alt{display:none}
+  .portada-inicio .entrada-mas{display:none}
   .portada-inicio .entrada{margin-top:1rem}
-  .portada-inicio .acciones{flex-wrap:nowrap;margin-top:1.3rem}
+  .portada-inicio .acciones{flex-wrap:wrap;margin-top:1.3rem}
   .portada-inicio .acciones .btn{flex:1 1 auto}
-  .portada-inicio .acciones .btn-tel{flex:0 0 auto;padding-inline:1.1rem}
-  .portada-inicio .btn-tel .tel-num{display:none}
+  .portada-inicio .promesa{margin-top:1.1rem}
+  .portada-inicio .portada-alt{margin-top:.5rem}
+  .portada-alt .enlace{display:inline-flex}
   .portada-inicio .instrumento{margin:1.6rem auto 2rem}
 }
 
@@ -1124,14 +1137,17 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .portada-inicio .grande{font-size:clamp(2.2rem,1rem + 3.2vw,4.3rem);max-width:17ch}
 @media (min-width:1021px) and (max-height:800px){.portada-inicio .grande{font-size:clamp(2.2rem,6.6svh,3.7rem)}}
 @media (max-width:767px){
-  /* móvil: titular y entrada, después el aro y los botones debajo (revisión de Pelayo) */
+  /* móvil (Fase 1): titular y entrada, los botones de contacto justo debajo, después la promesa, el enlace a los
+     casos y, al final, el aro. Los hijos del texto pasan a la rejilla (display:contents) y se ordenan con order.
+     Los botones ya no caen sobre el suelo del aro, así que vuelven a ser los mismos (navy) que en las subpáginas.
+     El H1 de la portada es el título mayor de la web: ver «escala de títulos en móvil» al final del fichero. */
   .portada-inicio .portada-texto{display:contents}
-  .portada-inicio .grande{order:1;position:relative;z-index:2;font-size:clamp(1.95rem,8.6vw,2.5rem)}
+  .portada-inicio .grande{order:1;position:relative;z-index:2;font-size:clamp(2.1rem,9vw,2.54rem)}
   .portada-inicio .entrada{order:2;position:relative;z-index:2}
-  .portada-inicio .instrumento{order:3;margin:1.4rem auto .4rem}
-  .portada-inicio .acciones{order:4;position:relative;z-index:2;margin:0 0 2rem}
-  .portada-inicio .acciones .btn-tinta{background:var(--verde);color:var(--navy)}
-  .portada-inicio .acciones .btn-linea{color:#fff;box-shadow:inset 0 0 0 1.5px rgb(255 255 255/.7)}
+  .portada-inicio .acciones{order:3;position:relative;z-index:2}
+  .portada-inicio .promesa{order:4;position:relative;z-index:2}
+  .portada-inicio .portada-alt{order:5;position:relative;z-index:2}
+  .portada-inicio .instrumento{order:6;margin:1.6rem auto .4rem}
 }
 /* v12 · cierre: en el móvil, las cuatro respuestas del chat en 2 y 2 */
 @media (max-width:767px){
@@ -1201,7 +1217,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 @media (max-width:900px){.hz-resultado{position:static}}
 .hz-res-t{font:700 .7rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--verde);margin-bottom:.8rem}
 .hz-nota{display:grid;gap:.4rem}
-.hz-nota b{font:800 2.6rem/1 var(--display);letter-spacing:-.03em;color:#fff}
+.hz-nota b{font:800 clamp(1.9rem,1rem + 2vw,2.6rem)/1 var(--display);letter-spacing:-.03em;color:#fff}
 .hz-nota span{color:var(--texto-claro)}
 .hz-arreglos{list-style:none;display:grid;gap:.7rem;margin:1rem 0}
 .hz-arreglos:empty{display:none}
@@ -1228,7 +1244,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 @media (max-width:900px){.hz-doble{grid-template-columns:minmax(0,1fr)}}
 .hz-mini{position:static}
 .hz-grande{display:grid;gap:.2rem;margin-bottom:.6rem}
-.hz-grande b{font:800 2.4rem/1 var(--display);letter-spacing:-.03em;color:var(--verde)}
+.hz-grande b{font:800 clamp(1.8rem,1rem + 1.8vw,2.4rem)/1 var(--display);letter-spacing:-.03em;color:var(--verde)}
 .hz-aviso{margin-top:.6rem;padding:.6rem .7rem;border-radius:.5rem;background:rgb(232 165 99/.14);color:#F3D3B0;font-size:.9rem}
 .hz-aviso:empty{display:none}
 .hz-otras{list-style:none;display:grid;gap:.6rem;margin-top:1.6rem}
@@ -1361,3 +1377,86 @@ textarea.hz-texto{resize:vertical}
 @media (max-width:900px){.rec-grupos{grid-template-columns:minmax(0,1fr)}}
 .rec-grupo-t{font:700 .74rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--verde-h);margin-bottom:.2rem}
 .rec-grupos .hz-otras{margin-top:.8rem}
+
+/* ═══════════════ v13 · Fase 1 de móvil (4-nov-2026) ═══════════════
+   Casi todo va en ≤ 767 px; la excepción es la escala de títulos de tablet y escritorio (Fase 1b), que está en las
+   reglas base (.h2, .h2-cierre, .grande-sub, .rc-nombre, .hz-nota b y .hz-grande b) y cambia sus tamaños a todos los
+   anchos. Las reglas de la portada de la home y de la cabecera están junto a las suyas (arriba); aquí, lo que
+   atraviesa el fichero: escala de títulos móvil, letra mínima, objetivos táctiles, tamaño de los campos y la
+   ventana de las capturas. */
+
+/* escala de títulos en móvil (a partir de 768 px la fijan las reglas base .grande-sub, .h2-cierre, .rc-nombre, .h2, .hz-nota b y
+   .hz-grande b, con el mismo orden): H1 de la home > H1 de interior > cierre > nombre de caso > H2
+   (a 390 px: 35,1 > 32,8 > 28 > 27,2 > 25,6; a 360 px el mismo orden: 33,6 > 32 > 28 > 27,2 > 25,6).
+   Los topes (2,4 / 2,15 / 2,1 / 2 rem) son los valores que dan las reglas base a 768 px, así que no hay salto al pasar a tablet. */
+@media (max-width:767px){
+  .grande-sub{font-size:clamp(2rem,8.4vw,2.4rem)}
+  .h2-cierre{font-size:clamp(1.75rem,7vw,2.15rem)}
+  .rc-nombre{font-size:clamp(1.7rem,6.6vw,2.1rem)}
+  .h2{font-size:clamp(1.6rem,6.4vw,2rem)}
+}
+
+/* letra mínima de 12 px en lo que se lee (antes, de 8,3 a 11,8 px en las réplicas, el menú y el pie).
+   Es la lista de reglas que bajaban de .75rem, con sus selectores tal cual para que pesen lo mismo. */
+@media (max-width:767px){
+  .chip,.v-titulo small,.v-barra-web,.nota b,.cfg-paso,.cfg-garantia,.res-listo,.rm-nav,.rm-it,.problema-n,.app-bar,.correo-fila small,.av,.mini-hoja,.bur small,
+  .alerta,.ficha-cab small,.ficha-datos dt,.xl,.xl-cinta,.xl-hojas,.la-tabla th,.est,.nav-tabs span,.nav-cuenta,.ph-cab small,.ph-t,.caso-meta,.of-carro b,
+  .of-miga,.of-cat,.of-precio span,.of-stock,.of-campos label,.of-res span,.jr-url,.jr-fav,.jr-mapa-t,.jr-mapa .jr-raiz,.jr-mapa button,.jr-nav,.jr-miga,
+  .jr-secs span,.jr-form span,.chat-dia,.msg small,.pie-tit,.pie-legal,.seg button,.ruta-aviso .ruta-et,.chips button,.chips button small,.desliza,.cs-cuenta span,
+  .cs-l,.cs-aviso,.cs-serp-u,.cs-serp-d,.cs-nav,.cs-cta,.cs-resp,.cs-bul,.py-top small,.py-estado,.py-tabla th,.py-tabla td:nth-child(n+2),.py-tabla tr.cap td,
+  .py-pdf,.py-pest button,.py-desc li,.py-desc li b,.py-desc-tot,.py-desc-tot small,.py-movil-sub,.py-sello,.py-sello small,.py-plan-vacio,.py-plan li,.py-plan li::before,
+  .py-plan li b,.ed-busca,.ed-cli,.ed-tabla th,.ed-tabla th small,.ed-btn-min,.ed-sub,.ed-estados span,.ed-log,.ed-snap,.ed-snap-h code,.menu-movil-t,.bloque-meta,
+  .puerta-caso,.sector-linea,.pasos li::before,.erp-mesas button small,.erp-sub,.erp-carta button,.erp-carta button b,.erp-reponer,.erp-cab span,.erp-lineas li b,
+  .erp-inv li,.erp-inv li b,.erp-caja,.erp-caja small,.rc-n,.rc-datos small,.gm-lista em span,.pq-cab,.sectores-fila small,.empieza-guia small,.hz-cuenta,
+  .hz-res-t,.pz-et,.pz-tabla th,.hz-codigo,.rec-grupo-t{font-size:.75rem}
+}
+
+/* objetivos táctiles de 44 px por padding o altura mínima (el texto no crece) */
+@media (max-width:767px){
+  .enlace,.seg button,.recursos-filtro button,.cs-rf button,.cs-sel,.erp-carta button,.erp-cobrar,.erp-reponer,.py-btn,.py-pest button,.ed-btn,.ed-btn-min,.of-campos input,.of-anadir,.of-wa,.jr-mapa button{min-height:2.75rem}
+  .seg button{min-width:2.75rem;padding-inline:.7rem}
+  .py-mic{width:2.75rem;height:2.75rem}
+  .pie address a,.pie-links a{display:flex;align-items:center;min-height:2.75rem}
+  .pie address,.pie-links{gap:0}
+  .pie-legal a{display:inline-flex;align-items:center;min-height:2.75rem;padding-inline:.2rem}
+  .formu .consent{min-height:2.75rem;align-items:center}
+  .formu .consent input{width:1.5rem;height:1.5rem;margin-top:0}
+}
+
+/* campos a 16 px: por debajo, Safari en iOS hace zoom al enfocarlos */
+@media (max-width:767px){
+  .cs-sel,.of-campos input,.pz input,.pz select,.pz textarea{font-size:1rem}
+}
+
+/* réplicas de los problemas con la letra a 12 px: más alto de ventana, pestañas del navegador sin la inicial
+   (así caben «Correo» y «WhatsApp») y la tarjeta del PDF algo más ancha para que no se corte su nombre de fichero */
+@media (max-width:767px){
+  .pv-cara{height:25rem}
+  .nav-tabs i{display:none}
+  .nav-tabs span{padding-inline:.35rem}
+  .app-pdf{width:62%}
+}
+
+/* herramientas: el contador «0 de 9» de la barra de la ventana, a 12 px, se partía en dos líneas */
+@media (max-width:767px){
+  .hz-cuenta{white-space:nowrap;flex:none}
+}
+
+/* capturas de los clientes (Recorrido y Tramos): en móvil se sirve la captura hecha a 390 px y su ventana es
+   vertical, como un teléfono, en lugar de una franja apaisada */
+@media (max-width:767px){
+  /* width:100% explícito: con el ancho en auto, el tope de alto se traspasaba al ancho y la ventana se estrechaba */
+  .rc-vista{width:100%;aspect-ratio:4/5;max-height:75svh}
+}
+
+/* revisión de la Fase 1: nada se sale de su tarjeta a 320-360 px */
+@media (max-width:767px){
+  /* la línea fina de la barra («norma vigente · revisado el …») puede saltar de línea en vez de salirse */
+  .v-titulo{min-width:0}
+  .v-titulo small{white-space:normal}
+  /* «Empresas de energía y comercializadoras» + su etiqueta medían 323 px a 320 px */
+  .sectores-fila small{white-space:normal}
+  /* los botones del mapa de J.R. se salían de la tarjeta: la rejilla puede encoger y la ruta, partirse */
+  .jr-mapa{grid-template-columns:minmax(0,1fr)}
+  .jr-mapa button{white-space:normal;overflow-wrap:anywhere}
+}
