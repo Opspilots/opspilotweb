@@ -45,6 +45,14 @@ La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta 
   EnergyDeal, ERP). Las activa `public/js/opspilot.js` por su `data-*`, una de cada tipo por página.
 - `src/data/`, `src/lib/resources.ts` y `src/lib/company.ts`: el contenido, igual que antes.
 - `public/css/opspilot.css`: el sistema visual «horizonte artificial».
+- Cabecera de la home, «La mesa»: `src/components/CabeceraMesa.astro`, el dibujo se genera en la construcción en
+  `src/lib/mesa.ts`, y solo la home carga `public/css/lamesa.css` y `public/js/lamesa.js` (los dos con `?v=`
+  por `version()`). Sin imágenes ni fuentes nuevas: la madera es un patrón SVG dentro del HTML (como imagen de
+  fondo se llevaría el LCP). La promesa «Desde 500 € · Respuesta en menos de 24 h» es un bloque suelto, marcado
+  con un comentario en el componente, para quitarlo si el dueño decide no mostrarla. Si se quita, hay que
+  revisar también la `description` de `src/pages/index.astro` (línea 13), que repite «precio cerrado desde
+  500 €» y «respuesta en menos de 24 h». Si `lamesa.js` no carga o falla al arrancar, la mesa se queda
+  recogida (clase `sin-script`).
 
 ## Pendiente del negocio (bloquea las páginas legales)
 

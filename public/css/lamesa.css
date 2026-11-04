@@ -1,0 +1,104 @@
+/* La mesa · cabecera de la home (4-nov-2026). Solo la carga la home (CabeceraMesa.astro, con ?v=).
+   Dibujo y madera: src/lib/mesa.ts · animación: public/js/lamesa.js.
+   Estados de la mesa:
+   · recogida (por defecto): lo que ve quien no tiene JS o pide menos movimiento. Es el `transform` de cada objeto.
+   · revuelta: html.js + sin «reducir movimiento» + sin la clase .sin-script; el CSS la aplica ya en el primer
+     pintado (variable --ta), así que no hay salto de «orden» a «lío». El script la deja y, una vez, la recoge.
+     Si el script no carga (onerror) o falla al arrancar, pone .sin-script y la mesa queda recogida. */
+
+.lm{--lm-papel:#F7E9D2;position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:min(calc(100svh - var(--cab)),62rem);padding-block:0;background:#CF9358;color:var(--navy)}
+
+/* ─── la tabla de arriba: texto y contacto sobre madera clara (navy sobre #DBA369: 8,2:1) ─── */
+.lm-tira{position:relative;z-index:2;background:#DBA369;border-bottom:3px solid rgb(138 85 41/.75);box-shadow:0 1.5px 0 rgb(235 192 140/.55);padding-block:clamp(.9rem,2.2svh,1.6rem) clamp(1rem,2.4svh,1.7rem)}
+.lm-veta{position:absolute;inset:0;z-index:-1;width:100%;height:100%}
+.lm-h1{margin:0;font-weight:800;font-size:clamp(2.1rem,9vw,2.54rem);line-height:1;letter-spacing:-.025em}
+.lm-sobre{display:block;margin-bottom:.4rem;font-weight:700;font-size:clamp(.92rem,4.6vw,1.2rem);line-height:1.15;letter-spacing:-.01em}
+.lm-grande{display:block;text-wrap:balance}
+.lm-fila{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.7rem 2rem;margin-top:.7rem}
+.lm-apoyo{flex:1 1 24rem;min-width:0;max-width:40rem}
+.lm-servicios{font-weight:500;font-size:clamp(1.02rem,.95rem + .4vw,1.3rem);line-height:1.3}
+.lm-promesa{list-style:none;display:flex;flex-wrap:wrap;gap:.1rem 1.1rem;margin-top:.4rem;font-weight:600;font-size:.92rem;line-height:1.3}
+.lm-promesa li{display:inline-flex;align-items:center;gap:.4rem}
+.lm-promesa .ico{width:1.1em;height:1.1em}
+.lm-contacto{display:flex;flex-direction:column;gap:.15rem;min-width:0;max-width:100%}
+.lm-acciones{display:flex;flex-wrap:wrap;gap:.7rem}
+.lm-acciones .btn{flex:1 1 auto;white-space:nowrap;padding-inline:.7rem;font-size:.92rem}
+.lm-casos{font-size:.95rem}
+.lm-casos .enlace{min-height:1.75rem}
+@media (pointer:coarse),(max-width:767px){.lm-casos .enlace{min-height:2.75rem}}
+@media (max-width:379px){.lm-acciones .ico{display:none}}
+.lm :focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+.lm .btn-tinta:focus-visible{outline-color:var(--navy);box-shadow:0 0 0 3px #fff}
+
+@media (min-width:640px){
+  .lm-fila{flex-wrap:nowrap}
+  .lm-contacto{flex:none;align-items:flex-end}
+  .lm-acciones{flex-wrap:nowrap}
+  .lm-acciones .btn{flex:none;padding-inline:1.2rem;font-size:1rem}
+  .lm-promesa{font-size:1rem}
+}
+@media (min-width:640px) and (max-width:899px){
+  .lm-fila{flex-wrap:wrap}
+  .lm-contacto{align-items:flex-start}
+}
+@media (min-width:768px){
+  /* misma escala que el resto de la web: este H1 es el texto mayor de la página y el de la home, el mayor del sitio */
+  .lm-h1{font-size:clamp(2.2rem,1rem + 3.2vw,4.3rem)}
+  .lm-sobre{font-size:clamp(1.05rem,.8rem + .75vw,1.6rem);margin-bottom:.5rem}
+}
+
+/* ─── la mesa ─── */
+.lm-escena{position:relative;flex:1 1 auto;display:flex;flex-direction:column;min-height:36rem;overflow:hidden;background:#CF9358;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.lm-madera{position:absolute;inset:0;width:100%;height:100%}
+html.js .lm-escena{cursor:grab}
+html.js .lm-escena.arrastra{cursor:grabbing}
+.lm-vista{position:relative;flex:1 1 0;min-height:0;container-type:size;display:grid;place-items:center}
+.lm-defs{position:absolute;width:0;height:0}
+.lm-svg{display:block;overflow:visible;font-family:var(--display)}   /* lo que se sale del dibujo se recorta en .lm-escena, no en una caja invisible */
+.lm-alto{width:min(100cqw,calc(100cqh*360/560),30rem);aspect-ratio:360/560}
+.lm-ancho{display:none;width:min(100cqw,calc(100cqh*1440/654));aspect-ratio:1440/654}
+
+/* el mando: Hoy ←→ Recogida. En el móvil va debajo del dibujo; en escritorio, encima, en la esquina */
+.lm-mando{position:relative;z-index:3;flex:none;display:flex;align-items:center;gap:.7rem;height:4rem;margin:0 clamp(1rem,4vw,2.5rem) 1rem;padding-inline:1rem;border-radius:.65rem;background:var(--lm-papel);color:var(--navy);font-weight:700;font-size:1.05rem;box-shadow:0 0 0 2px var(--navy),5px 7px 0 2px rgb(10 14 20/.28);visibility:hidden;cursor:default}
+.lm.lista .lm-mando{visibility:visible}
+.lm-mando input{appearance:none;-webkit-appearance:none;flex:1;min-width:0;height:3rem;margin:0;background:none;cursor:grab;touch-action:pan-y}
+.lm-mando input::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:var(--navy)}
+.lm-mando input::-moz-range-track{height:5px;border-radius:3px;background:var(--navy)}
+.lm-mando input::-webkit-slider-thumb{-webkit-appearance:none;width:2.75rem;height:2.75rem;margin-top:calc((5px - 2.75rem)/2);border:4px solid var(--navy);border-radius:50%;background:var(--verde)}
+.lm-mando input::-moz-range-thumb{box-sizing:border-box;width:2.75rem;height:2.75rem;border:4px solid var(--navy);border-radius:50%;background:var(--verde)}
+.lm-mando input:focus-visible{outline:3px solid var(--navy);outline-offset:3px;border-radius:.5rem}
+
+/* la mesa en tres estados: los objetos se mueven con `transform` y `opacity` (y las variables --fo / --fi de los
+   que cambian de cara). Valores por defecto = mesa recogida. */
+.lm [data-o]{--fo:0;--fi:1}
+.lm .s{opacity:0}
+.lm-fo{opacity:var(--fo,0)}
+.lm-fi{opacity:var(--fi,1)}
+.lm-vib{animation:var(--vib,none)}
+@keyframes lm-vib{0%{transform:translate(-2.4px,0)}50%{transform:translate(2.4px,0)}}
+@media (prefers-reduced-motion:no-preference){
+  html.js .lm:not(.sin-script) [data-o]{transform:var(--ta);--fo:1;--fi:0}
+  html.js .lm:not(.sin-script) .s{opacity:1}
+  html.js .lm:not(.sin-script) [data-bisagra]{transform:translate(0,410px) scale(1,.02)}
+  html.js .lm:not(.sin-script) [data-lim]{opacity:0}
+  /* el móvil solo vibra durante el lío y mientras se ve */
+  .lm.lio.en-vista [data-o=movil]{--vib:lm-vib .32s steps(2) infinite}
+}
+
+/* ─── escritorio: portátil, carpeta y café sobre el tapete ─── */
+@media (min-width:1000px){
+  .lm-escena{min-height:28.5rem}
+  .lm-vista{position:absolute;inset:0}
+  .lm-alto{display:none}
+  .lm-ancho{display:block}
+  .lm-mando{position:absolute;left:clamp(1rem,3.3vw,3rem);bottom:1.5rem;width:min(24.75rem,40vw);margin:0}
+}
+
+/* ─── el canto de la mesa: el paso de la madera a la sección siguiente (navy) ─── */
+.lm::after{content:"";position:absolute;z-index:4;left:0;right:0;bottom:0;height:.75rem;pointer-events:none;background:linear-gradient(#8A5529,#6B4020);box-shadow:inset 0 2px 0 rgb(235 192 140/.5),0 .35rem 1.1rem rgb(4 8 14/.45)}
+
+/* ─── apaisado de móvil: el texto y el contacto caben en la primera pantalla ─── */
+@media (max-height:520px) and (orientation:landscape){
+  .lm-tira{padding-block:.6rem .7rem}
+  .lm-fila{margin-top:.3rem}
+}

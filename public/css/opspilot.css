@@ -102,7 +102,6 @@ main{overflow-x:clip}
 .sobre{display:block;font:700 .82rem/1.2 var(--mono);text-transform:uppercase;letter-spacing:.16em;margin-bottom:1.35rem}
 .grande{display:block;font-weight:800;font-size:clamp(2.6rem,1.2rem + 4.2vw,5.4rem);line-height:1;letter-spacing:-.012em;max-width:12ch;text-wrap:balance}
 .entrada{font-size:clamp(1.06rem,1rem + .35vw,1.24rem);line-height:1.5;max-width:31rem;margin-top:1.4rem}
-.portada-alt{margin-top:1.2rem;font-size:.95rem}
 
 /* configurador de propuesta (su embudo real, en una ventana) */
 .cfg-marco{position:relative;max-width:30rem;margin-top:1.9rem}
@@ -163,11 +162,10 @@ main{overflow-x:clip}
 
 /* el instrumento: TODO cuelga de su tamaño. Dentro del aro no hay nada. */
 .instrumento{--s:min(40vw,64svh,40rem);position:relative;width:var(--s);aspect-ratio:1;justify-self:center;align-self:center;margin-top:2rem}
-.escala{position:absolute;inset:0;width:100%;height:100%;overflow:visible;color:var(--navy)}
 .actitud{position:absolute;inset:0}
 .giro{position:absolute;inset:0;transform:rotate(var(--horizonte))}
 .suelo{position:absolute;top:var(--corte);left:50%;width:250vmax;height:160vmax;margin-left:-125vmax;background:var(--navy)}
-.indice,.aro{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.aro{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 @media (prefers-reduced-motion:no-preference){
   .portada .actitud{animation:nivela 1.9s var(--curva) .15s both}
   @keyframes nivela{
@@ -799,25 +797,6 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .portada .acciones{display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center;margin-top:1.6rem}
 .btn-linea{background:none;color:var(--navy);box-shadow:inset 0 0 0 1.5px var(--navy)}
 .btn-linea:hover{background:rgb(15 22 32/.08)}
-.promesa{list-style:none;display:flex;flex-wrap:wrap;gap:.55rem 1.3rem;margin-top:1.4rem;font:400 .78rem/1.3 var(--mono);letter-spacing:.02em}
-.promesa li{display:inline-flex;align-items:center;gap:.45rem}
-.promesa .ico{width:1rem;height:1rem}
-/* portada: la primera pantalla entera, ni más ni menos */
-.portada-inicio .portada-in{min-height:min(calc(100svh - var(--cab)),52rem);align-items:center;padding-block:clamp(2rem,5vh,3.5rem)}
-/* el texto arriba: el suelo del horizonte baja hacia la izquierda y no debe tapar la promesa */
-.portada-inicio .portada-texto{align-self:start;padding-top:clamp(.5rem,3vh,2rem)}
-.portada-alt{width:fit-content}
-.portada-alt .enlace{display:inline;text-wrap:balance}
-/* portátiles bajos (1280 × 720, 1366 × 768): el aro, algo menor, para que el suelo no alcance el texto */
-@media (min-width:1021px) and (max-height:800px){
-  .portada-inicio .instrumento{--s:min(30vw,calc(100svh - var(--cab) - 12.5rem),28rem)}
-  .portada-inicio .grande{font-size:clamp(2.6rem,8.4svh,4.6rem)}
-  .portada-inicio .portada-texto{padding-top:0}
-}
-.portada-alt .enlace .ico{display:inline-block;vertical-align:-.2em;margin-left:.25rem}
-.portada-inicio .portada-in{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}
-/* el aro abajo: así la línea del suelo pasa por debajo del texto (lo comprueba el medidor de choques) */
-.portada-inicio .instrumento{--s:min(34vw,calc(100svh - var(--cab) - 10rem),32rem);align-self:end;margin-bottom:clamp(0rem,2vh,1.5rem)}
 /* páginas interiores: misma altura mínima, misma letra, mismo horizonte */
 .portada-sub .portada-in{grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);align-items:center;min-height:min(22rem,calc(100svh - var(--cab)));padding-block:clamp(2.25rem,5vh,3.5rem)}
 .grande-sub{font-size:clamp(2.2rem,1.25rem + 2.4vw,3.9rem);max-width:19ch}
@@ -826,13 +805,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .portada-sub .portada-in{padding-bottom:calc(clamp(2.25rem,5vh,3.5rem) + var(--s-sub) * .3)}
 .instrumento-sub{--s:var(--s-sub);align-self:end;margin:1.5rem 0 calc(var(--s) * -.3 - clamp(2.25rem,5vh,3.5rem))}
 .portada-sub .entrada{max-width:36rem}
-@media (max-width:1020px){
-  .portada-inicio .portada-in{grid-template-columns:minmax(0,1fr);min-height:0;padding-block:2.25rem 0}
-  .portada-inicio .instrumento{--s:min(66vw,20rem);align-self:center;margin:2.5rem auto 2.5rem}
-}
 @media (max-width:767px){
-  /* aro acotado (Fase 1): ni más ancho que la mitad de la pantalla ni más de un tercio de su alto, para que no empuje el contenido */
-  .portada-inicio .instrumento{--s:min(52vw,12.5rem,32svh)}
   .portada .acciones .btn{flex:1 1 12rem}
   .portada-sub .portada-in{grid-template-columns:minmax(0,1fr);min-height:0;padding-block:2rem 0}
   .portada-sub{--s-sub:min(40vw,11rem)}
@@ -1118,37 +1091,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .porque-pie .btn{width:100%}
 }
 
-/* v12 · móvil: la primera pantalla con menos texto y el aro a la vista (agobiaba: todo texto y nada visual).
-   Fase 1: se recuperan «Respuesta en menos de 24 h», «Desde 500 €» y el enlace a los casos; solo se queda
-   fuera la frase larga de la entrada. El teléfono enseña su número y, si no caben los dos botones en una
-   fila (a 360 px no caben), se apilan a todo el ancho. */
-@media (max-width:767px){
-  .portada-inicio .entrada-mas{display:none}
-  .portada-inicio .entrada{margin-top:1rem}
-  .portada-inicio .acciones{flex-wrap:wrap;margin-top:1.3rem}
-  .portada-inicio .acciones .btn{flex:1 1 auto}
-  .portada-inicio .promesa{margin-top:1.1rem}
-  .portada-inicio .portada-alt{margin-top:.5rem}
-  .portada-alt .enlace{display:inline-flex}
-  .portada-inicio .instrumento{margin:1.6rem auto 2rem}
-}
-
-/* v12 · el H1 de la portada lleva la palabra clave (sin la línea fina de encima): más largo, algo más pequeño */
-.portada-inicio .grande{font-size:clamp(2.2rem,1rem + 3.2vw,4.3rem);max-width:17ch}
-@media (min-width:1021px) and (max-height:800px){.portada-inicio .grande{font-size:clamp(2.2rem,6.6svh,3.7rem)}}
-@media (max-width:767px){
-  /* móvil (Fase 1): titular y entrada, los botones de contacto justo debajo, después la promesa, el enlace a los
-     casos y, al final, el aro. Los hijos del texto pasan a la rejilla (display:contents) y se ordenan con order.
-     Los botones ya no caen sobre el suelo del aro, así que vuelven a ser los mismos (navy) que en las subpáginas.
-     El H1 de la portada es el título mayor de la web: ver «escala de títulos en móvil» al final del fichero. */
-  .portada-inicio .portada-texto{display:contents}
-  .portada-inicio .grande{order:1;position:relative;z-index:2;font-size:clamp(2.1rem,9vw,2.54rem)}
-  .portada-inicio .entrada{order:2;position:relative;z-index:2}
-  .portada-inicio .acciones{order:3;position:relative;z-index:2}
-  .portada-inicio .promesa{order:4;position:relative;z-index:2}
-  .portada-inicio .portada-alt{order:5;position:relative;z-index:2}
-  .portada-inicio .instrumento{order:6;margin:1.6rem auto .4rem}
-}
+/* La portada de la home (antes aquí, con el aro) es ahora «La mesa»: public/css/lamesa.css. */
 /* v12 · cierre: en el móvil, las cuatro respuestas del chat en 2 y 2 */
 @media (max-width:767px){
   .chat-resp{display:grid;grid-template-columns:1fr 1fr}
@@ -1381,7 +1324,7 @@ textarea.hz-texto{resize:vertical}
 /* ═══════════════ v13 · Fase 1 de móvil (4-nov-2026) ═══════════════
    Casi todo va en ≤ 767 px; la excepción es la escala de títulos de tablet y escritorio (Fase 1b), que está en las
    reglas base (.h2, .h2-cierre, .grande-sub, .rc-nombre, .hz-nota b y .hz-grande b) y cambia sus tamaños a todos los
-   anchos. Las reglas de la portada de la home y de la cabecera están junto a las suyas (arriba); aquí, lo que
+   anchos. La portada de la home vive en public/css/lamesa.css (mismo orden de tamaños); aquí, lo que
    atraviesa el fichero: escala de títulos móvil, letra mínima, objetivos táctiles, tamaño de los campos y la
    ventana de las capturas. */
 
