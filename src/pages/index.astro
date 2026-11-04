@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Portada from '../components/Portada.astro';
+import CabeceraMesa from '../components/CabeceraMesa.astro';
 import Propuesta from '../components/Propuesta.astro';
 import Problemas from '../components/Problemas.astro';
 import PlanVuelo from '../components/PlanVuelo.astro';
@@ -12,7 +12,7 @@ import { SERVICIO_LOCAL } from '../lib/sitio';
 <Base title="Agencia de digitalización en Córdoba · OpsPilot"
   description="Webs, ficha de Google y herramientas a medida para negocios de Córdoba. Casos reales, precio cerrado desde 500 € y respuesta en menos de 24 h."
   path="/" jsonld={[SERVICIO_LOCAL]}>
-  <Portada />
+  <CabeceraMesa />
   <Problemas />
   <Propuesta />
   <Recorrido />
