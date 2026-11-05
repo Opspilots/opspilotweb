@@ -1,27 +1,67 @@
 ---
-// Cabecera única de las páginas interiores (v5, 27-sep, revisión de Pelayo): la misma escala y los mismos
-// márgenes en todas, el horizonte siempre y todo dentro de la primera pantalla. Sin migas visibles:
-// la ruta la sigue leyendo Google en el BreadcrumbList del JSON-LD de cada página.
+// Cabecera de las páginas interiores (5-nov-2026): la misma tira de madera que la de la home, «La mesa»
+// (CabeceraMesa.astro), pero compacta y con UN objeto de la mesa a la derecha (debajo del texto en móvil).
+// Qué objeto lleva cada ruta está en la tabla OBJETO_POR_RUTA de src/lib/objetos-pagina.ts; el prop `objeto`
+// la salta si una página lo necesita. Una ruta que no esté en la tabla y sin prop `objeto` lanza un error (en la construcción
+// y en `astro dev`): por eso la 404, que se sirve en cualquier URL, pasa objeto="aro".
+//   · 'aro'     → el aro grande sobre horizonte de antes (solo la 404). Su CSS vive en opspilot.css.
+//   · 'ninguno' → solo la tira de madera (legales y herramientas sin objeto).
+// El dibujo es decorativo (aria-hidden) y se genera en la construcción. Los estilos están en public/css/cabecera-pagina.css (con
+// ?v=); no usa JS: el único gesto es una animación CSS, solo con movimiento permitido. El H1 sigue siendo .grande-sub
+// (opspilot.css), mayor que el H2 y que el cierre; el de la home (lamesa.css) es mayor aún.
+import { objetoDeRuta, escena, veta, type ClaveObjeto } from '../lib/objetos-pagina';
+import { version } from '../lib/version';
+
 interface Props {
   /** ya no se pinta (v12, revisión de Pelayo): el H1 lleva la palabra clave. Se mantiene por compatibilidad */
   sobre?: string;
   titulo: string;
   entrada?: string;
+  /** salta la tabla por ruta */
+  objeto?: ClaveObjeto;
 }
-const { sobre, titulo, entrada } = Astro.props;
+const { titulo, entrada } = Astro.props;
+const clave = Astro.props.objeto ?? objetoDeRuta(Astro.url.pathname);
+const esc = escena(clave);
+
+// nginx sirve .css con «Cache-Control: public, immutable»: la versión va en la URL (ver DEPLOY.md).
+const CSS = `/css/cabecera-pagina.css?v=${version('/css/cabecera-pagina.css')}`;
 ---
-<section class="portada portada-sub" aria-labelledby="titular">
-  <div class="wrap portada-in">
-    <div class="portada-texto">
-      <h1 id="titular" class="grande grande-sub">{titulo}</h1>
-      {entrada && <p class="entrada">{entrada}</p>}
-      <slot />
-    </div>
-    <div class="instrumento instrumento-sub" aria-hidden="true">
-      <div class="actitud">
-        <div class="giro"><div class="suelo"></div></div>
-        <svg class="aro" viewBox="0 0 100 100"><use href="#aro"/></svg>
+{clave === 'aro' ? (
+  <section class="portada portada-sub" aria-labelledby="titular">
+    <div class="wrap portada-in">
+      <div class="portada-texto">
+        <h1 id="titular" class="grande grande-sub">{titulo}</h1>
+        {entrada && <p class="entrada">{entrada}</p>}
+        <slot />
+      </div>
+      <div class="instrumento instrumento-sub" aria-hidden="true">
+        <div class="actitud">
+          <div class="giro"><div class="suelo"></div></div>
+          <svg class="aro" viewBox="0 0 100 100"><use href="#aro"/></svg>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+) : (
+  <>
+    <link rel="stylesheet" href={CSS}>
+    <section class:list={['cp', esc ? 'cp-con' : 'cp-sin']} data-objeto={clave} aria-labelledby="titular">
+      <svg class="cp-veta" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true" focusable="false" set:html={veta()} />
+      <div class="wrap cp-in">
+        <h1 id="titular" class="grande grande-sub cp-h1">{titulo}</h1>
+        <div class="cp-texto">
+          {entrada && <p class="entrada">{entrada}</p>}
+          <slot />
+        </div>
+        {esc && (
+          <div class="cp-objeto" aria-hidden="true">
+            <svg class="cp-defs" width="0" height="0" focusable="false"><defs set:html={esc.defs} /></svg>
+            <svg class="cp-svg cp-ancho" viewBox="0 0 300 190" focusable="false" set:html={esc.ancho} />
+            <svg class="cp-svg cp-bajo" viewBox="0 0 300 116" focusable="false" set:html={esc.bajo} />
+          </div>
+        )}
+      </div>
+    </section>
+  </>
+)}

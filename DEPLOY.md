@@ -53,6 +53,13 @@ La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta 
   revisar también la `description` de `src/pages/index.astro` (línea 13), que repite «precio cerrado desde
   500 €» y «respuesta en menos de 24 h». Si `lamesa.js` no carga o falla al arrancar, la mesa se queda
   recogida (clase `sin-script`).
+- Cabeceras de las subpáginas (5-nov-2026): `src/components/CabeceraPagina.astro` pinta la misma tira de madera que la home con
+  UN objeto de la mesa a la derecha (debajo del texto en móvil). Qué objeto lleva cada ruta está en la tabla `OBJETO_POR_RUTA`
+  de `src/lib/objetos-pagina.ts` (las guías `/recursos/<slug>/` entran por prefijo); una ruta que no esté en la tabla rompe la
+  construcción, y el prop `objeto` de `CabeceraPagina` la salta. `ninguno` = solo la tira; `aro` = el aro grande de antes (solo la
+  404, que sigue usando `.instrumento`, `.giro` y `.suelo` de `opspilot.css`; `Cierre.astro` conserva su aro con `.giro` y `.suelo`).
+  El dibujo se genera en la construcción (reutiliza lo exportado de `src/lib/mesa.ts`) y los estilos están en
+  `public/css/cabecera-pagina.css` (con `?v=` por `version()`). Sin JS: el único gesto es una animación CSS de una vez.
 
 ## Pendiente del negocio (bloquea las páginas legales)
 

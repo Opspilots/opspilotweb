@@ -4,7 +4,7 @@ import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import PresupuesYa from '../../components/pantallas/PresupuesYa.astro';
 import Faq from '../../components/Faq.astro';
 import Cierre from '../../components/Cierre.astro';
-import { migas, faqSchema, ORG_ID } from '../../lib/sitio';
+import { migas, faqSchema, ORG_ID, WA } from '../../lib/sitio';
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Productos', path: '/productos/' }, { nombre: 'PresupuesYa', path: '/productos/presupuesya/' }];
 // Funciones: las que publica presupuesya.es y el artículo presupuestador-obra-bc3.
@@ -46,6 +46,7 @@ const app = {
     entrada="PresupuesYa es nuestro software para reformistas, fontaneros y electricistas: de la visita al presupuesto firmado sin pasar por la calculadora, el Excel y el Word.">
     <div class="acciones">
       <a class="btn btn-tinta" href="https://presupuesya.es" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>Ir a presupuesya.es</a>
+      <a class="btn btn-linea" href={WA('Hola OpsPilot, he visto PresupuesYa y quería consultaros:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
       <a class="enlace" href="/soluciones/software-a-medida/">¿Necesitas algo a medida? <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
     </div>
   </CabeceraPagina>

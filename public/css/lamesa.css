@@ -1,5 +1,4 @@
-/* La mesa · cabecera de la home (4-nov-2026). Solo la carga la home (CabeceraMesa.astro, con ?v=).
-   Dibujo y madera: src/lib/mesa.ts · animación: public/js/lamesa.js.
+/* La mesa · cabecera de la portada. Solo la carga la portada.
    Estados de la mesa:
    · recogida (por defecto): lo que ve quien no tiene JS o pide menos movimiento. Es el `transform` de cada objeto.
    · revuelta: html.js + sin «reducir movimiento» + sin la clase .sin-script; el CSS la aplica ya en el primer
@@ -9,7 +8,11 @@
 .lm{--lm-papel:#F7E9D2;position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:min(calc(100svh - var(--cab)),62rem);padding-block:0;background:#CF9358;color:var(--navy)}
 
 /* ─── la tabla de arriba: texto y contacto sobre madera clara (navy sobre #DBA369: 8,2:1) ─── */
-.lm-tira{position:relative;z-index:2;background:#DBA369;border-bottom:3px solid rgb(138 85 41/.75);box-shadow:0 1.5px 0 rgb(235 192 140/.55);padding-block:clamp(.9rem,2.2svh,1.6rem) clamp(1rem,2.4svh,1.7rem)}
+.lm-tira{position:relative;z-index:2;background:#DBA369;padding-block:clamp(.9rem,2.2svh,1.6rem) clamp(1rem,2.4svh,1.7rem)}
+/* la costura: la tabla de arriba es un tablón más alto que la mesa. Su canto (filo claro, cara de tabla, cara oscura) y la sombra que
+   echa sobre la mesa, en dos escalones planos: sin degradados ni difuminados */
+.lm-tira{border-bottom:.3rem solid #A2662F;box-shadow:inset 0 -2px 0 #EBC08C,0 .3rem 0 #6F4220}
+.lm-escena::before{content:"";position:absolute;z-index:1;left:0;right:0;top:0;height:.6rem;pointer-events:none;background:rgb(10 14 20/.3);box-shadow:0 .6rem 0 rgb(10 14 20/.14)}
 .lm-veta{position:absolute;inset:0;z-index:-1;width:100%;height:100%}
 .lm-h1{margin:0;font-weight:800;font-size:clamp(2.1rem,9vw,2.54rem);line-height:1;letter-spacing:-.025em}
 .lm-sobre{display:block;margin-bottom:.4rem;font-weight:700;font-size:clamp(.92rem,4.6vw,1.2rem);line-height:1.15;letter-spacing:-.01em}
@@ -30,6 +33,13 @@
 .lm :focus-visible{outline:3px solid var(--navy);outline-offset:3px}
 .lm .btn-tinta:focus-visible{outline-color:var(--navy);box-shadow:0 0 0 3px #fff}
 
+/* móvil: menos aire entre bloques (sin bajar letra ni objetivos táctiles) para que se vea más mesa en el primer pantallazo */
+@media (max-width:639px){
+  .lm-tira{padding-block:.75rem .8rem}
+  .lm-sobre{margin-bottom:.3rem}
+  .lm-fila{margin-top:.5rem;row-gap:.4rem}
+  .lm-promesa{margin-top:.25rem}
+}
 @media (min-width:640px){
   .lm-fila{flex-wrap:nowrap}
   .lm-contacto{flex:none;align-items:flex-end}
@@ -55,11 +65,11 @@ html.js .lm-escena.arrastra{cursor:grabbing}
 .lm-vista{position:relative;flex:1 1 0;min-height:0;container-type:size;display:grid;place-items:center}
 .lm-defs{position:absolute;width:0;height:0}
 .lm-svg{display:block;overflow:visible;font-family:var(--display)}   /* lo que se sale del dibujo se recorta en .lm-escena, no en una caja invisible */
-.lm-alto{width:min(100cqw,calc(100cqh*360/560),30rem);aspect-ratio:360/560}
+.lm-alto{width:min(100cqw,calc(100cqh*360/544),30rem);aspect-ratio:360/544}
 .lm-ancho{display:none;width:min(100cqw,calc(100cqh*1440/654));aspect-ratio:1440/654}
 
-/* el mando: Hoy ←→ Recogida. En el móvil va debajo del dibujo; en escritorio, encima, en la esquina */
-.lm-mando{position:relative;z-index:3;flex:none;display:flex;align-items:center;gap:.7rem;height:4rem;margin:0 clamp(1rem,4vw,2.5rem) 1rem;padding-inline:1rem;border-radius:.65rem;background:var(--lm-papel);color:var(--navy);font-weight:700;font-size:1.05rem;box-shadow:0 0 0 2px var(--navy),5px 7px 0 2px rgb(10 14 20/.28);visibility:hidden;cursor:default}
+/* el mando: Lío ←→ Orden. En el móvil va debajo del dibujo; en escritorio, encima, en la esquina */
+.lm-mando{position:relative;z-index:3;flex:none;display:flex;align-items:center;gap:.7rem;height:3.5rem;margin:0 clamp(1rem,4vw,2.5rem) .75rem;padding-inline:1rem;border-radius:.65rem;background:var(--lm-papel);color:var(--navy);font-weight:700;font-size:1.05rem;box-shadow:0 0 0 2px var(--navy),5px 7px 0 2px rgb(10 14 20/.28);visibility:hidden;cursor:default}
 .lm.lista .lm-mando{visibility:visible}
 .lm-mando input{appearance:none;-webkit-appearance:none;flex:1;min-width:0;height:3rem;margin:0;background:none;cursor:grab;touch-action:pan-y}
 .lm-mando input::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:var(--navy)}
@@ -67,20 +77,34 @@ html.js .lm-escena.arrastra{cursor:grabbing}
 .lm-mando input::-webkit-slider-thumb{-webkit-appearance:none;width:2.75rem;height:2.75rem;margin-top:calc((5px - 2.75rem)/2);border:4px solid var(--navy);border-radius:50%;background:var(--verde)}
 .lm-mando input::-moz-range-thumb{box-sizing:border-box;width:2.75rem;height:2.75rem;border:4px solid var(--navy);border-radius:50%;background:var(--verde)}
 .lm-mando input:focus-visible{outline:3px solid var(--navy);outline-offset:3px;border-radius:.5rem}
+/* la pista: sale cuando la mesa se ha recogido y se va al primer uso. Sin animación de movimiento, solo aparece */
+.lm-pista{position:absolute;right:3.6rem;bottom:calc(100% + .65rem);padding:.3rem .7rem;border-radius:.5rem;background:var(--lm-papel);color:var(--navy);font-weight:700;font-size:.92rem;line-height:1.25;white-space:nowrap;pointer-events:none;box-shadow:0 0 0 2px var(--navy),3px 4px 0 2px rgb(10 14 20/.28);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s}
+.lm-pista::after{content:"";position:absolute;top:100%;right:1.1rem;width:.7rem;height:.7rem;margin-top:-.4rem;background:var(--lm-papel);border:2px solid var(--navy);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.lm-pista.ver{opacity:1;visibility:visible;transition-delay:0s}
+@media (prefers-reduced-motion:reduce){.lm-pista{transition:none}}
 
 /* la mesa en tres estados: los objetos se mueven con `transform` y `opacity` (y las variables --fo / --fi de los
    que cambian de cara). Valores por defecto = mesa recogida. */
 .lm [data-o]{--fo:0;--fi:1}
 .lm .s{opacity:0}
 .lm-fo{opacity:var(--fo,0)}
+.lm-fo.lm-fp{opacity:1;transform:scale(var(--fo,0));transform-box:fill-box;transform-origin:center}   /* los papeles de la carpeta se encogen, no se vuelven transparentes */
 .lm-fi{opacity:var(--fi,1)}
 .lm-vib{animation:var(--vib,none)}
 @keyframes lm-vib{0%{transform:translate(-2.4px,0)}50%{transform:translate(2.4px,0)}}
+@keyframes lm-rebote{0%{opacity:0;transform:scale(1)}55%{opacity:1;transform:scale(1.22)}100%{opacity:1;transform:scale(1)}}   /* nunca por debajo de su tamaño: la letra no baja de 12 px */
+.lm-sello{transform-box:fill-box;transform-origin:center}
+@media (max-width:744px){.lm-lado{display:none}}   /* la franja de tablet (carpeta, llaves y café a los lados): solo cuando hay madera de sobra */
+@media (min-width:745px){.lm-solo-movil{display:none}}   /* y entonces el café del lado sustituye al del móvil */
 @media (prefers-reduced-motion:no-preference){
   html.js .lm:not(.sin-script) [data-o]{transform:var(--ta);--fo:1;--fi:0}
   html.js .lm:not(.sin-script) .s{opacity:1}
   html.js .lm:not(.sin-script) [data-bisagra]{transform:translate(0,410px) scale(1,.02)}
   html.js .lm:not(.sin-script) [data-lim]{opacity:0}
+  /* el gesto final: la marca del portátil (o la pegatina del móvil grande) aparece con un pequeño rebote, una vez, cuando la mesa
+     termina de recogerse. Solo transform y opacidad. Sin JS, con «reducir movimiento» o si el script falla, la marca ya está puesta. */
+  html.js .lm:not(.sin-script) .lm-sello{opacity:0}
+  html.js .lm:not(.sin-script).premio .lm-sello{animation:lm-rebote .6s ease-out both}
   /* el móvil solo vibra durante el lío y mientras se ve */
   .lm.lio.en-vista [data-o=movil]{--vib:lm-vib .32s steps(2) infinite}
 }
@@ -91,7 +115,7 @@ html.js .lm-escena.arrastra{cursor:grabbing}
   .lm-vista{position:absolute;inset:0}
   .lm-alto{display:none}
   .lm-ancho{display:block}
-  .lm-mando{position:absolute;left:clamp(1rem,3.3vw,3rem);bottom:1.5rem;width:min(24.75rem,40vw);margin:0}
+  .lm-mando{position:absolute;left:clamp(1rem,3.3vw,3rem);bottom:1.5rem;width:min(24.75rem,40vw);height:4rem;margin:0}
 }
 
 /* ─── el canto de la mesa: el paso de la madera a la sección siguiente (navy) ─── */
