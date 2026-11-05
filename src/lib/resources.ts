@@ -12,6 +12,8 @@ export interface Resource {
     slug: string;
     cat: ResourceCategory;
     title: string;
+    /** H1 visible, más corto que `title`. Opcional: solo cambia el titular de la página; `title` sigue alimentando <title>, JSON-LD, tarjetas y el mensaje de WhatsApp. */
+    h1?: string;
     desc: string;
     time: string;
     featured?: boolean;
@@ -33,6 +35,7 @@ export const RESOURCES: Resource[] = [
         slug: 'automatiza-tu-negocio-sin-saber-de-tecnologia',
         cat: 'Guía',
         title: 'Cómo automatizar tu negocio sin saber de tecnología',
+        h1: 'Automatiza tu negocio sin saber de tecnología',
         desc: 'Paso a paso para identificar qué procesos te roban tiempo y convertirlos en flujos automáticos. Sin código, sin complicaciones.',
         time: '8 min',
         featured: true,
@@ -123,6 +126,7 @@ export const RESOURCES: Resource[] = [
         slug: 'senales-pyme-necesita-sistema-de-gestion',
         cat: 'Artículo',
         title: '5 señales de que tu PYME necesita un sistema de gestión (ERP/CRM)',
+        h1: '5 señales de que tu PYME necesita un ERP/CRM',
         desc: 'Pierdes clientes por falta de seguimiento, tus datos viven en Excel sueltos y no sabes tu margen real. 5 señales de que necesitas un sistema.',
         time: '5 min',
         date: '2025-11-12',
@@ -185,6 +189,7 @@ export const RESOURCES: Resource[] = [
         slug: 'checklist-tu-web-trabaja-para-ti',
         cat: 'Checklist',
         title: '¿Tu web trabaja para ti o contra ti? Checklist de 10 puntos',
+        h1: '¿Tu web trabaja para ti? Checklist de 10 puntos',
         desc: 'Auditoría web gratuita en 10 puntos: velocidad en móvil, contacto visible, SSL y objetivo claro. Comprueba si tu web capta clientes o los espanta.',
         time: '3 min',
         date: '2025-09-30',
@@ -237,6 +242,7 @@ export const RESOURCES: Resource[] = [
         slug: 'asistentes-ia-productivos',
         cat: 'Artículo',
         title: 'Asistentes IA para empresas: ventajas, límites y cuándo implementar uno',
+        h1: 'Asistentes IA para empresas: ventajas y límites',
         desc: 'Qué hace bien hoy un asistente de IA en una empresa, qué no, y cuándo compensa invertir. Ventajas reales, límites y errores a evitar.',
         time: '7 min',
         date: '2026-05-08',
@@ -300,6 +306,7 @@ export const RESOURCES: Resource[] = [
         slug: 'como-pedir-presupuesto-de-software',
         cat: 'Guía',
         title: 'Cómo pedir un presupuesto de software sin que te timen: guía y preguntas',
+        h1: 'Cómo pedir un presupuesto de software',
         desc: 'Las preguntas que debes hacer antes de contratar desarrollo de software: propiedad del código, mantenimiento, alcance y señales de alarma en una propuesta.',
         time: '10 min',
         date: '2026-01-15',
@@ -367,6 +374,7 @@ export const RESOURCES: Resource[] = [
         slug: 'fiscalidad-plataforma-fiscal-contable',
         cat: 'Producto',
         title: 'Fiscalidad: facturación, contabilidad PGC y modelos AEAT en una sola plataforma',
+        h1: 'Facturación y modelos AEAT en una plataforma',
         desc: 'Plataforma fiscal y contable española completa, con SII y VeriFactu nativos, OCR de tickets y asistente IA. Para autónomos, PYMEs y asesorías.',
         time: '6 min',
         cover: '/images/resources/fiscalidad-plataforma-fiscal-contable.webp',
@@ -441,6 +449,7 @@ export const RESOURCES: Resource[] = [
         slug: 'energydeal-crm-energetico',
         cat: 'Producto',
         title: 'EnergyDeal: CRM vertical para agentes y comercializadoras energéticas',
+        h1: 'EnergyDeal: CRM para agentes energéticos',
         desc: 'Comparador multi-proveedor con snapshots inmutables, gestión por CIF con CUPS y liquidación de comisiones con trazabilidad completa.',
         time: '5 min',
         cover: '/images/resources/energydeal-crm-energetico.webp',
@@ -506,6 +515,7 @@ export const RESOURCES: Resource[] = [
         slug: 'presupuestador-obra-bc3',
         cat: 'Producto',
         title: 'Presupuestador: presupuestos y certificaciones de obra con BC3 nativo',
+        h1: 'Presupuestador de obra con BC3 nativo',
         desc: 'SaaS para construcción y reformas: partidas con descomposición, firma digital del cliente, certificaciones versionadas y control de coste real con OCR.',
         time: '6 min',
         cover: '/images/resources/presupuestador-obra-bc3.webp',
@@ -575,6 +585,7 @@ export const RESOURCES: Resource[] = [
         slug: 'erp-hosteleria-tpv-restaurantes',
         cat: 'Producto',
         title: 'ERP Hostelería: TPV, inventario, reservas y personal para restaurantes y bares',
+        h1: 'ERP Hostelería: TPV, inventario y reservas',
         desc: 'ERP todo-en-uno para el día a día de un negocio de hostelería: mesas y comandas, stock y proveedores, turnos, reservas y cierre de caja con analítica.',
         time: '5 min',
         cover: '/images/resources/erp-hosteleria-tpv-restaurantes.webp',
@@ -640,6 +651,7 @@ export const RESOURCES: Resource[] = [
         slug: 'gestion-leads-agencia-sin-crm',
         cat: 'Artículo',
         title: 'Cómo gestionar leads en tu agencia sin perderlos: pipeline visual sin software',
+        h1: 'Cómo gestionar leads en tu agencia sin perderlos',
         desc: 'Por qué se pierden leads en una agencia, los primeros cambios para arreglarlo sin software y en qué momento sí compensa un CRM.',
         time: '6 min',
         date: '2026-07-25',
@@ -742,6 +754,7 @@ export const RESOURCES: Resource[] = [
         slug: 'migrar-de-excel-a-sistema-pyme',
         cat: 'Guía',
         title: 'De Excel a sistema: cómo migrar tu PYME sin perder datos ni parar el negocio',
+        h1: 'De Excel a sistema: cómo migrar tu PYME',
         desc: 'Plan por fases para migrar tu PYME de Excel a un sistema de gestión sin parar la operativa, sin perder histórico y sin que el equipo se pierda en el cambio.',
         time: '8 min',
         date: '2026-07-25',
@@ -818,6 +831,7 @@ export const RESOURCES: Resource[] = [
         slug: 'cuando-pedir-software-a-medida-vs-estandar',
         cat: 'Guía',
         title: '¿Software a medida o estándar? Cómo decidir sin que te la cuelen',
+        h1: '¿Software a medida o estándar? Cómo decidir',
         desc: 'Criterios objetivos para elegir entre software estándar y a medida, las preguntas clave antes de pedir presupuesto y las señales de que te están vendiendo de más.',
         time: '8 min',
         date: '2026-07-25',
