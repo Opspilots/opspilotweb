@@ -45,15 +45,16 @@ const m = mesa();
     <div class="lm-vista">
       <svg class="lm-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs set:html={m.defs} /></svg>
       <svg class="lm-svg lm-ancho" viewBox="0 178 1440 654" aria-hidden="true" focusable="false" set:html={m.ancho} />
-      <svg class="lm-svg lm-alto" viewBox="0 0 360 560" aria-hidden="true" focusable="false" set:html={m.alto} />
+      <svg class="lm-svg lm-alto" viewBox="0 16 360 544" aria-hidden="true" focusable="false" set:html={m.alto} />
     </div>
     <div class="lm-mando">
-      <label class="sr" for="lm-rango">Mesa de trabajo: de revuelta a recogida</label>
-      <span class="lm-mando-et" aria-hidden="true">Hoy</span>
+      <label class="sr" for="lm-rango">Mesa de trabajo: del lío al orden</label>
+      <span class="lm-mando-et" aria-hidden="true">Lío</span>
       <input id="lm-rango" type="range" min="0" max="100" step="1" value="100" aria-describedby="lm-desc">
-      <span class="lm-mando-et" aria-hidden="true">Recogida</span>
+      <span class="lm-mando-et" aria-hidden="true">Orden</span>
+      <span class="lm-pista" aria-hidden="true">Prueba a moverlo</span>
     </div>
-    <p id="lm-desc" class="sr">Ilustración decorativa: una mesa con papeles, avisos y facturas sueltas que se recoge hasta quedar una sola pantalla con tu web, tu ficha de Google, los pedidos y los avisos automáticos.</p>
+    <p id="lm-desc" class="sr">Ilustración decorativa: una mesa con papeles, avisos y facturas sueltas que se ordena hasta quedar una sola pantalla con tu web, tu ficha de Google, los pedidos y los avisos automáticos.</p>
   </div>
 </section>
 {/* si el script no carga, la mesa se queda recogida (.sin-script); onerror inline: la CSP ya admite 'unsafe-inline' en script-src */}

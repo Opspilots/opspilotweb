@@ -38,6 +38,9 @@ const titulo = r.title.length <= 49 ? `${r.title} · OpsPilot` : r.title;
       <span>{r.time} de lectura</span>
       <span>{r.author ?? 'Equipo OpsPilot'}</span>
     </p>
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA(`Hola OpsPilot, he leído "${r.title}" y tengo una duda:`)} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+    </div>
   </CabeceraPagina>
 
   <section class="s-papel" aria-label="Artículo">

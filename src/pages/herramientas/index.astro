@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import Cierre from '../../components/Cierre.astro';
 import { HERRAMIENTAS, GRUPOS } from '../../data/herramientas';
-import { migas, SITE_URL } from '../../lib/sitio';
+import { migas, SITE_URL, WA } from '../../lib/sitio';
 const lista = {
   '@type': 'ItemList', name: 'Herramientas gratis para pequeños negocios',
   itemListElement: HERRAMIENTAS.map((h, i) => ({ '@type': 'ListItem', position: i + 1, name: h.nombre, url: `${SITE_URL}/herramientas/${h.slug}/` })),
@@ -13,7 +13,11 @@ const lista = {
   description="Herramientas gratis para autónomos y pequeños negocios: Google Maps, reseñas, WhatsApp, presupuestos, IVA e IRPF, margen, Verifactu y más."
   path="/herramientas/" jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Herramientas', path: '/herramientas/' }]), lista]}>
   <CabeceraPagina titulo="Herramientas gratis para pequeños negocios."
-    entrada="Para lo que te preguntas cada semana: por qué no sales en Google, cuánto poner de IVA, cuánto cobrar, cómo hacer un presupuesto. Sin registrarte." />
+    entrada="Para lo que te preguntas cada semana: por qué no sales en Google, cuánto poner de IVA, cuánto cobrar, cómo hacer un presupuesto. Sin registrarte.">
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, he visto vuestras herramientas gratis y quería consultaros algo:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+    </div>
+  </CabeceraPagina>
   <section class="s-navy" aria-labelledby="t-hz">
     <div class="wrap">
       <p class="etiqueta">Elige por lo que te pasa</p>

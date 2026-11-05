@@ -9,7 +9,7 @@ import Tramos, { type Tramo } from '../../components/Tramos.astro';
 import CordobaSoluciona from '../../components/pantallas/CordobaSoluciona.astro';
 import ErpHosteleria from '../../components/pantallas/ErpHosteleria.astro';
 import PresupuesYa from '../../components/pantallas/PresupuesYa.astro';
-import { LINEAS, migas, SITE_URL } from '../../lib/sitio';
+import { LINEAS, migas, SITE_URL, WA } from '../../lib/sitio';
 
 // Cada sector de la web anterior cae en una de las tres líneas. Se conserva su id como ancla
 // (/soluciones/#reformas…) para no romper enlaces antiguos.
@@ -53,7 +53,11 @@ const itemList = {
   description="Tres formas de poner orden en tu negocio: webs y tiendas que venden, software a medida y automatización de lo repetitivo. Desde Córdoba, con precio cerrado."
   path="/soluciones/" jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }]), itemList]}>
   <CabeceraPagina sobre="Soluciones" titulo="Soluciones de digitalización: tres formas de poner orden en tu negocio."
-    entrada="Que te encuentren, tenerlo todo en un sitio o quitarte de encima lo repetitivo. Con precio cerrado y desde Córdoba." />
+    entrada="Que te encuentren, tenerlo todo en un sitio o quitarte de encima lo repetitivo. Con precio cerrado y desde Córdoba.">
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, he visto vuestras soluciones y quería consultaros:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+    </div>
+  </CabeceraPagina>
 
   <Tramos tramos={TRAMOS} idSeccion="lineas" etiqueta="Tres líneas" titulo="¿Qué te está pasando?" lead="Elige lo que más se parezca a tu día a día. Cada línea, con algo real que puedes tocar.">
     <CordobaSoluciona slot="v-webs" />

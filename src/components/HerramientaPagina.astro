@@ -7,7 +7,7 @@ import CabeceraPagina from './CabeceraPagina.astro';
 import Faq from './Faq.astro';
 import Cierre from './Cierre.astro';
 import { HERRAMIENTAS, herramienta } from '../data/herramientas';
-import { migas, faqSchema, ORG_ID, SITE_URL } from '../lib/sitio';
+import { migas, faqSchema, ORG_ID, SITE_URL, WA } from '../lib/sitio';
 interface Props {
   slug: string; title: string; description: string; h1: string; entrada: string;
   faq: { q: string; a: string }[];
@@ -29,6 +29,9 @@ const otras = HERRAMIENTAS.filter((x) => x.slug !== slug && x.grupo === h.grupo)
   jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos gratis', path: '/recursos/' }, { nombre: h.nombre, path }]), app, faqSchema(faq)]}>
   <CabeceraPagina titulo={h1} entrada={entrada}>
     <p class="hz-gratis"><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Gratis, sin registrarte. Lo que escribes no sale de tu navegador.</p>
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA(`Hola OpsPilot, he usado la herramienta «${h.nombre}» y quería consultaros:`)} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+    </div>
   </CabeceraPagina>
 
   <section class="s-papel hz-sec" id="herramienta" aria-label={h.nombre}>

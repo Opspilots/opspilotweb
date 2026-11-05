@@ -1,0 +1,64 @@
+/* Cabecera de las páginas interiores: la tira de madera de la portada en compacto, con un objeto a la derecha
+   (debajo del texto en móvil). No usa JS: el único gesto es una animación CSS, solo con movimiento permitido. */
+
+.cp{--cp-canto:.75rem;position:relative;isolation:isolate;background:#DBA369;color:var(--navy);padding-block:0 var(--cp-canto)}
+.cp-veta{position:absolute;inset:0;z-index:-1;width:100%;height:100%}
+
+/* el canto de la mesa (el mismo de la home): aquí la madera acaba y empieza la sección siguiente */
+.cp::after{content:"";position:absolute;z-index:4;left:0;right:0;bottom:0;height:var(--cp-canto);pointer-events:none;background:linear-gradient(#8A5529,#6B4020);box-shadow:inset 0 2px 0 rgb(235 192 140/.5),0 .35rem 1.1rem rgb(4 8 14/.45)}
+
+.cp-in{display:grid;grid-template-columns:minmax(0,1fr);padding-top:clamp(1.6rem,4svh,2.6rem)}
+.cp .cp-h1{max-width:none;letter-spacing:-.025em;line-height:1;text-wrap:balance}
+.cp-texto{min-width:0;margin-top:.9rem;padding-bottom:1.4rem}
+.cp .entrada{max-width:36rem;margin-top:0}
+.cp .acciones{display:flex;flex-wrap:wrap;gap:.7rem 1.4rem;align-items:center;margin-top:1.1rem}
+.cp .hz-gratis,.cp .prosa-meta{margin-top:.9rem}
+.cp-texto > :first-child:not(.entrada){margin-top:0}
+.cp :focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+.cp .btn-tinta:focus-visible{box-shadow:0 0 0 3px #fff}
+
+/* el objeto: asoma por el canto de la mesa, así que se recorta abajo y los altos (móvil, calculadora, papel) caben */
+.cp-objeto{position:relative;overflow:hidden;justify-self:end;align-self:end;max-width:100%}
+.cp-defs{position:absolute;width:0;height:0}
+.cp-svg{display:block;overflow:hidden;font-family:var(--display)}
+.cp-ancho{display:none;width:21rem;aspect-ratio:300/190}
+.cp-bajo{width:min(100%,19rem);aspect-ratio:300/116}
+
+/* tira sin dibujo: solo el texto sobre la madera */
+.cp-sin .cp-texto{padding-bottom:1.6rem}
+
+@media (max-width:999px){
+  .cp .acciones .btn{flex:1 1 12rem}
+  .cp-con .cp-texto{padding-bottom:.8rem}
+}
+
+/* escritorio: titular de lado a lado (dos líneas) y, debajo, la entrada a la izquierda y el objeto a la derecha */
+@media (min-width:1000px){
+  .cp-con .cp-in{grid-template-columns:minmax(0,1fr) auto;column-gap:2.5rem}
+  .cp-con .cp-h1{grid-column:1/-1}
+  .cp-con .cp-texto{grid-column:1;align-self:center}
+  .cp-con .cp-objeto{grid-column:2}
+  .cp-ancho{display:block}
+  .cp-bajo{display:none}
+}
+
+@media (prefers-reduced-motion:no-preference){
+  .cp-svg{animation:cp-posa .8s var(--curva) .1s both}
+  @keyframes cp-posa{from{transform:translateY(16px) rotate(1.2deg)}to{transform:none}}
+}
+
+/* objetivos táctiles de 44 px también en tablet (opspilot.css solo lo hace a ≤ 767 px) */
+@media (pointer:coarse){.cp .enlace{min-height:2.75rem}}
+
+/* móvil apaisado (p. ej. 740 × 360): sin dibujo, y la entrada y los botones lado a lado para que el botón de contacto
+   quede en la primera pantalla */
+@media (max-height:520px) and (orientation:landscape) and (min-width:560px) and (max-width:999px){
+  .cp-in{padding-top:1.1rem}
+  .cp-objeto{display:none}
+  .cp-texto{margin-top:.5rem;padding-bottom:.9rem}
+  .cp-texto:has(> .entrada){display:grid;grid-template-columns:minmax(0,1fr) fit-content(18rem);column-gap:1.5rem;align-items:start}
+  .cp-texto:has(> .entrada) > .entrada{grid-column:1;grid-row:1/span 3}
+  .cp-texto:has(> .entrada) > :not(.entrada){grid-column:2;margin-top:0}
+  .cp-texto:has(> .entrada) .acciones{flex-direction:column;align-items:stretch;gap:.4rem;margin-top:0}
+  .cp-texto:has(> .entrada) .acciones .btn{flex:none}
+}

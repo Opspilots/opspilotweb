@@ -3,7 +3,7 @@
 //
 // Cada objeto se dibuja UNA vez (en <defs>) y las dos composiciones lo reutilizan con <use>:
 //   · «ancho» (≥ 1000 px): portátil, carpeta, móvil y café sobre el tapete. viewBox 1440 × 654.
-//   · «alto»  (< 1000 px): un móvil grande con la pantalla final. viewBox 360 × 560.
+//   · «alto»  (< 1000 px): un móvil grande con la pantalla final, y a los lados (solo en tablet) carpeta, llaves y café. viewBox 360 × 544 (desde y = 16).
 // El CSS enseña una y oculta la otra (display:none): la oculta ni se pinta ni se anima.
 //
 // Cada <use> lleva sus dos posiciones: `transform` = mesa recogida (lo que ve quien no tiene JS o pide menos
@@ -16,25 +16,25 @@
 
 type Pos = [number, number, number, number];
 
-const NAVY = '#0F1620', PAPEL = '#FFFDF6', TINTA = '#27303B', ROJO = '#C2402B', SOMBRA = '#0A0E14';
+export const NAVY = '#0F1620', PAPEL = '#FFFDF6', TINTA = '#27303B', ROJO = '#C2402B', SOMBRA = '#0A0E14';
 
-const N = (v: number) => Math.round(v * 10) / 10;
-const rng = (s: number) => () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
-const rc = (x: number, y: number, w: number, h: number, f: string, r = 0, e = '') =>
+export const N = (v: number) => Math.round(v * 10) / 10;
+export const rng = (s: number) => () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
+export const rc = (x: number, y: number, w: number, h: number, f: string, r = 0, e = '') =>
   `<rect x="${N(x)}" y="${N(y)}" width="${N(w)}" height="${N(h)}"${r ? ` rx="${r}"` : ''} fill="${f}"${e ? ' ' + e : ''}/>`;
-const ci = (x: number, y: number, r: number, f: string, e = '') =>
+export const ci = (x: number, y: number, r: number, f: string, e = '') =>
   `<circle cx="${N(x)}" cy="${N(y)}" r="${N(r)}" fill="${f}"${e ? ' ' + e : ''}/>`;
-const pa = (d: string, f: string, e = '') => `<path d="${d}" fill="${f}"${e ? ' ' + e : ''}/>`;
-const ln = (d: string, c: string, w = 2, e = '') =>
+export const pa = (d: string, f: string, e = '') => `<path d="${d}" fill="${f}"${e ? ' ' + e : ''}/>`;
+export const ln = (d: string, c: string, w = 2, e = '') =>
   `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"${e ? ' ' + e : ''}/>`;
-const tx = (x: number, y: number, s: number, t: string, f = NAVY, w = 600, e = '') =>
+export const tx = (x: number, y: number, s: number, t: string, f = NAVY, w = 600, e = '') =>
   `<text x="${N(x)}" y="${N(y)}" font-size="${s}" font-weight="${w}" fill="${f}"${e ? ' ' + e : ''}>${t}</text>`;
-const G = (c: string, e = '') => `<g${e ? ' ' + e : ''}>${c}</g>`;
+export const G = (c: string, e = '') => `<g${e ? ' ' + e : ''}>${c}</g>`;
 /* sombra plana: la misma forma, desplazada */
-const srect = (x: number, y: number, w: number, h: number, r = 0, dx = 7, dy = 9, o = 0.28) =>
+export const srect = (x: number, y: number, w: number, h: number, r = 0, dx = 7, dy = 9, o = 0.28) =>
   rc(x + dx, y + dy, w, h, SOMBRA, r, `opacity="${o}"`);
 /* línea con pulso de mano */
-const mano = (x1: number, y1: number, x2: number, R: () => number, am = 2) => {
+export const mano = (x1: number, y1: number, x2: number, R: () => number, am = 2) => {
   let d = `M${N(x1)} ${N(y1)}`, x = x1;
   const paso = (x2 - x1) / 6;
   for (let i = 0; i < 6; i++) { x += paso; d += `Q${N(x - paso / 2)} ${N(y1 + (R() - 0.5) * am * 2)} ${N(x)} ${N(y1 + (R() - 0.5) * am)}`; }
@@ -42,7 +42,7 @@ const mano = (x1: number, y1: number, x2: number, R: () => number, am = 2) => {
 };
 
 /* ───────── objetos (centrados en su origen) ───────── */
-const tapete = (w: number, h: number) => {
+export const tapete = (w: number, h: number) => {
   let fina = '', gruesa = '';
   for (let x = 40; x < w; x += 40) (x % 200 === 0 ? (gruesa += `M${x} 0V${h}`) : (fina += `M${x} 0V${h}`));
   for (let y = 40; y < h; y += 40) (y % 200 === 0 ? (gruesa += `M0 ${y}H${w}`) : (fina += `M0 ${y}H${w}`));
@@ -71,7 +71,7 @@ const libreta = () => {
   );
 };
 
-const ticket = (w: number, h: number, t: string, sello: string) => {
+export const ticket = (w: number, h: number, t: string, sello: string) => {
   let z = `M${-w / 2} ${-h / 2}H${w / 2}V${h / 2}`;
   for (let x = w / 2; x > -w / 2 + 1; x -= 14) z += `L${N(x - 7)} ${h / 2 + 8}L${N(x - 14)} ${h / 2}`;
   z += 'Z';
@@ -99,26 +99,21 @@ const presupuesto = () =>
       `<circle cx="66" cy="116" r="37" fill="none" stroke="#7A4A22" stroke-width="5" opacity=".4"/>`,
   );
 
-const movil = (w: number, h: number, c: string) =>
+export const movil = (w: number, h: number, c: string) =>
   G(
     srect(-w / 2, -h / 2, w, h, 26, 8, 10) + rc(-w / 2, -h / 2, w, h, NAVY, 26) + rc(-w / 2 + 3, -h / 2 + 3, w - 6, h - 6, '#2B3644', 24) +
       rc(-w / 2 + 8, -h / 2 + 8, w - 16, h - 16, '#1C2733', 19) + rc(-16, -h / 2 + 15, 32, 7, NAVY, 4) + c,
   );
 
 /* el móvil del lío: cuatro avisos sin atender y vibrando (la vibración solo corre durante el lío) */
-const movilLio = () =>
-  G(
-    movil(
-      170, 330,
-      rc(-73, -132, 146, 62, PAPEL, 10) + tx(-62, -108, 16.5, '¿Me das precio?', TINTA, 700) + tx(-62, -84, 16, 'Sin contestar', ROJO, 700) +
+const avisos = () =>
+  rc(-73, -132, 146, 62, PAPEL, 10) + tx(-62, -108, 16.5, '¿Me das precio?', TINTA, 700) + tx(-62, -84, 16, 'Sin contestar', ROJO, 700) +
         rc(-73, -62, 146, 62, '#D6F7E4', 10) + tx(-62, -38, 16.5, '¿Abrís hoy?', TINTA, 700) + tx(-62, -14, 16, 'Sin contestar', ROJO, 700) +
         rc(-73, 8, 146, 62, '#FBE3DD', 10) + tx(-62, 32, 16.5, 'Llamada perdida', TINTA, 700) + tx(-62, 56, 16, 'Sin devolver', ROJO, 700) +
-        rc(-73, 78, 146, 62, PAPEL, 10) + tx(-62, 102, 16.5, 'Foto de la obra', TINTA, 700) + tx(-62, 126, 16, 'Sin mirar', ROJO, 700),
-    ) + ln('M-98 -60q-12 22 0 44M-112 -74q-20 36 0 72', NAVY, 3.4) + ln('M98 16q12 22 0 44M112 2q20 36 0 72', NAVY, 3.4),
-    'class="lm-vib"',
-  );
+        rc(-73, 78, 146, 62, PAPEL, 10) + tx(-62, 102, 16.5, 'Foto de la obra', TINTA, 700) + tx(-62, 126, 16, 'Sin mirar', ROJO, 700);
+const vibra = () => ln('M-98 -60q-12 22 0 44M-112 -74q-20 36 0 72', NAVY, 3.4) + ln('M98 16q12 22 0 44M112 2q20 36 0 72', NAVY, 3.4);
 
-const calc = () => {
+export const calc = () => {
   let k = '';
   const sim = ['', '', '', '×', '', '', '', '−', '', '', '', '+', '', '', '', '='];
   for (let f = 0; f < 4; f++)
@@ -133,38 +128,38 @@ const calc = () => {
   );
 };
 
-const taza = () =>
+export const taza = () =>
   G(
     ci(8, 10, 70, SOMBRA, 'opacity=".26"') + rc(52, -13, 52, 26, '#EDE3CE', 12) + rc(58, -7, 40, 14, '#D6C9AC', 7) + ci(0, 0, 68, '#F5EFE2') + ci(0, 0, 58, '#E4DAC3') +
       ci(0, 0, 50, '#5B3418') + ln('M-30 -24A40 40 0 0 1 8 -39', '#8A5A30', 5) + ci(16, 18, 5, '#7A4A28'),
   );
 
-/* la carpeta: los papeles sueltos (lm-fo) se van al guardarla. Sus letras miden ≥ 18 u a escala .9 */
-const carpeta = () =>
+/* la carpeta: los papeles sueltos (lm-fp) se encogen y se van al guardarla. Sus letras miden ≥ 18 u a escala .9 */
+export const carpeta = () =>
   G(
     G(
       G(srect(-140, -170, 270, 190, 3) + rc(-140, -170, 270, 190, '#CFE2F5', 3) + rc(-122, -150, 150, 8, '#7B93AE', 2) + rc(-122, -130, 190, 8, '#7B93AE', 2), 'transform="rotate(-12)"') +
         G(srect(-110, -178, 260, 190, 3) + rc(-110, -178, 260, 190, PAPEL, 3) + tx(-88, -146, 19, 'Facturas', TINTA, 800) + rc(-88, -134, 180, 7, '#B8BDC4', 2) + rc(-88, -116, 120, 7, '#B8BDC4', 2), 'transform="rotate(9)"') +
         G(rc(-150, -140, 210, 130, '#FBD5CB', 3) + rc(-132, -124, 120, 7, '#C07F70', 2), 'transform="rotate(-27) translate(-40 30)"') +
         G(rc(60, -130, 150, 180, '#F8DF76', 3) + rc(76, -110, 100, 7, '#BFA044', 2) + rc(76, -92, 80, 7, '#BFA044', 2), 'transform="rotate(17)"'),
-      'class="lm-fo"',
+      'class="lm-fo lm-fp"',
     ) +
       srect(-170, -110, 340, 230, 6) + pa('M-170 -110H-60L-40 -132H70L90 -110H170V120H-170Z', '#7E2C1B') + rc(-170, -104, 340, 224, '#B8452E', 6) + rc(-170, -104, 340, 5, '#D0634A') +
       rc(-92, -50, 184, 70, PAPEL, 3) + tx(0, -20, 22, 'Clientes', TINTA, 800, 'text-anchor="middle"') + tx(0, 8, 20, 'y papeles', TINTA, 500, 'text-anchor="middle"') +
       rc(-170, 62, 340, 9, '#1C2733') + ln('M-150 108l14-4M-120 108l14-4M120 108l14-4M90 108l14-4', '#7E2C1B', 3),
   );
 
-const boli = () =>
+export const boli = () =>
   G(
     rc(-120, -5, 240, 14, SOMBRA, 6, 'opacity=".24" transform="translate(4 6)"') + rc(-120, -7, 214, 14, NAVY, 5) + rc(-120, -7, 214, 4, '#34465A', 3) +
       pa('M94 -7L122 0L94 7Z', '#E6E2D4') + pa('M114 -2L122 0L114 2Z', NAVY) + rc(-110, -12, 70, 5, '#9BA6B3', 2),
   );
-const lapiz = () =>
+export const lapiz = () =>
   G(
     rc(-110, -5, 220, 14, SOMBRA, 4, 'opacity=".24" transform="translate(4 6)"') + rc(-92, -8, 176, 16, '#F2B735') + rc(-92, -8, 176, 5, '#F8D26F') + rc(-92, 3, 176, 5, '#D09319') +
       rc(-112, -8, 20, 16, '#D66B52', 3) + rc(-96, -8, 8, 16, '#A9A493') + pa('M84 -8L112 0L84 8Z', '#EBC59A') + pa('M104 -2.3L112 0L104 2.3Z', TINTA),
   );
-const postit = (c: string, t1: string, t2: string) =>
+export const postit = (c: string, t1: string, t2: string) =>
   G(
     srect(-68, -66, 136, 132, 0, 5, 7) + rc(-68, -66, 136, 132, c) + pa('M68 66L34 66L68 34Z', SOMBRA, 'opacity=".14"') + rc(-68, -66, 136, 20, '#fff', 0, 'opacity=".22"') +
       tx(-54, -16, 21, t1, TINTA, 700) + tx(-54, 14, 21, t2, TINTA, 700),
@@ -180,17 +175,21 @@ const llaves = () =>
 const cerco = () => `<circle class="lm-fo" r="58" fill="none" stroke="#7A4A22" stroke-width="6" stroke-opacity=".38"/>`;
 const posavasos = () => G(ci(5, 6, 84, SOMBRA, 'opacity=".22"') + ci(0, 0, 84, '#1C2733') + `<circle r="70" fill="none" stroke="#51CB8A" stroke-width="3"/>`);
 
-/* el móvil pequeño: del lío (lm-fo) al «Al día» (lm-fi) */
+/* el móvil pequeño: un solo cuerpo, siempre opaco; lo que se cruza es el contenido de su pantalla, del lío (lm-fo) al «Al día» (lm-fi) */
 const movilFinal = () =>
   G(
-    G(movilLio(), 'class="lm-fo"') +
-      G(movil(170, 330, rc(-77, -152, 154, 304, '#16202B', 16) + ci(0, -10, 32, '#51CB8A') + ln('M-15 -10l11 11 20-22', NAVY, 6) + tx(0, 54, 20, 'Al día', '#fff', 700, 'text-anchor="middle"')), 'class="lm-fi"'),
+    movil(
+      170, 330,
+      G(avisos(), 'class="lm-fo"') +
+        G(rc(-77, -152, 154, 304, '#16202B', 16) + ci(0, -10, 32, '#51CB8A') + ln('M-15 -10l11 11 20-22', NAVY, 6) + tx(0, 54, 20, 'Al día', '#fff', 700, 'text-anchor="middle"'), 'class="lm-fi"'),
+    ) + G(vibra(), 'class="lm-fo"'),
+    'class="lm-vib"',
   );
 
-const mapa = (x: number, y: number, w: number, h: number, pin = '#1F7A4A') =>
+export const mapa = (x: number, y: number, w: number, h: number, pin = '#1F7A4A') =>
   `<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">${rc(0, 0, 200, 150, '#E7ECE0')}${pa('M130 0H200V70Q150 60 130 0Z', '#BFE3C6')}${ln('M-5 96L205 58M50 -5L82 155M140 -5L118 155M-5 26L205 12', '#fff', 11)}${pa('M92 42c-14 0-24 10-24 23 0 17 24 40 24 40s24-23 24-40c0-13-10-23-24-23z', pin)}${ci(92, 65, 9, '#fff')}</svg>`;
 
-const tiendita = (x: number, y: number, w: number) => {
+export const tiendita = (x: number, y: number, w: number) => {
   const u = w / 10;
   let t = '';
   for (let i = 0; i < 5; i++) t += pa(`M${x + i * 2 * u} ${y + 2 * u}h${2 * u}v${1.6 * u}a${u} ${u} 0 0 1 ${-2 * u} 0z`, i % 2 ? PAPEL : '#B8452E');
@@ -201,7 +200,7 @@ const tiendita = (x: number, y: number, w: number) => {
 /* ───────── pantallas finales: una sola interfaz con los cuatro servicios ───────── */
 const pantallaD = () =>
   G(
-    rc(0, 0, 640, 48, NAVY) + `<svg x="14" y="10" width="28" height="28" viewBox="0 0 100 100"><use href="#aro"/></svg>` + tx(50, 32, 21, 'Hoy en tu negocio', '#fff', 700) + tx(626, 32, 18, 'Todo en un sitio', '#51CB8A', 700, 'text-anchor="end"') +
+    rc(0, 0, 640, 48, NAVY) + `<svg x="14" y="10" width="28" height="28" viewBox="0 0 100 100"><use href="#aro"/></svg>` + tx(50, 32, 21, 'Hoy en tu negocio', '#fff', 700) + G(ci(456, 24, 10, '#51CB8A') + ln('M451 24l4 4 8-9', NAVY, 2.6) + tx(626, 32, 18, 'Todo en un sitio', '#51CB8A', 700, 'text-anchor="end"'), 'class="lm-sello"') +
       rc(0, 48, 640, 352, '#F4F4EF') +
       rc(16, 62, 300, 186, '#fff', 6) + rc(16, 62, 300, 26, '#DDE2E7', 6) + ci(30, 75, 4, '#B8452E') + ci(43, 75, 4, '#E7A93F') + ci(56, 75, 4, '#51CB8A') + tx(74, 81, 16, 'Tu web', TINTA, 700) +
       rc(16, 88, 120, 160, '#2F4E8C') + tiendita(26, 110, 100) + tx(150, 120, 21, 'Lo que', NAVY, 800) + tx(150, 145, 21, 'ofreces', NAVY, 800) + rc(150, 158, 150, 6, '#B8BDC4', 2) + rc(150, 172, 120, 6, '#B8BDC4', 2) +
@@ -220,9 +219,9 @@ const pantallaD = () =>
 const portatil = () => {
   const teclas = `<pattern id="lm-teclas" x="-310" y="424" width="48" height="38" patternUnits="userSpaceOnUse">${rc(0, 0, 42, 32, '#1C2733', 5)}${rc(0, 0, 42, 5, '#34465A', 3)}</pattern>`;
   return G(
-    `<defs>${teclas}</defs>` + srect(-350, -30, 700, 780, 18, 10, 12) + rc(-350, 410, 700, 340, '#9EA7B1', 14) + rc(-350, 410, 700, 8, '#7C8590') + rc(-340, 418, 680, 190, '#7C8590', 8) +
+    `<defs>${teclas}</defs>` + srect(-350, 410, 700, 340, 14, 10, 12) + rc(-350, 410, 700, 340, '#9EA7B1', 14) + rc(-350, 410, 700, 8, '#7C8590') + rc(-340, 418, 680, 190, '#7C8590', 8) +
       rc(-310, 424, 624, 152, 'url(#lm-teclas)') + rc(-90, 620, 180, 100, '#B1B9C2', 8) +
-      G(rc(-350, -30, 700, 450, NAVY, 18) + rc(-340, -20, 680, 430, '#1C2733', 10) + G(G(pantallaD(), 'data-lim'), 'transform="translate(-320 0)"'), 'data-bisagra'),
+      G(srect(-350, -30, 700, 450, 18, 10, 12) + rc(-350, -30, 700, 450, NAVY, 18) + rc(-340, -20, 680, 430, '#1C2733', 10) + G(G(pantallaD(), 'data-lim'), 'transform="translate(-320 0)"'), 'data-bisagra'),
   );
 };
 
@@ -237,10 +236,12 @@ const pantallaM = () =>
       tx(-80, 116, 13, 'Factura', TINTA, 500) + tx(80, 116, 13, 'Cobrada', '#1F7A4A', 700, 'text-anchor="end"') +
       rc(-90, 140, 180, 54, NAVY, 5) + tx(-80, 160, 15, 'Sale solo', '#fff', 800) + ci(-73, 178, 7, '#51CB8A') + tx(-60, 183, 13, 'Aviso de la cita', '#E6EBF2', 500),
   );
+/* la pegatina de «hecho» en la esquina del móvil grande: es el gesto final (.lm-sello), fuera de la pantalla que se funde */
+const pegatina = () => G(ci(72, -199, 15, '#51CB8A', `stroke="${NAVY}" stroke-width="3"`) + ln('M65 -199l5.5 5.5 10-11.5', NAVY, 3.4), 'class="lm-sello"');
 const movilGrande = () =>
   G(
     srect(-110, -222, 220, 444, 30, 9, 11) + rc(-110, -222, 220, 444, NAVY, 30) + rc(-106, -218, 212, 436, '#34465A', 27) + rc(-101, -213, 202, 426, '#1C2733', 22) +
-      G(pantallaM(), 'data-lim'),
+      G(pantallaM(), 'data-lim') + pegatina(),
   );
 
 /* ───────── composiciones ───────── */
@@ -265,7 +266,7 @@ const ANCHO = {
   pv: [[896, 690, -9, 1], [250, 540, 0, 0.5]],
   carp: [[212, 440, -9, 1], [214, 552, 0, 0.9]],
   llav: [[60, 700, 22, 1], [-90, 960, 0, 1]],
-  portatil: [[800, 1300, 4, 0.92], [790, 250, 0, 1.08]],
+  portatil: [[3000, 268, 7, 1.08], [790, 250, 0, 1.08]],   // entra deslizando desde la derecha, siempre opaco; arranca fuera de la vista incluso en pantallas de 3840 px (x = 3000); misma escala: la letra de la pantalla no baja de 12 px
   lap: [[1324, 690, 62, 1], [1420, 560, 90, 0.7]],
   boli: [[632, 700, -30, 1], [1394, 560, 90, 0.74]],
   pvs: [[1282, 350, 0, 0], [1290, 330, 0, 0.8]],
@@ -297,6 +298,24 @@ const SE_FUNDEN = {
   ancho: new Set(['pos', 'calc', 't1', 't2', 'presu', 'lib', 'pv']),
   alto: new Set(['pos', 'calc', 't1', 'presu', 'lib', 'pv', 'carp', 'movil']),
 };
+/* La franja de tablet (745-999 px): la mesa estrecha deja madera a los lados. Allí van una carpeta, unas llaves y un café, a escala
+   pequeña y sin letra (la regla de 12 px se cumple dibujándolos sin texto). Están fuera de la mesa en el lío y entran por escala
+   al final, cuando la carpeta del lío ya se ha ido: nunca se ven dos carpetas ni dos tazas. En móvil y por debajo de 745 px el CSS
+   los oculta (.lm-lado); en tablet se oculta el café del móvil (.lm-solo-movil). Con 745 px el margen de madera (≥ 99 u a cada lado)
+   deja sitio a la carpeta (123 u de ancho) sin pisar el móvil, que empieza en x = 46. */
+const carpetaLado = () =>
+  G(
+    srect(-110, -130, 220, 280, 6) + pa('M-110 -130H-34L-18 -152H46L62 -130H110V150H-110Z', '#7E2C1B') + rc(-110, -124, 220, 274, '#B8452E', 6) + rc(-110, -124, 220, 5, '#D0634A') +
+      rc(-72, -56, 144, 64, PAPEL, 3) + rc(-54, -38, 108, 8, '#B8BDC4', 2) + rc(-54, -18, 76, 8, '#B8BDC4', 2) + rc(-110, 96, 220, 9, '#1C2733'),
+  );
+/* [id del objeto, dibujo, posición con la mesa revuelta (escala 0 = aún no está), posición con la mesa recogida] */
+const LADO: [string, string, Pos, Pos][] = [
+  ['carpl', 'carpl', [-34, 432, -5, 0], [-34, 432, -5, 0.56]],
+  ['llavl', 'llav', [-62, 190, 16, 0], [-62, 190, 16, 0.7]],
+  ['pvsl', 'pvs', [405, 206, 0, 0], [405, 206, 0, 0.5]],
+  ['tazal', 'taza', [405, 206, 0, 0], [405, 206, 0, 0.5]],
+];
+const lados = () => LADO.map(([id, def, a, b]) => `<use href="#lm-${def}" ${pos(id, a, b, 'lm-lado')}/>`).join('');
 const objeto = (id: string, t: Record<string, [Pos, Pos]>, f: Set<string>) => uso(id, t[id][0], t[id][1], f.has(id) ? 's' : '');
 
 /* la madera: un mosaico de cinco tablas de 165 px que se repite en horizontal y en vertical. Va en el HTML (un patrón SVG)
@@ -334,7 +353,7 @@ export interface Mesa {
   defs: string;
   /** contenido del SVG ancho (viewBox 0 178 1440 654) */
   ancho: string;
-  /** contenido del SVG alto (viewBox 0 0 360 560) */
+  /** contenido del SVG alto (viewBox 0 16 360 544: sin el aire de arriba, para que se vea más mesa) */
   alto: string;
   /** veta de la tabla de arriba, detrás del texto (viewBox 0 0 1440 100, sin proporción) */
   veta: string;
@@ -353,6 +372,7 @@ export function mesa(): Mesa {
     lib: libreta(),
     pv: postit('#BDE6F2', '¿Pagó', 'o no?'),
     carp: carpeta(),
+    carpl: carpetaLado(),
     llav: llaves(),
     lap: lapiz(),
     boli: boli(),
@@ -370,9 +390,9 @@ export function mesa(): Mesa {
 
   const M = (id: keyof typeof ALTO) => objeto(id, ALTO, SE_FUNDEN.alto);
   const alto =
-    uso('tapetem', ALTO.tapete[0], ALTO.tapete[1]) + M('cerco') + M('pos') + M('calc') + M('t1') + M('presu') + M('lib') + M('pv') + M('carp') +
+    uso('tapetem', ALTO.tapete[0], ALTO.tapete[1]) + lados() + uso('cerco', ALTO.cerco[0], ALTO.cerco[1], 'lm-solo-movil') + M('pos') + M('calc') + M('t1') + M('presu') + M('lib') + M('pv') + M('carp') +
     dentro('portatil', ALTO.portatil[0], ALTO.portatil[1], movilGrande()) +
-    M('lap') + M('boli') + M('pvs') + M('taza') + M('movil');
+    M('lap') + M('boli') + uso('pvs', ALTO.pvs[0], ALTO.pvs[1], 'lm-solo-movil') + uso('taza', ALTO.taza[0], ALTO.taza[1], 'lm-solo-movil') + M('movil');
 
   const R = rng(7);
   let d = '';
