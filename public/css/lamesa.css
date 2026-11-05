@@ -1,4 +1,5 @@
 /* La mesa · cabecera de la portada. Solo la carga la portada.
+   De arriba abajo: la tabla del titular, la mesa y el tablón que la cierra (lo que ofrecemos y el contacto).
    Estados de la mesa:
    · recogida (por defecto): lo que ve quien no tiene JS o pide menos movimiento. Es el `transform` de cada objeto.
    · revuelta: html.js + sin «reducir movimiento» + sin la clase .sin-script; el CSS la aplica ya en el primer
@@ -7,8 +8,8 @@
 
 .lm{--lm-papel:#F7E9D2;position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:min(calc(100svh - var(--cab)),62rem);padding-block:0;background:#CF9358;color:var(--navy)}
 
-/* ─── la tabla de arriba: texto y contacto sobre madera clara (navy sobre #DBA369: 8,2:1) ─── */
-.lm-tira{position:relative;z-index:2;background:#DBA369;padding-block:clamp(.9rem,2.2svh,1.6rem) clamp(1rem,2.4svh,1.7rem)}
+/* ─── la tabla de arriba: el titular sobre madera clara (navy sobre #DBA369: 8,2:1) ─── */
+.lm-tira{position:relative;z-index:2;background:#DBA369;padding-block:clamp(.8rem,2svh,1.5rem) clamp(.85rem,2.2svh,1.6rem)}
 /* la costura: la tabla de arriba es un tablón más alto que la mesa. Su canto (filo claro, cara de tabla, cara oscura) y la sombra que
    echa sobre la mesa, en dos escalones planos: sin degradados ni difuminados */
 .lm-tira{border-bottom:.3rem solid #A2662F;box-shadow:inset 0 -2px 0 #EBC08C,0 .3rem 0 #6F4220}
@@ -17,40 +18,6 @@
 .lm-h1{margin:0;font-weight:800;font-size:clamp(2.1rem,9vw,2.54rem);line-height:1;letter-spacing:-.025em}
 .lm-sobre{display:block;margin-bottom:.4rem;font-weight:700;font-size:clamp(.92rem,4.6vw,1.2rem);line-height:1.15;letter-spacing:-.01em}
 .lm-grande{display:block;text-wrap:balance}
-.lm-fila{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.7rem 2rem;margin-top:.7rem}
-.lm-apoyo{flex:1 1 24rem;min-width:0;max-width:40rem}
-.lm-servicios{font-weight:500;font-size:clamp(1.02rem,.95rem + .4vw,1.3rem);line-height:1.3}
-.lm-promesa{list-style:none;display:flex;flex-wrap:wrap;gap:.1rem 1.1rem;margin-top:.4rem;font-weight:600;font-size:.92rem;line-height:1.3}
-.lm-promesa li{display:inline-flex;align-items:center;gap:.4rem}
-.lm-promesa .ico{width:1.1em;height:1.1em}
-.lm-contacto{display:flex;flex-direction:column;gap:.15rem;min-width:0;max-width:100%}
-.lm-acciones{display:flex;flex-wrap:wrap;gap:.7rem}
-.lm-acciones .btn{flex:1 1 auto;white-space:nowrap;padding-inline:.7rem;font-size:.92rem}
-.lm-casos{font-size:.95rem}
-.lm-casos .enlace{min-height:1.75rem}
-@media (pointer:coarse),(max-width:767px){.lm-casos .enlace{min-height:2.75rem}}
-@media (max-width:379px){.lm-acciones .ico{display:none}}
-.lm :focus-visible{outline:3px solid var(--navy);outline-offset:3px}
-.lm .btn-tinta:focus-visible{outline-color:var(--navy);box-shadow:0 0 0 3px #fff}
-
-/* móvil: menos aire entre bloques (sin bajar letra ni objetivos táctiles) para que se vea más mesa en el primer pantallazo */
-@media (max-width:639px){
-  .lm-tira{padding-block:.75rem .8rem}
-  .lm-sobre{margin-bottom:.3rem}
-  .lm-fila{margin-top:.5rem;row-gap:.4rem}
-  .lm-promesa{margin-top:.25rem}
-}
-@media (min-width:640px){
-  .lm-fila{flex-wrap:nowrap}
-  .lm-contacto{flex:none;align-items:flex-end}
-  .lm-acciones{flex-wrap:nowrap}
-  .lm-acciones .btn{flex:none;padding-inline:1.2rem;font-size:1rem}
-  .lm-promesa{font-size:1rem}
-}
-@media (min-width:640px) and (max-width:899px){
-  .lm-fila{flex-wrap:wrap}
-  .lm-contacto{align-items:flex-start}
-}
 @media (min-width:768px){
   /* misma escala que el resto de la web: este H1 es el texto mayor de la página y el de la home, el mayor del sitio */
   .lm-h1{font-size:clamp(2.2rem,1rem + 3.2vw,4.3rem)}
@@ -58,30 +25,14 @@
 }
 
 /* ─── la mesa ─── */
-.lm-escena{position:relative;flex:1 1 auto;display:flex;flex-direction:column;min-height:36rem;overflow:hidden;background:#CF9358;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.lm-escena{position:relative;flex:1 1 auto;display:flex;flex-direction:column;min-height:28.25rem;overflow:hidden;background:#CF9358}
 .lm-madera{position:absolute;inset:0;width:100%;height:100%}
-html.js .lm-escena{cursor:grab}
-html.js .lm-escena.arrastra{cursor:grabbing}
-.lm-vista{position:relative;flex:1 1 0;min-height:0;container-type:size;display:grid;place-items:center}
+.lm-vista{position:relative;flex:1 1 0;min-height:0;container-type:size;display:grid}
 .lm-defs{position:absolute;width:0;height:0}
-.lm-svg{display:block;overflow:visible;font-family:var(--display)}   /* lo que se sale del dibujo se recorta en .lm-escena, no en una caja invisible */
-.lm-alto{width:min(100cqw,calc(100cqh*360/544),30rem);aspect-ratio:360/544}
-.lm-ancho{display:none;width:min(100cqw,calc(100cqh*1440/654));aspect-ratio:1440/654}
-
-/* el mando: Lío ←→ Orden. En el móvil va debajo del dibujo; en escritorio, encima, en la esquina */
-.lm-mando{position:relative;z-index:3;flex:none;display:flex;align-items:center;gap:.7rem;height:3.5rem;margin:0 clamp(1rem,4vw,2.5rem) .75rem;padding-inline:1rem;border-radius:.65rem;background:var(--lm-papel);color:var(--navy);font-weight:700;font-size:1.05rem;box-shadow:0 0 0 2px var(--navy),5px 7px 0 2px rgb(10 14 20/.28);visibility:hidden;cursor:default}
-.lm.lista .lm-mando{visibility:visible}
-.lm-mando input{appearance:none;-webkit-appearance:none;flex:1;min-width:0;height:3rem;margin:0;background:none;cursor:grab;touch-action:pan-y}
-.lm-mando input::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:var(--navy)}
-.lm-mando input::-moz-range-track{height:5px;border-radius:3px;background:var(--navy)}
-.lm-mando input::-webkit-slider-thumb{-webkit-appearance:none;width:2.75rem;height:2.75rem;margin-top:calc((5px - 2.75rem)/2);border:4px solid var(--navy);border-radius:50%;background:var(--verde)}
-.lm-mando input::-moz-range-thumb{box-sizing:border-box;width:2.75rem;height:2.75rem;border:4px solid var(--navy);border-radius:50%;background:var(--verde)}
-.lm-mando input:focus-visible{outline:3px solid var(--navy);outline-offset:3px;border-radius:.5rem}
-/* la pista: sale cuando la mesa se ha recogido y se va al primer uso. Sin animación de movimiento, solo aparece */
-.lm-pista{position:absolute;right:3.6rem;bottom:calc(100% + .65rem);padding:.3rem .7rem;border-radius:.5rem;background:var(--lm-papel);color:var(--navy);font-weight:700;font-size:.92rem;line-height:1.25;white-space:nowrap;pointer-events:none;box-shadow:0 0 0 2px var(--navy),3px 4px 0 2px rgb(10 14 20/.28);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s}
-.lm-pista::after{content:"";position:absolute;top:100%;right:1.1rem;width:.7rem;height:.7rem;margin-top:-.4rem;background:var(--lm-papel);border:2px solid var(--navy);border-width:0 2px 2px 0;transform:rotate(45deg)}
-.lm-pista.ver{opacity:1;visibility:visible;transition-delay:0s}
-@media (prefers-reduced-motion:reduce){.lm-pista{transition:none}}
+.lm-svg{display:block;margin:auto;overflow:visible;font-family:var(--display)}   /* lo que se sale del dibujo se recorta en .lm-escena, no en una caja invisible. margin:auto centra, y si el dibujo es más alto que la mesa, se recorta por abajo */
+/* el dibujo escala con el alto que le deja la pantalla (svh, vía la altura del contenedor), sin bajar del ancho que mantiene la letra en 12 px o más */
+.lm-alto{width:min(100cqw,30rem,max(calc(100cqh*360/544),18.75rem));aspect-ratio:360/544}
+.lm-ancho{display:none;width:min(100cqw,max(calc(100cqh*1440/654),63.75rem));aspect-ratio:1440/654}
 
 /* la mesa en tres estados: los objetos se mueven con `transform` y `opacity` (y las variables --fo / --fi de los
    que cambian de cara). Valores por defecto = mesa recogida. */
@@ -111,18 +62,55 @@ html.js .lm-escena.arrastra{cursor:grabbing}
 
 /* ─── escritorio: portátil, carpeta y café sobre el tapete ─── */
 @media (min-width:1000px){
-  .lm-escena{min-height:28.5rem}
+  .lm-escena{min-height:24rem}
   .lm-vista{position:absolute;inset:0}
   .lm-alto{display:none}
   .lm-ancho{display:block}
-  .lm-mando{position:absolute;left:clamp(1rem,3.3vw,3rem);bottom:1.5rem;width:min(24.75rem,40vw);height:4rem;margin:0}
 }
 
-/* ─── el canto de la mesa: el paso de la madera a la sección siguiente (navy) ─── */
-.lm::after{content:"";position:absolute;z-index:4;left:0;right:0;bottom:0;height:.75rem;pointer-events:none;background:linear-gradient(#8A5529,#6B4020);box-shadow:inset 0 2px 0 rgb(235 192 140/.5),0 .35rem 1.1rem rgb(4 8 14/.45)}
+/* ─── el tablón de abajo: cierra la mesa y lleva lo que ofrecemos y el contacto (navy sobre #DBA369: 8,2:1) ─── */
+.lm-pie{position:relative;z-index:2;background:#DBA369;padding-block:clamp(.85rem,2svh,1.4rem) clamp(.95rem,2.2svh,1.5rem)}
+/* su canto: filo oscuro y claro donde sube sobre la mesa y, abajo, la cara del tablón y su sombra sobre la sección siguiente (navy),
+   en escalones planos como los de la tabla de arriba */
+.lm-pie{border-top:.2rem solid #A2662F;border-bottom:.45rem solid #8A5529;box-shadow:inset 0 2px 0 #EBC08C,inset 0 -2px 0 rgb(235 192 140/.45),0 .3rem 0 #6B4020}
+.lm-pie-in{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.7rem 2rem}
+.lm-apoyo{flex:1 1 24rem;min-width:0;max-width:40rem}
+.lm-servicios{font-weight:500;font-size:clamp(1.02rem,.95rem + .4vw,1.3rem);line-height:1.3}
+/* la promesa, como dos etiquetas de papel clavadas en el tablón (el mismo papel y la misma sombra plana que los objetos de la mesa) */
+.lm-promesa{list-style:none;display:flex;flex-wrap:wrap;gap:.45rem .7rem;margin-top:.55rem;font-weight:700;font-size:.92rem;line-height:1.25}
+.lm-promesa li{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .7rem;border-radius:.4rem;background:var(--lm-papel);box-shadow:0 0 0 2px var(--navy),3px 4px 0 2px rgb(10 14 20/.28)}
+.lm-promesa li:nth-child(odd){rotate:-.8deg}
+.lm-promesa li:nth-child(even){rotate:.7deg}
+.lm-promesa .ico{width:1.1em;height:1.1em}
+.lm-contacto{min-width:0;max-width:100%}
+.lm-acciones{display:flex;flex-wrap:wrap;gap:.7rem}
+.lm-acciones .btn{flex:1 1 auto;white-space:nowrap;padding-inline:.7rem;font-size:.92rem}
+@media (max-width:379px){.lm-acciones .ico{display:none}}
+.lm :focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+.lm .btn-tinta:focus-visible{outline-color:var(--navy);box-shadow:0 0 0 3px #fff}
 
-/* ─── apaisado de móvil: el texto y el contacto caben en la primera pantalla ─── */
+/* móvil: menos aire entre bloques (sin bajar letra ni objetivos táctiles) para que se vea más mesa en el primer pantallazo */
+@media (max-width:639px){
+  .lm-tira{padding-block:.75rem .8rem}
+  .lm-sobre{margin-bottom:.3rem}
+  .lm-pie{padding-block:.75rem .8rem}
+  .lm-pie-in{row-gap:.4rem}
+  .lm-promesa{margin-top:.4rem;gap:.4rem .5rem;font-size:.875rem}
+  .lm-promesa li{padding:.2rem .5rem;gap:.35rem}
+}
+@media (min-width:640px){
+  .lm-pie-in{flex-wrap:nowrap}
+  .lm-contacto{flex:none}
+  .lm-acciones{flex-wrap:nowrap}
+  .lm-acciones .btn{flex:none;padding-inline:1.2rem;font-size:1rem}
+  .lm-promesa{font-size:1rem}
+}
+@media (min-width:640px) and (max-width:899px){
+  .lm-pie-in{flex-wrap:wrap}
+}
+
+/* ─── apaisado de móvil: menos aire arriba y abajo ─── */
 @media (max-height:520px) and (orientation:landscape){
   .lm-tira{padding-block:.6rem .7rem}
-  .lm-fila{margin-top:.3rem}
+  .lm-pie{padding-block:.6rem .7rem}
 }

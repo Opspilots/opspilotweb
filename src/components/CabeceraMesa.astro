@@ -1,8 +1,8 @@
 ---
 // Cabecera de la home, «La mesa» (4-nov-2026): una mesa de trabajo vista desde arriba que pasa del lío (papeles,
-// avisos sin atender) a todo en una sola pantalla. Texto y contacto arriba, sobre la tabla de madera; debajo, el
-// dibujo (generado en la construcción: src/lib/mesa.ts) y el mando para recogerla (public/js/lamesa.js).
-// El dibujo es decorativo (aria-hidden); el mando es un <input type="range"> con etiqueta.
+// avisos sin atender) a todo en una sola pantalla. De arriba abajo: el titular sobre una tabla de madera, el dibujo
+// (generado en la construcción: src/lib/mesa.ts) y, debajo, el tablón que cierra la mesa con lo que ofrecemos y el contacto.
+// El dibujo es decorativo (aria-hidden) y se recoge solo, una vez, cuando se ve (public/js/lamesa.js): no hay mando.
 // Sin JS o con «reducir movimiento», la mesa llega ya recogida y quieta.
 import { WA, PHONE } from '../lib/sitio';
 import { mesa } from '../lib/mesa';
@@ -19,24 +19,6 @@ const m = mesa();
     <svg class="lm-veta" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true" focusable="false" set:html={m.veta} />
     <div class="wrap">
       <h1 id="titular" class="lm-h1"><span class="lm-sobre">Agencia de digitalización en Córdoba<span class="sr">:</span></span> <span class="lm-grande">Todo tu negocio, en un solo sitio.</span></h1>
-      <div class="lm-fila">
-        <div class="lm-apoyo">
-          <p class="lm-servicios">Webs, ficha de Google, herramientas a medida y automatización.</p>
-          {/* PROMESA: el dueño aún no ha decidido si se queda. Para quitarla, borrar este <ul> (y «.lm-promesa» en public/css/lamesa.css).
-              OJO: la meta description de src/pages/index.astro también repite «precio cerrado desde 500 €» y «respuesta en menos de 24 h». */}
-          <ul class="lm-promesa">
-            <li><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Desde 500 €</li>
-            <li><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>Respuesta en menos de 24 h</li>
-          </ul>
-        </div>
-        <div class="lm-contacto">
-          <div class="lm-acciones">
-            <a class="btn btn-tinta" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
-            <a class="btn btn-linea btn-tel" href={`tel:${PHONE.e164}`} aria-label={`Llamar al ${PHONE.display}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span class="tel-num">{PHONE.display}</span></a>
-          </div>
-          <p class="lm-casos"><a class="enlace" href="#casos">Ver lo que hemos hecho <svg class="ico" aria-hidden="true"><use href="#i-chevron-down"/></svg></a></p>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -47,14 +29,28 @@ const m = mesa();
       <svg class="lm-svg lm-ancho" viewBox="0 178 1440 654" aria-hidden="true" focusable="false" set:html={m.ancho} />
       <svg class="lm-svg lm-alto" viewBox="0 16 360 544" aria-hidden="true" focusable="false" set:html={m.alto} />
     </div>
-    <div class="lm-mando">
-      <label class="sr" for="lm-rango">Mesa de trabajo: del lío al orden</label>
-      <span class="lm-mando-et" aria-hidden="true">Lío</span>
-      <input id="lm-rango" type="range" min="0" max="100" step="1" value="100" aria-describedby="lm-desc">
-      <span class="lm-mando-et" aria-hidden="true">Orden</span>
-      <span class="lm-pista" aria-hidden="true">Prueba a moverlo</span>
+    <p class="sr">Ilustración decorativa: una mesa con papeles, avisos y facturas sueltas que se ordena hasta quedar una sola pantalla con tu web, tu ficha de Google, los pedidos y los avisos automáticos.</p>
+  </div>
+
+  <div class="lm-pie">
+    <svg class="lm-veta" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true" focusable="false" set:html={m.veta} />
+    <div class="wrap lm-pie-in">
+      <div class="lm-apoyo">
+        <p class="lm-servicios">Webs, ficha de Google, herramientas a medida y automatización.</p>
+        {/* PROMESA: el dueño aún no ha decidido si se queda. Para quitarla, borrar este <ul> (y «.lm-promesa» en public/css/lamesa.css).
+            OJO: la meta description de src/pages/index.astro también repite «precio cerrado desde 500 €» y «respuesta en menos de 24 h». */}
+        <ul class="lm-promesa">
+          <li><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Desde 500 €</li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>Respuesta en menos de 24 h</li>
+        </ul>
+      </div>
+      <div class="lm-contacto">
+        <div class="lm-acciones">
+          <a class="btn btn-tinta" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+          <a class="btn btn-linea btn-tel" href={`tel:${PHONE.e164}`} aria-label={`Llamar al ${PHONE.display}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span class="tel-num">{PHONE.display}</span></a>
+        </div>
+      </div>
     </div>
-    <p id="lm-desc" class="sr">Ilustración decorativa: una mesa con papeles, avisos y facturas sueltas que se ordena hasta quedar una sola pantalla con tu web, tu ficha de Google, los pedidos y los avisos automáticos.</p>
   </div>
 </section>
 {/* si el script no carga, la mesa se queda recogida (.sin-script); onerror inline: la CSP ya admite 'unsafe-inline' en script-src */}
