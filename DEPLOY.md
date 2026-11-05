@@ -30,7 +30,8 @@ La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta 
   apuntan al mismo sitio (solo actúan si algún día cambia el servidor).
 - `.css`/`.js` con `Cache-Control: public, immutable` 30 días: como estos ficheros no llevan hash en
   el nombre, se les añade `?v=<hash del contenido>` con `version()` de `src/lib/version.ts`: lo usan
-  `src/layouts/Base.astro` (`opspilot.css` y `opspilot.js`) y `Recorrido.astro` / `Tramos.astro` (`recorrido.js`);
+  `src/layouts/Base.astro` (`opspilot.css` y `opspilot.js`), `CabeceraMesa.astro` (`lamesa.css` y `lamesa.js`), `CabeceraPagina.astro`
+  (`cabecera-pagina.css`), `Problemas.astro` (`problemas.css` y `problemas.js`) y `Recorrido.astro` / `Tramos.astro` (`recorrido.js`);
   un `.css`/`.js` nuevo que se cargue con `<link>` o `<script>` tiene que pasar por esa función. **Ojo con fuentes e
   imágenes**: también son inmutables; si se cambia una, cambiar su NOMBRE, no sobrescribirla.
 - `.html` sin caché: cada despliegue se ve al momento.
@@ -47,12 +48,48 @@ La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta 
 - `public/css/opspilot.css`: el sistema visual «horizonte artificial».
 - Cabecera de la home, «La mesa»: `src/components/CabeceraMesa.astro`, el dibujo se genera en la construcción en
   `src/lib/mesa.ts`, y solo la home carga `public/css/lamesa.css` y `public/js/lamesa.js` (los dos con `?v=`
-  por `version()`). Sin imágenes ni fuentes nuevas: la madera es un patrón SVG dentro del HTML (como imagen de
-  fondo se llevaría el LCP). La promesa «Desde 500 € · Respuesta en menos de 24 h» es un bloque suelto, marcado
-  con un comentario en el componente, para quitarlo si el dueño decide no mostrarla. Si se quita, hay que
-  revisar también la `description` de `src/pages/index.astro` (línea 13), que repite «precio cerrado desde
-  500 €» y «respuesta en menos de 24 h». Si `lamesa.js` no carga o falla al arrancar, la mesa se queda
-  recogida (clase `sin-script`).
+  por `version()`). De arriba abajo: la tabla del titular, la mesa y, debajo, el tablón que la cierra (`.lm-pie`: servicios,
+  promesa y botones de contacto). No hay mando, arrastre ni enlace «Ver lo que hemos hecho»: la mesa llega revuelta y se recoge
+  sola, una vez, cuando se ve (con el gesto final de la marca). En escritorio (≥ 1000 px) la altura de la mesa sale de `svh`
+  (lo que deja la ventana tras el titular y el tablón) sin que el dibujo baje de 1020 px de ancho; entre 1000 y 1019 px ocupa
+  todo el ancho y la letra queda en 12,0-12,2 px. Si no cabe en alto, el dibujo se recorta por abajo (el teclado del portátil),
+  no se encoge. Sin imágenes ni fuentes nuevas: la madera es un patrón SVG dentro del HTML (como imagen de fondo se llevaría
+  el LCP). La promesa «Desde 500 € · Respuesta en menos de 24 h» es un bloque suelto, marcado con un comentario en el
+  componente, para quitarlo si el dueño decide no mostrarla. Si se quita, hay que revisar también la `description` de
+  `src/pages/index.astro` (línea 13), que repite «precio cerrado desde 500 €» y «respuesta en menos de 24 h». Si `lamesa.js`
+  no carga o falla al arrancar, la mesa se queda recogida (clase `sin-script`).
+- «Cuatro cosas que vemos cada semana» (`src/components/Problemas.astro`, también en `/soluciones/software-a-medida/`).
+  Con JS la sección es interactiva y se ve como siempre: lista 01-04 a la izquierda y ventana a la derecha (en móvil, pestañas
+  fijas y un problema cada vez). Si hay movimiento permitido y alto suficiente, además se queda fija: el bloque (`.pb-escena`)
+  es `position:sticky` dentro de una pista alta (`.pb-pista`, en `svh`: la ventana más 4 pasos de 90 svh) y el scroll nativo
+  va cambiando el activo del 1 al 4 (`public/js/problemas.js` solo lee cuánto se ha avanzado por la pista: un
+  `requestAnimationFrame` por scroll pasivo; sin `wheel`, `touch` ni `preventDefault`; ningún temporizador). Estilos en
+  `public/css/problemas.css` (los de cada réplica siguen en `opspilot.css`); los dos ficheros con `?v=` por `version()`.
+  El modo lo decide un script en línea al final del componente, antes del primer pintado: usa la svh PEQUEÑA (una sonda de
+  `100svh`), nunca la altura que sigue a la barra del navegador, la fuente raíz y el ancho útil (sin barra de desplazamiento)
+  dividido por esa fuente. Solo se recalcula al cambiar el ancho, la svh, la fuente raíz (un `ResizeObserver` sobre una sonda de
+  `1rem` lo detecta aunque no haya `resize`) o «reducir movimiento»; al hacerlo se conserva lo que se veía (el problema, si se
+  estaba dentro de la pista; lo que había en pantalla, si se estaba debajo). Sin `svh` o con «reducir movimiento» no hay pin: se ve
+  de uno en uno, como siempre. Los umbrales (alto de ventana a 16 px de fuente, medidos con el contenido de la escena más la
+  cabecera, tabla `UM` del script en línea; las bandas de ancho son en rem × 16):
+  - Escritorio (≥ 768 px): nivel 0, el tamaño de siempre, desde 705 px de alto (≥ 1280 px de ancho), 770 px (1024-1279) o 908 px
+    (768-1023); nivel 1, más compacto (menos aire y letra algo menor), desde 541, 551 o 648 px. En escritorio las réplicas llevan
+    los tamaños de letra de siempre (algunos bajan de 12 px, como en el resto del sitio).
+  - Móvil (≥ 360 px): nivel 0 desde 862-888 px; nivel 1 (menos aire) desde 729-774 px; nivel 2 (además, el párrafo del problema
+    solo a la vista del lector de pantalla) desde 668-687 px; nivel 3 (además, la nota de la réplica) desde 602-621 px. Aquí las
+    réplicas no bajan de 12 px y no se recortan.
+  - Por debajo de todo, o con «reducir movimiento»: un problema cada vez y sin pin. Los cuatro apilados quedan solo para sin JS
+    y para el script fallido o colgado: si `problemas.js` no ha arrancado a los 4 s, se retira todo (clase `sin-pin`) y los
+    cuatro problemas se leen apilados y completos, con las dos caras y las dos notas.
+  Las anclas `#p-google`, `#p-sitios`, `#p-excel` y `#p-pestanas` (y los `#w-…` de cada réplica) llevan al apartado. Si vienen en la
+  URL al cargar, el script en línea las guarda y las quita de la URL mientras carga (para que el salto nativo al fragmento no
+  pise el de `problemas.js`), y `problemas.js` salta de golpe y las devuelve a la URL; al recargar o volver con Atrás se respeta el
+  scroll que restaura el navegador. Solo al hacer clic en un enlace a un problema hay entrada nueva en el historial (si no se está
+  ya en ese ancla) y foco en la pestaña o el título.
+  El configurador de la home señala el problema que más se parece (evento `opspilot:ruta`, marca «para ti» y un aviso bajo su
+  formulario con el enlace); no lo activa, para no cambiar el alto de lo que hay encima.
+- Plausible (`src/layouts/Base.astro`) se carga con `async`, no con `defer`: un `defer` colgado bloquearía `lamesa.js`,
+  `problemas.js` y `opspilot.js`, que van detrás en el orden de los scripts diferidos.
 - Cabeceras de las subpáginas (5-nov-2026): `src/components/CabeceraPagina.astro` pinta la misma tira de madera que la home con
   UN objeto de la mesa a la derecha (debajo del texto en móvil). Qué objeto lleva cada ruta está en la tabla `OBJETO_POR_RUTA`
   de `src/lib/objetos-pagina.ts` (las guías `/recursos/<slug>/` entran por prefijo); una ruta que no esté en la tabla rompe la

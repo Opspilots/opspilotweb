@@ -190,8 +190,8 @@ section{padding-block:clamp(3rem,6vw,5rem)}
 .problema-n{display:block;font:700 .72rem/1 var(--mono);letter-spacing:.16em;color:var(--gris);margin-bottom:.55rem}
 .problema-t{display:block;font-weight:720;font-size:clamp(1.2rem,1rem + .6vw,1.5rem);line-height:1.15;letter-spacing:-.015em;color:#fff;text-wrap:balance}
 .problema-p{display:block;color:var(--gris);margin-top:.5rem;max-width:40ch}
-.problema[aria-pressed="true"]{border-left-color:var(--verde)}
-.problema[aria-pressed="true"] .problema-n{color:var(--verde)}
+.problema[aria-current]{border-left-color:var(--verde)}
+.problema[aria-current] .problema-n{color:var(--verde)}
 .problema:hover .problema-t{text-decoration:underline;text-decoration-color:rgb(255 255 255/.3);text-underline-offset:.2em}
 .pv{margin-top:1.25rem}
 .pv-barra{background:#E9ECF0;color:var(--ui-ink)}
@@ -202,8 +202,8 @@ section{padding-block:clamp(3rem,6vw,5rem)}
 .seg button[data-cara="sis"][aria-pressed="true"]{background:var(--navy);color:#fff}
 .pv-cara{position:relative;height:22rem;overflow:hidden;border-radius:0 0 .8rem .8rem}
 .pv .nota{right:-1rem;bottom:-1.5rem;max-width:17rem}
-.js .pv-cara{transition:opacity .35s var(--curva),transform .35s var(--curva)}
-.js .pv:not(.sis) .pv-sis,.js .pv.sis .pv-hoy{position:absolute;inset:auto 0 0;top:2.7rem;opacity:0;visibility:hidden;transform:scale(.98)}
+.pb-int .pv-cara{transition:opacity .35s var(--curva),transform .35s var(--curva)}
+.pb-int .pv:not(.sis) .pv-sis,.pb-int .pv.sis .pv-hoy{position:absolute;inset:auto 0 0;top:2.7rem;opacity:0;visibility:hidden;transform:scale(.98)}
 .pv.sis .pv-barra .pv-tit{color:var(--navy)}
 
 /* 01 · el escritorio con cuatro apps */
@@ -495,22 +495,15 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .pie a:hover{color:var(--verde)}
 .pie-legal{margin-top:3rem;padding-top:1.25rem;border-top:1px solid rgb(255 255 255/.08);font:400 .74rem/1.4 var(--mono)}
 
-/* ═══ ≥ TÁCTIL con JS: mesa de una ventana y visor de un caso ═══ */
+/* ═══ ≥ TÁCTIL con JS: visor de un caso (la mesa de problemas está en problemas.css) ═══ */
 @media (min-width:768px){
-  .js .mesa{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);grid-template-rows:auto auto auto 1fr;column-gap:clamp(2rem,5vw,4.5rem);min-height:28rem}
-  .js .par{display:contents}
-  .js .par:nth-child(1) .problema{grid-row:1}.js .par:nth-child(2) .problema{grid-row:2}.js .par:nth-child(3) .problema{grid-row:3}
-  .js .problema{grid-column:1}
-  .js .mesa .pv{grid-column:2;grid-row:1/span 4;align-self:start;margin-top:0;opacity:0;visibility:hidden;transform:translateY(14px) scale(.985);
-    transition:transform .45s var(--curva),opacity .35s var(--curva),visibility 0s .45s}
-  .js .par.activo .pv{opacity:1;visibility:visible;transform:none;transition:transform .45s var(--curva),opacity .35s var(--curva),visibility 0s}
   .js .visor{display:grid;grid-template-columns:minmax(0,.68fr) minmax(0,1.7fr);gap:clamp(2rem,4vw,3.5rem);align-items:start}
   .js .caso{display:none;margin-bottom:0}
   .js .caso.activo{display:block;animation:entra .4s var(--curva)}
   .js .escenario{padding-bottom:8rem;min-height:36rem}
   @keyframes entra{from{opacity:0;transform:translateY(10px)}}
 }
-@media (prefers-reduced-motion:reduce){.js .caso.activo,.msg,.ed-snap{animation:none}.js .mesa .pv,.js .par.activo .pv,.js .pv-cara,.cfg-p,.cfg-p.activo,.toast,.jr-res,.jr-hero{transition:none}}
+@media (prefers-reduced-motion:reduce){.js .caso.activo,.msg,.ed-snap{animation:none}.pb-int .pv-cara,.cfg-p,.cfg-p.activo,.toast,.jr-res,.jr-hero{transition:none}}
 @media (max-width:767px){
   .lista-casos{display:none}
   .caso::before{content:attr(data-titulo);display:block;font-weight:700;color:#fff;font-size:1.15rem;line-height:1.2;margin-bottom:1rem}
@@ -567,20 +560,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .ruta-aviso a{color:var(--verde);font-weight:700;text-underline-offset:.25em}
 .caso-tab.para-ti .caso-meta::after,.problema.para-ti .problema-n::after{content:" · para ti";color:var(--verde)}
 .caso-corto{display:none}
-.chips{display:none}
 /* ═══ v4 · A: en móvil, una pantalla cada vez (sin quitar nada) ═══ */
 @media (max-width:767px){
-  /* pestañas fijas (Fase 1): fondo opaco de lado a lado y pegadas a la cabecera, para que no asome el texto que pasa por detrás */
-  .js .chips:not([hidden]){--gutter:clamp(1rem,4vw,2.5rem);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem;margin:1.6rem calc(-1 * var(--gutter)) 0;padding:.4rem var(--gutter);background:var(--navy);position:sticky;top:var(--cab);z-index:5}
-  .chips button{display:grid;gap:.2rem;justify-items:center;align-content:start;padding:.55rem .2rem .6rem;border:0;border-radius:.5rem;background:#1F2A37;color:var(--gris);font:700 .74rem/1.15 var(--display);text-align:center}
-  .chips button small{font:700 .62rem/1 var(--mono);letter-spacing:.12em;color:var(--gris)}
-  .chips button[aria-pressed="true"]{background:var(--verde);color:var(--navy)}
-  .chips button[aria-pressed="true"] small{color:var(--navy)}
-  .js .mesa{margin-top:1.1rem}
-  .js .mesa .par{display:none;margin-bottom:0}
-  .js .mesa .par.activo{display:block}
-  .js .problema{border-left:0;padding:0;cursor:default}
-  .js .problema-n{display:none}
   .js .lista-casos{--gutter:clamp(1rem,4vw,2.5rem);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem;margin:0 calc(-1 * var(--gutter)) .9rem;padding:.4rem var(--gutter);background:var(--hondo);position:sticky;top:var(--cab);z-index:5}
   .js .caso-tab{border:0;border-radius:.5rem;background:#1F2A37;padding:.7rem .3rem;text-align:center}
   .js .caso-tab .caso-meta,.js .caso-tab .caso-t,.js .caso-tab .caso-p{display:none}
@@ -588,9 +569,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .js .caso-tab[aria-selected="true"]{background:var(--verde);color:var(--navy)}
   .js .caso{display:none;margin-bottom:4.5rem}
   .js .caso.activo{display:block}
-  .desliza{display:block;margin-top:.8rem;text-align:center;font:400 .7rem/1 var(--mono);color:var(--gris);letter-spacing:.06em}
 }
-@media (min-width:768px){.desliza{display:none}}
 
 /* ═══ v4b · Córdoba Soluciona: su paleta (favicon-califal.svg y marcas.json), su letra y sus 114 páginas reales ═══ */
 @font-face{font-family:'Young Serif';src:url('../fonts/young-serif-latin.woff2') format('woff2');font-weight:400;font-display:swap}
@@ -1345,7 +1324,7 @@ textarea.hz-texto{resize:vertical}
   .chip,.v-titulo small,.v-barra-web,.nota b,.cfg-paso,.cfg-garantia,.res-listo,.rm-nav,.rm-it,.problema-n,.app-bar,.correo-fila small,.av,.mini-hoja,.bur small,
   .alerta,.ficha-cab small,.ficha-datos dt,.xl,.xl-cinta,.xl-hojas,.la-tabla th,.est,.nav-tabs span,.nav-cuenta,.ph-cab small,.ph-t,.caso-meta,.of-carro b,
   .of-miga,.of-cat,.of-precio span,.of-stock,.of-campos label,.of-res span,.jr-url,.jr-fav,.jr-mapa-t,.jr-mapa .jr-raiz,.jr-mapa button,.jr-nav,.jr-miga,
-  .jr-secs span,.jr-form span,.chat-dia,.msg small,.pie-tit,.pie-legal,.seg button,.ruta-aviso .ruta-et,.chips button,.chips button small,.desliza,.cs-cuenta span,
+  .jr-secs span,.jr-form span,.chat-dia,.msg small,.pie-tit,.pie-legal,.seg button,.ruta-aviso .ruta-et,.cs-cuenta span,
   .cs-l,.cs-aviso,.cs-serp-u,.cs-serp-d,.cs-nav,.cs-cta,.cs-resp,.cs-bul,.py-top small,.py-estado,.py-tabla th,.py-tabla td:nth-child(n+2),.py-tabla tr.cap td,
   .py-pdf,.py-pest button,.py-desc li,.py-desc li b,.py-desc-tot,.py-desc-tot small,.py-movil-sub,.py-sello,.py-sello small,.py-plan-vacio,.py-plan li,.py-plan li::before,
   .py-plan li b,.ed-busca,.ed-cli,.ed-tabla th,.ed-tabla th small,.ed-btn-min,.ed-sub,.ed-estados span,.ed-log,.ed-snap,.ed-snap-h code,.menu-movil-t,.bloque-meta,

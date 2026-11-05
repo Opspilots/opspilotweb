@@ -1,14 +1,39 @@
-<section class="problemas" aria-labelledby="t-problemas">
-    <div class="wrap">
+---
+// «Cuatro cosas que vemos cada semana en negocios de aquí»: cuatro problemas, cada uno con su réplica de pantalla («Hoy» y la misma
+// con un sistema). Con JS la sección es interactiva y se ve igual que antes (lista a la izquierda y ventana a la derecha; en móvil,
+// pestañas fijas y un problema cada vez). Si hay movimiento permitido y alto suficiente, además se queda fija (position:sticky) sobre
+// una pista alta y el scroll nativo va cambiando el activo del 1 al 4. Si no cabe, o con «reducir movimiento», se ve un problema cada
+// vez y se cambia con un toque. Solo sin JS, o si el script falla o se cuelga, se apilan los cuatro, completos.
+// La decisión (public/js/problemas.js recalcula al girar o redimensionar) se toma aquí, en línea y antes del primer pintado: con la
+// altura real de la ventana pequeña (svh), no con la que sigue a la barra del navegador. Estilos: public/css/problemas.css.
+// También lo usa /soluciones/software-a-medida/. El configurador de la home (public/js/opspilot.js) avisa de su problema con el evento
+// «opspilot:ruta» y los enlaces #p-google, #p-sitios, #p-excel y #p-pestanas llevan a su apartado.
+import { version } from '../lib/version';
+
+// nginx sirve .css y .js con «Cache-Control: public, immutable»: la versión va en la URL (ver DEPLOY.md).
+const CSS = `/css/problemas.css?v=${version('/css/problemas.css')}`;
+const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
+---
+<link rel="stylesheet" href={CSS}>
+<section class="problemas pb" data-pb aria-labelledby="t-problemas">
+    <div class="wrap pb-cab">
       <p class="etiqueta">Lo que vemos cada semana</p>
       <h2 id="t-problemas" class="h2">Cuatro cosas que vemos cada semana en negocios de aquí.</h2>
-      <p class="ruta-aviso" data-ruta-aviso="problemas" aria-live="polite" hidden></p>
-      <div class="chips" data-chips-problemas hidden></div>
+    </div>
+    <div class="pb-pista" data-pb-pista>
+     <div class="pb-escena" data-pb-escena>
+      <div class="wrap pb-in">
+        <div class="chips" role="group" aria-label="Problemas" data-pb-tabs>
+          <button type="button" aria-controls="w-google"><small>01</small>No te encuentran</button>
+          <button type="button" aria-controls="w-sitios"><small>02</small>Cuatro sitios</button>
+          <button type="button" aria-controls="w-excel"><small>03</small>El Excel</button>
+          <button type="button" aria-controls="w-pestanas"><small>04</small>Cinco pestañas</button>
+        </div>
 
-      <div class="mesa" data-mesa>
-        <!-- ─── 01 · no te encuentran ─── -->
-        <div class="par activo">
-          <button class="problema" type="button" aria-pressed="true" aria-controls="w-google" data-corto="No te encuentran">
+        <div class="mesa">
+        {/* ─── 01 · no te encuentran ─── */}
+        <div class="par activo" id="p-google" data-par>
+          <button class="problema" type="button" aria-controls="w-google">
             <span class="problema-n" aria-hidden="true">01</span>
             <span class="problema-t">Te buscan en Google y sale otro</span>
             <span class="problema-p">Tienes web, pero cuando alguien busca lo que haces en tu pueblo, en el mapa salen tres y tú no.</span>
@@ -41,13 +66,13 @@
                 </ol>
               </div>
             </div>
-            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Tener web no basta: casi todo el que busca cerca elige entre los tres primeros del mapa.</span><span data-nota-sis hidden>Ficha completa, reseñas al día y una web que dice qué haces y dónde. Así se sube al mapa.</span></figcaption>
+            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Tener web no basta: casi todo el que busca cerca elige entre los tres primeros del mapa.</span><span data-nota-sis>Ficha completa, reseñas al día y una web que dice qué haces y dónde. Así se sube al mapa.</span></figcaption>
           </figure>
         </div>
 
-        <!-- ─── 02 · cuatro sitios ─── -->
-        <div class="par">
-          <button class="problema" type="button" aria-pressed="false" aria-controls="w-sitios" data-corto="Cuatro sitios">
+        {/* ─── 02 · cuatro sitios ─── */}
+        <div class="par" id="p-sitios" data-par>
+          <button class="problema" type="button" aria-controls="w-sitios">
             <span class="problema-n" aria-hidden="true">02</span>
             <span class="problema-t">Tu información vive en cuatro sitios</span>
             <span class="problema-p">Cuatro apps que nunca cuadran entre sí. Buscas el mismo dato tres veces al día.</span>
@@ -96,13 +121,13 @@
                 </ol>
               </div>
             </div>
-            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>El mismo pedido y tres respuestas distintas. ¿Cuál es la buena?</span><span data-nota-sis hidden>Un solo dato. El correo, el chat y la hoja lo leen del mismo sitio.</span></figcaption>
+            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>El mismo pedido y tres respuestas distintas. ¿Cuál es la buena?</span><span data-nota-sis>Un solo dato. El correo, el chat y la hoja lo leen del mismo sitio.</span></figcaption>
           </figure>
         </div>
 
-        <!-- ─── 02 · el Excel que se rompe ─── -->
-        <div class="par">
-          <button class="problema" type="button" aria-pressed="false" aria-controls="w-excel" data-corto="El Excel">
+        {/* ─── 03 · el Excel que se rompe ─── */}
+        <div class="par" id="p-excel" data-par>
+          <button class="problema" type="button" aria-controls="w-excel">
             <span class="problema-n" aria-hidden="true">03</span>
             <span class="problema-t">Lo que factura lo llevas en un Excel que se rompe</span>
             <span class="problema-p">Presupuestos y comisiones en una hoja que peta al primer descuido. Un clic y adiós.</span>
@@ -148,13 +173,13 @@
                 <p class="la-nota"><svg class="ico" aria-hidden="true"><use href="#i-history"/></svg>La comisión se calcula sola al aceptar, y cada cambio queda registrado.</p>
               </div>
             </div>
-            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Alguien borró una fila de «Comisiones» y se llevó por delante todas las fórmulas.</span><span data-nota-sis hidden>Las mismas cuatro obras. Los totales cuadran porque no los escribe nadie a mano.</span></figcaption>
+            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Alguien borró una fila de «Comisiones» y se llevó por delante todas las fórmulas.</span><span data-nota-sis>Las mismas cuatro obras. Los totales cuadran porque no los escribe nadie a mano.</span></figcaption>
           </figure>
         </div>
 
-        <!-- ─── 03 · cinco pestañas ─── -->
-        <div class="par">
-          <button class="problema" type="button" aria-pressed="false" aria-controls="w-pestanas" data-corto="Cinco pestañas">
+        {/* ─── 04 · cinco pestañas ─── */}
+        <div class="par" id="p-pestanas" data-par>
+          <button class="problema" type="button" aria-controls="w-pestanas">
             <span class="problema-n" aria-hidden="true">04</span>
             <span class="problema-t">Tu equipo cambia de pestaña cada cinco minutos</span>
             <span class="problema-p">Cinco herramientas para un solo trabajo. Y ninguna se habla con la otra.</span>
@@ -193,9 +218,106 @@
                 <p class="ph-acc"><span class="pri"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg>Confirmar 12 ud por WhatsApp</span><span><svg class="ico" aria-hidden="true"><use href="#i-calendar-check"/></svg>Mover la visita</span><span><svg class="ico" aria-hidden="true"><use href="#i-receipt"/></svg>Recordar 2.º plazo</span></p>
               </div>
             </div>
-            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Cinco pestañas abiertas para contestar una sola llamada.</span><span data-nota-sis hidden>Suena el teléfono y ya tienes delante todo lo de ese cliente.</span></figcaption>
+            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Cinco pestañas abiertas para contestar una sola llamada.</span><span data-nota-sis>Suena el teléfono y ya tienes delante todo lo de ese cliente.</span></figcaption>
           </figure>
         </div>
+        </div>
       </div>
+     </div>
     </div>
   </section>
+{/* La decisión del modo, en línea y antes del primer pintado (la CSP ya admite 'unsafe-inline' en script-src). Los comentarios van aquí, fuera
+    del script, para que no lleguen al HTML publicado.
+    Con JS la sección es siempre interactiva (.pb-int: un problema cada vez, como antes) y además se fija (.pb-fijo, con un nivel de
+    compactación .pb-nv0…3) si cabe. «Cabe» se decide con la altura de la ventana PEQUEÑA (una sonda de 100svh), con la fuente raíz y con el
+    ancho útil (sin barra de desplazamiento) dividido por esa fuente, nunca con la altura que sigue a la barra del navegador: así plegar o
+    desplegar la barra no cambia de modo a mitad de scroll. Tabla UM: svh mínimo, a 16 px de fuente, para cada nivel (del más holgado al más
+    compacto), por banda de ancho (desde ese ancho en rem × 16), medido con las réplicas a 12 px en móvil: lo que necesita el contenido de la
+    escena más la cabecera (68 px) y 2-3 px de holgura. Escritorio: nv0 es el tamaño de siempre y nv1 compacta. Móvil (desde 360 px): nv0 de
+    siempre, nv1 quita aire, nv2 además oculta el párrafo y nv3 además la nota de la réplica. Sin svh, con «reducir movimiento» o por debajo de
+    todo: sin pin. Si problemas.js no arranca en 4 s (falla o la petición se cuelga), pbRetira apila los cuatro problemas completos y deja al
+    usuario en el que veía o, si estaba debajo, con lo mismo en pantalla. El ancla #p-… / #w-… de la URL se guarda en pbHash y se quita
+    de la URL mientras carga, para que el salto nativo al fragmento no pise el de problemas.js; problemas.js la devuelve a la URL. */}
+<script is:inline>
+(function () {
+  var s = document.querySelector('[data-pb]');
+  if (!s) return;
+  var pista = s.querySelector('[data-pb-pista]'), esc = s.querySelector('[data-pb-escena]'), pares = s.querySelectorAll('[data-par]'), pvs = s.querySelectorAll('[data-pv]');
+  var RM = matchMedia('(prefers-reduced-motion: reduce)'), ANCHO = matchMedia('(min-width: 768px)');
+  var NIV = ['pb-nv0', 'pb-nv1', 'pb-nv2', 'pb-nv3'], sonda = null, clave = '', i;
+  var UM = { d: [[1280, [705, 541]], [1024, [770, 551]], [768, [908, 648]]], m: [[430, [862, 729, 668, 602]], [390, [862, 754, 687, 621]], [360, [888, 774, 687, 621]]] };
+  var svhPx = function () {
+    if (!window.CSS || !CSS.supports || !CSS.supports('height', '100svh')) return 0;
+    if (!sonda) {
+      sonda = document.createElement('div');
+      sonda.setAttribute('aria-hidden', 'true');
+      sonda.style.cssText = 'position:absolute;left:0;top:0;width:0;height:100svh;visibility:hidden;pointer-events:none';
+      s.appendChild(sonda);
+      s.pbSonda = sonda;
+    }
+    return sonda.offsetHeight;
+  };
+  var cab = document.querySelector('.cab');
+  var arriba = function () { return s.classList.contains('pb-fijo') ? (parseFloat(getComputedStyle(esc).top) || 0) : (cab ? cab.getBoundingClientRect().bottom : 0); };
+  s.pbArriba = arriba;
+  s.pbAncla = function () {
+    var e = document.elementFromPoint(window.innerWidth / 2, Math.min(120, window.innerHeight - 10));
+    if (e && e.closest) e = e.closest('main > *') || e;
+    if (!e || s.contains(e) || e === document.documentElement || e === document.body) {
+      e = s.nextElementSibling;
+      while (e && !e.getBoundingClientRect().height) e = e.nextElementSibling;
+    }
+    if (!e) return function () {};
+    var t = e.getBoundingClientRect().top;
+    return function () { var d = e.getBoundingClientRect().top - t; if (d) window.scrollBy(0, d); };
+  };
+  s.pbDecide = function () {
+    var f = (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16) / 16, w = document.documentElement.clientWidth || window.innerWidth;
+    var h = svhPx() / f, rm = RM.matches, an = ANCHO.matches, wf = w / f;
+    var k = [w, Math.round(h), f, rm ? 1 : 0, an ? 1 : 0].join('|');
+    if (k === clave) return false;
+    clave = k;
+    var t = null, n = -1;
+    if (!rm && h > 0) {
+      var bandas = an ? UM.d : UM.m;
+      for (i = 0; i < bandas.length; i++) if (wf >= bandas[i][0]) { t = bandas[i][1]; break; }
+      if (t) for (i = 0; i < t.length; i++) if (h >= t[i]) { n = i; break; }
+    }
+    s.classList.remove('pb-fijo', NIV[0], NIV[1], NIV[2], NIV[3]);
+    if (n >= 0) { s.classList.add('pb-fijo'); s.classList.add(NIV[n]); }
+    return true;
+  };
+  s.pbRetira = function () {
+    if (s.classList.contains('sin-pin')) return;
+    var k = -1, comp = null, fijo = s.classList.contains('pb-fijo'), top = arriba(), rp = pista.getBoundingClientRect(), x = -1;
+    if (fijo) {
+      var rango = pista.offsetHeight - esc.offsetHeight;
+      x = rango > 0 ? (top - rp.top) / rango : -1;
+      if (x >= 0 && x < 1) k = Math.min(pares.length - 1, Math.floor(x * pares.length));
+    }
+    if (k < 0 && (x >= 1 || rp.bottom <= top + 1)) comp = s.pbAncla();
+    s.classList.remove('pb-int', 'pb-fijo', NIV[0], NIV[1], NIV[2], NIV[3]);
+    s.classList.add('sin-pin');
+    if (s.pbHash) {
+      var destino = document.getElementById(s.pbHash);
+      try { history.replaceState(history.state, '', location.pathname + location.search + '#' + s.pbHash); } catch (e) {}
+      s.pbHash = null;
+      if (destino) { destino.scrollIntoView(); return; }
+    }
+    if (k >= 0) window.scrollTo(0, pares[k].getBoundingClientRect().top + window.pageYOffset - (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0));
+    else if (comp) comp();
+  };
+  var h0 = location.hash.slice(1);
+  if (h0) {
+    for (i = 0; i < pares.length; i++) if (pares[i].id === h0 || pvs[i].id === h0) {
+      s.pbHash = h0;
+      try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) {}
+      break;
+    }
+  }
+  s.classList.add('pb-int');
+  s.pbDecide();
+  setTimeout(function () { if (!s.pbListo) s.pbRetira(); }, 4000);
+})();
+</script>
+<script is:inline src={JS} defer onerror="var s=document.querySelector('[data-pb]');if(s&&s.pbRetira)s.pbRetira();else if(s)s.classList.add('sin-pin')"></script>

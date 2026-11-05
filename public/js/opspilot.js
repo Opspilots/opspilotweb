@@ -14,7 +14,7 @@
   var hora = function () { var d = new Date(); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); };
   var ico = function (id) { return '<svg class="ico" aria-hidden="true"><use href="#i-' + id + '"/></svg>'; };
   /* lo que el configurador decide, las secciones de abajo lo aplican cuando existan */
-  var pagina = { problema: null, caso: null, ruta: null };
+  var pagina = { caso: null, ruta: null };
   /* deslizar con el dedo entre pantallas (móvil) */
   function deslizar(el, fn) {
     var x0 = null, y0 = null;
@@ -102,9 +102,41 @@
     return nav + cuerpo;
   }
 
-  /* ═══ B · el configurador guía la página: lo elegido ordena problemas, casos y chat (sin quitar nada) ═══ */
+  /* ═══ B · el configurador guía la página: lo elegido marca el problema y el caso que más se parecen, y rellena el chat (sin quitar nada) ═══ */
   var NEC_LABEL = { web: 'Una web nueva', sistema: 'Un sistema interno', automatizar: 'Automatizar tareas repetitivas', guia: 'No lo sé, que me guíen' };
   var CASO_NOMBRE = { of: 'ObraFácil, una tienda online', cs: 'Córdoba Soluciona, una web que capta reformas pueblo a pueblo', py: 'PresupuesYa, nuestro software de presupuestos de obra' };
+  /* El aviso del problema, bajo el configurador (nada se mueve por encima de lo que se está viendo). Solo si la página tiene los problemas.
+     La región aria-live se crea vacía al cargar y se rellena después. El enlace es un ancla real (#p-sitios…): problemas.js lo lleva a su
+     apartado, con una entrada nueva en el historial, y ahí manda el foco. */
+  var regionAviso = (function () {
+    var seccion = $('.propuesta');
+    if (!seccion || !$('[data-par]')) return null;
+    var cont = document.createElement('div'), p = document.createElement('p');
+    cont.className = 'wrap propuesta-aviso';
+    p.className = 'ruta-aviso propuesta-ruta'; p.setAttribute('aria-live', 'polite');
+    cont.appendChild(p); seccion.appendChild(cont);
+    return p;
+  })();
+  function avisoProblema(r) {
+    if (!regionAviso) return;
+    var par = r.problema !== null ? $$('[data-par]')[r.problema] : null;
+    while (regionAviso.firstChild) regionAviso.removeChild(regionAviso.firstChild);
+    if (!par) return;
+    var et = document.createElement('span'), b = document.createElement('b'), a = document.createElement('a');
+    et.className = 'ruta-et'; et.textContent = 'Tu ruta';
+    b.textContent = r.etiqueta;
+    a.href = '#' + par.id; a.textContent = $('.problema-t', par).textContent;
+    regionAviso.appendChild(et);
+    regionAviso.appendChild(document.createTextNode(' Has elegido '));
+    regionAviso.appendChild(b);
+    regionAviso.appendChild(document.createTextNode('. El problema que más te va a sonar: '));
+    regionAviso.appendChild(a);
+    /* si queda fuera de la pantalla, se acerca lo justo y con suavidad (de golpe con «reducir movimiento»), pero sin esconder el formulario
+       bajo la cabecera: en pantallas bajas manda el paso en el que se está */
+    var marco = $('.cfg-marco'), cab = $('.cab'), r = regionAviso.getBoundingClientRect();
+    var falta = r.bottom + 24 - window.innerHeight, cabe = marco ? marco.getBoundingClientRect().top - (cab ? cab.getBoundingClientRect().bottom : 0) - 8 : falta;
+    if (Math.min(falta, cabe) > 0) window.scrollBy({ top: Math.min(falta, cabe), behavior: quieto ? 'auto' : 'smooth' });
+  }
   function guiar(nec, sub) {
     var etiqueta = NEC_LABEL[nec];
     if (nec === 'guia') { if (!sub) return; var m = REMAP[sub]; nec = m[0]; sub = m[1]; }
@@ -114,12 +146,11 @@
     if (nec === 'sistema') { r.caso = 'py'; r.problema = sub === 'facturacion' ? 2 : 1; }
     if (nec === 'automatizar') { r.caso = 'py'; r.problema = 2; r.cerca = true; }
     pagina.ruta = r;
-    var ap = $('[data-ruta-aviso="problemas"]'), ac = $('[data-ruta-aviso="casos"]');
+    var ac = $('[data-ruta-aviso="casos"]');
     var cambiar = ' <a href="#propuesta">cambiar</a>';
-    if (r.problema !== null && ap) {
-      ap.innerHTML = '<span class="ruta-et">Tu ruta</span> Has elegido <b>' + etiqueta + '</b>: empieza por el que más te va a sonar.' + cambiar;
-      ap.hidden = false; if (pagina.problema) pagina.problema(r.problema);
-    } else if (ap) { ap.hidden = true; $$('.problema.para-ti').forEach(function (x) { x.classList.remove('para-ti'); }); }
+    /* los problemas (problemas.js) marcan el suyo con este evento; aquí, el aviso con el enlace que lleva a su tramo */
+    document.dispatchEvent(new CustomEvent('opspilot:ruta', { detail: { problema: r.problema } }));
+    avisoProblema(r);
     if (r.caso && ac) {
       ac.innerHTML = '<span class="ruta-et">Tu ruta</span> ' + (r.cerca
         ? 'Así automatizamos en nuestro propio producto: en <b>PresupuesYa</b> dictas la partida y la IA la crea, la descompone y, al firmar, monta el plan de obra.'
@@ -173,59 +204,6 @@
   /* Lo que está bajo el pliegue se monta cuando el navegador está libre (evita la tarea larga al cargar) */
   var luego = function (fn) { ('requestIdleCallback' in window) ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 400); };
   luego(function () {
-  /* ═══ 2 · PROBLEMAS: mesa + dos caras por pantalla (+ pestañas y deslizar en móvil) ═══ */
-  var mesa = $('[data-mesa]');
-  if (mesa) {
-    var pares = $$('.par', mesa);
-    var activar = function (par) {
-      pares.forEach(function (p) {
-        var on = p === par; p.classList.toggle('activo', on);
-        $('.problema', p).setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
-    };
-    pares.forEach(function (p) {
-      var b = $('.problema', p);
-      b.addEventListener('click', function () { activar(p); });
-      b.addEventListener('mouseenter', function () { if (matchMedia('(hover:hover) and (min-width:768px)').matches) activar(p); });
-    });
-    /* móvil: tres pestañas arriba y una sola pantalla; también se pasa deslizando */
-    var chips = $('[data-chips-problemas]');
-    chips.setAttribute('role', 'group'); chips.setAttribute('aria-label', 'Problemas');
-    chips.innerHTML = pares.map(function (p, i) { var b = $('.problema', p); return '<button type="button" aria-pressed="' + (i ? 'false' : 'true') + '" aria-controls="' + b.getAttribute('aria-controls') + '"><small>0' + (i + 1) + '</small>' + b.dataset.corto + '</button>'; }).join('');
-    chips.hidden = false;
-    var botonesChip = $$('button', chips);
-    var activarBase = activar;
-    activar = function (par) { activarBase(par); var k = pares.indexOf(par); botonesChip.forEach(function (c, i) { c.setAttribute('aria-pressed', i === k ? 'true' : 'false'); }); };
-    botonesChip.forEach(function (c, i) { c.addEventListener('click', function () { activar(pares[i]); }); });
-    pares.forEach(function (p) { var fig = $('.pv', p), d = document.createElement('p'); d.className = 'desliza'; d.setAttribute('aria-hidden', 'true'); d.textContent = '← desliza para ver otro problema →'; p.appendChild(d); deslizar(fig, function (dir) { var k = pares.indexOf(mesa.querySelector('.par.activo')); activar(pares[(k + dir + pares.length) % pares.length]); }); });
-    pagina.problema = function (i) { activar(pares[i]); pares.forEach(function (p, k) { $('.problema', p).classList.toggle('para-ti', k === i); }); };
-    if (pagina.ruta && pagina.ruta.problema !== null) pagina.problema(pagina.ruta.problema);
-  }
-  $$('[data-pv]').forEach(function (pv) {
-    var bs = $$('.seg button', pv), t = $('[data-nota-t]', pv), h = $('[data-nota-hoy]', pv), s = $('[data-nota-sis]', pv);
-    var poner = function (cara) {
-      pv.classList.toggle('sis', cara === 'sis');
-      bs.forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.cara === cara ? 'true' : 'false'); });
-      t.textContent = cara === 'sis' ? 'Con un sistema' : 'Ejemplo · hoy'; h.hidden = cara === 'sis'; s.hidden = cara !== 'sis';
-    };
-    bs.forEach(function (x) { x.addEventListener('click', function () { poner(x.dataset.cara); }); });
-    /* demo: enseña el problema, y a los pocos segundos, la misma pantalla con un sistema */
-    demo(pv, async function (ctx) {
-      poner('hoy'); await espera(4200); if (!ctx.vivo()) return;
-      poner('sis'); await espera(4200);
-    });
-  });
-  /* las cinco pestañas pasan solas mientras se ven (así se siente el problema) */
-  var nav = $('[data-pestanas]');
-  if (nav && !quieto) (function () {
-    var tabs = $$('.nav-tabs span', nav), ps = $$('.np', nav), n = $('[data-nav-n]', nav), url = $('[data-nav-url]', nav), i = 0, reloj = null;
-    var q = ['¿dónde apunté lo del cliente de ayer?', '¿pagó el segundo plazo?', '¿qué día empezaba el alicatado?', '¿qué me dijo por WhatsApp?', '¿eran 12 o 14 placas?'];
-    var paso = function () { i = (i + 1) % tabs.length; tabs.forEach(function (t, k) { t.classList.toggle('on', k === i); }); ps.forEach(function (p, k) { p.classList.toggle('on', k === i); }); n.textContent = i + 1; url.textContent = q[i]; };
-    new IntersectionObserver(function (es) {
-      if (es[0].isIntersecting) { if (!reloj) reloj = setInterval(paso, 1500); } else { clearInterval(reloj); reloj = null; }
-    }, { threshold: .4 }).observe(nav);
-  })();
-
   /* ═══ 4 · VISOR DE CASOS ═══ */
   var visor = $('[data-visor]');
   if (visor) {
