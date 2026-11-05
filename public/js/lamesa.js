@@ -75,12 +75,12 @@
       if (raf) { cancelAnimationFrame(raf); raf = 0; }
       if (espera) { clearTimeout(espera); espera = 0; }
     };
-    /* el tiempo se acumula fotograma a fotograma (con tope): si la pestaña se queda en segundo plano y vuelve, sigue por
+    /* el tiempo se acumula fotograma a fotograma (con tope de 250 ms: 64 alargaba la recogida en dispositivos lentos): si la pestaña se queda en segundo plano y vuelve, sigue por
        donde iba en vez de saltar al final */
     var recoge = function () {
       var acum = 0, ant = performance.now();
       (function paso(n) {
-        acum += Math.min(n - ant, 64); ant = n;
+        acum += Math.min(n - ant, 250); ant = n;
         var x = acum / DURA;
         pinta(sm(x));
         if (x < 1) raf = requestAnimationFrame(paso);
