@@ -98,7 +98,9 @@
   .lm-tira{padding-block:.75rem .8rem}
   .lm-sobre{margin-bottom:.3rem}
   .lm-pie{padding-block:.75rem .8rem}
-  .lm-pie-in{row-gap:.4rem}
+  .lm-pie-in{row-gap:.6rem}
+  /* el botón de llamar y el de WhatsApp van primero: así quedan en la primera pantalla de un móvil de 844 px (con las barras del navegador) */
+  .lm-contacto{order:-1;width:100%}
   .lm-promesa{margin-top:.4rem;gap:.4rem .5rem;font-size:.875rem}
   .lm-promesa li{padding:.2rem .5rem;gap:.35rem}
 }
