@@ -49,12 +49,12 @@ import HerramientaPagina from '../../components/HerramientaPagina.astro';
       <div class="hz-resultado hz-factura" aria-live="polite">
         <p class="hz-res-t">Tu factura</p>
         <dl>
-          <div><dt>Base imponible</dt><dd data-base>1.000,00 €</dd></div>
-          <div><dt data-etq-iva>IVA 21 %</dt><dd data-cuota-iva>+210,00 €</dd></div>
-          <div><dt data-etq-irpf>Retención IRPF 0 %</dt><dd data-cuota-irpf>0,00 €</dd></div>
-          <div class="hz-total"><dt>Total de la factura</dt><dd data-total>1.210,00 €</dd></div>
+          <div><dt>Base imponible</dt><dd data-base>1.000,00&nbsp;€</dd></div>
+          <div><dt data-etq-iva>IVA 21 %</dt><dd data-cuota-iva>+210,00&nbsp;€</dd></div>
+          <div><dt data-etq-irpf>Retención IRPF 0 %</dt><dd data-cuota-irpf>0,00&nbsp;€</dd></div>
+          <div class="hz-total"><dt>Total de la factura</dt><dd data-total>1.210,00&nbsp;€</dd></div>
         </dl>
-        <p class="hz-nota-p" data-explica>Cobras 1.210,00 €. De ahí, 210,00 € de IVA son para Hacienda (los declaras en el trimestral).</p>
+        <p class="hz-nota-p" data-explica>Cobras 1.210,00&nbsp;€. De ahí, 210,00&nbsp;€ de IVA son para Hacienda (los declaras en el trimestral).</p>
         <button type="button" class="btn btn-linea hz-copiar" data-copiar><svg class="ico" aria-hidden="true"><use href="#i-file-text"/></svg>Copiar el desglose</button>
       </div>
     </div>
@@ -68,7 +68,7 @@ import HerramientaPagina from '../../components/HerramientaPagina.astro';
     <li><b>Retención de IRPF</b>: se resta. Te la descuenta tu cliente y la ingresa él a cuenta de tu renta.</li>
   </ul>
   <h3>Ejemplo</h3>
-  <p>Un diseñador factura 1.000 € a una empresa, con IVA del 21 % y retención del 15 %: 1.000 + 210 − 150 = <b>1.060 €</b>. Si en vez de a una empresa le factura a un particular, no hay retención: <b>1.210 €</b>.</p>
+  <p>Un diseñador factura 1.000&nbsp;€ a una empresa, con IVA del 21 % y retención del 15 %: 1.000 + 210 − 150 = <b>1.060&nbsp;€</b>. Si en vez de a una empresa le factura a un particular, no hay retención: <b>1.210&nbsp;€</b>.</p>
   <h2>Qué tipo de IVA y de retención te toca</h2>
   <ul>
     <li><b>IVA 21 %</b>: el general; la mayoría de servicios y productos.</li>

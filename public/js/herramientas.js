@@ -107,7 +107,7 @@
         '<td><select data-c="u" aria-label="Unidad"><option>ud</option><option>m²</option><option>m</option><option>m³</option><option>h</option><option>pa</option></select></td>' +
         '<td><input data-c="q" type="number" inputmode="decimal" step="0.01" min="0" aria-label="Cantidad"></td>' +
         '<td><input data-c="p" type="number" inputmode="decimal" step="0.01" min="0" aria-label="Precio"></td>' +
-        '<td class="pz-imp">0,00 €</td><td class="hz-noprint"><button type="button" class="pz-quitar" aria-label="Quitar partida">×</button></td>';
+        '<td class="pz-imp">0,00 €</td><td class="hz-noprint"><button type="button" class="pz-quitar" aria-label="Quitar partida">×</button></td>';
       $('[data-c="d"]', tr).value = p[0]; $('[data-c="u"]', tr).value = p[1]; $('[data-c="q"]', tr).value = p[2]; $('[data-c="p"]', tr).value = p[3];
       tb.appendChild(tr);
     };
