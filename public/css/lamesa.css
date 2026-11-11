@@ -6,13 +6,13 @@
      pintado (variable --ta), así que no hay salto de «orden» a «lío». El script la deja y, una vez, la recoge.
      Si el script no carga (onerror) o falla al arrancar, pone .sin-script y la mesa queda recogida. */
 
-.lm{--lm-papel:#F7E9D2;position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:min(calc(100svh - var(--cab)),62rem);padding-block:0;background:#CF9358;color:var(--navy)}
+.lm{--lm-papel:#F3F4F2;position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:min(calc(100svh - var(--cab)),62rem);padding-block:0;background:#1A2330;color:#fff}
 
-/* ─── la tabla de arriba: el titular sobre madera clara (navy sobre #DBA369: 8,2:1) ─── */
-.lm-tira{position:relative;z-index:2;background:#DBA369;padding-block:clamp(.8rem,2svh,1.5rem) clamp(.85rem,2.2svh,1.6rem)}
+/* ─── la tabla de arriba: el titular sobre pizarra (blanco sobre #1F2A3A: 14:1) ─── */
+.lm-tira{position:relative;z-index:2;background:#1F2A3A;padding-block:clamp(.8rem,2svh,1.5rem) clamp(.85rem,2.2svh,1.6rem)}
 /* la costura: la tabla de arriba es un tablón más alto que la mesa. Su canto (filo claro, cara de tabla, cara oscura) y la sombra que
    echa sobre la mesa, en dos escalones planos: sin degradados ni difuminados */
-.lm-tira{border-bottom:.3rem solid #A2662F;box-shadow:inset 0 -2px 0 #EBC08C,0 .3rem 0 #6F4220}
+.lm-tira{border-bottom:.3rem solid #2A364A;box-shadow:inset 0 -2px 0 #3A4B63,0 .3rem 0 #0A0E14}
 .lm-escena::before{content:"";position:absolute;z-index:1;left:0;right:0;top:0;height:.6rem;pointer-events:none;background:rgb(10 14 20/.3);box-shadow:0 .6rem 0 rgb(10 14 20/.14)}
 .lm-veta{position:absolute;inset:0;z-index:-1;width:100%;height:100%}
 .lm-h1{margin:0;font-weight:800;font-size:clamp(2.1rem,9vw,2.54rem);line-height:1;letter-spacing:-.025em}
@@ -25,7 +25,7 @@
 }
 
 /* ─── la mesa ─── */
-.lm-escena{position:relative;flex:1 1 auto;display:flex;flex-direction:column;min-height:28.25rem;overflow:hidden;background:#CF9358}
+.lm-escena{position:relative;flex:1 1 auto;display:flex;flex-direction:column;min-height:28.25rem;overflow:hidden;background:#1A2330}
 .lm-madera{position:absolute;inset:0;width:100%;height:100%}
 .lm-vista{position:relative;flex:1 1 0;min-height:0;container-type:size;display:grid}
 .lm-defs{position:absolute;width:0;height:0}
@@ -68,17 +68,17 @@
   .lm-ancho{display:block}
 }
 
-/* ─── el tablón de abajo: cierra la mesa y lleva lo que ofrecemos y el contacto (navy sobre #DBA369: 8,2:1) ─── */
-.lm-pie{position:relative;z-index:2;background:#DBA369;padding-block:clamp(.85rem,2svh,1.4rem) clamp(.95rem,2.2svh,1.5rem)}
+/* ─── el tablón de abajo: cierra la mesa y lleva lo que ofrecemos y el contacto (blanco sobre #1F2A3A: 14:1) ─── */
+.lm-pie{position:relative;z-index:2;background:#1F2A3A;padding-block:clamp(.85rem,2svh,1.4rem) clamp(.95rem,2.2svh,1.5rem)}
 /* su canto: filo oscuro y claro donde sube sobre la mesa y, abajo, la cara del tablón y su sombra sobre la sección siguiente (navy),
    en escalones planos como los de la tabla de arriba */
-.lm-pie{border-top:.2rem solid #A2662F;border-bottom:.45rem solid #8A5529;box-shadow:inset 0 2px 0 #EBC08C,inset 0 -2px 0 rgb(235 192 140/.45),0 .3rem 0 #6B4020}
+.lm-pie{border-top:.2rem solid #2A364A;border-bottom:.45rem solid #141C27;box-shadow:inset 0 2px 0 #3A4B63,inset 0 -2px 0 rgb(58 75 99/.45),0 .3rem 0 #0A0E14}
 .lm-pie-in{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.7rem 2rem}
 .lm-apoyo{flex:1 1 24rem;min-width:0;max-width:40rem}
 .lm-servicios{font-weight:500;font-size:clamp(1.02rem,.95rem + .4vw,1.3rem);line-height:1.3}
 /* la promesa, como dos etiquetas de papel clavadas en el tablón (el mismo papel y la misma sombra plana que los objetos de la mesa) */
 .lm-promesa{list-style:none;display:flex;flex-wrap:wrap;gap:.45rem .7rem;margin-top:.55rem;font-weight:700;font-size:.92rem;line-height:1.25}
-.lm-promesa li{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .7rem;border-radius:.4rem;background:var(--lm-papel);box-shadow:0 0 0 2px var(--navy),3px 4px 0 2px rgb(10 14 20/.28)}
+.lm-promesa li{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .7rem;border-radius:.4rem;background:var(--lm-papel);color:var(--navy);box-shadow:0 0 0 2px #3A4B63,3px 4px 0 2px rgb(4 8 14/.5)}
 .lm-promesa li:nth-child(odd){rotate:-.8deg}
 .lm-promesa li:nth-child(even){rotate:.7deg}
 .lm-promesa .ico{width:1.1em;height:1.1em}
@@ -86,8 +86,12 @@
 .lm-acciones{display:flex;flex-wrap:wrap;gap:.7rem}
 .lm-acciones .btn{flex:1 1 auto;white-space:nowrap;padding-inline:.7rem;font-size:.92rem}
 @media (max-width:379px){.lm-acciones .ico{display:none}}
-.lm :focus-visible{outline:3px solid var(--navy);outline-offset:3px}
-.lm .btn-tinta:focus-visible{outline-color:var(--navy);box-shadow:0 0 0 3px #fff}
+.lm :focus-visible{outline:3px solid var(--ambar);outline-offset:3px}
+/* sobre pizarra oscura: el botón principal en verde y el de línea en blanco */
+.lm .btn-tinta{background:var(--verde);color:var(--navy)}
+.lm .btn-tinta:hover{background:#6AD79D}
+.lm .btn-linea{color:#fff;box-shadow:inset 0 0 0 1.5px rgb(255 255 255/.6)}
+.lm .btn-linea:hover{background:rgb(255 255 255/.1)}
 
 /* móvil: menos aire entre bloques (sin bajar letra ni objetivos táctiles) para que se vea más mesa en el primer pantallazo */
 @media (max-width:639px){

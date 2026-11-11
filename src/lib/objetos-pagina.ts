@@ -79,7 +79,7 @@ const portatil = () => {
   const filas = [['Presupuesto', 'Enviado', VERDE_O], ['Factura', 'Cobrada', VERDE_O], ['Encargo', 'Por preparar', '#9A5F0E']];
   return G(
     srect(-125, -92, 250, 150, 10, 7, 9) + pa('M-142 60h284l-14 18h-256z', '#9EA7B1') + rc(-142, 60, 284, 4, '#7C8590') + rc(-28, 60, 56, 6, '#7C8590', 3) +
-      rc(-125, -92, 250, 150, NAVY, 10) + rc(-119, -86, 238, 138, '#F4F4EF', 5) +
+      rc(-125, -92, 250, 150, NAVY, 10) + rc(-119, -86, 238, 138, '#F2F4F6', 5) +
       rc(-119, -86, 238, 28, NAVY, 5) + marca(-113, -83, 22) + tx(-86, -66, 15, 'Pedidos de hoy', '#fff', 700) +
       filas.map((f, i) => rc(-111, -48 + i * 34, 222, 28, '#fff', 4) + tx(-102, -29 + i * 34, 13.5, f[0], TINTA, 500) + tx(102, -29 + i * 34, 13.5, f[1], f[2], 700, 'text-anchor="end"')).join(''),
   );
@@ -126,7 +126,7 @@ const carpetaBaja = () =>
     G(rc(-132, -92, 110, 54, '#CFE2F5', 3) + rc(-120, -78, 70, 6, '#7B93AE', 2), 'transform="rotate(-9 -77 -65)"') +
       G(rc(-52, -98, 120, 58, PAPEL, 3) + rc(-38, -82, 80, 6, GRIS, 2) + rc(-38, -68, 56, 6, GRIS, 2), 'transform="rotate(5 8 -70)"') +
       G(rc(50, -86, 86, 52, '#F8DF76', 3) + rc(62, -72, 56, 6, '#BFA044', 2), 'transform="rotate(14 93 -60)"') +
-      srect(-150, -52, 300, 162, 6) + pa('M-150 -52H-60L-44 -72H56L72 -52H150V110H-150Z', '#7E2C1B') + rc(-150, -46, 300, 156, '#B8452E', 6) + rc(-150, -46, 300, 5, '#D0634A') +
+      srect(-150, -52, 300, 162, 6) + pa('M-150 -52H-60L-44 -72H56L72 -52H150V110H-150Z', '#2A4468') + rc(-150, -46, 300, 156, '#3D5F8A', 6) + rc(-150, -46, 300, 5, '#5A7EAB') +
       rc(-84, -18, 168, 62, PAPEL, 3) + tx(0, 10, 22, 'Clientes', TINTA, 800, centro) + tx(0, 34, 20, 'y papeles', TINTA, 500, centro) +
       rc(-150, 70, 300, 9, '#1C2733'),
   );
@@ -134,7 +134,7 @@ const carpetaBaja = () =>
 /* presupuesto de papel: sin marca ni datos, solo la forma */
 const presupuestoPapel = () =>
   G(
-    srect(-95, -125, 190, 250, 3, 7, 9) + pa('M-95 -125H62L95 -92V125H-95Z', PAPEL) + pa('M62 -125L95 -92H62Z', '#D6D2C4') +
+    srect(-95, -125, 190, 250, 3, 7, 9) + pa('M-95 -125H62L95 -92V125H-95Z', PAPEL) + pa('M62 -125L95 -92H62Z', '#D3D8DD') +
       tx(-76, -90, 22, 'Presupuesto', TINTA, 800) + rc(-76, -78, 152, 2.5, TINTA) +
       [0, 1, 2, 3].map((i) => rc(-76, -60 + i * 26, 70 + ((i * 29) % 46), 7, GRIS, 2) + rc(34, -60 + i * 26, 42, 7, GRIS_O, 2)).join('') +
       rc(-76, 50, 152, 2.5, TINTA) + tx(-76, 78, 17, 'Total', TINTA, 800) + rc(20, 64, 56, 14, GRIS_O, 3) +
@@ -146,8 +146,8 @@ const libretaGuia = () =>
   G(
     srect(-100, -125, 200, 250, 6, 7, 9) + rc(-100, -125, 200, 250, '#F8DF76', 6) +
       [0, 1, 2, 3, 4, 5].map((i) => rc(-100, -50 + i * 32, 200, 1.6, '#D5B345')).join('') + rc(-72, -97, 1.8, 222, '#D66B52') +
-      rc(-100, -125, 200, 34, '#B8452E', 6) + rc(-100, -103, 200, 12, '#B8452E') +
-      [...Array(8)].map((_, i) => ci(-84 + i * 24, -110, 4, '#7E2C1B')).join('') +
+      rc(-100, -125, 200, 34, '#3D5F8A', 6) + rc(-100, -103, 200, 12, '#3D5F8A') +
+      [...Array(8)].map((_, i) => ci(-84 + i * 24, -110, 4, '#2A4468')).join('') +
       tx(-56, -66, 20, 'Guía rápida', TINTA, 800) +
       [0, 1, 2].map((i) => rc(-62, -38 + i * 32, 15, 15, 'none', 3, `stroke="${TINTA}" stroke-width="2"`) + (i < 2 ? ln(`M${-59} ${-30 + i * 32}l4 5 9-11`, ROJO, 3) : '') + rc(-36, -34 + i * 32, 90 - i * 18, 7, '#BFA044', 2)).join('') +
       pa('M100 125l-46 0 46-40z', '#E2C259'),
@@ -239,7 +239,7 @@ export function escena(clave: ClaveObjeto): Escena | null {
 
     case 'presupuesto':
       return {
-        defs: piezas({ obj: presupuestoPapel(), bol: boli(), cerco: `<circle r="30" fill="none" stroke="#7A4A22" stroke-width="5" stroke-opacity=".38"/>` }),
+        defs: piezas({ obj: presupuestoPapel(), bol: boli(), cerco: `<circle r="30" fill="none" stroke="#7C8590" stroke-width="5" stroke-opacity=".38"/>` }),
         ancho: u('obj', 140, 108, -3, 0.86) + u('bol', 252, 168, -72, 0.6) + u('cerco', 262, 56),
         bajo: u('obj', 170, 102, 3, 0.8) + u('bol', 46, 100, -20, 0.4),
       };
