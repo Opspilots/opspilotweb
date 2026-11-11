@@ -83,8 +83,8 @@
     regionAviso.appendChild(a);
     /* si queda fuera de la pantalla, se acerca lo justo y con suavidad (de golpe con «reducir movimiento»), pero sin esconder el formulario
        bajo la cabecera: en pantallas bajas manda el paso en el que se está */
-    var marco = $('.cfg-marco'), cab = $('.cab'), r = regionAviso.getBoundingClientRect();
-    var falta = r.bottom + 24 - window.innerHeight, cabe = marco ? marco.getBoundingClientRect().top - (cab ? cab.getBoundingClientRect().bottom : 0) - 8 : falta;
+    var marco = $('.cfg-marco'), cab = $('.cab'), caja = regionAviso.getBoundingClientRect();
+    var falta = caja.bottom + 24 - window.innerHeight, cabe = marco ? marco.getBoundingClientRect().top - (cab ? cab.getBoundingClientRect().bottom : 0) - 8 : falta;
     if (Math.min(falta, cabe) > 0) window.scrollBy({ top: Math.min(falta, cabe), behavior: quieto ? 'auto' : 'smooth' });
   }
   function guiar(nec, sub) {
@@ -94,7 +94,7 @@
     /* v12: el problema 0 es «te buscan en Google y sale otro»; los de sistema van detrás */
     if (nec === 'web') r.problema = 0;
     if (nec === 'sistema') r.problema = sub === 'facturacion' ? 2 : 1;
-    if (nec === 'automatizar') r.problema = 2;
+    /* «automatizar» (y «guía» → manual, que remite aquí) se queda en null y no enseña aviso: ningún problema de la lista encaja; avisoProblema y problemas.js aguantan el null */
     /* los problemas (problemas.js) marcan el suyo con este evento; aquí, el aviso con el enlace que lleva a su tramo */
     document.dispatchEvent(new CustomEvent('opspilot:ruta', { detail: { problema: r.problema } }));
     avisoProblema(r);
