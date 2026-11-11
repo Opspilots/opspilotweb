@@ -1,4 +1,4 @@
-/* «Cuatro cosas que vemos cada semana». Lo carga el componente de los problemas (la portada y /soluciones/software-a-medida/).
+/* «Cuatro cosas que vemos cada semana». Lo carga el componente de los problemas (la portada).
    Lo básico de cada problema y de su réplica está en opspilot.css. Tres estados, según las clases que pone la decisión en línea del componente:
    · apilado (sin clases): sin JS o si el script falla o se cuelga (.sin-pin). Los cuatro problemas, uno detrás de otro y completos.
    · interactivo (.pb-int): con JS. Igual que antes: lista a la izquierda y ventana a la derecha (en móvil, pestañas fijas y un problema
