@@ -1,4 +1,4 @@
-export type ResourceCategory = 'Guía' | 'Artículo' | 'Caso práctico' | 'Checklist';
+export type ResourceCategory = 'Guía' | 'Artículo' | 'Checklist';
 
 export type ResourceBlock =
     | { type: 'p'; text: string }
@@ -631,7 +631,7 @@ export const RESOURCES: Resource[] = [
     },
 ];
 
-export const RESOURCE_CATEGORIES: ResourceCategory[] = ['Guía', 'Artículo', 'Caso práctico', 'Checklist'];
+export const RESOURCE_CATEGORIES: ResourceCategory[] = ['Guía', 'Artículo', 'Checklist'];
 
 export function getResourceBySlug(slug: string): Resource | undefined {
     return RESOURCES.find((r) => r.slug === slug);
