@@ -1,14 +1,14 @@
 # =============================================================
 # OpsPilot — https://opspilot.es (sin www)
-# Web SSG (vite-react-ssg): HTML estatico por ruta en carpetas.
+# Web estatica (Astro): HTML por ruta, cada una en su carpeta.
 # Reglas: HTTPS + host canonico + redirects 301 finales +
 # 404 real + seguridad + cache + compresion.
 # Todo con guards <IfModule> para no romper si falta un modulo.
 #
-# CONVENCION DE URL: CON barra final (/casos/, no /casos). No es una
+# CONVENCION DE URL: CON barra final (/webs/, no /webs). No es una
 # preferencia estetica, es lo que este servidor ya hacia por su cuenta: con
-# dirStyle 'nested' cada ruta es un DIRECTORIO en dist/, asi que mod_dir
-# responde 301 de /casos a /casos/ antes de servir su index.html. Los
+# build.format 'directory' cada ruta es un DIRECTORIO en dist/, asi que mod_dir
+# responde 301 de /webs a /webs/ antes de servir su index.html. Los
 # canonicals, og:url, hreflang, sitemap y breadcrumbs declaran esa misma
 # forma para que lo declarado y lo servido coincidan.
 # =============================================================
@@ -86,9 +86,9 @@
 # (p. ej. /landing-oficial-24542/diseno-web-para-pymes/automatizaciones/), y
 # el /404/index.html que SI lleva noindex no se servia jamas.
 #
-# Con SSG el fallback ya no hace falta para que la web funcione: vite-react-ssg
-# prerenderiza todas las rutas reales como carpeta con su index.html
-# (incluidos los 17 articulos de /recursos/<slug>, los stubs de redirect y la
+# Con una web estatica el fallback no hace falta para que funcione: Astro
+# genera todas las rutas reales como carpeta con su index.html
+# (incluidos los articulos de /recursos/<slug>, las paginas de redireccion y la
 # propia /404/), asi que mod_dir + DirectoryIndex las resuelven solas. Lo unico
 # que cubria el fallback eran los paths que NO existen — que es precisamente lo
 # que debe devolver 404.
