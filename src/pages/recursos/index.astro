@@ -8,8 +8,8 @@ import { migas, SITE_URL, WA } from '../../lib/sitio';
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos gratis', path: '/recursos/' }];
 // Destacados primero y después por fecha, lo más reciente arriba.
-// Orden: lo que sirve a un pequeño negocio primero (checklist, guías, artículos) y los productos al final.
-const ORDEN = ['Checklist', 'Guía', 'Artículo', 'Producto'];
+// Orden: lo que sirve a un pequeño negocio primero (checklist, guías, artículos).
+const ORDEN = ['Checklist', 'Guía', 'Artículo'];
 const lista = [...RESOURCES].sort((a, b) => ORDEN.indexOf(a.cat) - ORDEN.indexOf(b.cat) || Number(!!b.featured) - Number(!!a.featured) || (b.date ?? '').localeCompare(a.date ?? ''));
 // Por dónde empezar: la situación con las palabras del dueño y la guía que le toca.
 const EMPIEZA = [

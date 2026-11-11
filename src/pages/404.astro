@@ -1,14 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
 import CabeceraPagina from '../components/CabeceraPagina.astro';
-import { LINEAS } from '../lib/sitio';
+import { NAV } from '../lib/sitio';
 ---
 <Base title="Página no encontrada · OpsPilot" description="Esta página no existe o ha cambiado de sitio." path="/404/" noindex>
   <CabeceraPagina objeto="aro" sobre="Error 404" titulo="Esta página se ha salido de la ruta."
     entrada="No existe o ha cambiado de dirección. Te dejamos por dónde seguir:">
     <div class="acciones">
       <a class="btn btn-tinta" href="/">Volver al inicio</a>
-      {LINEAS.map((l) => <a class="enlace" href={l.href}>{l.label}</a>)}
+      {NAV.map((n) => <a class="enlace" href={n.href}>{n.label}</a>)}
     </div>
   </CabeceraPagina>
 </Base>

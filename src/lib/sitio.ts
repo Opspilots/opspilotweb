@@ -6,17 +6,12 @@ export { BRAND_NAME, CONTACT_EMAIL, PHONE, SITE_URL, ADDRESS, LEGAL_NAME, TAX_ID
 
 export const WA = (texto: string) => `https://wa.me/${PHONE.wa}?text=${encodeURIComponent(texto)}`;
 
+// Menú principal (escritorio y móvil). /recursos sigue publicada pero ya no va en el menú.
 export const NAV = [
+  { href: '/webs/', label: 'Webs' },
   { href: '/soluciones/', label: 'Soluciones' },
-  { href: '/casos/', label: 'Casos' },
-  { href: '/productos/', label: 'Productos' },
-  { href: '/recursos/', label: 'Recursos gratis' },
-] as const;
-
-export const LINEAS = [
-  { href: '/soluciones/webs-y-tiendas/', label: 'Webs y tiendas', corto: 'Webs y tiendas', icono: 'globe' },
-  { href: '/soluciones/software-a-medida/', label: 'Software a medida', corto: 'Software a medida', icono: 'layout-dashboard' },
-  { href: '/soluciones/automatizacion/', label: 'Automatización', corto: 'Automatización', icono: 'zap' },
+  { href: '/herramientas/', label: 'Herramientas' },
+  { href: '/contacto/', label: 'Contacto' },
 ] as const;
 
 export const ORG_ID = `${SITE_URL}/#organization`;
@@ -60,7 +55,7 @@ export function migas(items: { nombre: string; path: string }[]) {
 export const SERVICIO_LOCAL = {
   '@type': 'ProfessionalService',
   '@id': `${SITE_URL}/#service`,
-  name: `${BRAND_NAME} · Desarrollo de software a medida en Córdoba`,
+  name: `${BRAND_NAME} · Digitalización y webs en Córdoba`,
   url: `${SITE_URL}/`,
   image: `${SITE_URL}/images/og-horizonte.png`,
   telephone: PHONE.e164,
@@ -72,7 +67,7 @@ export const SERVICIO_LOCAL = {
     { '@type': 'AdministrativeArea', name: 'Andalucía' },
     { '@type': 'Country', name: 'España' },
   ],
-  serviceType: ['Desarrollo de software a medida', 'Diseño web', 'Tiendas online', 'Automatización de procesos', 'Integraciones', 'Agentes IA'],
+  serviceType: ['Diseño web', 'Ficha de Google', 'Tiendas online', 'Soluciones a medida', 'Automatización de procesos'],
   provider: { '@id': ORG_ID },
 };
 

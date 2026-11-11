@@ -20,16 +20,8 @@ export type ClaveObjeto =
   | 'aro';      // el aro grande sobre horizonte de siempre (404)
 
 export const OBJETO_POR_RUTA: Record<string, ClaveObjeto> = {
-  '/soluciones/': 'tapete',
-  '/soluciones/webs-y-tiendas/': 'pantalla-web',
-  '/diseno-web-cordoba/': 'pantalla-web',
-  '/soluciones/software-a-medida/': 'portatil',
-  '/desarrollo-software-cordoba/': 'portatil',
-  '/soluciones/automatizacion/': 'movil-sale-solo',
-  '/casos/': 'carpeta',
-  '/productos/': 'presupuesto',
-  '/productos/presupuesya/': 'presupuesto',
-  '/productos/erp-hosteleria/': 'comanda',
+  '/webs/': 'pantalla-web',
+  '/soluciones/': 'portatil',
   '/recursos/': 'libreta',
   '/herramientas/': 'calculadora',
   // herramientas de números: calculadora. Las de Google, reseñas y WhatsApp no tienen nada que ver con una calculadora: solo la tira

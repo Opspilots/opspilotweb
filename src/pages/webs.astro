@@ -1,0 +1,119 @@
+---
+// /webs: reúne lo que estaba en /soluciones/webs-y-tiendas/ y en /diseno-web-cordoba/ (retiradas con 301, ver astro.config.mjs).
+// Sin clientes con nombre, capturas ni cifras de resultados. Las respuestas salen de los artículos publicados
+// (checklist-tu-web-trabaja-para-ti y como-pedir-presupuesto-de-software) y del proceso de la portada.
+import Base from '../layouts/Base.astro';
+import CabeceraPagina from '../components/CabeceraPagina.astro';
+import Faq from '../components/Faq.astro';
+import Cierre from '../components/Cierre.astro';
+import PorQue from '../components/PorQue.astro';
+import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../lib/sitio';
+
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Webs', path: '/webs/' }];
+const FAQ = [
+  { q: '¿Cuánto cuesta una página web en Córdoba?', a: 'Desde 500 €, con la ficha de Google incluida. El precio final depende de cuántas páginas hagan falta y de si vendes en línea. Te lo damos cerrado y por escrito antes de empezar, después de una primera conversación de 30 minutos en la que entendemos tu negocio.' },
+  { q: '¿Me ayudáis a salir en Google en mi pueblo o en mi barrio?', a: 'Sí, y empieza por la estructura: una página propia para cada búsqueda real, la ficha de Google bien completada y el mismo nombre, dirección y teléfono en todas partes. Lo que no te vamos a prometer es un puesto concreto en Google: nadie honesto puede.' },
+  { q: '¿Cómo sé si mi web actual está funcionando bien?', a: 'Revisa diez puntos: carga en menos de 3 segundos en el móvil con datos, teléfono o WhatsApp visibles sin bajar, se ve bien en el móvil, un objetivo claro por página, explica qué haces en la primera pantalla, sin enlaces rotos, aparece en Google por tu negocio más tu ciudad, tiene certificado SSL, el formulario funciona y se actualizó en el último año. Si falla en tres o más, está perdiendo clientes.' },
+  { q: '¿De quién es la web cuando la terminamos?', a: 'Tuya. El código, el dominio y los datos son tuyos al terminar, y así lo dejamos por escrito en la propuesta.' },
+  { q: '¿Por qué una página por servicio y por zona?', a: 'Porque la gente no busca «reformas» a secas: busca «reforma de baño en Puente Genil». Una página propia para cada búsqueda real, con su título y su texto, llega mucho mejor que una portada genérica que intenta hablar de todo.' },
+  { q: '¿Puedo vender por WhatsApp en lugar de con pago en línea?', a: 'Sí. Si tu venta se cierra hablando, la tienda puede dejar el pedido o el presupuesto ya escrito en un mensaje de WhatsApp. El pago en línea se añade solo si te encaja.' },
+  { q: '¿Puedo actualizar yo la web después?', a: 'Lo que cambia a menudo (productos, ofertas, trabajos nuevos) se deja preparado para que lo cambies tú sin tocar código. Lo que no cambia casi nunca, no hace falta que lo toques.' },
+];
+const servicio = {
+  '@type': 'Service',
+  name: 'Diseño web en Córdoba y ficha de Google',
+  serviceType: 'Diseño y desarrollo web',
+  provider: { '@id': ORG_ID },
+  areaServed: [{ '@type': 'City', name: 'Córdoba' }, { '@type': 'Country', name: 'España' }],
+  url: `${SITE_URL}/webs/`,
+};
+---
+<Base title="Diseño web en Córdoba y ficha de Google · OpsPilot"
+  description="Diseño web en Córdoba hecho a mano: una página por servicio y zona, tienda online y ficha de Google al día. Desde 500 €, con precio cerrado."
+  path="/webs/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
+  <CabeceraPagina titulo="Diseño web en Córdoba para que te encuentren"
+    entrada="Webs y tiendas online hechas a mano, con tu ficha de Google al día. Desde 500 €, con precio cerrado y por escrito.">
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, quiero una web nueva. Os cuento:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu web</a>
+      <a class="enlace" href="/contacto/">Respuesta en menos de 24 h <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    </div>
+  </CabeceraPagina>
+
+  <section class="s-navy" id="incluye" aria-labelledby="t-incluye">
+    <div class="wrap">
+      <p class="etiqueta">Qué incluye</p>
+      <h2 id="t-incluye" class="h2">Diseño web en Córdoba: lo que lleva una web nuestra.</h2>
+      <div class="producto-ficha">
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg><h3>Una página por búsqueda real</h3><p>Por servicio y por zona, con su título y su texto propios. Nada de copiar y pegar la misma página cambiando el pueblo.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-badge-check"/></svg><h3>Tu ficha de Google al día</h3><p>Categoría, horario, fotos y reseñas respondidas, con los mismos datos que la web.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg><h3>Contacto que llega ordenado</h3><p>Formulario y WhatsApp con el mensaje ya escrito: te llega qué quiere, dónde y cómo localizarle, no un «hola» suelto.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg><h3>Rápida y medida</h3><p>La medimos en el móvil antes de entregarla. Una web lenta pierde clientes antes de que vean nada.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg><h3>Tuya de verdad</h3><p>El código, el dominio y los datos son tuyos al terminar. Por escrito.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-sparkles"/></svg><h3>Con tu personalidad</h3><p>Hecha a mano a partir de tu marca, tu local y tu forma de hablar. Que nadie pueda confundirla con la de tu competencia.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-papel" id="ficha-de-google" aria-labelledby="t-ficha">
+    <div class="wrap lectura-in">
+      <div class="prosa">
+        <h2 id="t-ficha">Tu ficha de Google, al día</h2>
+        <p>Cuando alguien busca lo que haces en su zona, lo primero que ve es el mapa. Si tu ficha está a medias, sale otro. Por eso la ficha va con la web, no aparte.</p>
+        <p>Pesa tanto como la web: la categoría correcta, el horario, las fotos, las reseñas respondidas y el mismo nombre, dirección y teléfono en todos los directorios. Lo dejamos completo y lo cuidamos.</p>
+        <p>Si quieres revisarla tú antes, tienes dos herramientas gratis: <a href="/herramientas/negocio-no-sale-en-google-maps/">por qué tu negocio no sale en Google Maps</a> y <a href="/herramientas/poner-negocio-en-google-maps/">cómo poner tu negocio paso a paso</a>.</p>
+      </div>
+      <aside class="lateral">
+        <div class="lateral-caja">
+          <p class="etiqueta">Desde 500 €</p>
+          <p><b>Web y ficha de Google.</b> Precio cerrado y por escrito antes de empezar.</p>
+          <a class="btn btn-verde" href={WA('Hola OpsPilot, quiero una web y mi ficha de Google. Os cuento:')} rel="noopener">Pedir precio</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="s-hondo" id="tiendas" aria-labelledby="t-tiendas">
+    <div class="wrap">
+      <p class="etiqueta">Vender</p>
+      <h2 id="t-tiendas" class="h2">Tiendas online que resuelven la duda antes de que te llamen.</h2>
+      <div class="producto-ficha">
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-shopping-cart"/></svg><h3>Catálogo y pedido</h3><p>Fichas con categorías y disponibilidad que editas tú, pedido con envío o recogida y confirmación al cliente.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg><h3>Pedido por WhatsApp</h3><p>Si tu venta se cierra hablando, el pedido o el presupuesto llegan ya escritos en un mensaje.</p></div>
+        <div class="pf"><svg class="ico" aria-hidden="true"><use href="#i-calculator"/></svg><h3>Con lo que tu cliente necesita saber</h3><p>Medidas, cantidades o plazos: lo que hoy contestas una y otra vez por teléfono, resuelto en la propia tienda.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-papel" aria-label="Cómo hacemos una web">
+    <div class="wrap lectura-in">
+      <div class="prosa">
+        <h2>Una web que se encuentra y que convence</h2>
+        <p>Una web bonita que nadie encuentra no trae clientes. Y una web que aparece en Google pero no explica en la primera pantalla qué haces, dónde y cómo contactarte, tampoco. Por eso trabajamos las dos cosas a la vez: la estructura para que te encuentren y el diseño para que, cuando lleguen, te llamen a ti y no al siguiente resultado.</p>
+        <p>En una búsqueda local, la gente no escribe «reformas» a secas: escribe «reforma de baño en Montilla». Una web de una sola página compite mal por esas búsquedas. Lo que funciona es tener una página propia para cada combinación real de servicio y zona. Y que cargue rápido en el móvil: la mayoría de tus visitantes entra con datos, y si tarda más de 3 segundos, muchos se van antes de ver nada.</p>
+
+        <h2>Cómo hacemos una web, paso a paso</h2>
+        <ol>
+          <li><b>Leemos tu negocio, no tu sector.</b> Tu web actual, tu ficha de Google, tus reseñas y tu local. Lo que repiten tus clientes en las reseñas suele ser lo que la web tiene que decir en grande.</li>
+          <li><b>Decidimos cómo se va a ver antes de maquetar.</b> Colores de tu marca, tu logo tal cual es y tu forma de hablar.</li>
+          <li><b>La construimos a mano</b>, con una página por cada búsqueda que importa y el contenido que nos das. Lo que falta se marca como pendiente, no se inventa.</li>
+          <li><b>La medimos en el móvil</b> antes de enseñártela: velocidad, que se lea bien y que nada se rompa.</li>
+          <li><b>La publicamos sin perder lo que ya tienes.</b> Si tu web actual ya sale en Google, las direcciones antiguas se redirigen a las nuevas para no perder posicionamiento.</li>
+        </ol>
+
+        <h2>Antes de pedir presupuesto: revisa tu web actual</h2>
+        <p>Diez puntos rápidos, y si falla en tres o más, está perdiendo clientes. Los tienes enteros en el <a href="/recursos/checklist-tu-web-trabaja-para-ti/">checklist de una web que trabaja para ti</a>.</p>
+      </div>
+      <aside class="lateral">
+        <div class="lateral-caja">
+          <p class="etiqueta">Sin compromiso</p>
+          <p><b>Mándanos tu web actual.</b> Te decimos qué cambiaríamos primero y cuánto cuesta.</p>
+          <a class="btn btn-verde" href={WA('Hola OpsPilot, esta es mi web actual: ')} rel="noopener">Mandar mi web</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <PorQue />
+  <Faq items={FAQ} titulo="Preguntas sobre diseño web en Córdoba." />
+  <Cierre />
+</Base>
