@@ -53,29 +53,25 @@
   RewriteRule ^demo/?$            /contacto/ [R=301,L]
   RewriteRule ^contact/?$         /contacto/ [R=301,L]
 
-  #    3b. Casos (EN) -> /casos/
-  RewriteRule ^cases/?$           /casos/ [R=301,L]
+  #    3b. Casos (EN) -> / (la pagina /casos/ se retiro el 11-nov-2026)
+  RewriteRule ^cases/?$           / [R=301,L]
 
   #    3c. Recursos (EN) -> /recursos/
   RewriteRule ^resources/?$       /recursos/ [R=301,L]
 
-  #    3d. Producto (EN) -> /productos/
-  #
-  #    OJO: hasta 2026-07-27 estas dos reglas mandaban /product Y /productos a
-  #    /recursos/, porque los productos vivian como articulos del blog y no
-  #    existia ninguna pagina de producto. Eso ha cambiado: /productos/ es
-  #    AHORA una pagina real (el hub, ver src/pages/Products.tsx).
-  #
-  #    La regla de /productos habia que quitarla si o si. Es de SERVIDOR, o sea
-  #    que se ejecuta ANTES de que React exista: con ella puesta, el hub nuevo
-  #    era literalmente inalcanzable en produccion — cualquiera que pidiera
-  #    /productos se comia un 301 hacia /recursos/ sin llegar a verlo nunca.
-  #    Un fallo que en local no se nota, porque el servidor de desarrollo de
-  #    Vite no aplica este fichero.
-  #
-  #    /product (en ingles) si se conserva, pero cambia de destino: ahora
-  #    apunta al hub, que es su equivalente real, en vez de al blog.
-  RewriteRule ^product/?$         /productos/ [R=301,L]
+  #    3d. Producto (EN) -> /recursos/ (asi esta en produccion, nginx). La pagina /productos/ se retiro el
+  #        11-nov-2026 (ver 3e): ya no hay hub de productos al que mandar /product.
+  RewriteRule ^product/?$         /recursos/ [R=301,L]
+
+  #    3e. Reenfoque (11-nov-2026): webs y soluciones a medida. Mismas reglas que `redirects` en astro.config.mjs
+  #        y que el bloque de nginx de DEPLOY.md (producción usa nginx: este fichero no se aplica allí).
+  RewriteRule ^casos/?$                                                  / [R=301,L]
+  RewriteRule ^productos(/(erp-hosteleria|presupuesya))?/?$              /soluciones/ [R=301,L]
+  RewriteRule ^(soluciones/webs-y-tiendas|diseno-web-cordoba)/?$         /webs/ [R=301,L]
+  RewriteRule ^(soluciones/(software-a-medida|automatizacion)|desarrollo-software-cordoba)/?$ /soluciones/ [R=301,L]
+  RewriteRule ^recursos/(energydeal-crm-energetico|presupuestador-obra-bc3|erp-hosteleria-tpv-restaurantes|fiscalidad-plataforma-fiscal-contable|caso-reformas-de-excel-a-sistema|caso-energydeal-comercializadora-excel|caso-asesoria-archivo-digital-cliente-web|caso-hosteleria-tpv-inteligente-margen)/?$ /soluciones/ [R=301,L]
+  RewriteRule ^recursos/caso-agencia-servicios-pipeline-automatizado/?$  /recursos/gestion-leads-agencia-sin-crm/ [R=301,L]
+  RewriteRule ^herramientas/cuanto-cuesta-una-pagina-web/?$              /webs/ [R=301,L]
 </IfModule>
 
 # -------------------------------------------------------------

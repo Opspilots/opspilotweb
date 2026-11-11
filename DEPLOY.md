@@ -18,7 +18,7 @@ Construcción de revisión que no se indexa: `PUBLIC_NOINDEX=1 npm run build`.
 ## Despliegue
 
 Igual que antes: `.github/workflows/deploy.yml` construye en cada push a `main` y sube `dist/` por
-rsync a `/var/www/opspilotweb/dist/` (nginx, VPS de ObraFácil). **Mergear a main = publicar.**
+rsync a `/var/www/opspilotweb/dist/` (nginx, VPS). **Mergear a main = publicar.**
 
 ## nginx: no hace falta tocarlo (revisado en solo lectura el 25-sep)
 
@@ -26,25 +26,57 @@ La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta 
 - `error_page 404 /404/index.html` + `try_files $uri $uri/ =404`: `scripts/postbuild.mjs` copia
   `dist/404.html` a `dist/404/index.html`.
 - 301 de /services, /servicios, /contact, /demo, /diagnostico, /pricing y /precios → /contacto/;
-  /cases → /casos/; /resources y /product → /recursos/. Las redirecciones de `astro.config.mjs`
-  apuntan al mismo sitio (solo actúan si algún día cambia el servidor).
+  /resources y /product → /recursos/ (medido en producción el 11-nov-2026; /cases → /casos/ ya no sirve, ver «Reenfoque»).
+  Las redirecciones de `astro.config.mjs` apuntan al mismo sitio, pero son páginas con meta refresh, NO un 301: el 301
+  real solo existe si está en nginx (ver «Reenfoque»).
 - `.css`/`.js` con `Cache-Control: public, immutable` 30 días: como estos ficheros no llevan hash en
   el nombre, se les añade `?v=<hash del contenido>` con `version()` de `src/lib/version.ts`: lo usan
   `src/layouts/Base.astro` (`opspilot.css` y `opspilot.js`), `CabeceraMesa.astro` (`lamesa.css` y `lamesa.js`), `CabeceraPagina.astro`
-  (`cabecera-pagina.css`), `Problemas.astro` (`problemas.css` y `problemas.js`) y `Recorrido.astro` / `Tramos.astro` (`recorrido.js`);
+  (`cabecera-pagina.css`), `Problemas.astro` (`problemas.css` y `problemas.js`);
   un `.css`/`.js` nuevo que se cargue con `<link>` o `<script>` tiene que pasar por esa función. **Ojo con fuentes e
   imágenes**: también son inmutables; si se cambia una, cambiar su NOMBRE, no sobrescribirla.
 - `.html` sin caché: cada despliegue se ve al momento.
 
+## Reenfoque (11-nov-2026): páginas retiradas y redirecciones
+
+La web pasa a explicar «digitalización y webs para negocios»: menú Webs · Soluciones · Herramientas · Contacto. Páginas retiradas
+y su destino (las mismas reglas están en `astro.config.mjs` y en `public/.htaccess`):
+
+| Antes | Ahora |
+|---|---|
+| /productos/, /productos/erp-hosteleria/, /productos/presupuesya/ | /soluciones/ |
+| /casos/, /cases/ | / |
+| /soluciones/webs-y-tiendas/, /diseno-web-cordoba/ | /webs/ |
+| /soluciones/software-a-medida/, /soluciones/automatizacion/, /desarrollo-software-cordoba/ | /soluciones/ |
+| cuatro guías de producto de /recursos/ y los casos «ilustrativos» de octubre | /soluciones/ (la de leads, a su guía) |
+| /herramientas/cuanto-cuesta-una-pagina-web/ | /webs/ |
+
+**Cómo se sirven.** `astro.config.mjs` (`redirects`) genera, por cada una, una página estática con `<meta http-equiv="refresh">` y
+canonical al destino: sirve como red de seguridad, pero **no es un 301** y no traspasa la autoridad SEO. `public/.htaccess` tiene los
+301 equivalentes, pero producción usa nginx y lo ignora. **El 301 real exige añadir esto al `server {}` de nginx en el VPS** (no está
+en el repo; hay que hacerlo a mano, con copia de seguridad y `sudo nginx -t` antes de recargar), antes del `location /`:
+
+```nginx
+location ~ ^/(cases|casos)/?$                                                            { return 301 /; }
+location ~ ^/productos(/(erp-hosteleria|presupuesya))?/?$                                { return 301 /soluciones/; }
+location ~ ^/(soluciones/webs-y-tiendas|diseno-web-cordoba)/?$                           { return 301 /webs/; }
+location ~ ^/(soluciones/(software-a-medida|automatizacion)|desarrollo-software-cordoba)/?$ { return 301 /soluciones/; }
+location ~ ^/recursos/(energydeal-crm-energetico|presupuestador-obra-bc3|erp-hosteleria-tpv-restaurantes|fiscalidad-plataforma-fiscal-contable|caso-reformas-de-excel-a-sistema|caso-energydeal-comercializadora-excel|caso-asesoria-archivo-digital-cliente-web|caso-hosteleria-tpv-inteligente-margen)/?$ { return 301 /soluciones/; }
+location ~ ^/recursos/caso-agencia-servicios-pipeline-automatizado/?$                    { return 301 /recursos/gestion-leads-agencia-sin-crm/; }
+location ~ ^/herramientas/cuanto-cuesta-una-pagina-web/?$                                { return 301 /webs/; }
+```
+
+La regla que hoy manda `/cases` a `/casos/` hay que sustituirla por la de arriba (si no, `/cases` → `/casos/` → `/` son dos saltos).
+Comprobación tras recargar: `curl -sI https://opspilot.es/casos/ | grep -i '^HTTP\|^location'` debe decir `301` a `https://opspilot.es/`,
+y lo mismo con `/productos/` (→ /soluciones/) y `/diseno-web-cordoba/` (→ /webs/). Con nginx sin tocar, esas URLs siguen devolviendo
+200 con la página de redirección de Astro (meta refresh), no un 404.
+
 ## Dónde está cada cosa
 
-- `src/pages/`: una página por ruta. Se conservan las 22 URLs publicadas y se añaden
-  /soluciones/{webs-y-tiendas,software-a-medida,automatizacion}/, /productos/, /productos/presupuesya/,
-  /productos/erp-hosteleria/ (noindex: decisión del equipo en `src/data/productPages.ts`),
-  /desarrollo-software-cordoba/, /diseno-web-cordoba/, /aviso-legal/, /privacidad/ y /cookies/.
-- `src/components/pantallas/`: réplicas de producto (ObraFácil, Córdoba Soluciona, PresupuesYa, J.R.,
-  EnergyDeal, ERP). Las activa `public/js/opspilot.js` por su `data-*`, una de cada tipo por página.
-- `src/data/`, `src/lib/resources.ts` y `src/lib/company.ts`: el contenido, igual que antes.
+- `src/pages/`: una página por ruta. Menú: /webs/, /soluciones/, /herramientas/ y /contacto/ (con las 9 herramientas en
+  `src/pages/herramientas/` y `src/data/herramientas.ts`). Además: la home, /recursos/ (guías, fuera del menú) y las legales.
+  `/webs/` y `/soluciones/` reúnen lo que antes eran siete páginas (ver «Reenfoque»).
+- `src/data/herramientas.ts`, `src/lib/resources.ts` y `src/lib/company.ts`: el contenido de las herramientas, las guías y la empresa.
 - `public/css/opspilot.css`: el sistema visual «horizonte artificial».
 - Cabecera de la home, «La mesa»: `src/components/CabeceraMesa.astro`, el dibujo se genera en la construcción en
   `src/lib/mesa.ts`, y solo la home carga `public/css/lamesa.css` y `public/js/lamesa.js` (los dos con `?v=`
@@ -58,7 +90,7 @@ La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta 
   componente, para quitarlo si el dueño decide no mostrarla. Si se quita, hay que revisar también la `description` de
   `src/pages/index.astro` (línea 13), que repite «precio cerrado desde 500 €» y «respuesta en menos de 24 h». Si `lamesa.js`
   no carga o falla al arrancar, la mesa se queda recogida (clase `sin-script`).
-- «Cuatro cosas que vemos cada semana» (`src/components/Problemas.astro`, también en `/soluciones/software-a-medida/`).
+- «Cuatro cosas que vemos cada semana» (`src/components/Problemas.astro`, solo en la home).
   Con JS la sección es interactiva y se ve como siempre: lista 01-04 a la izquierda y ventana a la derecha (en móvil, pestañas
   fijas y un problema cada vez). Si hay movimiento permitido y alto suficiente, además se queda fija: el bloque (`.pb-escena`)
   es `position:sticky` dentro de una pista alta (`.pb-pista`, en `svh`: la ventana más 4 pasos de 90 svh) y el scroll nativo
@@ -329,7 +361,7 @@ curl -sI https://opspilot.es/landing-oficial-24542/ | head -1        # → HTTP/
 curl -sI https://opspilot.es/recursos/slug-inexistente | head -1     # → HTTP/2 404
 
 # Las URLs del sitemap responden 200 directo, sin redirección
-curl -sI https://opspilot.es/casos/ | head -1                        # → HTTP/2 200
+curl -sI https://opspilot.es/webs/ | head -1                          # → HTTP/2 200
 curl -sI https://opspilot.es/soluciones/ | head -1                   # → HTTP/2 200
 ```
 
