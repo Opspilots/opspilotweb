@@ -50,11 +50,11 @@ const servicio = {
   url: `${SITE_URL}/soluciones/`,
 };
 ---
-<Base title="Software a medida y soluciones en Córdoba · OpsPilot"
-  description="Desarrollo de software a medida en Córdoba: citas, reservas, TPV, inventario, facturación y automatización de lo repetitivo. Precio cerrado y por fases."
+<Base title="Desarrollo de software a medida en Córdoba · OpsPilot"
+  description="Empresa de desarrollo de software a medida en Córdoba: citas, reservas, TPV, inventario, facturación y automatización. Precio cerrado y por fases."
   path="/soluciones/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
-  <CabeceraPagina titulo="Soluciones a medida: software y automatización en Córdoba"
-    entrada="Cuando ningún programa encaja con cómo trabajas, lo hacemos nosotros, alrededor de tu proceso. Con precio cerrado, por fases y sin parar tu negocio.">
+  <CabeceraPagina titulo="Desarrollo de software a medida y automatización en Córdoba"
+    entrada="Cuando ningún programa encaja con cómo trabajas, hacemos el desarrollo de software a medida alrededor de tu proceso. Con precio cerrado, por fases y sin parar tu negocio.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, necesito una solución a medida. Os cuento:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu proceso</a>
       <a class="enlace" href="/contacto/">Respuesta en menos de 24 h <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
@@ -65,7 +65,7 @@ const servicio = {
     <div class="wrap">
       <p class="etiqueta">Qué podemos construir</p>
       <h2 id="t-ejemplos" class="h2">Hacemos soluciones a medida. Algunos ejemplos.</h2>
-      <p class="lead">No son productos cerrados: son ejemplos de lo que se puede hacer. Cada proyecto se monta alrededor de tu forma de trabajar, con tu vocabulario y tus pasos.</p>
+      <p class="lead">No son productos cerrados: son ejemplos de lo que se puede hacer. Cada proyecto se monta alrededor de tu forma de trabajar, con tu vocabulario y tus pasos. También hacemos ERP y CRM a medida para pymes.</p>
       <div class="producto-ficha">
         {EJEMPLOS.map((x) => (
           <div class="pf"><svg class="ico" aria-hidden="true"><use href={`#i-${x.icono}`}/></svg><h3>{x.t}</h3><p>{x.p}</p></div>
