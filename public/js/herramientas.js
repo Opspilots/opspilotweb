@@ -4,7 +4,7 @@
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
   var num = function (el) { return parseFloat(String(el && el.value || '').replace(',', '.')) || 0; };
-  var eur = function (v) { return v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: 'always' }) + ' €'; };
+  var eur = function (v) { return v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: 'always' }) + ' €'; };
   var radio = function (f, n) { var r = $('input[name="' + n + '"]:checked', f); return r ? r.value : null; };
 
   /* ─── 1 · ¿Por qué no sales en Google Maps? ─── */
@@ -107,7 +107,7 @@
         '<td><select data-c="u" aria-label="Unidad"><option>ud</option><option>m²</option><option>m</option><option>m³</option><option>h</option><option>pa</option></select></td>' +
         '<td><input data-c="q" type="number" inputmode="decimal" step="0.01" min="0" aria-label="Cantidad"></td>' +
         '<td><input data-c="p" type="number" inputmode="decimal" step="0.01" min="0" aria-label="Precio"></td>' +
-        '<td class="pz-imp">0,00 €</td><td class="hz-noprint"><button type="button" class="pz-quitar" aria-label="Quitar partida">×</button></td>';
+        '<td class="pz-imp">0,00 €</td><td class="hz-noprint"><button type="button" class="pz-quitar" aria-label="Quitar partida">×</button></td>';
       $('[data-c="d"]', tr).value = p[0]; $('[data-c="u"]', tr).value = p[1]; $('[data-c="q"]', tr).value = p[2]; $('[data-c="p"]', tr).value = p[3];
       tb.appendChild(tr);
     };

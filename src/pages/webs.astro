@@ -11,7 +11,7 @@ import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../lib/sitio';
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Webs', path: '/webs/' }];
 const FAQ = [
-  { q: '¿Cuánto cuesta una página web en Córdoba?', a: 'Desde 500 €, con la ficha de Google incluida. El precio final depende de cuántas páginas hagan falta y de si vendes en línea. Te lo damos cerrado y por escrito antes de empezar, después de una primera conversación de 30 minutos en la que entendemos tu negocio.' },
+  { q: '¿Cuánto cuesta una página web en Córdoba?', a: 'Desde 500 €, con la ficha de Google incluida. El precio final depende de cuántas páginas hagan falta y de si vendes en línea. Te lo damos cerrado y por escrito antes de empezar, después de una primera conversación de 30 minutos en la que entendemos tu negocio.' },
   { q: '¿Me ayudáis a salir en Google en mi pueblo o en mi barrio?', a: 'Sí, y empieza por la estructura: una página propia para cada búsqueda real, la ficha de Google bien completada y el mismo nombre, dirección y teléfono en todas partes. Lo que no te vamos a prometer es un puesto concreto en Google: nadie honesto puede.' },
   { q: '¿Cómo sé si mi web actual está funcionando bien?', a: 'Revisa diez puntos: carga en menos de 3 segundos en el móvil con datos, teléfono o WhatsApp visibles sin bajar, se ve bien en el móvil, un objetivo claro por página, explica qué haces en la primera pantalla, sin enlaces rotos, aparece en Google por tu negocio más tu ciudad, tiene certificado SSL, el formulario funciona y se actualizó en el último año. Si falla en tres o más, está perdiendo clientes.' },
   { q: '¿De quién es la web cuando la terminamos?', a: 'Tuya. El código, el dominio y los datos son tuyos al terminar, y así lo dejamos por escrito en la propuesta.' },
@@ -32,7 +32,7 @@ const servicio = {
   description="Diseño web en Córdoba hecho a mano: una página por servicio y zona, tienda online y ficha de Google al día. Desde 500 €, con precio cerrado."
   path="/webs/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
   <CabeceraPagina titulo="Diseño web en Córdoba para que te encuentren"
-    entrada="Páginas web y tiendas online hechas a mano, con tu ficha de Google al día. Desde 500 €, con precio cerrado y por escrito.">
+    entrada="Páginas web y tiendas online hechas a mano, con tu ficha de Google al día. Desde 500 €, con precio cerrado y por escrito.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, quiero una web nueva. Os cuento:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu web</a>
       <a class="enlace" href="/contacto/">Respuesta en menos de 24 h <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
@@ -64,7 +64,7 @@ const servicio = {
       </div>
       <aside class="lateral">
         <div class="lateral-caja">
-          <p class="etiqueta">Desde 500 €</p>
+          <p class="etiqueta">Desde 500&nbsp;€</p>
           <p><b>Web y ficha de Google.</b> Precio cerrado y por escrito antes de empezar.</p>
           <a class="btn btn-verde" href={WA('Hola OpsPilot, quiero una web y mi ficha de Google. Os cuento:')} rel="noopener">Pedir precio</a>
         </div>

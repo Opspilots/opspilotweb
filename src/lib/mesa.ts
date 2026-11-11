@@ -16,7 +16,7 @@
 
 type Pos = [number, number, number, number];
 
-export const NAVY = '#0F1620', PAPEL = '#FFFDF6', TINTA = '#27303B', ROJO = '#C2402B', SOMBRA = '#0A0E14';
+export const NAVY = '#0F1620', PAPEL = '#F6F7F5', TINTA = '#27303B', ROJO = '#C2402B', SOMBRA = '#0A0E14';
 
 export const N = (v: number) => Math.round(v * 10) / 10;
 export const rng = (s: number) => () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
@@ -59,8 +59,8 @@ const libreta = () => {
   return G(
     srect(-140, -170, 280, 340, 6) + rc(-140, -170, 280, 340, '#F8DF76', 6) +
       [0, 1, 2, 3, 4, 5, 6, 7].map((i) => rc(-140, -92 + i * 34, 280, 1.6, '#D5B345')).join('') +
-      rc(-104, -138, 1.8, 308, '#D66B52') + rc(-140, -170, 280, 36, '#B8452E', 6) + rc(-140, -146, 280, 12, '#B8452E') +
-      [...Array(11)].map((_, i) => ci(-122 + i * 24.4, -152, 4, '#7E2C1B')).join('') +
+      rc(-104, -138, 1.8, 308, '#D66B52') + rc(-140, -170, 280, 36, '#3D5F8A', 6) + rc(-140, -146, 280, 12, '#3D5F8A') +
+      [...Array(11)].map((_, i) => ci(-122 + i * 24.4, -152, 4, '#2A4468')).join('') +
       tx(-94, -102, 21, 'Llamar al fontanero', TINTA, 600) + ln(mano(-96, -109, 108, R, 3), ROJO, 3) +
       tx(-94, -68, 21, 'Pedir material', TINTA, 600) +
       tx(-94, -34, 21, '¿Y la factura?', TINTA, 700) +
@@ -92,11 +92,11 @@ export const ticket = (w: number, h: number, t: string, sello: string) => {
 
 const presupuesto = () =>
   G(
-    srect(-120, -160, 240, 320, 3) + pa('M-120 -160H84L120 -124V160H-120Z', PAPEL) + pa('M84 -160L120 -124H84Z', '#D6D2C4') +
+    srect(-120, -160, 240, 320, 3) + pa('M-120 -160H84L120 -124V160H-120Z', PAPEL) + pa('M84 -160L120 -124H84Z', '#D3D8DD') +
       tx(-98, -118, 21, 'Presupuesto', TINTA, 800) + tx(-98, -92, 18, 'de la cocina', TINTA, 500) + rc(-98, -78, 196, 2.5, TINTA) +
       [0, 1, 2, 3, 4].map((i) => rc(-98, -60 + i * 24, 90 + ((i * 37) % 50), 7, '#B8BDC4', 2) + rc(54, -60 + i * 24, 44, 7, '#8F96A0', 2)).join('') +
       rc(-98, 62, 196, 2.5, TINTA) + tx(-98, 96, 21, 'Sin enviar', ROJO, 800) + ln('M-98 104q50 8 104-2', ROJO, 2.6) +
-      `<circle cx="66" cy="116" r="37" fill="none" stroke="#7A4A22" stroke-width="5" opacity=".4"/>`,
+      `<circle cx="66" cy="116" r="37" fill="none" stroke="#7C8590" stroke-width="5" opacity=".4"/>`,
   );
 
 export const movil = (w: number, h: number, c: string) =>
@@ -119,8 +119,8 @@ export const calc = () => {
   for (let f = 0; f < 4; f++)
     for (let c = 0; c < 4; c++) {
       const x = -72 + c * 38, y = -46 + f * 38, na = c === 3, i = f * 4 + c;
-      k += rc(x, y + 4, 32, 30, '#16202B', 6) + rc(x, y, 32, 30, na ? '#E7A93F' : '#F1ECDF', 6) +
-        (sim[i] ? tx(x + 16, y + 23, 22, sim[i], NAVY, 800, 'text-anchor="middle"') : ci(x + 16, y + 15, 3.2, '#A9A493'));
+      k += rc(x, y + 4, 32, 30, '#16202B', 6) + rc(x, y, 32, 30, na ? '#E7A93F' : '#E6EBF2', 6) +
+        (sim[i] ? tx(x + 16, y + 23, 22, sim[i], NAVY, 800, 'text-anchor="middle"') : ci(x + 16, y + 15, 3.2, '#9EA7B1'));
     }
   return G(
     srect(-88, -120, 176, 240, 14) + rc(-88, -120, 176, 240, '#2F4E8C', 14) + rc(-88, -120, 176, 8, '#4466AB', 4) + rc(-72, -100, 144, 40, '#C9D8B6', 5) +
@@ -130,8 +130,8 @@ export const calc = () => {
 
 export const taza = () =>
   G(
-    ci(8, 10, 70, SOMBRA, 'opacity=".26"') + rc(52, -13, 52, 26, '#EDE3CE', 12) + rc(58, -7, 40, 14, '#D6C9AC', 7) + ci(0, 0, 68, '#F5EFE2') + ci(0, 0, 58, '#E4DAC3') +
-      ci(0, 0, 50, '#5B3418') + ln('M-30 -24A40 40 0 0 1 8 -39', '#8A5A30', 5) + ci(16, 18, 5, '#7A4A28'),
+    ci(8, 10, 70, SOMBRA, 'opacity=".26"') + rc(52, -13, 52, 26, '#E6EBF2', 12) + rc(58, -7, 40, 14, '#C4CCD6', 7) + ci(0, 0, 68, '#F2F5F8') + ci(0, 0, 58, '#D8DFE7') +
+      ci(0, 0, 50, '#251F1C') + ln('M-30 -24A40 40 0 0 1 8 -39', '#4A3F39', 5) + ci(16, 18, 5, '#3A302B'),
   );
 
 /* la carpeta: los papeles sueltos (lm-fp) se encogen y se van al guardarla. Sus letras miden ≥ 18 u a escala .9 */
@@ -144,20 +144,20 @@ export const carpeta = () =>
         G(rc(60, -130, 150, 180, '#F8DF76', 3) + rc(76, -110, 100, 7, '#BFA044', 2) + rc(76, -92, 80, 7, '#BFA044', 2), 'transform="rotate(17)"'),
       'class="lm-fo lm-fp"',
     ) +
-      srect(-170, -110, 340, 230, 6) + pa('M-170 -110H-60L-40 -132H70L90 -110H170V120H-170Z', '#7E2C1B') + rc(-170, -104, 340, 224, '#B8452E', 6) + rc(-170, -104, 340, 5, '#D0634A') +
+      srect(-170, -110, 340, 230, 6) + pa('M-170 -110H-60L-40 -132H70L90 -110H170V120H-170Z', '#2A4468') + rc(-170, -104, 340, 224, '#3D5F8A', 6) + rc(-170, -104, 340, 5, '#5A7EAB') +
       rc(-92, -50, 184, 70, PAPEL, 3) + tx(0, -20, 22, 'Clientes', TINTA, 800, 'text-anchor="middle"') + tx(0, 8, 20, 'y papeles', TINTA, 500, 'text-anchor="middle"') +
-      rc(-170, 62, 340, 9, '#1C2733') + ln('M-150 108l14-4M-120 108l14-4M120 108l14-4M90 108l14-4', '#7E2C1B', 3),
+      rc(-170, 62, 340, 9, '#1C2733') + ln('M-150 108l14-4M-120 108l14-4M120 108l14-4M90 108l14-4', '#2A4468', 3),
   );
 
 export const boli = () =>
   G(
     rc(-120, -5, 240, 14, SOMBRA, 6, 'opacity=".24" transform="translate(4 6)"') + rc(-120, -7, 214, 14, NAVY, 5) + rc(-120, -7, 214, 4, '#34465A', 3) +
-      pa('M94 -7L122 0L94 7Z', '#E6E2D4') + pa('M114 -2L122 0L114 2Z', NAVY) + rc(-110, -12, 70, 5, '#9BA6B3', 2),
+      pa('M94 -7L122 0L94 7Z', '#E1E5EA') + pa('M114 -2L122 0L114 2Z', NAVY) + rc(-110, -12, 70, 5, '#9BA6B3', 2),
   );
 export const lapiz = () =>
   G(
     rc(-110, -5, 220, 14, SOMBRA, 4, 'opacity=".24" transform="translate(4 6)"') + rc(-92, -8, 176, 16, '#F2B735') + rc(-92, -8, 176, 5, '#F8D26F') + rc(-92, 3, 176, 5, '#D09319') +
-      rc(-112, -8, 20, 16, '#D66B52', 3) + rc(-96, -8, 8, 16, '#A9A493') + pa('M84 -8L112 0L84 8Z', '#EBC59A') + pa('M104 -2.3L112 0L104 2.3Z', TINTA),
+      rc(-112, -8, 20, 16, '#D66B52', 3) + rc(-96, -8, 8, 16, '#9EA7B1') + pa('M84 -8L112 0L84 8Z', '#EBC59A') + pa('M104 -2.3L112 0L104 2.3Z', TINTA),
   );
 export const postit = (c: string, t1: string, t2: string) =>
   G(
@@ -172,7 +172,7 @@ const llaves = () =>
       G(rc(-20, -68, 40, 44, '#51CB8A', 6), 'transform="rotate(10)"'),
   );
 /* stroke-opacity y no opacity: .lm-fo gobierna la propiedad opacity y pisaría un opacity="…" del propio elemento */
-const cerco = () => `<circle class="lm-fo" r="58" fill="none" stroke="#7A4A22" stroke-width="6" stroke-opacity=".38"/>`;
+const cerco = () => `<circle class="lm-fo" r="58" fill="none" stroke="#0F1620" stroke-width="6" stroke-opacity=".3"/>`;
 const posavasos = () => G(ci(5, 6, 84, SOMBRA, 'opacity=".22"') + ci(0, 0, 84, '#1C2733') + `<circle r="70" fill="none" stroke="#51CB8A" stroke-width="3"/>`);
 
 /* el móvil pequeño: un solo cuerpo, siempre opaco; lo que se cruza es el contenido de su pantalla, del lío (lm-fo) al «Al día» (lm-fi) */
@@ -192,17 +192,17 @@ export const mapa = (x: number, y: number, w: number, h: number, pin = '#1F7A4A'
 export const tiendita = (x: number, y: number, w: number) => {
   const u = w / 10;
   let t = '';
-  for (let i = 0; i < 5; i++) t += pa(`M${x + i * 2 * u} ${y + 2 * u}h${2 * u}v${1.6 * u}a${u} ${u} 0 0 1 ${-2 * u} 0z`, i % 2 ? PAPEL : '#B8452E');
-  return rc(x + u * 0.4, y + u, w - u * 0.8, u * 11, '#F6E7C8') + rc(x, y + u * 0.3, w, u * 1.7, '#7E2C1B') + t + rc(x + u, y + u * 5, u * 4.4, u * 7, '#BFDDEA') +
-    rc(x + u * 1.3, y + u * 7.6, u * 3.8, u * 0.5, '#7E2C1B') + rc(x + u * 6.2, y + u * 5, u * 2.8, u * 7, '#1F7A4A') + ci(x + u * 8.4, y + u * 8.4, u * 0.3, '#F2B735');
+  for (let i = 0; i < 5; i++) t += pa(`M${x + i * 2 * u} ${y + 2 * u}h${2 * u}v${1.6 * u}a${u} ${u} 0 0 1 ${-2 * u} 0z`, i % 2 ? PAPEL : '#1F7A4A');
+  return rc(x + u * 0.4, y + u, w - u * 0.8, u * 11, '#E6EBF2') + rc(x, y + u * 0.3, w, u * 1.7, '#14502F') + t + rc(x + u, y + u * 5, u * 4.4, u * 7, '#BFDDEA') +
+    rc(x + u * 1.3, y + u * 7.6, u * 3.8, u * 0.5, '#14502F') + rc(x + u * 6.2, y + u * 5, u * 2.8, u * 7, '#1F7A4A') + ci(x + u * 8.4, y + u * 8.4, u * 0.3, '#F2B735');
 };
 
 /* ───────── pantallas finales: una sola interfaz con los cuatro servicios ───────── */
 const pantallaD = () =>
   G(
     rc(0, 0, 640, 48, NAVY) + `<svg x="14" y="10" width="28" height="28" viewBox="0 0 100 100"><use href="#aro"/></svg>` + tx(50, 32, 21, 'Hoy en tu negocio', '#fff', 700) + G(ci(456, 24, 10, '#51CB8A') + ln('M451 24l4 4 8-9', NAVY, 2.6) + tx(626, 32, 18, 'Todo en un sitio', '#51CB8A', 700, 'text-anchor="end"'), 'class="lm-sello"') +
-      rc(0, 48, 640, 352, '#F4F4EF') +
-      rc(16, 62, 300, 186, '#fff', 6) + rc(16, 62, 300, 26, '#DDE2E7', 6) + ci(30, 75, 4, '#B8452E') + ci(43, 75, 4, '#E7A93F') + ci(56, 75, 4, '#51CB8A') + tx(74, 81, 16, 'Tu web', TINTA, 700) +
+      rc(0, 48, 640, 352, '#F2F4F6') +
+      rc(16, 62, 300, 186, '#fff', 6) + rc(16, 62, 300, 26, '#DDE2E7', 6) + ci(30, 75, 4, '#C2402B') + ci(43, 75, 4, '#E7A93F') + ci(56, 75, 4, '#51CB8A') + tx(74, 81, 16, 'Tu web', TINTA, 700) +
       rc(16, 88, 120, 160, '#2F4E8C') + tiendita(26, 110, 100) + tx(150, 120, 21, 'Lo que', NAVY, 800) + tx(150, 145, 21, 'ofreces', NAVY, 800) + rc(150, 158, 150, 6, '#B8BDC4', 2) + rc(150, 172, 120, 6, '#B8BDC4', 2) +
       rc(150, 192, 150, 38, '#1F7A4A', 6) + tx(225, 217, 16, 'Pide presupuesto', '#fff', 700, 'text-anchor="middle"') +
       rc(328, 62, 296, 186, '#fff', 6) + mapa(328, 62, 132, 186) + tx(472, 92, 18, 'Tu ficha', NAVY, 800) + tx(472, 114, 18, 'en Google', NAVY, 800) + tx(472, 142, 16, 'Abierto ahora', '#1F7A4A', 700) +
@@ -228,7 +228,7 @@ const portatil = () => {
 const pantallaM = () =>
   G(
     rc(-96, -188, 192, 40, NAVY) + `<svg x="-88" y="-180" width="24" height="24" viewBox="0 0 100 100"><use href="#aro"/></svg>` + tx(-58, -162, 14.5, 'Hoy en tu negocio', '#fff', 700) +
-      rc(-96, -148, 192, 350, '#F4F4EF') +
+      rc(-96, -148, 192, 350, '#F2F4F6') +
       rc(-90, -142, 180, 92, '#fff', 5) + rc(-90, -142, 64, 92, '#2F4E8C', 5) + G(tiendita(0, 0, 100), 'transform="translate(-86 -122) scale(.56)"') + tx(-18, -122, 15, 'Tu web', NAVY, 800) +
       rc(-18, -112, 96, 5, '#B8BDC4', 2) + rc(-18, -102, 72, 5, '#B8BDC4', 2) + rc(-18, -90, 102, 34, '#1F7A4A', 5) + tx(33, -68, 13, 'Presupuesto', '#fff', 700, 'text-anchor="middle"') +
       rc(-90, -44, 180, 86, '#fff', 5) + mapa(-90, -44, 70, 86) + tx(-12, -22, 15, 'Tu ficha', NAVY, 800) + tx(-12, -4, 15, 'en Google', NAVY, 800) + tx(-12, 18, 13, 'Abierto ahora', '#1F7A4A', 700) +
@@ -305,7 +305,7 @@ const SE_FUNDEN = {
    deja sitio a la carpeta (123 u de ancho) sin pisar el móvil, que empieza en x = 46. */
 const carpetaLado = () =>
   G(
-    srect(-110, -130, 220, 280, 6) + pa('M-110 -130H-34L-18 -152H46L62 -130H110V150H-110Z', '#7E2C1B') + rc(-110, -124, 220, 274, '#B8452E', 6) + rc(-110, -124, 220, 5, '#D0634A') +
+    srect(-110, -130, 220, 280, 6) + pa('M-110 -130H-34L-18 -152H46L62 -130H110V150H-110Z', '#2A4468') + rc(-110, -124, 220, 274, '#3D5F8A', 6) + rc(-110, -124, 220, 5, '#5A7EAB') +
       rc(-72, -56, 144, 64, PAPEL, 3) + rc(-54, -38, 108, 8, '#B8BDC4', 2) + rc(-54, -18, 76, 8, '#B8BDC4', 2) + rc(-110, 96, 220, 9, '#1C2733'),
   );
 /* [id del objeto, dibujo, posición con la mesa revuelta (escala 0 = aún no está), posición con la mesa recogida] */
@@ -323,7 +323,7 @@ const objeto = (id: string, t: Record<string, [Pos, Pos]>, f: Set<string>) => us
    Las vetas empiezan y acaban a la misma altura, así que el mosaico no deja costura. */
 const MADERA_W = 1440, MADERA_TABLA = 165, MADERA_N = 5;
 function madera(): string {
-  const tonos = ['#DBA369', '#CF9358', '#D79C60', '#D2975B', '#CB8E52'];
+  const tonos = ['#1C2635', '#1A2330', '#1D2837', '#192230', '#1B2533'];
   const R = rng(91);
   let s = '';
   for (let i = 0; i < MADERA_N; i++) {
@@ -335,13 +335,13 @@ function madera(): string {
       d += `M0 ${N(yy)}`;
       for (let q = 0; q < 5; q++) d += `Q${N(q * st + st / 2)} ${N(yy + (R() - 0.5) * am * 2)} ${N((q + 1) * st)} ${N(q === 4 ? yy : yy + (R() - 0.5) * am)}`;
     }
-    s += ln(d, '#A96F38', 1.4, 'opacity=".5"');
+    s += ln(d, '#2E3B4F', 1.4, 'opacity=".55"');
     if (i % 2 === 1) {
       const kx = R() * (MADERA_W - 60) + 30, ky = y + MADERA_TABLA * 0.3 + R() * MADERA_TABLA * 0.4;
-      s += `<ellipse cx="${N(kx)}" cy="${N(ky)}" rx="26" ry="9" fill="none" stroke="#8F5A2C" stroke-width="2" opacity=".55"/><ellipse cx="${N(kx)}" cy="${N(ky)}" rx="13" ry="4" fill="#8F5A2C" opacity=".55"/>`;
+      s += `<ellipse cx="${N(kx)}" cy="${N(ky)}" rx="26" ry="9" fill="none" stroke="#2E3B4F" stroke-width="2" opacity=".6"/><ellipse cx="${N(kx)}" cy="${N(ky)}" rx="13" ry="4" fill="#0F1620" opacity=".5"/>`;
     }
     /* canto entre tablas: línea oscura y reflejo claro */
-    s += rc(0, y + MADERA_TABLA - 2, MADERA_W, 3, '#8A5529', 0, 'opacity=".75"') + rc(0, y + MADERA_TABLA + 1, MADERA_W, 1.5, '#EBC08C', 0, 'opacity=".5"');
+    s += rc(0, y + MADERA_TABLA - 2, MADERA_W, 3, '#0A0E14', 0, 'opacity=".75"') + rc(0, y + MADERA_TABLA + 1, MADERA_W, 1.5, '#2E3B4F', 0, 'opacity=".6"');
   }
   return `<defs><pattern id="lm-madera" width="${MADERA_W}" height="${MADERA_TABLA * MADERA_N}" patternUnits="userSpaceOnUse">${s}</pattern></defs><rect width="100%" height="100%" fill="url(#lm-madera)"/>`;
 }
@@ -402,7 +402,7 @@ export function mesa(): Mesa {
     let xx = -20;
     for (let q = 0; q < 5; q++) { xx += 296; d += `Q${N(xx - 148)} ${N(yy + (R() - 0.5) * am * 2)} ${N(xx)} ${N(yy + (R() - 0.5) * am)}`; }
   }
-  const veta = `<path d="${d}" fill="none" stroke="#A96F38" stroke-width="1.4" stroke-linecap="round" opacity=".2" vector-effect="non-scaling-stroke"/>`;
+  const veta = `<path d="${d}" fill="none" stroke="#2E3B4F" stroke-width="1.4" stroke-linecap="round" opacity=".5" vector-effect="non-scaling-stroke"/>`;
 
   return { madera: madera(), defs, ancho, alto, veta };
 }
