@@ -4,7 +4,7 @@
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
   var num = function (el) { return parseFloat(String(el && el.value || '').replace(',', '.')) || 0; };
-  var eur = function (v) { return v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: 'always' }) + ' €'; };
+  var eur = function (v) { return v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: 'always' }) + ' €'; };
   var radio = function (f, n) { var r = $('input[name="' + n + '"]:checked', f); return r ? r.value : null; };
 
   /* ─── 1 · ¿Por qué no sales en Google Maps? ─── */
