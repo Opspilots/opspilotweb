@@ -145,7 +145,7 @@ main{overflow-x:clip}
 .res-lista li{display:flex;gap:.5rem;font-size:.84rem;color:#2B323D}
 .res-lista .ico{margin-top:.1rem;color:var(--verde-h)}
 .res-extra{margin-top:.55rem;font-size:.82rem;color:var(--ui-mut);font-style:italic}
-.cfg-sello{position:absolute;z-index:3;right:-2.2rem;top:-1.6rem;display:flex;align-items:center;gap:.6rem;background:#fff;color:var(--navy);padding:.6rem .8rem;border-radius:.6rem;box-shadow:0 16px 30px -14px rgb(4 8 14/.55);font-size:.8rem;line-height:1.2;rotate:3deg}
+.cfg-sello{position:absolute;z-index:3;right:-.8rem;top:-3.6rem;display:flex;align-items:center;gap:.6rem;background:#fff;color:var(--navy);padding:.6rem .8rem;border-radius:.6rem;box-shadow:0 16px 30px -14px rgb(4 8 14/.55);font-size:.8rem;line-height:1.2;rotate:3deg}
 .cfg-sello .ico{width:1.35rem;height:1.35rem;color:var(--verde-h)}
 .cfg-sello b{display:block;font-size:.95rem}
 
@@ -268,8 +268,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .xl-dialogo{position:absolute;left:14%;top:auto;bottom:2.6rem;width:min(82%,21rem);background:#fff;border-radius:.55rem;padding:.9rem 1rem .8rem;font-family:var(--display);font-size:.82rem;color:var(--ui-mut);box-shadow:0 24px 48px -16px rgb(10 14 20/.6),0 0 0 1px rgb(10 14 20/.08)}
 .xl-dialogo p:first-child{display:flex;align-items:center;gap:.45rem;color:var(--ui-ink);font-size:.92rem;margin-bottom:.35rem}
 .xl-dialogo .ico{color:var(--rojo)}
-.xl-bots{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.7rem}
-.xl-bots span{padding:.4rem .7rem;border-radius:.3rem;border:1px solid #D5D9E0;font-weight:650;color:var(--ui-ink)}
+.xl-bots{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.5rem;margin-top:.7rem}
+.xl-bots span{white-space:nowrap;padding:.4rem .7rem;border-radius:.3rem;border:1px solid #D5D9E0;font-weight:650;color:var(--ui-ink)}
 .xl-bots .on{background:var(--rojo);border-color:var(--rojo);color:#fff}
 @media (prefers-reduced-motion:no-preference){
   .js .pv:not(.sis) .xl-dialogo{animation:tiembla 4s var(--curva) 1s infinite}
@@ -381,7 +381,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .pie{background:var(--navy);color:var(--gris);padding-block:3.5rem 2rem;font-size:.97rem}
 .pie-in{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:2.5rem}
 .pie-marca p{max-width:32ch;margin-top:1rem}
-.pie-tit{font:600 .8rem/1 var(--display);color:#fff;margin-bottom:1rem}
+.pie-tit{font:600 .8rem/1.35 var(--display);color:#fff;margin-bottom:1rem}
 .pie address{font-style:normal;display:flex;flex-direction:column;gap:.6rem}
 .pie address a{display:inline-flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--texto-claro)}
 .pie-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
@@ -398,7 +398,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .btn-cab{margin-left:auto}
   .portada-in{grid-template-columns:minmax(0,1fr);gap:0;padding-block:2.25rem 0}
   .instrumento{--s:min(84vw,24rem);margin:3rem auto 3.5rem}
-  .cfg-sello{right:-.4rem;top:-1.9rem}
+  .cfg-sello{right:0;top:-3.6rem}
   .cfg-vista{height:25.5rem}
   .cfg-ops-2{grid-template-columns:minmax(0,1fr)}
   .cfg-garantia{font-size:.66rem}
@@ -481,14 +481,14 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .instrumento-sub{margin:1.5rem 0 1rem auto}
 }
 /* la propuesta (configurador) en su sección */
-.propuesta{background:var(--papel);color:var(--navy)}
+.propuesta{background:var(--papel);color:var(--navy);padding-top:clamp(4.5rem,8vw,6.5rem)}   /* sitio para el sello «6 a 8 semanas», que cuelga sobre el borde de la ventana */
 .propuesta .etiqueta{color:var(--navy)}
 .propuesta .lead{color:var(--gris-papel)}
 .propuesta-in{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1fr);gap:clamp(2rem,5vw,4.5rem);align-items:center}
 .propuesta .cfg-marco{margin-top:0;justify-self:end;width:100%}
 .propuesta-nota{display:flex;gap:.55rem;align-items:flex-start;max-width:34rem;margin-top:1.4rem;font-size:.92rem;color:var(--gris-papel)}
 .propuesta-nota .ico{margin-top:.15rem;color:var(--verde-h)}
-@media (max-width:1020px){.propuesta-in{grid-template-columns:minmax(0,1fr)}.propuesta .cfg-marco{justify-self:start;margin-top:.5rem}}
+@media (max-width:1020px){.propuesta-in{grid-template-columns:minmax(0,1fr)}.propuesta .cfg-marco{justify-self:start;margin-top:1.2rem}}
 /* secciones */
 .s-navy{background:var(--navy);color:var(--texto-claro)}
 .s-hondo{background:var(--hondo);color:var(--texto-claro)}
