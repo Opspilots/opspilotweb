@@ -77,18 +77,9 @@ main{overflow-x:clip}
 .v-titulo small{display:block;font:400 .7rem/1.2 var(--mono);color:var(--gris);margin-top:.15rem;white-space:nowrap}
 .puntos{display:inline-flex;gap:.35rem;flex:none}
 .puntos i{width:.62rem;height:.62rem;border-radius:50%;background:#CDD2D9}
-.v-barra-web{background:#E9ECF0;color:#48505C;font:400 .74rem/1.2 var(--mono);gap:.5rem}
-.v-barra-web .ico{width:.9rem;height:.9rem;color:#7B8491}
-.v-barra-web .url{flex:1;min-width:0;background:#fff;border-radius:99rem;padding:.38rem .8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:inset 0 0 0 1px rgb(10 14 20/.07)}
 .nota{position:absolute;z-index:6;max-width:18rem;background:var(--verde);color:var(--navy);border-radius:.55rem;padding:.8rem .95rem;font:500 .88rem/1.42 var(--display);box-shadow:0 18px 34px -16px rgb(4 8 14/.65)}
 .nota b{display:block;font:700 .64rem/1 var(--mono);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.45rem}
 .nota .enlace{margin-top:.6rem;display:flex;width:max-content}
-.toast{position:absolute;z-index:8;left:50%;bottom:1rem;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:#0d0d0d;color:#fff;font:600 .82rem/1.3 var(--display);padding:.6rem .9rem;border-radius:.5rem;box-shadow:0 12px 26px -12px rgb(0 0 0/.6);transition:opacity .3s var(--curva),transform .3s var(--curva);white-space:nowrap}
-.toast.on{opacity:1;transform:translate(-50%,0)}
-.cursor{position:absolute;z-index:9;left:0;top:0;width:1.35rem;height:1.35rem;pointer-events:none;opacity:0;transition:transform .7s var(--curva),opacity .3s;filter:drop-shadow(0 2px 3px rgb(0 0 0/.35))}
-.cursor.on{opacity:1}
-.cursor.clic{animation:clic .25s var(--curva)}
-@keyframes clic{50%{scale:.8}}
 @media (prefers-reduced-motion:no-preference){
   .flota{animation:flota 7s var(--curva) 2.2s infinite alternate}
   @keyframes flota{to{transform:translateY(-7px)}}
@@ -400,7 +391,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .pie-legal{margin-top:3rem;padding-top:1.25rem;border-top:1px solid rgb(255 255 255/.08);font:400 .74rem/1.4 var(--mono)}
 
 /* reducir movimiento: sin animación en los mensajes del chat ni transiciones en el configurador y los avisos */
-@media (prefers-reduced-motion:reduce){.msg{animation:none}.pb-int .pv-cara,.cfg-p,.cfg-p.activo,.toast{transition:none}}
+@media (prefers-reduced-motion:reduce){.msg{animation:none}.pb-int .pv-cara,.cfg-p,.cfg-p.activo{transition:none}}
 
 /* ─── TÁCTIL ≤ 767 px ─── */
 @media (max-width:767px){
@@ -415,7 +406,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .pv-cara{height:23rem}
   .seg button{padding:.4rem .5rem;font-size:.7rem}
   .pv-tit{display:none}
-  .pv .nota,.nota-caso{position:relative;right:auto;bottom:auto;top:auto;margin:-.6rem .8rem 0 auto;display:block}
+  .pv .nota{position:relative;right:auto;bottom:auto;top:auto;margin:-.6rem .8rem 0 auto;display:block}
   .app-correo{width:76%}.app-hoja{width:58%;top:30%}.app-chat{width:70%;top:50%}.app-pdf{width:56%;top:72%;right:4%}
   .alerta{bottom:.5rem;font-size:.68rem}
   .xl-tabla th:nth-child(6),.xl-tabla td:nth-child(6){display:none}
@@ -503,31 +494,17 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .s-navy{background:var(--navy);color:var(--texto-claro)}
 .s-hondo{background:var(--hondo);color:var(--texto-claro)}
 .s-papel{background:var(--papel);color:var(--navy)}
-.s-papel .etiqueta,.s-verde .etiqueta{color:var(--navy)}
-.s-verde{background:var(--verde);color:var(--navy)}
+.s-papel .etiqueta{color:var(--navy)}
 .s-navy .h2,.s-hondo .h2{color:#fff}
 .lead{font-size:clamp(1.05rem,1rem + .3vw,1.2rem);max-width:60ch;margin-top:1rem}
 .s-papel .lead{color:var(--gris-papel)}
 .enlace-claro{color:var(--verde)}
-.casos-mas{margin-top:1rem}
 /* bloque: texto + pantalla */
 .bloque{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(2rem,5vw,4.5rem);align-items:start;margin-top:clamp(2.5rem,5vw,4rem)}
 .bloque+.bloque{margin-top:clamp(3.5rem,6vw,5.5rem)}
-.bloque-inv{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}
-.bloque-inv>.bloque-texto{order:2}
-.bloque-texto h3{font-weight:760;font-size:clamp(1.4rem,1.1rem + 1vw,2rem);line-height:1.1;letter-spacing:-.018em;text-wrap:balance}
-.s-navy .bloque-texto h3,.s-hondo .bloque-texto h3{color:#fff}
-.bloque-texto p{margin-top:.8rem;max-width:52ch}
 .bloque-meta{font:700 .7rem/1 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--verde);margin-bottom:.8rem}
 .s-papel .bloque-meta{color:var(--verde-h)}
-.bloque-texto .enlace{margin-top:1.1rem}
-.caso-pantalla{position:relative}
-/* v6: en las subpáginas la nota va en el flujo, colgada del borde de la pantalla: absoluta pisaba el caso siguiente entre 768 y 1020 px y asomaba ~120 px en escritorio */
-.caso-pantalla .nota-caso{position:relative;top:auto;right:auto;bottom:auto;display:block;width:max-content;max-width:min(21rem,100%);margin:-2.2rem -1rem 0 auto}
-/* v5: al lado de un texto largo, la pantalla acompaña la lectura en vez de dejar un hueco debajo */
-@media (min-width:1021px) and (min-height:700px){.bloque .caso-pantalla{position:sticky;top:calc(var(--cab) + 1.5rem)}}
-@media (max-width:1020px){.bloque,.bloque-inv{grid-template-columns:minmax(0,1fr)}.bloque-inv>.bloque-texto{order:0}}
-@media (max-width:767px){.caso-pantalla .nota-caso{margin:-.6rem .8rem 0 auto}}
+@media (max-width:1020px){.bloque{grid-template-columns:minmax(0,1fr)}}
 /* lista con marca */
 .lista-ok{list-style:none;display:grid;gap:.6rem;margin-top:1.1rem}
 .lista-ok li{display:flex;gap:.6rem;align-items:flex-start}
@@ -543,17 +520,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .puerta p{color:var(--gris)}
 .puerta ul{list-style:none;display:grid;gap:.35rem;font-size:.92rem}
 .puerta ul li::before{content:"—";color:var(--verde);margin-right:.45rem}
-.puerta-caso{margin-top:auto;padding-top:.9rem;border-top:1px solid rgb(255 255 255/.1);font:400 .74rem/1.35 var(--mono);color:var(--gris)}
-.puerta-caso b{color:#fff;font-family:var(--display);font-size:.9rem}
 .puerta-ir{display:inline-flex;align-items:center;gap:.4rem;font-weight:700;color:var(--verde)}
 @media (max-width:1020px){.puertas{grid-template-columns:minmax(0,1fr)}}
-/* sectores */
-.sectores{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:.8rem;margin-top:2rem}
-.sector{padding:1rem 1.1rem;border-radius:.7rem;background:#fff;border:1px solid rgb(15 22 32/.08);scroll-margin-top:6rem}
-.sector h3{font-weight:720;font-size:1.05rem}
-.sector p{font-size:.9rem;color:var(--gris-papel);margin-top:.35rem}
-.sector a{display:inline-flex;margin-top:.6rem;font-weight:700;font-size:.88rem;color:var(--navy)}
-.sector-linea{display:inline-block;font:700 .62rem/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--verde-h);margin-bottom:.5rem}
 /* preguntas */
 .faq-in{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:clamp(2rem,5vw,4rem)}
 .faq{display:grid;gap:.5rem}
@@ -710,7 +678,6 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .pf h3{margin-top:0;font-size:clamp(1.1rem,1rem + .4vw,1.3rem);letter-spacing:-.01em}
 .pf p{margin-top:0;font-size:.98rem}
 @media (max-width:767px){.producto-ficha{grid-template-columns:minmax(0,1fr)}.pf p{font-size:.92rem}}
-.s-verde .lead{color:var(--navy);opacity:.85}
 
 /* ═══ v12 · herramientas gratis: cada una dentro de su ventana, como las pantallas de la web ═══ */
 .hz-gratis{display:flex;gap:.5rem;align-items:center;margin-top:1.2rem;font-size:.92rem;font-weight:600}
@@ -917,7 +884,6 @@ textarea.hz-texto{resize:vertical}
 @media (max-width:767px){
   .chip,
   .v-titulo small,
-  .v-barra-web,
   .nota b,
   .cfg-paso,
   .cfg-garantia,
@@ -950,8 +916,6 @@ textarea.hz-texto{resize:vertical}
   .ruta-aviso .ruta-et,
   .menu-movil-t,
   .bloque-meta,
-  .puerta-caso,
-  .sector-linea,
   .pasos li::before,
   .gm-lista em span,
   .pq-cab,
