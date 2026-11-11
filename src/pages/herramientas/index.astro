@@ -29,7 +29,7 @@ const lista = {
             {HERRAMIENTAS.filter((h) => h.grupo === g.id).map((h) => (
               <li><a href={`/herramientas/${h.slug}/`}>
                 <span class="empieza-sit">«{h.busqueda}»</span>
-                <span class="empieza-guia"><small>Gratis</small>{h.nombre}. {h.frase}</span>
+                <span class="empieza-guia"><small>Gratis</small>{/[?!.]$/.test(h.nombre) ? h.nombre : `${h.nombre}.`} {h.frase}</span>
                 <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
               </a></li>
             ))}
