@@ -49,7 +49,7 @@ export const ADDRESS = {
 /** Email de contacto público. Es TAMBIÉN el buzón al que FormSubmit entrega
  *  los formularios (ver lib/forms.ts) y el canal de ejercicio de derechos
  *  RGPD que se cita en la cláusula de consentimiento del embudo. */
-export const CONTACT_EMAIL = 'opspilot.contact@gmail.com';
+export const CONTACT_EMAIL = 'contacto@opspilot.es';
 
 /** Teléfono en sus tres formas. Se guardan las tres porque cada consumidor
  *  necesita una distinta y derivar unas de otras con `replace` es más frágil

@@ -1,85 +1,135 @@
 ---
+// /soluciones: reúne lo que estaba en software a medida, automatización, desarrollo de software en Córdoba y el ERP
+// (esas páginas se retiraron con 301, ver astro.config.mjs). Los ejemplos son GENÉRICOS: lo que se puede construir,
+// sin productos con nombre, demos ni clientes. Las respuestas salen de los artículos publicados
+// (cuando-pedir-software-a-medida-vs-estandar, como-pedir-presupuesto-de-software, migrar-de-excel-a-sistema-pyme,
+// automatiza-tu-negocio-sin-saber-de-tecnologia y asistentes-ia-productivos).
 import Base from '../../layouts/Base.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import PlanVuelo from '../../components/PlanVuelo.astro';
+import Faq from '../../components/Faq.astro';
 import Cierre from '../../components/Cierre.astro';
 import PorQue from '../../components/PorQue.astro';
-import { SECTORS } from '../../data/sectors';
-import Tramos, { type Tramo } from '../../components/Tramos.astro';
-import CordobaSoluciona from '../../components/pantallas/CordobaSoluciona.astro';
-import ErpHosteleria from '../../components/pantallas/ErpHosteleria.astro';
-import PresupuesYa from '../../components/pantallas/PresupuesYa.astro';
-import { LINEAS, migas, SITE_URL, WA } from '../../lib/sitio';
+import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../../lib/sitio';
 
-// Cada sector de la web anterior cae en una de las tres líneas. Se conserva su id como ancla
-// (/soluciones/#reformas…) para no romper enlaces antiguos.
-const LINEA_DE: Record<string, number> = { asesorias: 1, energia: 1, reformas: 1, agencias: 2, hosteleria: 1, pymes: 2, medida: 1 };
-
-// Las tres líneas como tramos: el síntoma con las palabras del dueño, lo que lleva y algo real que se puede tocar.
-const TRAMOS: Tramo[] = [
-  {
-    id: 'webs', nombre: 'Webs y tiendas online', sintoma: 'Me buscan en Google y sale otro.',
-    bg: '#2F5E3B', fg: '#FBFAF5', ac: '#FFC9A8',
-    titulo: 'Que te encuentren y te escriban, sin salir a buscarlos.',
-    texto: 'Una web hecha para lo que busca la gente de tu zona, y tu ficha de Google al día. Si vendes, con tienda o con el pedido directo a tu WhatsApp.',
-    lista: ['Una página por cada servicio y cada pueblo o barrio', 'Ficha de Google completa y reseñas respondidas', 'Tienda con carrito, o pedido por WhatsApp', 'Rápida en el móvil y medida antes de entregarla'],
-    datos: [{ cifra: 'Desde 500 €', que: 'precio cerrado y por escrito, con la mitad al empezar' }],
-    enlace: { url: '/soluciones/webs-y-tiendas/', texto: 'Ver webs y tiendas' },
-  },
-  {
-    id: 'software', nombre: 'Software a medida', sintoma: 'Lo tengo en el WhatsApp, en la libreta y en un Excel.',
-    bg: '#0D131C', fg: '#E9EEF4', ac: '#00FF6A',
-    titulo: 'Pedidos, clientes y facturas en un solo sitio.',
-    texto: 'Cuando ningún programa encaja con cómo trabajas, lo hacemos alrededor de tu forma de trabajar. Esta pantalla es nuestro ERP para hostelería: tócala.',
-    lista: ['Lo que hoy vive en cuatro sitios, en uno', 'Una pantalla con lo que hay que atender hoy', 'Cada persona ve y toca solo lo suyo', 'Precio cerrado antes de empezar'],
-    enlace: { url: '/soluciones/software-a-medida/', texto: 'Ver software a medida' },
-  },
-  {
-    id: 'automatizacion', nombre: 'Automatización', sintoma: 'Hago lo mismo a mano diez veces al día.',
-    bg: '#0E0E0E', fg: '#F4EFE6', ac: '#DD9717',
-    titulo: 'Lo repetitivo, hecho solo.',
-    texto: 'Presupuestos, recordatorios, documentos: lo que copias y pegas cada día lo hace el sistema, y una persona revisa lo que importa. Aquí, en PresupuesYa: dictas la partida y se crea sola.',
-    lista: ['Respuestas y recordatorios que salen solos', 'Datos que entran una vez y viajan solos', 'Documentos sin copiar y pegar'],
-    enlace: { url: '/soluciones/automatizacion/', texto: 'Ver automatización' },
-  },
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }];
+// Ejemplos de lo que se puede construir. Genéricos: cada proyecto se hace alrededor del proceso de quien lo pide.
+const EJEMPLOS = [
+  { icono: 'calendar-check', t: 'Asistente de citas', p: 'Tus clientes piden hora solos, a cualquier hora, y la agenda evita las dobles reservas.' },
+  { icono: 'calendar-days', t: 'Reservas', p: 'Mesas, pistas, clases o alquileres: reserva con confirmación y recordatorio al cliente.' },
+  { icono: 'credit-card', t: 'TPV', p: 'Cobrar, sacar el ticket y que cada venta descuente del stock y sume a la caja.' },
+  { icono: 'package', t: 'Inventario', p: 'Qué hay, qué falta y cuándo reponer, sin contar a mano.' },
+  { icono: 'receipt', t: 'Facturación', p: 'Facturas que salen del presupuesto aceptado, sin reescribir nada.' },
+  { icono: 'clock', t: 'Control horario', p: 'Fichaje desde el móvil y el registro de jornada listo para cuando te lo pidan.' },
+  { icono: 'file-text', t: 'Presupuestos', p: 'Plantillas con tus partidas y tus precios; el PDF sale con tu logo y se envía en un clic.' },
+  { icono: 'message-circle', t: 'WhatsApp automatizado', p: 'Respuesta a las preguntas que se repiten, y paso a una persona cuando la conversación lo pide.' },
+  { icono: 'bell', t: 'Recordatorios', p: 'Avisos por WhatsApp o correo: citas, cobros pendientes, presupuestos sin respuesta.' },
 ];
-const itemList = {
-  '@type': 'ItemList',
-  name: 'Soluciones de OpsPilot',
-  itemListElement: LINEAS.map((l, i) => ({ '@type': 'ListItem', position: i + 1, name: l.label, url: `${SITE_URL}${l.href}` })),
+const TAREAS = [
+  { icono: 'message-circle', t: 'Responder WhatsApp y consultas', antes: 'Consulta', despues: 'Cita en agenda', e: ['Respuestas automáticas a las preguntas que se repiten, escritas con tu tono.', 'Paso a una persona en cuanto la conversación se sale del guion.', 'Las citas que se cierran por chat entran solas en la agenda.'] },
+  { icono: 'file-text', t: 'Generar presupuestos', antes: 'Petición', despues: 'Presupuesto enviado', e: ['Plantillas de presupuesto por tipo de trabajo, con partidas reutilizables.', 'El documento se genera y se envía al cliente en un clic, con tu marca.', 'Aviso cuando un presupuesto lleva días sin respuesta, para que no se enfríe.'] },
+  { icono: 'keyboard', t: 'Meter datos a mano', antes: 'A mano', despues: 'Ficha creada', e: ['Los datos entran una sola vez y viajan solos entre las herramientas que ya usas.', 'Lectura automática de los documentos que hoy tecleas a mano.', 'Un registro de qué se ha creado y cuándo, para revisarlo si algo falla.'] },
+  { icono: 'bell', t: 'Recordatorios y seguimiento', antes: 'Sin seguimiento', despues: 'Aviso enviado', e: ['Avisos automáticos por email o WhatsApp según el momento de cada cliente.', 'Plantillas de mensaje editables, para no reescribir lo mismo cada vez.', 'Historial de qué se ha enviado a quién, sin buscarlo en el móvil.'] },
+];
+const FAQ = [
+  { q: '¿Cuándo compensa el software a medida frente a uno estándar?', a: 'Cuando tu proceso tiene reglas propias que ningún software estándar cubre, ni configurándolo, y esas reglas son el motivo real por el que ganas o pierdes dinero. Si un estándar resuelve el 80 % con una configuración razonable, ese 20 % restante rara vez justifica construir desde cero, y te lo diremos.' },
+  { q: '¿Cuánto tarda y cuánto cuesta?', a: 'En rangos orientativos: un proceso simple puede resolverse en 6 a 8 semanas, uno con varias integraciones en 3 o 4 meses, y un proyecto con varios módulos conectados puede llevar más. El precio te lo damos cerrado y por escrito cuando conocemos tu proceso, nunca antes.' },
+  { q: '¿Hay que parar el negocio para cambiar de Excel a un sistema?', a: 'No, si se hace por fases. Lo antiguo sigue funcionando en paralelo mientras lo nuevo se valida con datos reales, y solo se apaga el Excel cuando el sistema ya ha demostrado que funciona con tu operativa de verdad.' },
+  { q: '¿De quién es el código y los datos al terminar?', a: 'Tuyos. Es la primera pregunta que conviene hacer a cualquiera que te presupueste software, y la respuesta correcta siempre es la misma.' },
+  { q: '¿Y después de entregarlo?', a: 'Nos quedamos. Montamos tu sistema y seguimos ahí cuando nos necesites; cómo y cuánto cuesta el mantenimiento se acuerda por escrito antes de empezar, no después.' },
+  { q: '¿Se puede automatizar un negocio sin saber de tecnología?', a: 'Sí. No necesitas saber programar: necesitas conocer bien tu proceso actual. Nosotros ponemos la parte técnica; tú nos cuentas qué haces cada día y dónde se te va el tiempo.' },
+  { q: '¿La IA se equivoca?', a: 'Sí, y lo hace con el mismo tono seguro con el que acierta. Por eso todo lo que afecta a dinero, contratos o datos legales lleva un punto de revisión humana antes de salir.' },
+  { q: '¿Solo trabajáis con empresas de Córdoba?', a: 'No. Estamos en Córdoba y trabajamos con pymes de toda España; la mayor parte del trabajo se hace a distancia sin problema.' },
+];
+const servicio = {
+  '@type': 'Service',
+  name: 'Desarrollo de software a medida y automatización',
+  serviceType: 'Desarrollo de software a medida para pymes',
+  provider: { '@id': ORG_ID },
+  areaServed: [{ '@type': 'City', name: 'Córdoba' }, { '@type': 'Country', name: 'España' }],
+  url: `${SITE_URL}/soluciones/`,
 };
 ---
-<Base title="Webs, software a medida y automatización · OpsPilot"
-  description="Tres formas de poner orden en tu negocio: webs y tiendas que venden, software a medida y automatización de lo repetitivo. Desde Córdoba, con precio cerrado."
-  path="/soluciones/" jsonld={[migas([{ nombre: 'Inicio', path: '/' }, { nombre: 'Soluciones', path: '/soluciones/' }]), itemList]}>
-  <CabeceraPagina sobre="Soluciones" titulo="Soluciones de digitalización para tu negocio"
-    entrada="Que te encuentren, tenerlo todo en un sitio o quitarte de encima lo repetitivo. Con precio cerrado y desde Córdoba.">
+<Base title="Desarrollo de software a medida en Córdoba · OpsPilot"
+  description="Empresa de desarrollo de software a medida en Córdoba: citas, reservas, TPV, inventario, facturación y automatización. Precio cerrado y por fases."
+  path="/soluciones/" jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
+  <CabeceraPagina titulo="Desarrollo de software a medida y automatización en Córdoba"
+    entrada="Cuando ningún programa encaja con cómo trabajas, hacemos el desarrollo de software a medida alrededor de tu proceso. Con precio cerrado, por fases y sin parar tu negocio.">
     <div class="acciones">
-      <a class="btn btn-tinta" href={WA('Hola OpsPilot, he visto vuestras soluciones y quería consultaros:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, necesito una solución a medida. Os cuento:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu proceso</a>
+      <a class="enlace" href="/contacto/">Respuesta en menos de 24 h <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
     </div>
   </CabeceraPagina>
 
-  <Tramos tramos={TRAMOS} idSeccion="lineas" etiqueta="Tres líneas" titulo="¿Qué te está pasando?" lead="Elige lo que más se parezca a tu día a día. Cada línea, con algo real que puedes tocar.">
-    <CordobaSoluciona slot="v-webs" />
-    <ErpHosteleria slot="v-software" />
-    <PresupuesYa slot="v-automatizacion" />
-  </Tramos>
-
-  <section class="s-papel" aria-labelledby="t-sectores">
+  <section class="s-navy" id="ejemplos" aria-labelledby="t-ejemplos">
     <div class="wrap">
-      <p class="etiqueta">Por sector</p>
-      <h2 id="t-sectores" class="h2">¿Tu sector? Te decimos por dónde empezar.</h2>
-      <ul class="sectores-fila">
-        {SECTORS.map((s) => {
-          const l = LINEAS[LINEA_DE[s.id] ?? 1];
-          return <li id={s.id}><a href={l.href}>{s.title}<small>{l.corto}</small></a></li>;
-        })}
-      </ul>
-      <p class="lead">Si el tuyo no está, cuéntanos cómo trabajas: lo que importa es tu proceso, no la etiqueta.</p>
+      <p class="etiqueta">Qué podemos construir</p>
+      <h2 id="t-ejemplos" class="h2">Hacemos soluciones a medida. Algunos ejemplos.</h2>
+      <p class="lead">No son productos cerrados: son ejemplos de lo que se puede hacer. Cada proyecto se monta alrededor de tu forma de trabajar, con tu vocabulario y tus pasos. También hacemos ERP y CRM a medida para pymes.</p>
+      <div class="producto-ficha">
+        {EJEMPLOS.map((x) => (
+          <div class="pf"><svg class="ico" aria-hidden="true"><use href={`#i-${x.icono}`}/></svg><h3>{x.t}</h3><p>{x.p}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="s-papel" id="todo-en-un-sitio" aria-labelledby="t-todo">
+    <div class="wrap lectura-in">
+      <div class="prosa">
+        <h2 id="t-todo">Todo en un sitio: un sistema a medida para tu negocio</h2>
+        <p>La mayoría de las pymes que nos llaman tienen el mismo síntoma: la información vive en cuatro sitios que no cuadran entre sí. Un programa para facturar, un Excel para los presupuestos, el correo para los pedidos y WhatsApp para todo lo demás. Cada herramienta funciona por separado; el problema está en los huecos entre ellas, que es donde se pierden los datos, el tiempo y a veces el margen.</p>
+        <p>Nuestro trabajo es cerrar esos huecos. Lo que suele llamarse un ERP a medida: clientes, pedidos, stock, facturas y personal conectados entre sí, con una pantalla de lo que hay que atender hoy y con cada persona viendo y tocando solo lo suyo.</p>
+        <h2>Cuándo compensa un software a medida</h2>
+        <p>Cuando tu proceso tiene reglas propias que ningún programa del mercado cubre, ni configurándolo. Si uno estándar te resuelve el 80 % con una configuración razonable, te lo diremos: construir desde cero ese 20 % restante rara vez compensa. Lo explicamos con más calma en <a href="/recursos/cuando-pedir-software-a-medida-vs-estandar/">cuándo pedir software a medida o estándar</a>.</p>
+        <h2>Qué necesitamos de ti para empezar</h2>
+        <p>Menos de lo que parece. No hace falta que traigas un documento técnico ni que sepas qué tecnología quieres: eso es cosa nuestra. Nos sirve entender tu día a día:</p>
+        <ul>
+          <li>Cómo trabajas hoy, paso a paso, desde que entra un cliente o un pedido hasta que se cobra.</li>
+          <li>Qué herramientas usas y dónde vive cada dato: el Excel, el programa de facturación, el correo, el grupo de WhatsApp.</li>
+          <li>Un par de ejemplos reales: un presupuesto, un albarán, una hoja que se rompe a menudo.</li>
+          <li>Quién va a usar el sistema y qué necesita ver cada persona.</li>
+        </ul>
+        <p>De esa primera conversación te llevas algo útil aunque no sigamos: qué procesos te están costando dinero, cuáles no merece la pena tocar y, si encaja, una propuesta con alcance, precio cerrado y plazo por escrito.</p>
+      </div>
+      <aside class="lateral">
+        <div class="lateral-caja">
+          <p class="etiqueta">En 30 minutos</p>
+          <p><b>Cuéntanos cómo trabajas hoy.</b> Te decimos qué haríamos y cuánto cuesta, por escrito.</p>
+          <a class="btn btn-verde" href="/contacto/">Contactar</a>
+        </div>
+        <div class="lateral-caja">
+          <p class="etiqueta">Para leer antes</p>
+          <p><a href="/recursos/como-pedir-presupuesto-de-software/" style="color:#fff">Cómo pedir presupuesto de software</a></p>
+          <p><a href="/recursos/migrar-de-excel-a-sistema-pyme/" style="color:#fff">Migrar de Excel a un sistema</a></p>
+          <p><a href="/recursos/senales-pyme-necesita-sistema-de-gestion/" style="color:#fff">Señales de que necesitas un sistema</a></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="s-navy" id="automatizacion" aria-labelledby="t-tareas">
+    <div class="wrap">
+      <p class="etiqueta">Automatización</p>
+      <h2 id="t-tareas" class="h2">Cuatro tareas que no deberías hacer a mano.</h2>
+      <p class="lead">Copiar datos de una hoja a otra, contestar lo mismo por WhatsApp, perseguir un presupuesto sin respuesta. Eso lo puede hacer un sistema, con una persona revisando lo que importa.</p>
+      <div class="producto-ficha">
+        {TAREAS.map((t) => (
+          <div class="pf">
+            <svg class="ico" aria-hidden="true"><use href={`#i-${t.icono}`}/></svg>
+            <div>
+              <h3>{t.t}</h3>
+              <p><b style="color:#fff">{t.antes}</b> → <b style="color:var(--verde)">{t.despues}</b></p>
+              <ul class="lista-ok">{t.e.map((x) => <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>{x}</span></li>)}</ul>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
 
   <PorQue />
   <PlanVuelo />
+  <Faq items={FAQ} titulo="Lo que suelen preguntarnos sobre soluciones a medida." />
   <Cierre />
 </Base>

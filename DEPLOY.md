@@ -18,33 +18,60 @@ Construcción de revisión que no se indexa: `PUBLIC_NOINDEX=1 npm run build`.
 ## Despliegue
 
 Igual que antes: `.github/workflows/deploy.yml` construye en cada push a `main` y sube `dist/` por
-rsync a `/var/www/opspilotweb/dist/` (nginx, VPS de ObraFácil). **Mergear a main = publicar.**
+rsync a `/var/www/opspilotweb/dist/` (nginx, VPS). **Mergear a main = publicar.**
 
-## nginx: no hace falta tocarlo (revisado en solo lectura el 25-sep)
+## nginx: qué tiene y qué hay que añadir (ver Reenfoque)
 
-La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta a ella:
+La configuración de opspilot.es ya tenía (revisada en solo lectura el 25-sep) casi todo lo necesario y la web nueva se adapta a ella.
+Lo que falta son las redirecciones del reenfoque, el bloqueo de ficheros ocultos y el cambio de `/product`: están en un ÚNICO bloque
+copiable, en «Despliegue en Nginx (VPS)» más abajo. Lo que ya hay:
 - `error_page 404 /404/index.html` + `try_files $uri $uri/ =404`: `scripts/postbuild.mjs` copia
   `dist/404.html` a `dist/404/index.html`.
 - 301 de /services, /servicios, /contact, /demo, /diagnostico, /pricing y /precios → /contacto/;
-  /cases → /casos/; /resources y /product → /recursos/. Las redirecciones de `astro.config.mjs`
-  apuntan al mismo sitio (solo actúan si algún día cambia el servidor).
+  /resources y /product → /recursos/ (medido en producción el 11-nov-2026; /cases → /casos/ ya no sirve, ver «Reenfoque»).
+  Las redirecciones de `astro.config.mjs` apuntan al mismo sitio, pero son páginas con meta refresh, NO un 301: el 301
+  real solo existe si está en nginx (ver «Reenfoque»).
+- La CSP está en enforce en producción (cabecera `Content-Security-Policy`, comprobado el 11-nov-2026).
 - `.css`/`.js` con `Cache-Control: public, immutable` 30 días: como estos ficheros no llevan hash en
   el nombre, se les añade `?v=<hash del contenido>` con `version()` de `src/lib/version.ts`: lo usan
   `src/layouts/Base.astro` (`opspilot.css` y `opspilot.js`), `CabeceraMesa.astro` (`lamesa.css` y `lamesa.js`), `CabeceraPagina.astro`
-  (`cabecera-pagina.css`), `Problemas.astro` (`problemas.css` y `problemas.js`) y `Recorrido.astro` / `Tramos.astro` (`recorrido.js`);
+  (`cabecera-pagina.css`), `Problemas.astro` (`problemas.css` y `problemas.js`);
   un `.css`/`.js` nuevo que se cargue con `<link>` o `<script>` tiene que pasar por esa función. **Ojo con fuentes e
   imágenes**: también son inmutables; si se cambia una, cambiar su NOMBRE, no sobrescribirla.
 - `.html` sin caché: cada despliegue se ve al momento.
 
+## Reenfoque (11-nov-2026): páginas retiradas y redirecciones
+
+La web pasa a explicar «digitalización y webs para negocios»: menú Webs · Soluciones · Herramientas · Contacto. Páginas retiradas
+y su destino (las mismas reglas están en `astro.config.mjs` y en `public/.htaccess`):
+
+| Antes | Ahora |
+|---|---|
+| /productos/, /productos/erp-hosteleria/, /productos/presupuesya/ | /soluciones/ |
+| /casos/, /cases/ | / |
+| /soluciones/webs-y-tiendas/, /diseno-web-cordoba/ | /webs/ |
+| /soluciones/software-a-medida/, /soluciones/automatizacion/, /desarrollo-software-cordoba/ | /soluciones/ |
+| cuatro guías de producto de /recursos/ y los casos «ilustrativos» de octubre | /soluciones/ (la de leads, a su guía) |
+| /herramientas/cuanto-cuesta-una-pagina-web/ | /webs/ |
+
+**Cómo se sirven.** `astro.config.mjs` (`redirects`) genera, por cada una, una página estática con `<meta http-equiv="refresh">` y
+canonical al destino: sirve como red de seguridad, pero **no es un 301** y no traspasa la autoridad SEO. `public/.htaccess` tiene los
+301 equivalentes, pero producción usa nginx y lo ignora. **El 301 real exige editar el `server {}` de opspilot.es en nginx** (no está
+en el repo; hay que hacerlo a mano, con copia de seguridad y `sudo nginx -t` antes de recargar). Hay UN solo bloque, el de
+«Despliegue en Nginx (VPS)» más abajo: las reglas van como `rewrite` a nivel de `server`, con destino absoluto y ANTES del `rewrite` de la
+barra final, y sustituyen a las `location` antiguas (`/cases` → `/casos/`, `/product` → `/productos/`, etc.): hay que borrar esas
+`location`, no dejarlas junto a las nuevas. Los tres sitios (`astro.config.mjs`, `public/.htaccess` y ese bloque) deben tener las mismas
+reglas: si cambias una, cambia las otras dos.
+
+Con nginx sin tocar, esas URLs siguen devolviendo 200 con la página de redirección de Astro (meta refresh), no un 301 ni un 404.
+La comprobación tras recargar está en «Verificación de redirects».
+
 ## Dónde está cada cosa
 
-- `src/pages/`: una página por ruta. Se conservan las 22 URLs publicadas y se añaden
-  /soluciones/{webs-y-tiendas,software-a-medida,automatizacion}/, /productos/, /productos/presupuesya/,
-  /productos/erp-hosteleria/ (noindex: decisión del equipo en `src/data/productPages.ts`),
-  /desarrollo-software-cordoba/, /diseno-web-cordoba/, /aviso-legal/, /privacidad/ y /cookies/.
-- `src/components/pantallas/`: réplicas de producto (ObraFácil, Córdoba Soluciona, PresupuesYa, J.R.,
-  EnergyDeal, ERP). Las activa `public/js/opspilot.js` por su `data-*`, una de cada tipo por página.
-- `src/data/`, `src/lib/resources.ts` y `src/lib/company.ts`: el contenido, igual que antes.
+- `src/pages/`: una página por ruta. Menú: /webs/, /soluciones/, /herramientas/ y /contacto/ (con las 9 herramientas en
+  `src/pages/herramientas/` y `src/data/herramientas.ts`). Además: la home, /recursos/ (guías, fuera del menú) y las legales.
+  `/webs/` y `/soluciones/` reúnen lo que antes eran siete páginas (ver «Reenfoque»).
+- `src/data/herramientas.ts`, `src/lib/resources.ts` y `src/lib/company.ts`: el contenido de las herramientas, las guías y la empresa.
 - `public/css/opspilot.css`: el sistema visual «horizonte artificial».
 - Cabecera de la home, «La mesa»: `src/components/CabeceraMesa.astro`, el dibujo se genera en la construcción en
   `src/lib/mesa.ts`, y solo la home carga `public/css/lamesa.css` y `public/js/lamesa.js` (los dos con `?v=`
@@ -58,7 +85,7 @@ La configuración de opspilot.es ya tiene lo necesario y la web nueva se adapta 
   componente, para quitarlo si el dueño decide no mostrarla. Si se quita, hay que revisar también la `description` de
   `src/pages/index.astro` (línea 13), que repite «precio cerrado desde 500 €» y «respuesta en menos de 24 h». Si `lamesa.js`
   no carga o falla al arrancar, la mesa se queda recogida (clase `sin-script`).
-- «Cuatro cosas que vemos cada semana» (`src/components/Problemas.astro`, también en `/soluciones/software-a-medida/`).
+- «Cuatro cosas que vemos cada semana» (`src/components/Problemas.astro`, solo en la home).
   Con JS la sección es interactiva y se ve como siempre: lista 01-04 a la izquierda y ventana a la derecha (en móvil, pestañas
   fijas y un problema cada vez). Si hay movimiento permitido y alto suficiente, además se queda fija: el bloque (`.pb-escena`)
   es `position:sticky` dentro de una pista alta (`.pb-pista`, en `svh`: la ventana más 4 pasos de 90 svh) y el scroll nativo
@@ -192,6 +219,9 @@ Si el sitio se hospeda en un VPS con Nginx, las reglas de `.htaccess` no aplican
 > Si pegas esto tal cual encima de tu configuración, tiras el TLS y el sitio deja de
 > servirse. **Copia solo los bloques marcados y respeta el orden.**
 >
+> ⚠️ **Este bloque va SOLO dentro del `server {}` de opspilot.es.** El VPS tiene más servicios: nunca lo pongas en un
+> snippet compartido, en `nginx.conf` ni en el `default_server`, o aplicarías estas reglas (y el `=404`) a sitios que no son este.
+>
 > Nota: `listen 443 ssl http2;` está deprecado desde nginx 1.25.1 y hace que `nginx -t`
 > escupa un warning. La forma actual es `listen 443 ssl;` más una línea `http2 on;`.
 
@@ -200,33 +230,38 @@ server {
   listen 443 ssl;
   http2 on;                    # nginx >= 1.25.1 (antes: `listen 443 ssl http2;`)
   server_name opspilot.es;
-  root /var/www/opspilot/dist;
+  root /var/www/opspilotweb/dist;   # misma ruta que `remote_path` en .github/workflows/deploy.yml
   index index.html;
 
-  # ── Redirects 301 legacy → destino FINAL ──
-  # Preserva el SEO de URLs antiguas que Google ya pueda haber indexado.
-  # Van al destino final y CON barra: si apuntaran a /servicios o /productos
-  # encadenarían un segundo 301 (esos stubs solo existen para redirigir), y si
-  # apuntaran sin barra encadenarían el 301 que añade la barra. Un salto, no tres.
-  # El `/?$` NO es adorno: con `location = /services` (match exacto) la variante
-  # `/services/` no entraría aquí, caería en el `try_files` de abajo y devolvería
-  # 404 — justo las URLs antiguas cuya autoridad queremos conservar. El .htaccess
-  # sí las cubría (`^services/?$`). Las regex se evalúan ANTES que el prefijo `/`.
-  location ~ ^/(services|servicios|contact|demo|diagnostico|pricing|precios)/?$ { return 301 /contacto/; }
-  location ~ ^/cases/?$                                                        { return 301 /casos/; }
-  location ~ ^/resources/?$                                                    { return 301 /recursos/; }
+  # ── Ficheros ocultos: nada de .htaccess, .git, .env… (/.well-known/ sigue abierto) ──
+  # Sin esto https://opspilot.es/.htaccess se lee en público (dist/ lo contiene).
+  location ~ /\.(?!well-known) { deny all; }
 
-  # /product (EN) apunta al hub de productos, NO al blog.
-  # ⚠️ NO añadas aquí `productos`. Hasta 2026-07-27 esta regla mandaba también
-  # /productos a /recursos/, porque los productos vivían como artículos del
-  # blog. Ya no: /productos/ es una página real. Como esta redirección es de
-  # servidor y corre ANTES que React, dejarla puesta hace que el hub sea
-  # inalcanzable en producción — y no se detecta en local, porque el servidor
-  # de desarrollo de Vite no aplica ni este bloque ni el .htaccess.
-  location ~ ^/product/?$                                                      { return 301 /productos/; }
+  # ── Redirects 301 → destino FINAL, ABSOLUTO y CON barra ──
+  # Mismas reglas que `redirects` en astro.config.mjs y que public/.htaccess.
+  # Preserva el SEO de URLs antiguas que Google ya pueda haber indexado.
+  #
+  # POR QUÉ `rewrite … permanent` A NIVEL DE `server` Y NO `location … { return 301 }`:
+  # el `rewrite ^(/[^.]*[^/])$ $1/ permanent;` de más abajo también está a nivel de server y se
+  # ejecuta ANTES de elegir location. Con una `location` para /casos, la petición a /casos (sin
+  # barra) la atrapaba ese rewrite primero: 301 a /casos/ y, desde ahí, otro 301 a /. Dos saltos.
+  # Estas reglas, en cambio, se evalúan en orden con el resto de directivas del server y la primera
+  # que casa corta: por eso TODAS van antes de ese rewrite. El `/?$` cubre la URL con y sin barra, y
+  # el destino absoluto (https://opspilot.es/…) no depende de qué host o esquema llegó la petición.
+  # No dejes `location` antiguas para estas rutas (p. ej. `/cases` → `/casos/` o `/product` → `/productos/`):
+  # borra las que haya y deja solo estas.
+  rewrite ^/(services|servicios|contact|demo|diagnostico|pricing|precios)/?$ https://opspilot.es/contacto/ permanent;
+  rewrite ^/(resources|product)/?$                                           https://opspilot.es/recursos/ permanent;
+  rewrite ^/(cases|casos)/?$                                                 https://opspilot.es/ permanent;
+  rewrite ^/productos(/(erp-hosteleria|presupuesya))?/?$                     https://opspilot.es/soluciones/ permanent;
+  rewrite ^/(soluciones/webs-y-tiendas|diseno-web-cordoba)/?$                https://opspilot.es/webs/ permanent;
+  rewrite ^/(soluciones/(software-a-medida|automatizacion)|desarrollo-software-cordoba)/?$ https://opspilot.es/soluciones/ permanent;
+  rewrite ^/recursos/(energydeal-crm-energetico|presupuestador-obra-bc3|erp-hosteleria-tpv-restaurantes|fiscalidad-plataforma-fiscal-contable|caso-reformas-de-excel-a-sistema|caso-energydeal-comercializadora-excel|caso-asesoria-archivo-digital-cliente-web|caso-hosteleria-tpv-inteligente-margen)/?$ https://opspilot.es/soluciones/ permanent;
+  rewrite ^/recursos/caso-agencia-servicios-pipeline-automatizado/?$         https://opspilot.es/recursos/gestion-leads-agencia-sin-crm/ permanent;
+  rewrite ^/herramientas/cuanto-cuesta-una-pagina-web/?$                     https://opspilot.es/webs/ permanent;
 
   # ── Rutas estáticas + 404 REAL ──
-  # La web es SSG (vite-react-ssg, dirStyle 'nested'): TODA ruta real existe como
+  # La web es estática (Astro, `build.format: 'directory'`): TODA ruta real existe como
   # dist/<ruta>/index.html, así que no hace falta ningún fallback a /index.html.
   #
   # El `=404` es el punto crítico y la razón de ser de este bloque. Con el antiguo
@@ -238,9 +273,9 @@ server {
   # páginas reales del sitio estaban indexadas.
   #
   # La barra final importa: los canonical, el sitemap y los hreflang declaran
-  # TODOS la forma CON barra (/casos/), porque es lo que el servidor sirve hoy.
-  # Hecho verificado el 2026-07-26 contra producción: pedir https://opspilot.es/casos
-  # acaba en https://opspilot.es/casos/ (hay una redirección real de por medio).
+  # TODOS la forma CON barra (/webs/), porque es lo que el servidor sirve hoy.
+  # Hecho verificado el 2026-07-26 contra producción: pedir https://opspilot.es/webs
+  # acaba en https://opspilot.es/webs/ (hay una redirección real de por medio).
   #
   # Ese 301 lo emite hoy la configuración actual, que NO es exactamente este
   # bloque. `try_files $uri $uri/` por sí solo puede resolver el directorio con un
@@ -249,13 +284,14 @@ server {
   # dependiente-de-nada lo que hoy ocurre por configuración heredada.
   #
   # Si prefieres no añadirlo, COMPRUEBA primero que el 301 sigue vivo:
-  #   curl -sI https://opspilot.es/casos | head -1     # debe decir 301
+  #   curl -sI https://opspilot.es/webs | head -1      # debe decir 301
   #
   # El `[^.]*` es CRÍTICO, no una optimización: excluye cualquier ruta que
   # contenga un punto, es decir todos los ficheros con extensión. Sin él, la
-  # regla capturaría también /assets/app-JSd3VJND.js, /favicon.svg, /robots.txt
+  # regla capturaría también /css/opspilot.css, /favicon.svg, /robots.txt
   # y /sitemap.xml, y los redirigiría a una URL con barra que devuelve 404 —
   # tirando la web entera (sin JS ni CSS) además del sitemap y el robots.
+  # (Las reglas de redirección de arriba van antes a propósito: ver su comentario.)
   rewrite ^(/[^.]*[^/])$ $1/ permanent;
 
   location / {
@@ -285,20 +321,20 @@ server {
 **`/etc/nginx/snippets/opspilot-headers.conf`:**
 
 ```nginx
-# Las 4 primeras ya están activas en producción (verificado 2026-07-26).
-# La CSP en Report-Only NO lo está: vivía solo en .htaccess, que no se aplica.
+# Cabeceras activas en producción. La CSP está en ENFORCE (cabecera `Content-Security-Policy`,
+# comprobado el 2026-11-11); ya no es Report-Only. Si la cambias, pruébala primero en Report-Only.
 add_header X-Content-Type-Options "nosniff" always;
 add_header X-Frame-Options "SAMEORIGIN" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 add_header Permissions-Policy "geolocation=(), camera=(), microphone=()" always;
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-add_header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://plausible.io https://formsubmit.co" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://plausible.io https://formsubmit.co" always;
 ```
 
 > ⚠️ **El `include` repetido no es redundancia: es la razón de ser del snippet.** En Nginx
 > `add_header` **NO se hereda** hacia un `location` que declare sus propios `add_header`.
-> Y esto muerde donde menos se espera: al pedir `/casos/`, la directiva `index` hace un
-> internal redirect a `/casos/index.html`, que **vuelve a pasar por el matching de
+> Y esto muerde donde menos se espera: al pedir `/webs/`, la directiva `index` hace un
+> internal redirect a `/webs/index.html`, que **vuelve a pasar por el matching de
 > locations** y cae en la regex `\.html$` (las regex ganan al prefijo `/`). Si esa
 > location declara su `Cache-Control` y no incluye el snippet, **las 6 cabeceras de
 > seguridad desaparecen de todas las páginas del sitio**. Lo mismo aplica a `/assets/`:
@@ -306,7 +342,7 @@ add_header Content-Security-Policy-Report-Only "default-src 'self'; script-src '
 >
 > Compruébalo siempre tras recargar:
 > ```bash
-> curl -sI https://opspilot.es/casos/ | grep -ic 'x-frame-options\|strict-transport'
+> curl -sI https://opspilot.es/webs/ | grep -ic 'x-frame-options\|strict-transport'
 > ```
 
 Tras editar la configuración:
@@ -317,11 +353,34 @@ sudo systemctl reload nginx
 
 ### Verificación de redirects
 
+Tras `sudo nginx -t` y la recarga. Cada URL retirada, con y sin barra, debe dar UN solo `301` directo al destino final (absoluto).
+La salida debe ser `HTTP/2 301` y una única línea `location:` con el destino de la última columna; si aparece un segundo salto
+(p. ej. `/casos` → `/casos/` → `/`), hay una `location` antigua o una regla colocada después del `rewrite` de la barra final.
+
 ```bash
-# Un SOLO salto hasta el destino final, ya con barra
-curl -sI https://opspilot.es/services | grep -i '^HTTP\|^location'   # → 301 /contacto/
-curl -sI https://opspilot.es/contact  | grep -i '^HTTP\|^location'   # → 301 /contacto/
-curl -sI https://opspilot.es/demo     | grep -i '^HTTP\|^location'   # → 301 /contacto/
+for u in /casos /casos/ /cases /cases/ /productos /productos/ /productos/erp-hosteleria/ /productos/presupuesya \
+         /diseno-web-cordoba /diseno-web-cordoba/ /desarrollo-software-cordoba /desarrollo-software-cordoba/ \
+         /soluciones/webs-y-tiendas /soluciones/webs-y-tiendas/ /soluciones/software-a-medida/ /soluciones/automatizacion \
+         /recursos/caso-reformas-de-excel-a-sistema /recursos/caso-reformas-de-excel-a-sistema/ \
+         /recursos/erp-hosteleria-tpv-restaurantes /recursos/erp-hosteleria-tpv-restaurantes/ \
+         /recursos/caso-agencia-servicios-pipeline-automatizado/ /herramientas/cuanto-cuesta-una-pagina-web/ \
+         /product /product/ /resources /services /contact; do
+  printf '%-62s' "$u"
+  curl -sI "https://opspilot.es$u" | grep -i '^HTTP\|^location' | tr -d '\r' | tr '\n' ' '
+  echo
+done
+```
+
+Destinos esperados (todos como `https://opspilot.es/...`): `/casos`, `/cases` → `/`; `/productos…`, `/soluciones/software-a-medida/`,
+`/soluciones/automatizacion`, `/desarrollo-software-cordoba` y las guías retiradas → `/soluciones/`; `/diseno-web-cordoba`,
+`/soluciones/webs-y-tiendas` y `/herramientas/cuanto-cuesta-una-pagina-web/` → `/webs/`;
+`/recursos/caso-agencia-servicios-pipeline-automatizado/` → `/recursos/gestion-leads-agencia-sin-crm/`; `/product`, `/resources` → `/recursos/`;
+`/services` y `/contact` → `/contacto/`.
+
+```bash
+# Ficheros ocultos: 403 (o 404), nunca 200
+curl -sI https://opspilot.es/.htaccess | head -1                      # → HTTP/2 403
+curl -sI https://opspilot.es/.well-known/security.txt | head -1       # sigue abierto: 200 si el fichero existe, 404 si no; nunca 403
 
 # 404 REAL en cualquier URL inventada (antes devolvía 200 con la home)
 curl -sI https://opspilot.es/ruta-que-no-existe | head -1            # → HTTP/2 404
@@ -329,10 +388,10 @@ curl -sI https://opspilot.es/landing-oficial-24542/ | head -1        # → HTTP/
 curl -sI https://opspilot.es/recursos/slug-inexistente | head -1     # → HTTP/2 404
 
 # Las URLs del sitemap responden 200 directo, sin redirección
-curl -sI https://opspilot.es/casos/ | head -1                        # → HTTP/2 200
+curl -sI https://opspilot.es/webs/ | head -1                          # → HTTP/2 200
 curl -sI https://opspilot.es/soluciones/ | head -1                   # → HTTP/2 200
 ```
 
-> Los redirects client-side de `src/components/common/RedirectTo.tsx` son una red de seguridad, pero **los 301 server-side son los que cuentan para SEO**: solo así Google transfiere la autoridad de las URLs antiguas a las nuevas.
+> Las páginas de redirección de `astro.config.mjs` (meta refresh) son una red de seguridad, pero **los 301 server-side son los que cuentan para SEO**: solo así Google transfiere la autoridad de las URLs antiguas a las nuevas.
 
-> **Comprobación obligatoria tras el primer despliegue de este cambio:** que ninguna ruta legítima haya empezado a devolver 404. El `=404` no perdona: si una ruta no se prerenderizó, deja de existir. Repasa las 22 URLs del sitemap.
+> **Comprobación obligatoria tras el primer despliegue de este cambio:** que ninguna ruta legítima haya empezado a devolver 404. El `=404` no perdona: si una ruta no se generó en la construcción, deja de existir. Repasa las URLs de `sitemap-0.xml`.

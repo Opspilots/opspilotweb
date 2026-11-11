@@ -6,7 +6,7 @@
 // vez y se cambia con un toque. Solo sin JS, o si el script falla o se cuelga, se apilan los cuatro, completos.
 // La decisión (public/js/problemas.js recalcula al girar o redimensionar) se toma aquí, en línea y antes del primer pintado: con la
 // altura real de la ventana pequeña (svh), no con la que sigue a la barra del navegador. Estilos: public/css/problemas.css.
-// También lo usa /soluciones/software-a-medida/. El configurador de la home (public/js/opspilot.js) avisa de su problema con el evento
+// Solo lo usa la home. El configurador de la home (public/js/opspilot.js) avisa de su problema con el evento
 // «opspilot:ruta» y los enlaces #p-google, #p-sitios, #p-excel y #p-pestanas llevan a su apartado.
 import { version } from '../lib/version';
 
@@ -49,10 +49,10 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
                 <p class="gm-busca"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>carpintería cerca de mí</p>
                 <div class="gm-mapa" aria-hidden="true"><i style="left:22%;top:38%"></i><i style="left:58%;top:24%"></i><i style="left:74%;top:62%"></i><i class="gm-tu gm-lejos" style="left:40%;top:78%"></i></div>
                 <ol class="gm-lista">
-                  <li><b>Otra carpintería</b><span>4,7 ★ (63) · Abierto · 1,2 km</span></li>
-                  <li><b>Otra más</b><span>4,5 ★ (41) · Abierto · 2,0 km</span></li>
+                  <li><b>Otra carpintería</b><span>Abierto · 1,2 km</span></li>
+                  <li><b>Otra más</b><span>Abierto · 2,0 km</span></li>
                 </ol>
-                <p class="gm-tu-no"><svg class="ico" aria-hidden="true"><use href="#i-circle-alert"/></svg>Tu negocio no sale entre los primeros: 3 reseñas, la última de hace 2 años.</p>
+                <p class="gm-tu-no"><svg class="ico" aria-hidden="true"><use href="#i-circle-alert"/></svg>Tu negocio no sale entre los primeros.</p>
               </div>
             </div>
             <div class="pv-cara pv-sis">
@@ -60,9 +60,9 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
                 <p class="gm-busca"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>carpintería cerca de mí</p>
                 <div class="gm-mapa" aria-hidden="true"><i class="gm-tu" style="left:40%;top:44%"></i><i style="left:58%;top:24%"></i><i style="left:74%;top:62%"></i></div>
                 <ol class="gm-lista">
-                  <li class="gm-yo"><b>Tu negocio</b><span>4,9 ★ (27) · Abierto · fotos de tus trabajos</span><em><span>Llamar</span><span>Cómo llegar</span><span>Web</span></em></li>
-                  <li><b>Otra carpintería</b><span>4,7 ★ (63) · Abierto · 1,2 km</span></li>
-                  <li><b>Otra más</b><span>4,5 ★ (41) · Abierto · 2,0 km</span></li>
+                  <li class="gm-yo"><b>Tu negocio</b><span>Abierto · fotos de tus trabajos</span><em><span>Llamar</span><span>Cómo llegar</span><span>Web</span></em></li>
+                  <li><b>Otra carpintería</b><span>Abierto · 1,2 km</span></li>
+                  <li><b>Otra más</b><span>Abierto · 2,0 km</span></li>
                 </ol>
               </div>
             </div>

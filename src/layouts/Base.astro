@@ -3,7 +3,7 @@
 // Open Graph y un @graph JSON-LD (Organization + WebSite + lo propio de la página).
 // PUBLIC_NOINDEX=1 en la construcción de revisión: noindex en todas las páginas.
 import iconos from '../components/iconos.html?raw';
-import { NAV, LINEAS, grafoBase, SITE_URL, PHONE, CONTACT_EMAIL, BRAND_NAME } from '../lib/sitio';
+import { NAV, grafoBase, SITE_URL, PHONE, CONTACT_EMAIL, BRAND_NAME } from '../lib/sitio';
 import { version } from '../lib/version';
 
 // nginx sirve .css y .js con «Cache-Control: public, immutable» 30 días: la versión va en la URL.
@@ -72,12 +72,7 @@ const aro = `<symbol id="aro" viewBox="0 0 100 100"><path style="fill:var(--arco
     <details class="menu-movil">
       <summary aria-label="Abrir el menú"><svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg></summary>
       <div class="menu-movil-panel">
-        {NAV.map((n) => (
-          <>
-            <a href={n.href}>{n.label}</a>
-            {n.href === '/soluciones/' && LINEAS.map((l) => <a class="sub" href={l.href}><svg class="ico" aria-hidden="true"><use href={`#i-${l.icono}`}/></svg>{l.label}</a>)}
-          </>
-        ))}
+        {NAV.map((n) => <a href={n.href} aria-current={actual(n.href) ? 'page' : undefined}>{n.label}</a>)}
         <a class="btn btn-verde" href="/contacto/">Empieza ahora</a>
       </div>
     </details>
@@ -95,7 +90,7 @@ const aro = `<symbol id="aro" viewBox="0 0 100 100"><path style="fill:var(--arco
         <svg class="marca-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>
         <span>OpsPilot</span>
       </a>
-      <p>Agencia de digitalización en Córdoba: webs, ficha de Google y herramientas a medida para negocios.</p>
+      <p>Digitalización y webs en Córdoba: te ayudamos a captar clientes y a mejorar los procesos de tu negocio.</p>
       <address>
         <a href={`tel:${PHONE.e164}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>{PHONE.display}</a>
         <a href={`mailto:${CONTACT_EMAIL}`}><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>{CONTACT_EMAIL}</a>
@@ -103,27 +98,23 @@ const aro = `<symbol id="aro" viewBox="0 0 100 100"><path style="fill:var(--arco
       </address>
     </div>
     <div>
+      <p class="pie-tit">Webs</p>
+      <ul class="pie-links">
+        <li><a href="/webs/">Diseño web en Córdoba</a></li>
+        <li><a href="/webs/#ficha-de-google">Ficha de Google</a></li>
+        <li><a href="/webs/#tiendas">Tiendas online</a></li>
+      </ul>
+    </div>
+    <div>
       <p class="pie-tit">Soluciones</p>
-      <ul class="pie-links">{LINEAS.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
-    </div>
-    <div>
-      <p class="pie-tit">Productos</p>
       <ul class="pie-links">
-        <li><a href="/productos/presupuesya/">PresupuesYa</a></li>
-        <li><a href="/productos/erp-hosteleria/">ERP para hostelería</a></li>
-        <li><a href="/productos/">Todos los productos</a></li>
+        <li><a href="/soluciones/">Soluciones a medida</a></li>
+        <li><a href="/soluciones/#ejemplos">Qué podemos construir</a></li>
+        <li><a href="/soluciones/#como-trabajamos">Cómo trabajamos</a></li>
       </ul>
     </div>
     <div>
-      <p class="pie-tit">OpsPilot</p>
-      <ul class="pie-links">
-        <li><a href="/casos/">Casos</a></li>
-        <li><a href="/recursos/">Recursos</a></li>
-        <li><a href="/contacto/">Contacto</a></li>
-      </ul>
-    </div>
-    <div>
-      <p class="pie-tit">Recursos gratis</p>
+      <p class="pie-tit">Herramientas gratis</p>
       <ul class="pie-links">
         <li><a href="/herramientas/negocio-no-sale-en-google-maps/">Si no sales en Google Maps</a></li>
         <li><a href="/herramientas/plantilla-presupuesto-obra/">Plantilla de presupuesto de obra</a></li>
@@ -134,10 +125,10 @@ const aro = `<symbol id="aro" viewBox="0 0 100 100"><path style="fill:var(--arco
       </ul>
     </div>
     <div>
-      <p class="pie-tit">En Córdoba</p>
+      <p class="pie-tit">OpsPilot</p>
       <ul class="pie-links">
-        <li><a href="/desarrollo-software-cordoba/">Desarrollo de software en Córdoba</a></li>
-        <li><a href="/diseno-web-cordoba/">Diseño web en Córdoba</a></li>
+        <li><a href="/contacto/">Contacto</a></li>
+        <li><a href="/recursos/">Guías y recursos</a></li>
       </ul>
     </div>
   </div>

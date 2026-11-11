@@ -20,10 +20,10 @@ export const ORG_LOGO = `${SITE_URL}/favicon.svg`;
  * BreadcrumbList JSON-LD a partir de una lista ordenada de migas.
  * Cada item necesita un `name` visible y una `url` absoluta.
  *
- * CONVENCIÓN: las `url` van CON barra final (`/casos/`, no `/casos`), igual
- * que los canonicals y el sitemap. Motivo: con `ssgOptions.dirStyle: 'nested'`
- * cada ruta se prerenderiza como carpeta, así que Apache ya responde 301 de
- * `/casos` a `/casos/` por su cuenta — declarar la forma sin barra hacía que
+ * CONVENCIÓN: las `url` van CON barra final (`/webs/`, no `/webs`), igual
+ * que los canonicals y el sitemap. Motivo: con `build.format: 'directory'`
+ * cada ruta se genera como carpeta, así que el servidor ya responde 301 de
+ * `/webs` a `/webs/` por su cuenta — declarar la forma sin barra hacía que
  * el breadcrumb apuntara a una URL que redirige, contradiciendo al canonical
  * de su propia página. La función NO normaliza: recibe la URL tal cual y la
  * emite tal cual, para no inventarse barras en URLs con fragmento o query.
