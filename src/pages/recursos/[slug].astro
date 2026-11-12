@@ -47,20 +47,22 @@ const titulo = r.title.length <= 49 ? `${r.title} · OpsPilot` : r.title;
     <div class="wrap lectura-in">
       <article class="prosa">
         {r.cover && <figure class="prosa-portada"><img src={r.cover} alt="" width="1280" height="720" loading="eager" decoding="async"></figure>}
-        <p style="font-size:1.15rem;font-weight:500">{r.desc}</p>
+        <p style="font-size:var(--t-4);line-height:1.4;font-weight:500">{r.desc}</p>
         <Bloques bloques={r.blocks} />
       </article>
-      <aside class="lateral">
-        <div class="lateral-caja">
-          <p class="etiqueta">¿Te suena?</p>
+      <div class="banda">
+        <div>
+          <p class="banda-t">¿Te suena?</p>
           <p><b>Cuéntanos tu caso en 30 minutos.</b> Te decimos qué haríamos, con precio cerrado y por escrito.</p>
-          <a class="btn btn-verde" href={WA(`Hola OpsPilot, he leído «${r.title}» y quería contaros mi caso:`)}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Escríbenos</a>
         </div>
-        <div class="lateral-caja">
-          <p class="etiqueta">Sigue leyendo</p>
-          {relacionados.map((x) => <p><a href={`/recursos/${x.slug}/`} style="color:#fff">{x.title}</a></p>)}
-        </div>
-      </aside>
+        <a class="btn btn-verde" href={WA(`Hola OpsPilot, he leído «${r.title}» y quería contaros mi caso:`)}><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Escríbenos</a>
+      </div>
+      <h2 class="sub-t">Sigue leyendo</h2>
+      <ul class="hz-otras">
+        {relacionados.map((x) => (
+          <li><a href={`/recursos/${x.slug}/`}><span><b>{x.title}</b></span><svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a></li>
+        ))}
+      </ul>
     </div>
   </section>
 

@@ -14,7 +14,6 @@ const filas = [
 <section class="porque s-hondo" id="por-que" aria-labelledby="t-porque">
   <div class="wrap">
     <div class="porque-cab">
-      <p class="etiqueta">Por qué con nosotros</p>
       <h2 id="t-porque" class="h2">Lo que suele pasar con una agencia, y cómo lo hacemos nosotros.</h2>
     </div>
     <div class="porque-tabla" role="table" aria-label="Comparación">
@@ -28,7 +27,7 @@ const filas = [
       ))}
     </div>
     <ul class="pq-movil">
-      {filas.map((f) => (<li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>{f.corto}</li>))}
+      {filas.map((f) => (<li>{f.corto}</li>))}
     </ul>
     <div class="porque-pie">
       <a class="btn btn-verde" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>

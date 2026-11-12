@@ -41,13 +41,13 @@ const otras = HERRAMIENTAS.filter((x) => x.slug !== slug && x.grupo === h.grupo)
   <section class="s-papel hz-explica" aria-label="Cómo funciona">
     <div class="wrap lectura-in">
       <article class="prosa"><slot /></article>
-      <aside class="lateral">
-        <div class="lateral-caja">
-          <p class="etiqueta">Y si quieres no hacerlo a mano</p>
+      <div class="banda">
+        <div>
+          <p class="banda-t">Y si quieres no hacerlo a mano</p>
           <p><b>{salida.titulo}</b> {salida.texto}</p>
-          <a class="btn btn-verde" href={salida.href}>{salida.boton}</a>
         </div>
-      </aside>
+        <a class="btn btn-verde" href={salida.href}>{salida.boton}</a>
+      </div>
     </div>
   </section>
 
@@ -55,12 +55,10 @@ const otras = HERRAMIENTAS.filter((x) => x.slug !== slug && x.grupo === h.grupo)
 
   <section class="s-papel" aria-labelledby="t-otras">
     <div class="wrap">
-      <p class="etiqueta">Otras herramientas gratis</p>
       <h2 id="t-otras" class="h2">También te puede servir.</h2>
       <ul class="hz-otras">
         {otras.map((o) => (
           <li><a href={`/herramientas/${o.slug}/`}>
-            <span class="hz-otras-ico"><svg class="ico" aria-hidden="true"><use href={`#i-${o.icono}`}/></svg></span>
             <span><small>«{o.busqueda}»</small><b>{o.nombre}</b></span>
             <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
           </a></li>
