@@ -27,7 +27,10 @@
 /* ─── la mesa ─── */
 .lm-escena{position:relative;flex:1 1 auto;display:flex;flex-direction:column;min-height:28.25rem;overflow:hidden;background:#1A2330}
 .lm-madera{position:absolute;inset:0;width:100%;height:100%}
-.lm-vista{position:relative;flex:1 1 0;min-height:0;container-type:size;display:grid}
+/* La vista es un hijo absoluto de la escena (inset:0 = todo su alto y ancho): así es una frontera de layout y mover un objeto del dibujo no
+   obliga a recalcular el resto de la cabecera ni la propia vista. Como hijo en flujo (flex:1 1 0), cada fotograma de la recogida costaba
+   unos 85 ms de layout (CPU ×4) por el container-type:size; ahora, unos 4 ms. El alto de la escena lo siguen dando la propia escena y la cabecera (min-height). */
+.lm-vista{position:absolute;inset:0;container-type:size;display:grid}
 .lm-defs{position:absolute;width:0;height:0}
 .lm-svg{display:block;margin:auto;overflow:visible;font-family:var(--display)}   /* lo que se sale del dibujo se recorta en .lm-escena, no en una caja invisible. margin:auto centra, y si el dibujo es más alto que la mesa, se recorta por abajo */
 /* el dibujo escala con el alto que le deja la pantalla (svh, vía la altura del contenedor), sin bajar del ancho que mantiene la letra en 12 px o más */
@@ -63,7 +66,6 @@
 /* ─── escritorio: portátil, carpeta y café sobre el tapete ─── */
 @media (min-width:1000px){
   .lm-escena{min-height:24rem}
-  .lm-vista{position:absolute;inset:0}
   .lm-alto{display:none}
   .lm-ancho{display:block}
 }

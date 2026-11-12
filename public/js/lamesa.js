@@ -1,7 +1,8 @@
 /* La mesa (cabecera de la home): la mesa llega revuelta y se recoge sola UNA vez cuando se ve, con un gesto final. No hay mando ni
    arrastre: lo único que cambia la animación es la propia página (verse, ocultarse la pestaña, pedir menos movimiento). Sin librerías.
    Rendimiento: un solo requestAnimationFrame mientras dura la animación (~3,4 s); al acabar no queda nada
-   corriendo. Solo se anima la composición que se ve (la otra está en display:none). Sin JS o con «reducir
+   corriendo. En cada fotograma solo se escribe lo que ha cambiado (un objeto que aún no ha salido, o que ya llegó, no se toca): cada escritura
+   en un objeto del SVG cuesta un layout. Solo se anima la composición que se ve (la otra está en display:none). Sin JS o con «reducir
    movimiento» no se mueve nada solo: la mesa ya viene recogida (lo decide el CSS de la cabecera).
    Si este script falla (no carga o lanza una excepción al arrancar), la mesa se queda recogida: clase «sin-script». */
 (function () {
@@ -51,16 +52,18 @@
         var u = sm((t - o.ini) / o.dur), lev = 1 + 0.07 * Math.sin(Math.PI * u);
         /* los que se guardan se encogen hasta desaparecer (nada se vuelve transparente sobre otro objeto) */
         if (o.s) lev *= 1 - sm((u - 0.72) / 0.26);
-        o.el.style.transform = 'translate(' + (o.a[0] + (o.b[0] - o.a[0]) * u).toFixed(1) + 'px,' + (o.a[1] + (o.b[1] - o.a[1]) * u).toFixed(1) + 'px) rotate(' +
+        var tr = 'translate(' + (o.a[0] + (o.b[0] - o.a[0]) * u).toFixed(1) + 'px,' + (o.a[1] + (o.b[1] - o.a[1]) * u).toFixed(1) + 'px) rotate(' +
           (o.a[2] + (o.b[2] - o.a[2]) * u).toFixed(2) + 'deg) scale(' + ((o.a[3] + (o.b[3] - o.a[3]) * u) * lev).toFixed(3) + ')';
+        if (tr !== o.tr) { o.tr = tr; o.el.style.transform = tr; }
         if (o.cambia) {
           /* el cambio de cara es corto (0,25 de recorrido, casi sin solaparse): un móvil medio transparente sobre la mesa se ve peor que un salto breve */
-          o.el.style.setProperty('--fo', (1 - sm((u - 0.3) / 0.25)).toFixed(3));
-          o.el.style.setProperty('--fi', sm((u - 0.5) / 0.25).toFixed(3));
+          var fo = (1 - sm((u - 0.3) / 0.25)).toFixed(3), fi = sm((u - 0.5) / 0.25).toFixed(3);
+          if (fo !== o.fo) { o.fo = fo; o.el.style.setProperty('--fo', fo); }
+          if (fi !== o.fi) { o.fi = fi; o.el.style.setProperty('--fi', fi); }
         }
       });
-      if (e.bis) { var ab = sm((t - 0.16) / 0.34); e.bis.style.transform = 'translate(0,' + (410 * (1 - ab)).toFixed(1) + 'px) scale(1,' + Math.max(0.02, ab).toFixed(3) + ')'; }
-      if (e.lim) e.lim.style.opacity = sm((t - 0.5) / 0.28).toFixed(3);
+      if (e.bis) { var ab = sm((t - 0.16) / 0.34), bt = 'translate(0,' + (410 * (1 - ab)).toFixed(1) + 'px) scale(1,' + Math.max(0.02, ab).toFixed(3) + ')'; if (bt !== e.bt) { e.bt = bt; e.bis.style.transform = bt; } }
+      if (e.lim) { var lo = sm((t - 0.5) / 0.28).toFixed(3); if (lo !== e.lo) { e.lo = lo; e.lim.style.opacity = lo; } }
       /* al llegar por primera vez al final: un gesto breve (la marca rebota; el CSS lo anima solo con movimiento permitido) */
       if (t > 0.999 && !premiada && !RM.matches) { premiada = true; s.classList.add('premio'); }
     };
