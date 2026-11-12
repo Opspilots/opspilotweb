@@ -29,6 +29,14 @@ export const ln = (d: string, c: string, w = 2, e = '') =>
   `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"${e ? ' ' + e : ''}/>`;
 export const tx = (x: number, y: number, s: number, t: string, f = NAVY, w = 600, e = '') =>
   `<text x="${N(x)}" y="${N(y)}" font-size="${s}" font-weight="${w}" fill="${f}"${e ? ' ' + e : ''}>${t}</text>`;
+/* Para bajar el número de nodos del DOM: figuras del mismo color que no se tapan entre sí van en UN solo <path>.
+   rr = rectángulo (con esquinas redondas si r > 0, igual que <rect rx>), cc = círculo. Devuelven datos de trazo (d), sin etiqueta. */
+export const rr = (x: number, y: number, w: number, h: number, r = 0) => {
+  r = Math.min(r, w / 2, h / 2);
+  if (!r) return `M${N(x)} ${N(y)}h${N(w)}v${N(h)}h${N(-w)}z`;
+  return `M${N(x + r)} ${N(y)}h${N(w - 2 * r)}a${r} ${r} 0 0 1 ${r} ${r}v${N(h - 2 * r)}a${r} ${r} 0 0 1 ${-r} ${r}h${N(-(w - 2 * r))}a${r} ${r} 0 0 1 ${-r} ${-r}v${N(-(h - 2 * r))}a${r} ${r} 0 0 1 ${r} ${-r}z`;
+};
+export const cc = (x: number, y: number, r: number) => `M${N(x - r)} ${N(y)}a${N(r)} ${N(r)} 0 1 0 ${N(2 * r)} 0a${N(r)} ${N(r)} 0 1 0 ${N(-2 * r)} 0z`;
 export const G = (c: string, e = '') => `<g${e ? ' ' + e : ''}>${c}</g>`;
 /* sombra plana: la misma forma, desplazada */
 export const srect = (x: number, y: number, w: number, h: number, r = 0, dx = 7, dy = 9, o = 0.28) =>
@@ -58,9 +66,9 @@ const libreta = () => {
   const R = rng(11);
   return G(
     srect(-140, -170, 280, 340, 6) + rc(-140, -170, 280, 340, '#F8DF76', 6) +
-      [0, 1, 2, 3, 4, 5, 6, 7].map((i) => rc(-140, -92 + i * 34, 280, 1.6, '#D5B345')).join('') +
+      pa([0, 1, 2, 3, 4, 5, 6, 7].map((i) => rr(-140, -92 + i * 34, 280, 1.6)).join(''), '#D5B345') +
       rc(-104, -138, 1.8, 308, '#D66B52') + rc(-140, -170, 280, 36, '#3D5F8A', 6) + rc(-140, -146, 280, 12, '#3D5F8A') +
-      [...Array(11)].map((_, i) => ci(-122 + i * 24.4, -152, 4, '#2A4468')).join('') +
+      pa([...Array(11)].map((_, i) => cc(-122 + i * 24.4, -152, 4)).join(''), '#2A4468') +
       tx(-94, -102, 21, 'Llamar al fontanero', TINTA, 600) + ln(mano(-96, -109, 108, R, 3), ROJO, 3) +
       tx(-94, -68, 21, 'Pedir material', TINTA, 600) +
       tx(-94, -34, 21, '¿Y la factura?', TINTA, 700) +
@@ -75,12 +83,14 @@ export const ticket = (w: number, h: number, t: string, sello: string) => {
   let z = `M${-w / 2} ${-h / 2}H${w / 2}V${h / 2}`;
   for (let x = w / 2; x > -w / 2 + 1; x -= 14) z += `L${N(x - 7)} ${h / 2 + 8}L${N(x - 14)} ${h / 2}`;
   z += 'Z';
-  let l = '';
+  /* las líneas de texto: dos trazos (claras y oscuras), no dos rectángulos por línea */
+  let l1 = '', l2 = '';
   const R = rng(w * 7 + h);
   for (let i = 0; i < (h - 90) / 22; i++) {
     const y = -h / 2 + 62 + i * 22;
-    l += rc(-w / 2 + 14, y, (w - 68) * (0.55 + R() * 0.4), 6, '#B8BDC4', 2) + rc(w / 2 - 40, y, 26, 6, '#8F96A0', 2);
+    l1 += rr(-w / 2 + 14, y, (w - 68) * (0.55 + R() * 0.4), 6, 2); l2 += rr(w / 2 - 40, y, 26, 6, 2);
   }
+  const l = pa(l1, '#B8BDC4') + pa(l2, '#8F96A0');
   return G(
     pa(z, SOMBRA, 'opacity=".26" transform="translate(6 9)"') + pa(z, PAPEL) +
       tx(0, -h / 2 + 36, 18, t, TINTA, 700, 'text-anchor="middle"') + rc(-w / 2 + 14, -h / 2 + 46, w - 28, 2, TINTA) + l +
@@ -94,7 +104,7 @@ const presupuesto = () =>
   G(
     srect(-120, -160, 240, 320, 3) + pa('M-120 -160H84L120 -124V160H-120Z', PAPEL) + pa('M84 -160L120 -124H84Z', '#D3D8DD') +
       tx(-98, -118, 21, 'Presupuesto', TINTA, 800) + tx(-98, -92, 18, 'de la cocina', TINTA, 500) + rc(-98, -78, 196, 2.5, TINTA) +
-      [0, 1, 2, 3, 4].map((i) => rc(-98, -60 + i * 24, 90 + ((i * 37) % 50), 7, '#B8BDC4', 2) + rc(54, -60 + i * 24, 44, 7, '#8F96A0', 2)).join('') +
+      pa([0, 1, 2, 3, 4].map((i) => rr(-98, -60 + i * 24, 90 + ((i * 37) % 50), 7, 2)).join(''), '#B8BDC4') + pa([0, 1, 2, 3, 4].map((i) => rr(54, -60 + i * 24, 44, 7, 2)).join(''), '#8F96A0') +
       rc(-98, 62, 196, 2.5, TINTA) + tx(-98, 96, 21, 'Sin enviar', ROJO, 800) + ln('M-98 104q50 8 104-2', ROJO, 2.6) +
       `<circle cx="66" cy="116" r="37" fill="none" stroke="#7C8590" stroke-width="5" opacity=".4"/>`,
   );
@@ -114,14 +124,17 @@ const avisos = () =>
 const vibra = () => ln('M-98 -60q-12 22 0 44M-112 -74q-20 36 0 72', NAVY, 3.4) + ln('M98 16q12 22 0 44M112 2q20 36 0 72', NAVY, 3.4);
 
 export const calc = () => {
-  let k = '';
+  /* las 16 teclas en cuatro trazos (sombra, tecla gris, tecla naranja y puntos) más los cuatro símbolos: ninguna tecla tapa a otra */
+  let sombra = '', gris = '', naranja = '', puntos = '', sims = '';
   const sim = ['', '', '', '×', '', '', '', '−', '', '', '', '+', '', '', '', '='];
   for (let f = 0; f < 4; f++)
     for (let c = 0; c < 4; c++) {
       const x = -72 + c * 38, y = -46 + f * 38, na = c === 3, i = f * 4 + c;
-      k += rc(x, y + 4, 32, 30, '#16202B', 6) + rc(x, y, 32, 30, na ? '#E7A93F' : '#E6EBF2', 6) +
-        (sim[i] ? tx(x + 16, y + 23, 22, sim[i], NAVY, 800, 'text-anchor="middle"') : ci(x + 16, y + 15, 3.2, '#9EA7B1'));
+      sombra += rr(x, y + 4, 32, 30, 6);
+      if (na) naranja += rr(x, y, 32, 30, 6); else gris += rr(x, y, 32, 30, 6);
+      if (sim[i]) sims += tx(x + 16, y + 23, 22, sim[i], NAVY, 800, 'text-anchor="middle"'); else puntos += cc(x + 16, y + 15, 3.2);
     }
+  const k = pa(sombra, '#16202B') + pa(gris, '#E6EBF2') + pa(naranja, '#E7A93F') + pa(puntos, '#9EA7B1') + sims;
   return G(
     srect(-88, -120, 176, 240, 14) + rc(-88, -120, 176, 240, '#2F4E8C', 14) + rc(-88, -120, 176, 8, '#4466AB', 4) + rc(-72, -100, 144, 40, '#C9D8B6', 5) +
       rc(-62, -84, 60, 5, '#5A6B4C') + rc(4, -84, 56, 5, '#5A6B4C') + k,
@@ -340,8 +353,9 @@ function madera(): string {
       const kx = R() * (MADERA_W - 60) + 30, ky = y + MADERA_TABLA * 0.3 + R() * MADERA_TABLA * 0.4;
       s += `<ellipse cx="${N(kx)}" cy="${N(ky)}" rx="26" ry="9" fill="none" stroke="#2E3B4F" stroke-width="2" opacity=".6"/><ellipse cx="${N(kx)}" cy="${N(ky)}" rx="13" ry="4" fill="#0F1620" opacity=".5"/>`;
     }
-    /* canto entre tablas: línea oscura y reflejo claro */
-    s += rc(0, y + MADERA_TABLA - 2, MADERA_W, 3, '#0A0E14', 0, 'opacity=".75"') + rc(0, y + MADERA_TABLA + 1, MADERA_W, 1.5, '#2E3B4F', 0, 'opacity=".6"');
+    /* canto entre tablas: línea oscura. (Había también un reflejo claro en y + 166, pero la tabla siguiente, que se dibuja después y empieza
+       en y + 165, lo tapaba siempre, y el de la última cae fuera del mosaico: se quitó, sin cambio en pantalla.) */
+    s += rc(0, y + MADERA_TABLA - 2, MADERA_W, 3, '#0A0E14', 0, 'opacity=".75"');
   }
   return `<defs><pattern id="lm-madera" width="${MADERA_W}" height="${MADERA_TABLA * MADERA_N}" patternUnits="userSpaceOnUse">${s}</pattern></defs><rect width="100%" height="100%" fill="url(#lm-madera)"/>`;
 }

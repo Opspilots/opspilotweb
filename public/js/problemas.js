@@ -69,21 +69,20 @@
     };
 
     /* ── un fotograma (modo fijo): dónde va la pista → problema activo y cuánto lleva de su tramo ── */
-    var estado = function () {
-      var x = cl((top - pista.getBoundingClientRect().top) / rango, 0, 1) * N;
+    var estado = function (rp) {
+      var x = cl((top - rp.top) / rango, 0, 1) * N;
       var i = Math.min(N - 1, Math.floor(x));
       return { i: i, loc: x >= N ? 1 : x - i };
     };
     /* lo último que se veía: se anota en cada fotograma de scroll (y al arrancar) porque, al girar o redimensionar, el navegador recoloca la
        página ANTES de que llegue el evento resize y ya no se puede saber dónde se estaba */
     var ult = { zona: 'encima' };
-    var anota = function () {
-      var rp = pista.getBoundingClientRect();
+    var anota = function (rp) {
       if (fijo) {
         /* x: cuánto de la pista se lleva recorrido. Pasado el 1 (la escena ya se va con el final de la pista) cuenta como «debajo» */
         var x = (top - rp.top) / rango;
         if (x >= 1) ult = { zona: 'debajo', comp: sec.pbAncla() };
-        else if (x >= 0) { var e = estado(); ult = { zona: 'pista', i: e.i, loc: e.loc }; }
+        else if (x >= 0) { var e = estado(rp); ult = { zona: 'pista', i: e.i, loc: e.loc }; }
         else ult = { zona: 'encima' };
       } else if (rp.bottom <= sec.pbArriba() + 1) ult = { zona: 'debajo', comp: sec.pbAncla() };
       else { var re = esc.getBoundingClientRect(); ult = re.top <= window.innerHeight * 0.6 ? { zona: 'dentro', i: Math.max(0, activo), escTop: re.top } : { zona: 'encima' }; }
@@ -95,9 +94,11 @@
          el cambio con lo que se anotó antes, y solo después se vuelve a anotar */
       var d = window.innerWidth + 'x' + window.innerHeight;
       if (d !== dim) { dim = d; recalcula(); }
-      anota();
+      /* una sola lectura de geometría por fotograma (antes eran tres): la comparten anota y estado */
+      var rp = pista.getBoundingClientRect();
+      anota(rp);
       if (!fijo) return;
-      var e = estado(), i = e.i, loc = e.loc;
+      var e = estado(rp), i = e.i, loc = e.loc;
       if (i !== activo) marca(i);
       /* la réplica pasa de «Hoy» a la solución a mitad de su tramo, salvo que la persona haya elegido cara */
       if (!manual[i]) { var cara = loc < 0.5 ? 'hoy' : 'sis'; if (pvs[i].classList.contains('sis') !== (cara === 'sis')) poner(pvs[i], cara); }
@@ -210,6 +211,9 @@
       if (sec.pbSonda) ro.observe(sec.pbSonda);
     }
     window.addEventListener('scroll', pide, { passive: true });
+    /* las animaciones infinitas de las réplicas (el latido de los choques, el temblor del diálogo, los puntos de «escribiendo») solo corren con la
+       sección a la vista: fuera, el CSS las pausa con .pb-fuera. Con un IntersectionObserver, sin leer geometría en el scroll */
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { sec.classList.toggle('pb-fuera', !es[es.length - 1].isIntersecting); }, { rootMargin: '100px 0px' }).observe(sec);
     /* ── arranque ── */
     medir();
     marca(0);

@@ -124,6 +124,12 @@
   .pb .est{padding-inline:.4rem}
 }
 
+/* Solo se anima lo que se ve: las animaciones infinitas de las réplicas (opspilot.css: .choque, .xl-dialogo, .escribe) se pausan en las de los
+   problemas que no están activos (ocultas) y en toda la sección cuando está fuera de pantalla (.pb-fuera, la pone problemas.js). Pausar no cambia
+   cómo se ve: al volver, siguen por donde iban. */
+.pb-int .par:not(.activo) *,.pb-int .par:not(.activo) *::before,.pb-int .par:not(.activo) *::after,
+.pb-fuera *,.pb-fuera *::before,.pb-fuera *::after{animation-play-state:paused !important}
+
 /* con «reducir movimiento», el cambio de problema es inmediato */
 @media (prefers-reduced-motion:reduce){.pb *{transition:none !important}}
 @media (max-width:374px){
