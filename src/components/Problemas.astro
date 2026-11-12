@@ -17,24 +17,23 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
 <link rel="stylesheet" href={CSS}>
 <section class="problemas pb" data-pb aria-labelledby="t-problemas">
     <div class="wrap pb-cab">
-      <p class="etiqueta">Lo que vemos cada semana</p>
       <h2 id="t-problemas" class="h2">Cuatro cosas que vemos cada semana en negocios de aquí.</h2>
     </div>
     <div class="pb-pista" data-pb-pista>
      <div class="pb-escena" data-pb-escena>
       <div class="wrap pb-in">
         <div class="chips" role="group" aria-label="Problemas" data-pb-tabs>
-          <button type="button" aria-controls="w-google"><small>01</small>No te encuentran</button>
-          <button type="button" aria-controls="w-sitios"><small>02</small>Cuatro sitios</button>
-          <button type="button" aria-controls="w-excel"><small>03</small>El Excel</button>
-          <button type="button" aria-controls="w-pestanas"><small>04</small>Cinco pestañas</button>
+          <button type="button" aria-controls="w-google">No te encuentran</button>
+          <button type="button" aria-controls="w-sitios">Cuatro sitios</button>
+          <button type="button" aria-controls="w-excel">El Excel</button>
+          <button type="button" aria-controls="w-pestanas">Cinco pestañas</button>
         </div>
 
         <div class="mesa">
         {/* ─── 01 · no te encuentran ─── */}
         <div class="par activo" id="p-google" data-par>
           <button class="problema" type="button" aria-controls="w-google">
-            <span class="problema-n" aria-hidden="true">01</span>
+            <span class="problema-n" aria-hidden="true"></span>
             <span class="problema-t">Te buscan en Google y sale otro</span>
             <span class="problema-p">Tienes web, pero cuando alguien busca lo que haces en tu pueblo, en el mapa salen tres y tú no.</span>
           </button>
@@ -73,7 +72,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
         {/* ─── 02 · cuatro sitios ─── */}
         <div class="par" id="p-sitios" data-par>
           <button class="problema" type="button" aria-controls="w-sitios">
-            <span class="problema-n" aria-hidden="true">02</span>
+            <span class="problema-n" aria-hidden="true"></span>
             <span class="problema-t">Tu información vive en cuatro sitios</span>
             <span class="problema-p">Cuatro apps que nunca cuadran entre sí. Buscas el mismo dato tres veces al día.</span>
           </button>
@@ -128,7 +127,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
         {/* ─── 03 · el Excel que se rompe ─── */}
         <div class="par" id="p-excel" data-par>
           <button class="problema" type="button" aria-controls="w-excel">
-            <span class="problema-n" aria-hidden="true">03</span>
+            <span class="problema-n" aria-hidden="true"></span>
             <span class="problema-t">Lo que factura lo llevas en un Excel que se rompe</span>
             <span class="problema-p">Presupuestos y comisiones en una hoja que peta al primer descuido. Un clic y adiós.</span>
           </button>
@@ -180,7 +179,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
         {/* ─── 04 · cinco pestañas ─── */}
         <div class="par" id="p-pestanas" data-par>
           <button class="problema" type="button" aria-controls="w-pestanas">
-            <span class="problema-n" aria-hidden="true">04</span>
+            <span class="problema-n" aria-hidden="true"></span>
             <span class="problema-t">Tu equipo cambia de pestaña cada cinco minutos</span>
             <span class="problema-p">Cinco herramientas para un solo trabajo. Y ninguna se habla con la otra.</span>
           </button>

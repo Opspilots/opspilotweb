@@ -23,17 +23,16 @@ const contacto = { '@type': 'ContactPage', name: 'Contacto · OpsPilot', url: 'h
   <section class="s-navy" aria-labelledby="t-canales">
     <div class="wrap contacto-in">
       <div>
-        <p class="etiqueta">Directo</p>
         <h2 id="t-canales" class="h2">Como te venga mejor.</h2>
         <div class="canales">
-          <a class="canal" href={WA('Hola OpsPilot, os escribo desde la web.')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg><span><b>WhatsApp</b><small>{PHONE.display}</small></span></a>
-          <a class="canal" href={`tel:${PHONE.e164}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><b>Teléfono</b><small>{PHONE.display}</small></span></a>
-          <a class="canal" href={`mailto:${CONTACT_EMAIL}`}><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span><b>Correo</b><small>{CONTACT_EMAIL}</small></span></a>
-          <p class="canal" style="cursor:default"><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg><span><b>Córdoba, Andalucía</b><small>Trabajamos con pymes de toda España</small></span></p>
+          <a class="canal" href={WA('Hola OpsPilot, os escribo desde la web.')} rel="noopener"><span><b>WhatsApp</b><small>{PHONE.display}</small></span></a>
+          <a class="canal" href={`tel:${PHONE.e164}`}><span><b>Teléfono</b><small>{PHONE.display}</small></span></a>
+          <a class="canal" href={`mailto:${CONTACT_EMAIL}`}><span><b>Correo</b><small>{CONTACT_EMAIL}</small></span></a>
+          <p class="canal" style="cursor:default"><span><b>Córdoba, Andalucía</b><small>Trabajamos con pymes de toda España</small></span></p>
         </div>
       </div>
       <form class="formu" data-formu action={FORMSUBMIT_ENDPOINT} method="post" novalidate>
-        <p class="bloque-meta" style="color:var(--verde-h);margin:0">O déjanos un mensaje</p>
+        <h2 class="form-t">O déjanos un mensaje</h2>
         <label>Nombre<input name="nombre" autocomplete="name" required></label>
         <label>Correo<input name="email" type="email" autocomplete="email" required></label>
         <label>Teléfono <small style="font-weight:400;color:var(--gris-papel)">(opcional)</small><input name="telefono" type="tel" autocomplete="tel"></label>

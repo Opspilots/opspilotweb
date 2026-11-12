@@ -37,7 +37,6 @@ const blog = {
   </CabeceraPagina>
   <section class="s-papel" aria-labelledby="t-gratis">
     <div class="wrap">
-      <p class="etiqueta">Herramientas gratis</p>
       <h2 id="t-gratis" class="h2">Resuélvelo ahora, en dos minutos.</h2>
       <div class="rec-grupos">
         {GRUPOS.map((g) => (
@@ -46,7 +45,6 @@ const blog = {
             <ul class="hz-otras">
               {HERRAMIENTAS.filter((o) => o.grupo === g.id).map((o) => (
                 <li><a href={`/herramientas/${o.slug}/`}>
-                  <span class="hz-otras-ico"><svg class="ico" aria-hidden="true"><use href={`#i-${o.icono}`}/></svg></span>
                   <span><small>«{o.busqueda}»</small><b>{o.nombre}</b></span>
                   <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
                 </a></li>
@@ -59,7 +57,6 @@ const blog = {
   </section>
   <section class="s-navy" aria-labelledby="t-empieza">
     <div class="wrap">
-      <p class="etiqueta">Empieza por aquí</p>
       <h2 id="t-empieza" class="h2">¿Qué te pasa? Te decimos qué leer primero.</h2>
       <ol class="empieza">
         {EMPIEZA.map(({ sit, r }) => (
@@ -80,10 +77,9 @@ const blog = {
         {CATS.map((c) => <button type="button" aria-pressed="false" data-cat={c}>{c}</button>)}
       </div>
       <ol class="cuaderno">
-        {lista.map((r, i) => (
+        {lista.map((r) => (
           <li class="cuaderno-fila" data-item data-cat={r.cat}>
             <a href={`/recursos/${r.slug}/`}>
-              <span class="cuaderno-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
               <span class="cuaderno-c">
                 <span class="cuaderno-cat">{r.cat} · {r.time} de lectura</span>
                 <h3>{r.title}</h3>

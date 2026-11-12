@@ -63,65 +63,76 @@ const servicio = {
 
   <section class="s-navy" id="ejemplos" aria-labelledby="t-ejemplos">
     <div class="wrap">
-      <p class="etiqueta">Qué podemos construir</p>
       <h2 id="t-ejemplos" class="h2">Hacemos soluciones a medida. Algunos ejemplos.</h2>
       <p class="lead">No son productos cerrados: son ejemplos de lo que se puede hacer. Cada proyecto se monta alrededor de tu forma de trabajar, con tu vocabulario y tus pasos. También hacemos ERP y CRM a medida para pymes.</p>
-      <div class="producto-ficha">
+      <div class="producto-ficha producto-ficha-3">
         {EJEMPLOS.map((x) => (
-          <div class="pf"><svg class="ico" aria-hidden="true"><use href={`#i-${x.icono}`}/></svg><h3>{x.t}</h3><p>{x.p}</p></div>
+          <div class="pf"><h3>{x.t}</h3><p>{x.p}</p></div>
         ))}
       </div>
     </div>
   </section>
 
   <section class="s-papel" id="todo-en-un-sitio" aria-labelledby="t-todo">
-    <div class="wrap lectura-in">
-      <div class="prosa">
-        <h2 id="t-todo">Todo en un sitio: un sistema a medida para tu negocio</h2>
-        <p>La mayoría de las pymes que nos llaman tienen el mismo síntoma: la información vive en cuatro sitios que no cuadran entre sí. Un programa para facturar, un Excel para los presupuestos, el correo para los pedidos y WhatsApp para todo lo demás. Cada herramienta funciona por separado; el problema está en los huecos entre ellas, que es donde se pierden los datos, el tiempo y a veces el margen.</p>
-        <p>Nuestro trabajo es cerrar esos huecos. Lo que suele llamarse un ERP a medida: clientes, pedidos, stock, facturas y personal conectados entre sí, con una pantalla de lo que hay que atender hoy y con cada persona viendo y tocando solo lo suyo.</p>
-        <h2>Cuándo compensa un software a medida</h2>
-        <p>Cuando tu proceso tiene reglas propias que ningún programa del mercado cubre, ni configurándolo. Si uno estándar te resuelve el 80 % con una configuración razonable, te lo diremos: construir desde cero ese 20 % restante rara vez compensa. Lo explicamos con más calma en <a href="/recursos/cuando-pedir-software-a-medida-vs-estandar/">cuándo pedir software a medida o estándar</a>.</p>
-        <h2>Qué necesitamos de ti para empezar</h2>
-        <p>Menos de lo que parece. No hace falta que traigas un documento técnico ni que sepas qué tecnología quieres: eso es cosa nuestra. Nos sirve entender tu día a día:</p>
-        <ul>
-          <li>Cómo trabajas hoy, paso a paso, desde que entra un cliente o un pedido hasta que se cobra.</li>
-          <li>Qué herramientas usas y dónde vive cada dato: el Excel, el programa de facturación, el correo, el grupo de WhatsApp.</li>
-          <li>Un par de ejemplos reales: un presupuesto, un albarán, una hoja que se rompe a menudo.</li>
-          <li>Quién va a usar el sistema y qué necesita ver cada persona.</li>
-        </ul>
-        <p>De esa primera conversación te llevas algo útil aunque no sigamos: qué procesos te están costando dinero, cuáles no merece la pena tocar y, si encaja, una propuesta con alcance, precio cerrado y plazo por escrito.</p>
+    <div class="wrap">
+      <div class="ed">
+        <div class="ed-fila">
+          <h2 id="t-todo">Todo en un sitio: un sistema a medida para tu negocio</h2>
+          <div class="prosa">
+            <p>La mayoría de las pymes que nos llaman tienen el mismo síntoma: la información vive en cuatro sitios que no cuadran entre sí. Un programa para facturar, un Excel para los presupuestos, el correo para los pedidos y WhatsApp para todo lo demás. Cada herramienta funciona por separado; el problema está en los huecos entre ellas, que es donde se pierden los datos, el tiempo y a veces el margen.</p>
+            <p>Nuestro trabajo es cerrar esos huecos. Lo que suele llamarse un ERP a medida: clientes, pedidos, stock, facturas y personal conectados entre sí, con una pantalla de lo que hay que atender hoy y con cada persona viendo y tocando solo lo suyo.</p>
+          </div>
+        </div>
+        <div class="ed-fila">
+          <h2>Cuándo compensa un software a medida</h2>
+          <div class="prosa">
+            <p>Cuando tu proceso tiene reglas propias que ningún programa del mercado cubre, ni configurándolo. Si uno estándar te resuelve el 80 % con una configuración razonable, te lo diremos: construir desde cero ese 20 % restante rara vez compensa. Lo explicamos con más calma en <a href="/recursos/cuando-pedir-software-a-medida-vs-estandar/">cuándo pedir software a medida o estándar</a>.</p>
+          </div>
+        </div>
+        <div class="ed-fila">
+          <h2>Qué necesitamos de ti para empezar</h2>
+          <div class="prosa">
+            <p>Menos de lo que parece. No hace falta que traigas un documento técnico ni que sepas qué tecnología quieres: eso es cosa nuestra. Nos sirve entender tu día a día:</p>
+            <ul>
+              <li>Cómo trabajas hoy, paso a paso, desde que entra un cliente o un pedido hasta que se cobra.</li>
+              <li>Qué herramientas usas y dónde vive cada dato: el Excel, el programa de facturación, el correo, el grupo de WhatsApp.</li>
+              <li>Un par de ejemplos reales: un presupuesto, un albarán, una hoja que se rompe a menudo.</li>
+              <li>Quién va a usar el sistema y qué necesita ver cada persona.</li>
+            </ul>
+            <p>De esa primera conversación te llevas algo útil aunque no sigamos: qué procesos te están costando dinero, cuáles no merece la pena tocar y, si encaja, una propuesta con alcance, precio cerrado y plazo por escrito.</p>
+          </div>
+        </div>
+        <div class="ed-fila">
+          <h2>Para leer antes</h2>
+          <div class="prosa">
+            <ul>
+              <li><a href="/recursos/como-pedir-presupuesto-de-software/">Cómo pedir presupuesto de software</a></li>
+              <li><a href="/recursos/migrar-de-excel-a-sistema-pyme/">Migrar de Excel a un sistema</a></li>
+              <li><a href="/recursos/senales-pyme-necesita-sistema-de-gestion/">Señales de que necesitas un sistema</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <aside class="lateral">
-        <div class="lateral-caja">
-          <p class="etiqueta">En 30 minutos</p>
+      <div class="banda">
+        <div>
+          <p class="banda-t">En 30 minutos</p>
           <p><b>Cuéntanos cómo trabajas hoy.</b> Te decimos qué haríamos y cuánto cuesta, por escrito.</p>
-          <a class="btn btn-verde" href="/contacto/">Contactar</a>
         </div>
-        <div class="lateral-caja">
-          <p class="etiqueta">Para leer antes</p>
-          <p><a href="/recursos/como-pedir-presupuesto-de-software/" style="color:#fff">Cómo pedir presupuesto de software</a></p>
-          <p><a href="/recursos/migrar-de-excel-a-sistema-pyme/" style="color:#fff">Migrar de Excel a un sistema</a></p>
-          <p><a href="/recursos/senales-pyme-necesita-sistema-de-gestion/" style="color:#fff">Señales de que necesitas un sistema</a></p>
-        </div>
-      </aside>
+        <a class="btn btn-verde" href="/contacto/">Contactar</a>
+      </div>
     </div>
   </section>
 
   <section class="s-navy" id="automatizacion" aria-labelledby="t-tareas">
     <div class="wrap">
-      <p class="etiqueta">Automatización</p>
       <h2 id="t-tareas" class="h2">Cuatro tareas que no deberías hacer a mano.</h2>
       <p class="lead">Copiar datos de una hoja a otra, contestar lo mismo por WhatsApp, perseguir un presupuesto sin respuesta. Eso lo puede hacer un sistema, con una persona revisando lo que importa.</p>
       <div class="producto-ficha">
         {TAREAS.map((t) => (
-          <div class="pf">
-            <svg class="ico" aria-hidden="true"><use href={`#i-${t.icono}`}/></svg>
-            <div>
-              <h3>{t.t}</h3>
-              <p><b style="color:#fff">{t.antes}</b> → <b style="color:var(--verde)">{t.despues}</b></p>
-              <ul class="lista-ok">{t.e.map((x) => <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>{x}</span></li>)}</ul>
-            </div>
+          <div class="pf-tar">
+            <h3>{t.t}</h3>
+            <p><b style="color:#fff">{t.antes}</b> → <b style="color:var(--verde)">{t.despues}</b></p>
+            <ul class="lista-ok">{t.e.map((x) => <li>{x}</li>)}</ul>
           </div>
         ))}
       </div>
