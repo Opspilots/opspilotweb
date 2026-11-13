@@ -202,6 +202,10 @@ export class Persiana {
   private punteroSuave = new Vector2();
   private ultimo = 0;
   private pidiendo = false;
+  private rafId = 0;
+  private liberado = false;
+  /** Cuelga de aquí todo lo que se escucha en el canvas: liberar() lo quita de una vez. */
+  private fin = new AbortController();
   activo = true;
   onFrame?: () => void;
 
@@ -209,7 +213,7 @@ export class Persiana {
     this.renderer = new WebGLRenderer({
       canvas,
       antialias: true,
-      powerPreference: 'high-performance',
+      powerPreference: 'default',
       preserveDrawingBuffer: !!op.poster,
       failIfMajorPerformanceCaveat: !op.poster && !new URLSearchParams(location.search).has('persiana-forzar'),
     });
@@ -219,14 +223,19 @@ export class Persiana {
     this.renderer.toneMappingExposure = 1.0;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = PCFShadowMap;
-    this.renderer.setPixelRatio(op.poster ? 1 : Math.min(window.devicePixelRatio || 1, 1.75));
+    this.ajustarDpr();
     // three recupera el render solo tras perder el contexto, pero las sombras tienen autoUpdate=false:
     // hay que pedir que se recalculen o la pared se queda sin la sombra proyectada
     canvas.addEventListener('webglcontextrestored', () => {
       if (this.sol) this.sol.shadow.needsUpdate = true;
       if (this.foco) this.foco.shadow.needsUpdate = true;
       this.pedir();
-    });
+    }, { signal: this.fin.signal });
+  }
+
+  /** DPR del momento (puede cambiar al mover la ventana a otra pantalla o con el zoom), con el mismo tope de siempre. */
+  private ajustarDpr() {
+    this.renderer.setPixelRatio(this.op.poster ? 1 : Math.min(window.devicePixelRatio || 1, 1.75));
   }
 
   /** Construye la escena por partes, cediendo el hilo entre ellas (sin tareas largas en móviles lentos). */
@@ -235,11 +244,12 @@ export class Persiana {
     marca = performance.now();
     // las texturas pesadas, una por tarea (pintura.ts)
     const img = await pintar({
-      cal: ['calColor', [1024]], relieve: ['calRelieve', [512]], zocalo: ['zocalo', [1024]], acera: ['acera', [1024]],
-      empedrado: ['empedrado', [512]], chapa: ['chapa', [512]], hidraulica: ['hidraulica', [512]], estuco: ['estuco', [256]],
-      madera: ['madera', [256]], fondo: ['paredFondo', [IX0, IX1, 3.0, BALDAS, PANT, LAMP_X]],
-      contacto: ['contactoSuelo', [IX0, IX1, FONDO, MOSTRADOR]],
+      cal: () => P.calColor(1024), relieve: () => P.calRelieve(512), zocalo: () => P.zocalo(1024), acera: () => P.acera(1024),
+      empedrado: () => P.empedrado(512), chapa: () => P.chapa(512), hidraulica: () => P.hidraulica(512), estuco: () => P.estuco(256),
+      madera: () => P.madera(256), fondo: () => P.paredFondo(IX0, IX1, 3.0, BALDAS, PANT, LAMP_X),
+      contacto: () => P.contactoSuelo(IX0, IX1, FONDO, MOSTRADOR),
     });
+
     cronometro('pintura');
     const s = this.scene;
     s.background = new Color('#1A2330');
@@ -763,6 +773,7 @@ export class Persiana {
     this.camara.aspect = asp;
     this.camara.fov = asp >= ASPECTO ? MathUtils.radToDeg(2 * Math.atan(Math.tan(MathUtils.degToRad(FOV) / 2) * ASPECTO / asp)) : FOV;
     this.camara.updateProjectionMatrix();
+    this.ajustarDpr();
     this.renderer.setSize(w, h, false);
     this.pedir();
   }
@@ -782,13 +793,14 @@ export class Persiana {
 
   /** Pide un fotograma; el bucle se apaga solo cuando todo ha llegado a su sitio. */
   pedir() {
-    if (this.pidiendo || !this.activo) return;
+    if (this.pidiendo || !this.activo || this.liberado) return;
     this.pidiendo = true;
-    requestAnimationFrame(this.paso);
+    this.rafId = requestAnimationFrame(this.paso);
   }
 
   private paso = (t: number) => {
     this.pidiendo = false;
+    if (this.liberado) return;
     const dt = this.ultimo ? Math.min((t - this.ultimo) / 1000, 1 / 20) : 1 / 60;
     this.ultimo = t;
     const antes = this.abierto;
@@ -808,9 +820,14 @@ export class Persiana {
     if (!quieto) this.pedir(); else this.ultimo = 0;
   };
 
+  /** Libera la GPU. Idempotente. Primero se recorre la escena y las sombras; el renderer se libera el último. */
   liberar() {
+    if (this.liberado) return;
+    this.liberado = true;
     this.activo = false;
-    this.renderer.dispose();
+    this.fin.abort();
+    cancelAnimationFrame(this.rafId);
+    this.pidiendo = false;
     this.scene.traverse((o: Object3D) => {
       const m = o as Mesh;
       if (m.geometry) m.geometry.dispose();
@@ -820,5 +837,9 @@ export class Persiana {
         mat.dispose();
       }
     });
+    this.sol?.shadow.dispose();
+    this.foco?.shadow.dispose();
+    this.renderer.dispose();
+    this.renderer.forceContextLoss();
   }
 }
