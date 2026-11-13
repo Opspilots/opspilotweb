@@ -1,0 +1,82 @@
+---
+// Cabecera de la home, «La persiana» (12-nov-2026): la fachada encalada de un comercio de Córdoba, en 3D. La persiana
+// sube (un poco al cargar, del todo con el scroll) y dentro aparece el negocio ya digitalizado: el cartel de «Abierto»,
+// la web en la pantalla, el móvil del mostrador con un WhatsApp y el plano con el pin pegado al cristal. Sustituye a
+// «La mesa» (CabeceraMesa.astro).
+//
+// Capas: el póster (una foto de la propia escena, generada con scripts/poster-persiana.mjs) es lo que se pinta primero y
+// lo que ve quien no tiene JS o WebGL; con «reducir movimiento», el <picture> elige el póster con la persiana ya subida
+// y no se carga three.js. Encima, cuando está lista, la escena en vivo (src/scripts/persiana/) se funde sobre el póster.
+// El texto es HTML normal, al lado de la escena (encima de ella en el móvil), nunca sobre la imagen.
+import { WA, PHONE } from '../lib/sitio';
+import { version } from '../lib/version';
+
+// nginx sirve .css y .js con «Cache-Control: public, immutable»: la versión va en la URL (ver DEPLOY.md).
+const CSS = `/css/persiana.css?v=${version('/css/persiana.css')}`;
+
+// Pósteres: uno por encuadre, con la misma proporción de referencia que la escena (ASPECTOS en escena.ts); las dos capas
+// recortan igual (cover). Escritorio («ancho», la columna derecha): hasta 1620 px para pantallas de DPR 2. Móvil
+// («alto», todo el ancho): hasta 1080 px. El corte entre los dos es el mismo que el del CSS (MQ_ANCHO).
+// Las imágenes también son inmutables en nginx: si se regeneran, cambia el sufijo de versión del nombre (POSTER_V).
+const POSTER_V = 'v3';
+const MQ_ANCHO = '(min-width: 900px) and (min-aspect-ratio: 1/1)';
+const FORMATOS = {
+  ancho: { aspecto: 0.82, anchos: [810, 1080, 1620] },
+  alto: { aspecto: 0.7, anchos: [540, 810, 1080] },
+} as const;
+type Formato = keyof typeof FORMATOS;
+const set = (f: Formato, estado: string, fmt: string) =>
+  FORMATOS[f].anchos.map((w) => `/images/persiana/${estado}-${f}-${POSTER_V}-${w}.${fmt} ${w}w`).join(', ');
+// Ancho real de la imagen (medido en el CSS): en escritorio, la columna derecha (100vw menos el margen izquierdo, la
+// columna de texto y el hueco: entre ~47 y 50vw según el ancho; se redondea a 52); en el móvil, todo el ancho.
+const SIZES_ANCHO = '52vw';
+const SIZES_ALTO = '100vw';
+// Qué se ve si no hay escena en vivo (sin WebGL, error o «reducir movimiento»): la persiana subida, con el interior.
+const ALT_INICIO = 'Fachada encalada de un comercio de Córdoba, con reja y macetas, y la persiana metálica casi bajada.';
+const ALT_FINAL = 'Fachada encalada de un comercio de Córdoba, con reja y macetas, y la persiana metálica subida: dentro, el cartel de Abierto, la web del negocio en una pantalla, un móvil con un aviso de WhatsApp en el mostrador y un plano con el pin pegado al cristal.';
+---
+<link rel="stylesheet" href={CSS}>
+<section class="ps" data-ps aria-labelledby="titular">
+  {/* .ps-pin: en escritorio se queda fija mientras el scroll sube la persiana (ver persiana.css) */}
+  <div class="ps-pin" data-pin>
+    <div class="ps-titulo">
+      {/* el titular grande primero y, debajo, qué hacemos y dónde: sin línea pequeña encima del titular (sin «eyebrow») */}
+      <h1 id="titular" class="ps-h1"><span class="ps-sub">Digitalización y webs en Córdoba<span class="sr">:</span></span> <span class="ps-grande">Todo tu negocio, en un solo sitio.</span></h1>
+    </div>
+
+    <div class="ps-escena" data-escena>
+      <picture>
+        <source media={`(prefers-reduced-motion: reduce) and ${MQ_ANCHO}`} type="image/avif" srcset={set('ancho', 'final', 'avif')} sizes={SIZES_ANCHO}>
+        <source media={`(prefers-reduced-motion: reduce) and ${MQ_ANCHO}`} type="image/webp" srcset={set('ancho', 'final', 'webp')} sizes={SIZES_ANCHO}>
+        <source media="(prefers-reduced-motion: reduce)" type="image/avif" srcset={set('alto', 'final', 'avif')} sizes={SIZES_ALTO}>
+        <source media="(prefers-reduced-motion: reduce)" type="image/webp" srcset={set('alto', 'final', 'webp')} sizes={SIZES_ALTO}>
+        {/* data-final: lo que pone arranque.ts en el póster si pasa a modo quieto (sin WebGL o con error) */}
+        <source media={MQ_ANCHO} type="image/avif" srcset={set('ancho', 'inicio', 'avif')} data-final={set('ancho', 'final', 'avif')} sizes={SIZES_ANCHO}>
+        <source media={MQ_ANCHO} type="image/webp" srcset={set('ancho', 'inicio', 'webp')} data-final={set('ancho', 'final', 'webp')} sizes={SIZES_ANCHO}>
+        <source type="image/avif" srcset={set('alto', 'inicio', 'avif')} data-final={set('alto', 'final', 'avif')} sizes={SIZES_ALTO}>
+        <img class="ps-poster" src={`/images/persiana/inicio-alto-${POSTER_V}-1080.webp`} srcset={set('alto', 'inicio', 'webp')} sizes={SIZES_ALTO}
+          data-final={set('alto', 'final', 'webp')} data-src-final={`/images/persiana/final-alto-${POSTER_V}-1080.webp`} data-alt-final={ALT_FINAL}
+          width="1080" height={Math.round(1080 / FORMATOS.alto.aspecto)} fetchpriority="high" decoding="async"
+          alt={ALT_INICIO}>
+      </picture>
+    </div>
+
+    <div class="ps-contacto">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+      <a class="btn btn-linea btn-tel" href={`tel:${PHONE.e164}`} aria-label={`Llamar al ${PHONE.display}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span class="tel-num">{PHONE.display}</span></a>
+    </div>
+
+    <div class="ps-apoyo">
+    <p class="ps-servicios">Webs y ficha de Google, soluciones a medida y herramientas gratis.</p>
+    {/* PROMESA: se mantiene (decisión del dueño, 11-nov-2026). Para quitarla, borrar este <ul> (y «.ps-promesa» en public/css/persiana.css).
+        OJO: la meta description de src/pages/index.astro también repite «desde 500 €» y «respuesta en menos de 24 h». */}
+    <ul class="ps-promesa">
+      <li><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Desde 500&nbsp;€</li>
+      <li><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>Respuesta en menos de 24 h</li>
+    </ul>
+    </div>
+  </div>
+</section>
+<script>
+  import '../scripts/persiana/arranque';
+</script>
