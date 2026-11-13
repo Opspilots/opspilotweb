@@ -74,7 +74,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
           <button class="problema" type="button" aria-controls="w-sitios">
             <span class="problema-n" aria-hidden="true"></span>
             <span class="problema-t">Tu información vive en cuatro sitios</span>
-            <span class="problema-p">Correo, Excel y WhatsApp que nunca cuadran. Buscas el mismo dato tres veces al día.</span>
+            <span class="problema-p">Correo, Excel, WhatsApp y PDFs que nunca cuadran. Buscas el mismo dato tres veces al día.</span>
           </button>
           <figure class="ventana pv" id="w-sitios" data-pv>
             <div class="v-barra pv-barra">
@@ -90,7 +90,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
                 </div>
                 <div class="app app-hoja">
                   <p class="app-bar"><svg class="ico" aria-hidden="true"><use href="#i-file-spreadsheet"/></svg>pedidos.xlsx</p>
-                  <table class="mini-hoja"><tr><th>Pedido</th><th>Material</th><th>Ud</th></tr><tr><td>0411</td><td>Agua 1,5 L</td><td>6</td></tr><tr class="sel"><td>0412</td><td>Vino tinto (caja 6)</td><td><mark class="choque">14</mark></td></tr></table>
+                  <table class="mini-hoja"><tr><th>Pedido</th><th>Material</th><th>Cajas</th></tr><tr><td>0411</td><td>Agua 1,5 L</td><td>6</td></tr><tr class="sel"><td>0412</td><td>Vino tinto</td><td><mark class="choque">14</mark></td></tr></table>
                 </div>
                 <div class="app app-chat">
                   <p class="app-bar"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>WhatsApp</p>
@@ -99,7 +99,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
                 </div>
                 <div class="app app-pdf">
                   <p class="app-bar"><svg class="ico" aria-hidden="true"><use href="#i-paperclip"/></svg>pedido_0412_final_v2.pdf</p>
-                  <div class="pdf-hoja"><i></i><i></i><p>Cantidad: <mark class="choque">10 ud</mark></p><i></i></div>
+                  <div class="pdf-hoja"><i></i><i></i><p>Cantidad: <mark class="choque">10 cajas</mark></p><i></i></div>
                 </div>
                 <p class="alerta"><svg class="ico" aria-hidden="true"><use href="#i-circle-alert"/></svg>3 cantidades distintas para el mismo pedido</p>
               </div>
@@ -108,14 +108,14 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
               <div class="ficha">
                 <div class="ficha-cab"><span><small>Pedido</small><b>0412 · Bar La Plaza</b></span><span class="chip chip-ok"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Confirmado</span></div>
                 <dl class="ficha-datos">
-                  <div><dt>Material</dt><dd>Vino tinto (caja 6)</dd></div>
-                  <div><dt>Cantidad</dt><dd class="dato-uno">12 ud</dd></div>
+                  <div><dt>Material</dt><dd>Vino tinto</dd></div>
+                  <div><dt>Cantidad</dt><dd class="dato-uno">12 cajas</dd></div>
                   <div><dt>Entrega</dt><dd>Viernes</dd></div>
                 </dl>
                 <ol class="linea">
                   <li><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span><b>09:14 · Correo del cliente</b>«al final son 12» → cantidad actualizada</span></li>
                   <li><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg><span><b>11:02 · WhatsApp enlazado al pedido</b>respondido con el dato de la ficha</span></li>
-                  <li><svg class="ico" aria-hidden="true"><use href="#i-refresh-cw"/></svg><span><b>11:02 · Hoja y albarán</b>se rehacen solos con las 12 ud</span></li>
+                  <li><svg class="ico" aria-hidden="true"><use href="#i-refresh-cw"/></svg><span><b>11:02 · Hoja y albarán</b>se rehacen solos con las 12 cajas</span></li>
                   <li><svg class="ico" aria-hidden="true"><use href="#i-file-check-2"/></svg><span><b>11:03 · Pedido al almacén</b>sale con la cantidad buena, una sola vez</span></li>
                 </ol>
               </div>
@@ -200,7 +200,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
                   <div class="np"><p class="np-f">Transferencia recibida<span>ref. «bar plaza 1/2»</span></p><p class="np-f">Recibo luz almacén<span>cargo</span></p><p class="np-f">Bodega<span>cargo</span></p><p class="np-f">¿Pagó el segundo plazo?<span>no aparece</span></p></div>
                   <div class="np"><p class="np-f"><b>12:30</b>Llamar a Bar La Plaza</p><p class="np-f"><b>16:00</b>Visita Hotel Ribera</p><p class="np-f"><b>Viernes</b>Abre la terraza</p></div>
                   <div class="np"><p class="np-f"><b>Bar La Plaza</b><span>¿Me confirmas si eran 12 o 14?</span></p><p class="np-f">Hotel Ribera<span>Audio de 2:14</span></p><p class="np-f">Repartidor<span>Mañana no puedo</span></p><p class="np-f">Catering Sur<span>Foto</span></p></div>
-                  <div class="np"><p class="np-f">Pedido 0412<span>14 ud</span></p><p class="np-f">Cobros<span>#¡REF!</span></p><p class="np-f">Pedidos en curso<span>hoja 3 de 7</span></p></div>
+                  <div class="np"><p class="np-f">Pedido 0412<span>14 cajas</span></p><p class="np-f">Cobros<span>#¡REF!</span></p><p class="np-f">Pedidos en curso<span>hoja 3 de 7</span></p></div>
                 </div>
                 <p class="nav-cuenta"><span data-nav-n>1</span> de 5 pestañas para contestar una llamada</p>
               </div>
@@ -212,9 +212,9 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
                   <div class="ph-w"><p class="ph-t"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>Último correo</p><p>Re: pedido del viernes · ayer</p></div>
                   <div class="ph-w"><p class="ph-t"><svg class="ico" aria-hidden="true"><use href="#i-credit-card"/></svg>Cobros</p><p>1.º plazo cobrado · 2.º pendiente</p></div>
                   <div class="ph-w"><p class="ph-t"><svg class="ico" aria-hidden="true"><use href="#i-calendar-days"/></svg>Agenda</p><p>Viernes · abren la terraza</p></div>
-                  <div class="ph-w"><p class="ph-t"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>WhatsApp</p><p>«¿12 o 14?» → 12 ud, según el pedido</p></div>
+                  <div class="ph-w"><p class="ph-t"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>WhatsApp</p><p>«¿12 o 14?» → 12 cajas, según el pedido</p></div>
                 </div>
-                <p class="ph-acc"><span class="pri"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg>Confirmar 12 ud por WhatsApp</span><span><svg class="ico" aria-hidden="true"><use href="#i-calendar-check"/></svg>Mover la visita</span><span><svg class="ico" aria-hidden="true"><use href="#i-receipt"/></svg>Recordar 2.º plazo</span></p>
+                <p class="ph-acc"><span class="pri"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg>Confirmar 12 cajas por WhatsApp</span><span><svg class="ico" aria-hidden="true"><use href="#i-calendar-check"/></svg>Mover la visita</span><span><svg class="ico" aria-hidden="true"><use href="#i-receipt"/></svg>Recordar 2.º plazo</span></p>
               </div>
             </div>
             <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Cinco pestañas abiertas para contestar una sola llamada.</span><span data-nota-sis>Suena el teléfono y ya tienes delante todo lo de ese cliente.</span></figcaption>
