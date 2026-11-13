@@ -4,8 +4,8 @@
    scroll, que es lo que dura la subida de la persiana: así se ve el interior entero antes de que la escena se vaya.
    Escritorio y apaisado ancho: el texto a la izquierda, alineado con el resto de la web, y la escena a sangre hasta el
    borde derecho. Ahí la cabecera entera (.ps-pin) se queda fija durante medio alto de pantalla de scroll: es lo que dura
-   la subida de la persiana; después la página sigue. Sin JS, con «reducir movimiento» o si la escena no arranca
-   (.ps-quieta), no se fija nada.
+   la subida de la persiana; después la página sigue. Sin JS, con «reducir movimiento», con poca altura o si la
+   escena no arranca (.ps-quieta), no se fija nada (la fijación es la clase .ps-fija, ver el final).
    La escena son dos capas del mismo tamaño: el póster (<img>; sin CLS: su caja la da el layout, no la imagen) y el canvas
    que se funde encima (.ps-viva). Las dos recortan igual: object-fit: cover sobre la proporción 0,9 del encuadre.
    Tamaños de letra: la escala de opspilot.css (--t-1 … --t-6). */
@@ -72,14 +72,17 @@
   .ps-apoyo{grid-area:apoyo;padding:0}
   .ps-contacto{grid-area:contacto;padding:2rem 0 0;gap:.8rem}
 }
-/* la fijación (solo cuando hay escena en vivo posible). En el móvil, el recorrido lo da un hueco al final de la sección
-   (::after, dentro de su caja de contenido: el sticky no puede usar el padding); en escritorio, el alto de la sección. */
-@media (prefers-reduced-motion:no-preference){
-  html.js .ps:not(.ps-quieta)::after{content:"";display:block;height:38svh}
-  html.js .ps:not(.ps-quieta) .ps-pin{position:sticky;top:var(--cab)}
+/* la fijación: solo cuando la escena en vivo está lista (.ps-fija, que pone arranque.ts si la página sigue arriba). Así, si
+   no hay WebGL o se reduce el movimiento, la sección no cambia de alto y no hay saltos; y al activarse crece por abajo.
+   En el móvil, el recorrido lo da un hueco al final de la sección (::after, dentro de su caja de contenido: el sticky no
+   puede usar el padding); en escritorio, el alto de la sección. Con poca altura (móvil apaisado) no se fija nada: la
+   parte fija no cabría en pantalla y dejaría los botones de contacto fuera. */
+@media (prefers-reduced-motion:no-preference) and (min-height:501px){
+  .ps-fija:not(.ps-quieta)::after{content:"";display:block;height:38svh}
+  .ps-fija:not(.ps-quieta) .ps-pin{position:sticky;top:var(--cab)}
 }
-@media (min-width:900px) and (min-aspect-ratio:1/1) and (prefers-reduced-motion:no-preference){
-  html.js .ps:not(.ps-quieta)::after{display:none}
-  html.js .ps:not(.ps-quieta){height:calc(var(--alto) + 50svh)}
-  html.js .ps:not(.ps-quieta) .ps-pin{position:sticky;top:var(--cab)}
+@media (min-width:900px) and (min-aspect-ratio:1/1) and (prefers-reduced-motion:no-preference) and (min-height:501px){
+  .ps-fija:not(.ps-quieta)::after{display:none}
+  .ps-fija:not(.ps-quieta){height:calc(var(--alto) + 50svh)}
+  .ps-fija:not(.ps-quieta) .ps-pin{position:sticky;top:var(--cab)}
 }

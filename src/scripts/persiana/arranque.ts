@@ -4,15 +4,50 @@
 // subida (lo elige el <picture>). Si no hay WebGL, o falla algo, también se queda el póster.
 //
 // Modo póster (para scripts/poster-persiana.mjs): ?poster=inicio|final pinta un único fotograma a pantalla completa.
+// Ese script trabaja contra el build de producción (astro preview), así que no se puede limitar a import.meta.env.DEV:
+// se aceptan solo esos dos valores exactos; cualquier otro se ignora y la página sale normal.
 
 const raiz = document.querySelector<HTMLElement>('[data-ps]');
 const escena = raiz?.querySelector<HTMLElement>('[data-escena]');
 const parametros = new URLSearchParams(location.search);
-const modoPoster = parametros.get('poster');
+const pedidoPoster = parametros.get('poster');
+const modoPoster = pedidoPoster === 'inicio' || pedidoPoster === 'final' ? pedidoPoster : null;
 const quieto = matchMedia('(prefers-reduced-motion: reduce)');
+
+/** Pasa la cabecera a «quieta»: sin escena en vivo ni fijación, y con el póster de la persiana subida (interior a la vista).
+ *  Sin JS se queda el póster de inicio, así que el cambio solo se hace aquí, cuando ya se sabe que no habrá escena. */
+function ponerQuieta() {
+  if (!raiz) return;
+  raiz.classList.remove('ps-viva', 'ps-fija');
+  raiz.classList.add('ps-quieta');
+  const img = raiz.querySelector<HTMLImageElement>('img.ps-poster');
+  if (img?.dataset.altFinal) img.alt = img.dataset.altFinal;
+  // con «reducir movimiento» el <picture> ya ha elegido el póster final: no se vuelve a pedir nada
+  if (quieto.matches) return;
+  for (const el of raiz.querySelectorAll<HTMLElement>('[data-final]')) {
+    if (el instanceof HTMLSourceElement) el.srcset = el.dataset.final!;
+    else if (el instanceof HTMLImageElement) { el.srcset = el.dataset.final!; el.src = el.dataset.srcFinal ?? el.src; }
+  }
+}
+
+/** ¿Se puede crear un contexto WebGL2 de verdad (sin el modo por software)? Se comprueba antes de bajar three.js y sin
+ *  que three escriba su «Error creating WebGL context» en la consola. */
+function hayWebGL(): boolean {
+  if (parametros.has('persiana-forzar')) return true;
+  try {
+    const prueba = document.createElement('canvas');
+    const gl = prueba.getContext('webgl2', { failIfMajorPerformanceCaveat: true });
+    if (!gl) return false;
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 async function cargar() {
   if (!raiz || !escena) return;
+  if (!modoPoster && !hayWebGL()) { ponerQuieta(); return; }
   const fuentes = document.fonts?.load ? Promise.all([
     document.fonts.load('800 64px Bricolage'), document.fonts.load('500 24px Bricolage'),
   ]).catch(() => undefined) : Promise.resolve();
@@ -44,10 +79,20 @@ async function cargar() {
   try {
     p = new Persiana(canvas, { movil });
   } catch {
-    raiz.classList.add('ps-quieta'); // sin WebGL (o con WebGL por software): se queda el póster, y sin fijar la cabecera
+    ponerQuieta(); // sin WebGL (o con WebGL por software): se queda el póster, y sin fijar la cabecera
     return;
   }
-  await p.construir();
+  try {
+    await p.construir();
+  } catch (e) {
+    try { p.liberar(); } catch { /* ya no hay nada que liberar */ }
+    throw e;
+  }
+  if (quieto.matches) { p.liberar(); ponerQuieta(); return; } // se pidió «reducir movimiento» mientras se construía
+
+  // la fijación solo se activa ahora que la escena está lista y solo si la página sigue arriba: así la sección crece por
+  // abajo sin mover nada de lo que se ve. Si ya se ha bajado, no se fija (la persiana sube en los primeros ~380 px).
+  if (scrollY < 8) raiz.classList.add('ps-fija');
 
   // el objetivo de la persiana: la subida breve del arranque y, encima, lo que diga el scroll
   let intro = INICIO;
@@ -85,15 +130,18 @@ async function cargar() {
   tamano.observe(escena);
   medir();
 
+  let liberada = false;
+
   // el primer fotograma, en el mismo estado que el póster; y entonces el fundido
   p.abierto = p.objetivo = INICIO;
   escena.append(canvas);
   p.onFrame = () => {
     p.onFrame = undefined;
     requestAnimationFrame(() => {
+      if (liberada) return;
       raiz.classList.add('ps-viva');
       // la subida breve, cuando el fundido ya ha terminado
-      setTimeout(() => { intro = INTRO; actualizar(); }, 650);
+      setTimeout(() => { if (!liberada) { intro = INTRO; actualizar(); } }, 650);
     });
   };
   p.pedir();
@@ -122,19 +170,19 @@ async function cargar() {
   document.addEventListener('visibilitychange', estado, senal);
 
   // si se pide «reducir movimiento» con la página abierta, fuera la escena: queda el póster.
-  // Antes de liberar el renderer se desconecta todo lo que podría volver a pedir fotogramas.
-  quieto.addEventListener('change', () => {
-    if (!quieto.matches) return;
+  // Antes de liberar el renderer se desconecta todo lo que podría volver a pedir fotogramas. Es idempotente.
+  const soltar = () => {
+    if (liberada) return;
+    liberada = true;
     fin.abort();
     enPantalla.disconnect();
     tamano.disconnect();
     p.onFrame = undefined;
-    p.activo = false;
     p.liberar();
     canvas.remove();
-    raiz.classList.remove('ps-viva');
-    raiz.classList.add('ps-quieta');
-  });
+    ponerQuieta();
+  };
+  quieto.addEventListener('change', () => { if (quieto.matches) soltar(); }, senal);
 }
 
 function cuandoEsteLibre(f: () => void) {
@@ -152,4 +200,5 @@ function cuandoEsteLibre(f: () => void) {
 }
 
 if (modoPoster) cargar();
-else if (raiz && !quieto.matches) cuandoEsteLibre(() => { cargar().catch(() => { raiz.classList.remove('ps-viva'); raiz.classList.add('ps-quieta'); }); });
+else if (raiz && quieto.matches) ponerQuieta();
+else if (raiz) cuandoEsteLibre(() => { cargar().catch(ponerQuieta); });
