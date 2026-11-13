@@ -18,6 +18,8 @@ const EMPIEZA = [
   ['Quiero automatizar, pero no sé qué.', 'automatiza-tu-negocio-sin-saber-de-tecnologia'],
   ['Voy a pedir presupuesto y no quiero que me timen.', 'como-pedir-presupuesto-de-software'],
 ].map(([sit, slug]) => ({ sit, r: RESOURCES.find((x) => x.slug === slug)! })).filter((x) => x.r);
+// Las dos columnas de herramientas quedan igual de altas: la más corta termina con una tarjeta para pedir la que falta.
+const MAX_GRUPO = Math.max(...GRUPOS.map((g) => HERRAMIENTAS.filter((h) => h.grupo === g.id).length));
 const CATS = ORDEN.filter((c) => RESOURCES.some((r) => r.cat === c));
 const blog = {
   '@type': 'Blog',
@@ -49,6 +51,12 @@ const blog = {
                   <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
                 </a></li>
               ))}
+              {HERRAMIENTAS.filter((o) => o.grupo === g.id).length < MAX_GRUPO && (
+                <li><a class="hz-pide" href={WA('Hola OpsPilot, me vendría bien una herramienta para:')} rel="noopener">
+                  <span><small>¿Echas una en falta?</small><b>Cuéntanos cuál y la tenemos en cuenta</b></span>
+                  <svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>
+                </a></li>
+              )}
             </ul>
           </div>
         ))}
