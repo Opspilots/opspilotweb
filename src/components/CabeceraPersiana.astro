@@ -18,7 +18,7 @@ const CSS = `/css/persiana.css?v=${version('/css/persiana.css')}`;
 // recortan igual (cover). Escritorio («ancho», la columna derecha): hasta 1620 px para pantallas de DPR 2. Móvil
 // («alto», todo el ancho): hasta 1080 px. El corte entre los dos es el mismo que el del CSS (MQ_ANCHO).
 // Las imágenes también son inmutables en nginx: si se regeneran, cambia el sufijo de versión del nombre (POSTER_V).
-const POSTER_V = 'v2';
+const POSTER_V = 'v3';
 const MQ_ANCHO = '(min-width: 900px) and (min-aspect-ratio: 1/1)';
 const FORMATOS = {
   ancho: { aspecto: 0.82, anchos: [810, 1080, 1620] },

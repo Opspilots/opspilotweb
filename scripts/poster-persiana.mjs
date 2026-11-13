@@ -11,7 +11,7 @@ import { createRequire } from 'node:module';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import sharp from 'sharp';
 
-const POSTER_V = 'v2';
+const POSTER_V = 'v3';
 // Sobremuestreo: se renderiza un 25 % más grande que el póster mayor y se reduce (bordes más limpios que el antialias
 // del canvas solo). Peso: cada póster tiene un tope en KB (AVIF; el WebP, 1,7 veces más): se codifica con la calidad
 // de partida y, si se pasa, se baja de 4 en 4 hasta que cabe. El grano de la cal y del empedrado es lo que más pesa.

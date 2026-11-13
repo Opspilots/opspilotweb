@@ -36,11 +36,11 @@ type Pose = { pos: Vector3; mira: Vector3 };
 const POSES: Record<Encuadre, { a: Pose; b: Pose }> = {
   ancho: {
     a: { pos: new Vector3(-0.05, 2.2, 10.6), mira: new Vector3(-0.05, 2.05, 0) },
-    b: { pos: new Vector3(0.72, 1.5, 5.7), mira: new Vector3(0.74, 1.36, -1) },
+    b: { pos: new Vector3(0.72, 1.5, 4.8), mira: new Vector3(0.74, 1.36, -1) },
   },
   alto: {
     a: { pos: new Vector3(0.02, 2.05, 11.8), mira: new Vector3(0.02, 1.95, 0) },
-    b: { pos: new Vector3(0.7, 1.42, 5.6), mira: new Vector3(0.72, 1.3, -1) },
+    b: { pos: new Vector3(0.75, 1.75, 5.1), mira: new Vector3(0.75, 1.1, -1) },
   },
 };
 
@@ -936,7 +936,8 @@ export class Persiana {
     const pose = POSES[this.encuadre];
     const pos = pose.a.pos.clone().lerp(pose.b.pos, k);
     const mira = pose.a.mira.clone().lerp(pose.b.mira, k);
-    pos.x += this.punteroSuave.x * 0.18;
+    // el puntero mueve menos la cámara cuanto más cerca está (en B, el azulejo queda justo fuera del encuadre)
+    pos.x += this.punteroSuave.x * 0.18 * (1 - 0.6 * k);
     pos.y += this.punteroSuave.y * 0.08;
     this.camara.position.copy(pos);
     this.camara.lookAt(mira);
