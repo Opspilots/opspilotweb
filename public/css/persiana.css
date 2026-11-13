@@ -1,0 +1,82 @@
+/* La persiana · cabecera de la portada. Solo la carga la portada (CabeceraPersiana.astro).
+   Móvil (por defecto): titular, la escena y los botones de contacto en la primera pantalla (390 × 844, también con las
+   barras del navegador) y, debajo, lo que ofrecemos. Esa primera pantalla se queda fija (sticky) durante ~38svh de
+   scroll, que es lo que dura la subida de la persiana: así se ve el interior entero antes de que la escena se vaya.
+   Escritorio y apaisado ancho: el texto a la izquierda, alineado con el resto de la web, y la escena a sangre hasta el
+   borde derecho. Ahí la cabecera entera (.ps-pin) se queda fija durante medio alto de pantalla de scroll: es lo que dura
+   la subida de la persiana; después la página sigue. Sin JS, con «reducir movimiento» o si la escena no arranca
+   (.ps-quieta), no se fija nada.
+   La escena son dos capas del mismo tamaño: el póster (<img>; sin CLS: su caja la da el layout, no la imagen) y el canvas
+   que se funde encima (.ps-viva). Las dos recortan igual: object-fit: cover sobre la proporción 0,9 del encuadre.
+   Tamaños de letra: la escala de opspilot.css (--t-1 … --t-6). */
+
+.ps{position:relative;isolation:isolate;padding-block:0;background:#1A2330;color:#fff}
+.ps-pin{display:flex;flex-direction:column}
+
+/* ─── titular (blanco sobre #1A2330: 15:1; el subtítulo #D5DCE5: 11:1) ─── */
+.ps-titulo{padding:clamp(.8rem,2.2svh,1.4rem) clamp(1rem,4vw,2.5rem) clamp(.8rem,2svh,1.2rem)}
+.ps-h1{margin:0;font-weight:800;font-size:var(--t-6);line-height:1;letter-spacing:-.03em}
+.ps-grande{display:block;text-wrap:balance}
+.ps-sub{display:block;margin-top:.5rem;font-weight:600;font-size:var(--t-4);line-height:1.2;letter-spacing:-.01em;color:#D5DCE5}
+
+/* ─── la escena: en el móvil, el alto que dejan el titular y los botones en la primera pantalla ─── */
+.ps-escena{
+  position:relative;overflow:hidden;background:#3A3D3F;
+  height:clamp(17rem,calc(100svh - var(--cab) - 2 * var(--t-6) - 1.2 * var(--t-4) - 7.4rem),150vw);
+}
+.ps-poster,.ps-canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ps-canvas{opacity:0;transition:opacity .6s cubic-bezier(.2,0,0,1)}
+.ps-viva .ps-canvas{opacity:1}
+
+/* ─── contacto: justo debajo de la escena ─── */
+.ps-contacto{display:flex;flex-wrap:wrap;gap:.6rem;padding:.8rem clamp(1rem,4vw,2.5rem) .85rem}
+.ps-contacto .btn{flex:1 1 auto;gap:.45rem;white-space:nowrap;padding-inline:.65rem;min-height:3rem}
+@media (max-width:379px){.ps-contacto .ico{display:none}}
+.ps .btn-tinta{background:var(--verde);color:var(--navy)}
+.ps .btn-tinta:hover{background:#6AD79D}
+.ps .btn-linea{color:#fff;box-shadow:inset 0 0 0 1.5px rgb(255 255 255/.6)} /* el contorno del botón secundario, como en opspilot.css (no es una sombra) taste-skill-ignore */
+.ps .btn-linea:hover{background:rgb(255 255 255/.1)}
+.ps .btn{transition-property:transform,background-color}
+.ps .btn:active{transform:scale(.96)}
+.ps :focus-visible{outline:3px solid var(--ambar);outline-offset:3px}
+
+/* ─── lo que ofrecemos y la promesa ─── */
+.ps-apoyo{padding:.5rem clamp(1rem,4vw,2.5rem) 2rem}
+.ps-servicios{max-width:34rem;font-weight:500;font-size:var(--t-4);line-height:1.35;text-wrap:pretty}
+.ps-promesa{list-style:none;display:flex;flex-wrap:wrap;gap:.4rem 1.3rem;margin-top:.8rem;font-weight:650;font-size:var(--t-3);line-height:1.3;color:#E6EBF2}
+.ps-promesa li{display:inline-flex;align-items:center;gap:.45rem}
+.ps-promesa .ico{color:var(--verde);width:1.15em;height:1.15em}
+
+@media (min-width:640px){
+  .ps-contacto .btn{flex:none;padding-inline:1.2rem}
+}
+
+/* ─── escritorio y apaisado ancho: texto a la izquierda (alineado con .wrap), escena a la derecha a sangre ─── */
+@media (min-width:900px) and (min-aspect-ratio:1/1){
+  .ps{--alto:min(calc(100svh - var(--cab)),64rem)}
+  .ps-pin{
+    display:grid;
+    grid-template-columns:minmax(0,clamp(24rem,36vw,35rem)) minmax(0,1fr);
+    grid-template-rows:1fr auto auto auto 1fr;
+    grid-template-areas:". escena" "titulo escena" "apoyo escena" "contacto escena" ". escena";
+    column-gap:clamp(2rem,4vw,4.5rem);
+    padding-left:max(clamp(1rem,4vw,2.5rem),calc((100vw - 78rem) / 2 + clamp(1rem,4vw,2.5rem)));
+    height:var(--alto);
+  }
+  .ps-titulo{grid-area:titulo;padding:0 0 1.6rem}
+  .ps-sub{margin-top:.8rem}
+  .ps-escena{grid-area:escena;height:auto}
+  .ps-apoyo{grid-area:apoyo;padding:0}
+  .ps-contacto{grid-area:contacto;padding:2rem 0 0;gap:.8rem}
+}
+/* la fijación (solo cuando hay escena en vivo posible). En el móvil, el recorrido lo da un hueco al final de la sección
+   (::after, dentro de su caja de contenido: el sticky no puede usar el padding); en escritorio, el alto de la sección. */
+@media (prefers-reduced-motion:no-preference){
+  html.js .ps:not(.ps-quieta)::after{content:"";display:block;height:38svh}
+  html.js .ps:not(.ps-quieta) .ps-pin{position:sticky;top:var(--cab)}
+}
+@media (min-width:900px) and (min-aspect-ratio:1/1) and (prefers-reduced-motion:no-preference){
+  html.js .ps:not(.ps-quieta)::after{display:none}
+  html.js .ps:not(.ps-quieta){height:calc(var(--alto) + 50svh)}
+  html.js .ps:not(.ps-quieta) .ps-pin{position:sticky;top:var(--cab)}
+}

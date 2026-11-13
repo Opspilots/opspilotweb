@@ -1,0 +1,63 @@
+---
+// Cabecera de la home, «La persiana» (12-nov-2026): la fachada encalada de un comercio de Córdoba, en 3D. La persiana
+// sube (un poco al cargar, del todo con el scroll) y dentro aparece el negocio ya digitalizado: el cartel de «Abierto»,
+// la web en la pantalla, el aviso de WhatsApp y el pin del mapa. Sustituye a «La mesa» (CabeceraMesa.astro).
+//
+// Capas: el póster (una foto de la propia escena, generada con scripts/poster-persiana.mjs) es lo que se pinta primero y
+// lo que ve quien no tiene JS o WebGL; con «reducir movimiento», el <picture> elige el póster con la persiana ya subida
+// y no se carga three.js. Encima, cuando está lista, la escena en vivo (src/scripts/persiana/) se funde sobre el póster.
+// El texto es HTML normal, al lado de la escena (encima de ella en el móvil), nunca sobre la imagen.
+import { WA, PHONE } from '../lib/sitio';
+import { version } from '../lib/version';
+
+// nginx sirve .css y .js con «Cache-Control: public, immutable»: la versión va en la URL (ver DEPLOY.md).
+const CSS = `/css/persiana.css?v=${version('/css/persiana.css')}`;
+
+// Pósteres: misma proporción (0,9) que el encuadre de referencia de la escena; las dos capas recortan igual (cover).
+// Las imágenes también son inmutables en nginx: si se regeneran, cambia el sufijo de versión del nombre (POSTER_V).
+const POSTER_V = 'v1';
+const ANCHOS = [540, 810, 1080];
+const ALTO = (w: number) => Math.round(w / 0.9);
+const set = (estado: string, fmt: string) => ANCHOS.map((w) => `/images/persiana/${estado}-${POSTER_V}-${w}.${fmt} ${w}w`).join(', ');
+// En el móvil la escena es más estrecha que el póster (se recorta por los lados): pide algo más de 100vw.
+const SIZES = '(min-width: 900px) and (min-aspect-ratio: 1/1) 56vw, 118vw';
+---
+<link rel="stylesheet" href={CSS}>
+<section class="ps" data-ps aria-labelledby="titular">
+  {/* .ps-pin: en escritorio se queda fija mientras el scroll sube la persiana (ver persiana.css) */}
+  <div class="ps-pin" data-pin>
+    <div class="ps-titulo">
+      {/* el titular grande primero y, debajo, qué hacemos y dónde: sin línea pequeña encima del titular (sin «eyebrow») */}
+      <h1 id="titular" class="ps-h1"><span class="ps-grande">Todo tu negocio, en un solo sitio.</span> <span class="ps-sub">Digitalización y webs en Córdoba</span></h1>
+    </div>
+
+    <div class="ps-escena" data-escena>
+      <picture>
+        <source media="(prefers-reduced-motion: reduce)" type="image/avif" srcset={set('final', 'avif')} sizes={SIZES}>
+        <source media="(prefers-reduced-motion: reduce)" type="image/webp" srcset={set('final', 'webp')} sizes={SIZES}>
+        <source type="image/avif" srcset={set('inicio', 'avif')} sizes={SIZES}>
+        <img class="ps-poster" src={`/images/persiana/inicio-${POSTER_V}-1080.webp`} srcset={set('inicio', 'webp')} sizes={SIZES}
+          width="1080" height={ALTO(1080)} fetchpriority="high" decoding="async"
+          alt="Fachada encalada de un comercio de Córdoba, con reja y macetas, y la persiana metálica subiendo: dentro, el cartel de Abierto, la web del negocio en una pantalla, un aviso de WhatsApp y un vinilo con el pin del mapa.">
+      </picture>
+    </div>
+
+    <div class="ps-contacto">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+      <a class="btn btn-linea btn-tel" href={`tel:${PHONE.e164}`} aria-label={`Llamar al ${PHONE.display}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span class="tel-num">{PHONE.display}</span></a>
+    </div>
+
+    <div class="ps-apoyo">
+    <p class="ps-servicios">Webs y ficha de Google, soluciones a medida y herramientas gratis.</p>
+    {/* PROMESA: se mantiene (decisión del dueño, 11-nov-2026). Para quitarla, borrar este <ul> (y «.ps-promesa» en public/css/persiana.css).
+        OJO: la meta description de src/pages/index.astro también repite «desde 500 €» y «respuesta en menos de 24 h». */}
+    <ul class="ps-promesa">
+      <li><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Desde 500&nbsp;€</li>
+      <li><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>Respuesta en menos de 24 h</li>
+    </ul>
+    </div>
+  </div>
+</section>
+<script>
+  import '../scripts/persiana/arranque';
+</script>
