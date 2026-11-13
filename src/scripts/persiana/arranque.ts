@@ -67,7 +67,10 @@ async function cargar() {
     }
   };
   medirRecorrido();
-  addEventListener('resize', medirRecorrido);
+  // todos los listeners cuelgan de esta señal: al liberar la escena se quitan de una vez
+  const fin = new AbortController();
+  const senal = { signal: fin.signal };
+  addEventListener('resize', medirRecorrido, senal);
   const progreso = () => Math.min(1, Math.max(0, (scrollY - desde) / recorrido));
   const actualizar = () => {
     p.objetivo = intro === INICIO ? INICIO : INTRO + (1 - INTRO) * progreso();
@@ -78,7 +81,8 @@ async function cargar() {
     const r = escena.getBoundingClientRect();
     if (r.width > 0 && r.height > 0) p.medir(r.width, r.height);
   };
-  new ResizeObserver(medir).observe(escena);
+  const tamano = new ResizeObserver(medir);
+  tamano.observe(escena);
   medir();
 
   // el primer fotograma, en el mismo estado que el póster; y entonces el fundido
@@ -94,15 +98,15 @@ async function cargar() {
   };
   p.pedir();
 
-  addEventListener('scroll', () => { if (intro === INTRO) actualizar(); }, { passive: true });
+  addEventListener('scroll', () => { if (intro === INTRO) actualizar(); }, { passive: true, signal: fin.signal });
 
   // el puntero mueve un poco la cámara (solo con ratón)
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
     escena.addEventListener('pointermove', (e) => {
       const r = escena.getBoundingClientRect();
       p.apuntar(((e.clientX - r.left) / r.width) * 2 - 1, -(((e.clientY - r.top) / r.height) * 2 - 1));
-    });
-    escena.addEventListener('pointerleave', () => p.apuntar(0, 0));
+    }, senal);
+    escena.addEventListener('pointerleave', () => p.apuntar(0, 0), senal);
   }
 
   // fuera de pantalla o con la pestaña oculta, no se pinta
@@ -113,12 +117,19 @@ async function cargar() {
     p.activo = activo;
     if (activo) p.pedir();
   };
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; estado(); }).observe(escena);
-  document.addEventListener('visibilitychange', estado);
+  const enPantalla = new IntersectionObserver(([e]) => { visible = e.isIntersecting; estado(); });
+  enPantalla.observe(escena);
+  document.addEventListener('visibilitychange', estado, senal);
 
-  // si se pide «reducir movimiento» con la página abierta, fuera la escena: queda el póster
+  // si se pide «reducir movimiento» con la página abierta, fuera la escena: queda el póster.
+  // Antes de liberar el renderer se desconecta todo lo que podría volver a pedir fotogramas.
   quieto.addEventListener('change', () => {
     if (!quieto.matches) return;
+    fin.abort();
+    enPantalla.disconnect();
+    tamano.disconnect();
+    p.onFrame = undefined;
+    p.activo = false;
     p.liberar();
     canvas.remove();
     raiz.classList.remove('ps-viva');

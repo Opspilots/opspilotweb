@@ -220,6 +220,13 @@ export class Persiana {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = PCFShadowMap;
     this.renderer.setPixelRatio(op.poster ? 1 : Math.min(window.devicePixelRatio || 1, 1.75));
+    // three recupera el render solo tras perder el contexto, pero las sombras tienen autoUpdate=false:
+    // hay que pedir que se recalculen o la pared se queda sin la sombra proyectada
+    canvas.addEventListener('webglcontextrestored', () => {
+      if (this.sol) this.sol.shadow.needsUpdate = true;
+      if (this.foco) this.foco.shadow.needsUpdate = true;
+      this.pedir();
+    });
   }
 
   /** Construye la escena por partes, cediendo el hilo entre ellas (sin tareas largas en móviles lentos). */
