@@ -15,7 +15,7 @@
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var RM = matchMedia('(prefers-reduced-motion: reduce)');
   var PUNTO = 0.06;   /* por dónde de su tramo cae el scroll al ir a un problema: un poco dentro, para que no lo empuje al anterior */
-  var NAV_Q = ['¿dónde apunté lo del cliente de ayer?', '¿pagó el segundo plazo?', '¿qué día empezaba el alicatado?', '¿qué me dijo por WhatsApp?', '¿eran 12 o 14 placas?'];
+  var NAV_Q = ['¿dónde apunté lo del cliente de ayer?', '¿pagó el segundo plazo?', '¿qué día abrían la terraza?', '¿qué me dijo por WhatsApp?', '¿eran 12 o 14 cajas?'];
   var cl = function (x, a, b) { return x < a ? a : x > b ? b : x; };
   var raf = 0;
 
