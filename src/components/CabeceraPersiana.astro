@@ -1,7 +1,8 @@
 ---
 // Cabecera de la home, «La persiana» (12-nov-2026): la fachada encalada de un comercio de Córdoba, en 3D. La persiana
 // sube (un poco al cargar, del todo con el scroll) y dentro aparece el negocio ya digitalizado: el cartel de «Abierto»,
-// la web en la pantalla, el aviso de WhatsApp y el pin del mapa. Sustituye a «La mesa» (CabeceraMesa.astro).
+// la web en la pantalla, el móvil del mostrador con un WhatsApp y el plano con el pin pegado al cristal. Sustituye a
+// «La mesa» (CabeceraMesa.astro).
 //
 // Capas: el póster (una foto de la propia escena, generada con scripts/poster-persiana.mjs) es lo que se pinta primero y
 // lo que ve quien no tiene JS o WebGL; con «reducir movimiento», el <picture> elige el póster con la persiana ya subida
@@ -13,18 +14,26 @@ import { version } from '../lib/version';
 // nginx sirve .css y .js con «Cache-Control: public, immutable»: la versión va en la URL (ver DEPLOY.md).
 const CSS = `/css/persiana.css?v=${version('/css/persiana.css')}`;
 
-// Pósteres: misma proporción (0,9) que el encuadre de referencia de la escena; las dos capas recortan igual (cover).
+// Pósteres: uno por encuadre, con la misma proporción de referencia que la escena (ASPECTOS en escena.ts); las dos capas
+// recortan igual (cover). Escritorio («ancho», la columna derecha): hasta 1620 px para pantallas de DPR 2. Móvil
+// («alto», todo el ancho): hasta 1080 px. El corte entre los dos es el mismo que el del CSS (MQ_ANCHO).
 // Las imágenes también son inmutables en nginx: si se regeneran, cambia el sufijo de versión del nombre (POSTER_V).
-const POSTER_V = 'v1';
-const ANCHOS = [540, 810, 1080];
-const ALTO = (w: number) => Math.round(w / 0.9);
-const set = (estado: string, fmt: string) => ANCHOS.map((w) => `/images/persiana/${estado}-${POSTER_V}-${w}.${fmt} ${w}w`).join(', ');
-// Ancho real de la imagen (medido en el CSS): en el móvil, todo el ancho; en escritorio y apaisado ancho, la columna derecha
-// (100vw menos el margen izquierdo, la columna de texto y el hueco: entre ~47 y 50vw según el ancho; se redondea a 52).
-const SIZES = '(min-width: 900px) and (min-aspect-ratio: 1/1) 52vw, 100vw';
+const POSTER_V = 'v2';
+const MQ_ANCHO = '(min-width: 900px) and (min-aspect-ratio: 1/1)';
+const FORMATOS = {
+  ancho: { aspecto: 0.82, anchos: [810, 1080, 1620] },
+  alto: { aspecto: 0.7, anchos: [540, 810, 1080] },
+} as const;
+type Formato = keyof typeof FORMATOS;
+const set = (f: Formato, estado: string, fmt: string) =>
+  FORMATOS[f].anchos.map((w) => `/images/persiana/${estado}-${f}-${POSTER_V}-${w}.${fmt} ${w}w`).join(', ');
+// Ancho real de la imagen (medido en el CSS): en escritorio, la columna derecha (100vw menos el margen izquierdo, la
+// columna de texto y el hueco: entre ~47 y 50vw según el ancho; se redondea a 52); en el móvil, todo el ancho.
+const SIZES_ANCHO = '52vw';
+const SIZES_ALTO = '100vw';
 // Qué se ve si no hay escena en vivo (sin WebGL, error o «reducir movimiento»): la persiana subida, con el interior.
 const ALT_INICIO = 'Fachada encalada de un comercio de Córdoba, con reja y macetas, y la persiana metálica casi bajada.';
-const ALT_FINAL = 'Fachada encalada de un comercio de Córdoba, con reja y macetas, y la persiana metálica subida: dentro, el cartel de Abierto, la web del negocio en una pantalla, un aviso de WhatsApp y un vinilo con el pin del mapa.';
+const ALT_FINAL = 'Fachada encalada de un comercio de Córdoba, con reja y macetas, y la persiana metálica subida: dentro, el cartel de Abierto, la web del negocio en una pantalla, un móvil con un aviso de WhatsApp en el mostrador y un plano con el pin pegado al cristal.';
 ---
 <link rel="stylesheet" href={CSS}>
 <section class="ps" data-ps aria-labelledby="titular">
@@ -37,13 +46,17 @@ const ALT_FINAL = 'Fachada encalada de un comercio de Córdoba, con reja y macet
 
     <div class="ps-escena" data-escena>
       <picture>
-        <source media="(prefers-reduced-motion: reduce)" type="image/avif" srcset={set('final', 'avif')} sizes={SIZES}>
-        <source media="(prefers-reduced-motion: reduce)" type="image/webp" srcset={set('final', 'webp')} sizes={SIZES}>
+        <source media={`(prefers-reduced-motion: reduce) and ${MQ_ANCHO}`} type="image/avif" srcset={set('ancho', 'final', 'avif')} sizes={SIZES_ANCHO}>
+        <source media={`(prefers-reduced-motion: reduce) and ${MQ_ANCHO}`} type="image/webp" srcset={set('ancho', 'final', 'webp')} sizes={SIZES_ANCHO}>
+        <source media="(prefers-reduced-motion: reduce)" type="image/avif" srcset={set('alto', 'final', 'avif')} sizes={SIZES_ALTO}>
+        <source media="(prefers-reduced-motion: reduce)" type="image/webp" srcset={set('alto', 'final', 'webp')} sizes={SIZES_ALTO}>
         {/* data-final: lo que pone arranque.ts en el póster si pasa a modo quieto (sin WebGL o con error) */}
-        <source type="image/avif" srcset={set('inicio', 'avif')} data-final={set('final', 'avif')} sizes={SIZES}>
-        <img class="ps-poster" src={`/images/persiana/inicio-${POSTER_V}-1080.webp`} srcset={set('inicio', 'webp')} sizes={SIZES}
-          data-final={set('final', 'webp')} data-src-final={`/images/persiana/final-${POSTER_V}-1080.webp`} data-alt-final={ALT_FINAL}
-          width="1080" height={ALTO(1080)} fetchpriority="high" decoding="async"
+        <source media={MQ_ANCHO} type="image/avif" srcset={set('ancho', 'inicio', 'avif')} data-final={set('ancho', 'final', 'avif')} sizes={SIZES_ANCHO}>
+        <source media={MQ_ANCHO} type="image/webp" srcset={set('ancho', 'inicio', 'webp')} data-final={set('ancho', 'final', 'webp')} sizes={SIZES_ANCHO}>
+        <source type="image/avif" srcset={set('alto', 'inicio', 'avif')} data-final={set('alto', 'final', 'avif')} sizes={SIZES_ALTO}>
+        <img class="ps-poster" src={`/images/persiana/inicio-alto-${POSTER_V}-1080.webp`} srcset={set('alto', 'inicio', 'webp')} sizes={SIZES_ALTO}
+          data-final={set('alto', 'final', 'webp')} data-src-final={`/images/persiana/final-alto-${POSTER_V}-1080.webp`} data-alt-final={ALT_FINAL}
+          width="1080" height={Math.round(1080 / FORMATOS.alto.aspecto)} fetchpriority="high" decoding="async"
           alt={ALT_INICIO}>
       </picture>
     </div>
