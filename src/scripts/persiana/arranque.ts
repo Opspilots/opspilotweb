@@ -3,16 +3,20 @@
 // póster cuando tiene su primer fotograma. Con «reducir movimiento» no se carga nada: se queda el póster con la persiana
 // subida (lo elige el <picture>). Si no hay WebGL, o falla algo, también se queda el póster.
 //
-// Modo póster (para scripts/poster-persiana.mjs): ?poster=inicio|final pinta un único fotograma a pantalla completa.
-// Ese script trabaja contra el build de producción (astro preview), así que no se puede limitar a import.meta.env.DEV:
-// se aceptan solo esos dos valores exactos; cualquier otro se ignora y la página sale normal.
+// Modo póster (para scripts/poster-persiana.mjs): ?poster=inicio|final pinta un único fotograma a pantalla completa,
+// con el encuadre de ?encuadre=ancho|alto (escritorio o móvil; por defecto, ancho). Ese script trabaja contra el build
+// de producción (astro preview), así que no se puede limitar a import.meta.env.DEV: se aceptan solo esos valores
+// exactos; cualquier otro se ignora (y la página sale normal, o con el encuadre por defecto).
 
 const raiz = document.querySelector<HTMLElement>('[data-ps]');
 const escena = raiz?.querySelector<HTMLElement>('[data-escena]');
 const parametros = new URLSearchParams(location.search);
 const pedidoPoster = parametros.get('poster');
 const modoPoster = pedidoPoster === 'inicio' || pedidoPoster === 'final' ? pedidoPoster : null;
+const encuadrePoster = parametros.get('encuadre') === 'alto' ? 'alto' : 'ancho';
 const quieto = matchMedia('(prefers-reduced-motion: reduce)');
+// el mismo corte que el CSS (persiana.css) y que los <source> del póster: escritorio y apaisado ancho, o móvil
+const anchoMQ = matchMedia('(min-width: 900px) and (min-aspect-ratio: 1/1)');
 
 /** Pasa la cabecera a «quieta»: sin escena en vivo ni fijación, y con el póster de la persiana subida (interior a la vista).
  *  Sin JS se queda el póster de inicio, así que el cambio solo se hace aquí, cuando ya se sabe que no habrá escena. */
@@ -66,7 +70,7 @@ async function cargar() {
     document.body.replaceChildren(canvas);
     document.body.style.margin = '0';
     canvas.style.cssText = 'display:block;width:100vw;height:100vh';
-    const p = new Persiana(canvas, { poster: true });
+    const p = new Persiana(canvas, { poster: true, encuadre: encuadrePoster, movil: encuadrePoster === 'alto' });
     await p.construir();
     p.medir(innerWidth, innerHeight);
     p.pintarYa(modoPoster === 'final' ? 1 : INICIO);
@@ -77,7 +81,7 @@ async function cargar() {
 
   let p: InstanceType<typeof Persiana>;
   try {
-    p = new Persiana(canvas, { movil });
+    p = new Persiana(canvas, { movil, encuadre: anchoMQ.matches ? 'ancho' : 'alto' });
   } catch {
     ponerQuieta(); // sin WebGL (o con WebGL por software): se queda el póster, y sin fijar la cabecera
     return;
@@ -92,6 +96,7 @@ async function cargar() {
 
   // la fijación solo se activa ahora que la escena está lista y solo si la página sigue arriba: así la sección crece por
   // abajo sin mover nada de lo que se ve. Si ya se ha bajado, no se fija (la persiana sube en los primeros ~380 px).
+  // El recorrido fijo es de ~1 pantalla en el móvil y ~0,8 en escritorio (ver persiana.css).
   if (scrollY < 8) raiz.classList.add('ps-fija');
 
   // el objetivo de la persiana: la subida breve del arranque y, encima, lo que diga el scroll
@@ -116,6 +121,7 @@ async function cargar() {
   const fin = new AbortController();
   const senal = { signal: fin.signal };
   addEventListener('resize', medirRecorrido, senal);
+  anchoMQ.addEventListener('change', () => { p.ponerEncuadre(anchoMQ.matches ? 'ancho' : 'alto'); medirRecorrido(); }, senal);
   const progreso = () => Math.min(1, Math.max(0, (scrollY - desde) / recorrido));
   const actualizar = () => {
     p.objetivo = intro === INICIO ? INICIO : INTRO + (1 - INTRO) * progreso();

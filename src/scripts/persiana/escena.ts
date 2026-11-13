@@ -1,12 +1,13 @@
 // «La persiana» · la escena 3D de la cabecera de la home (three.js, importado bajo demanda desde arranque.ts).
 // Una fachada de comercio de Córdoba a última hora de la tarde: la parte alta y la ventana con reja al sol, la tienda
 // en la sombra de la casa de enfrente. La persiana sube (al cargar, un poco; con el scroll, del todo) y dentro aparece
-// el negocio ya digitalizado: el cartel de «Abierto», la web en la pantalla, el aviso de WhatsApp y el pin del mapa.
+// el negocio ya digitalizado: el cartel de «Abierto», la web en la pantalla, el móvil del mostrador que se enciende con
+// un WhatsApp y el plano con el pin pegado al cristal.
 //
 // Rendimiento: se pinta solo cuando algo cambia (no hay bucle continuo), se para fuera de pantalla y con la pestaña
 // oculta, DPR limitado, las sombras del sol se calculan una vez y la del interior solo mientras se mueve la persiana.
 import {
-  ACESFilmicToneMapping, AmbientLight, BoxGeometry, BufferAttribute, BufferGeometry, CanvasTexture, CatmullRomCurve3, Color, CylinderGeometry, TubeGeometry,
+  ACESFilmicToneMapping, AdditiveBlending, AmbientLight, BoxGeometry, BufferAttribute, BufferGeometry, CanvasTexture, CatmullRomCurve3, Color, CylinderGeometry, TubeGeometry,
   DirectionalLight, DoubleSide, Group, HemisphereLight, IcosahedronGeometry, LatheGeometry,
   Material, MathUtils, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, PCFShadowMap, PerspectiveCamera, PlaneGeometry, PointLight,
   RepeatWrapping, Scene, Shape, Path, ShapeGeometry, SpotLight, SRGBColorSpace, Texture, TorusGeometry, Vector2, Vector3, WebGLRenderer,
@@ -20,35 +21,101 @@ const { muro: MU, hueco: HU, ventana: VE } = P.MED;
 /** Estados de la persiana: 0 bajada del todo, 1 subida. */
 export const INICIO = 0.12;     // el póster y el primer fotograma: una rendija de luz por debajo
 export const INTRO = 0.42;      // la subida breve al cargar
-/** Encuadre de referencia (ancho / alto): el póster se genera con esta proporción y el canvas recorta igual que object-fit: cover. */
-export const ASPECTO = 0.9;
 const FOV = 36;
+
+/**
+ * Encuadres. «ancho»: escritorio y apaisado ancho (la escena es la columna derecha, algo más alta que ancha). «alto»: el
+ * móvil y la tableta en vertical (la escena va entre el titular y los botones, bastante más alta que ancha). Cada uno
+ * tiene su proporción de referencia (el póster se genera con ella y el canvas recorta igual que object-fit: cover) y sus
+ * dos poses de cámara: A, la fachada entera (de la reja al azulejo); B, la tienda abierta, más cerca.
+ */
+export type Encuadre = 'ancho' | 'alto';
+export const ASPECTOS: Record<Encuadre, number> = { ancho: 0.82, alto: 0.7 };
+
+type Pose = { pos: Vector3; mira: Vector3 };
+const POSES: Record<Encuadre, { a: Pose; b: Pose }> = {
+  ancho: {
+    a: { pos: new Vector3(-0.05, 2.2, 10.6), mira: new Vector3(-0.05, 2.05, 0) },
+    b: { pos: new Vector3(0.72, 1.5, 5.7), mira: new Vector3(0.74, 1.36, -1) },
+  },
+  alto: {
+    a: { pos: new Vector3(0.02, 2.05, 11.8), mira: new Vector3(0.02, 1.95, 0) },
+    b: { pos: new Vector3(0.7, 1.42, 5.6), mira: new Vector3(0.72, 1.3, -1) },
+  },
+};
 
 export interface Opciones {
   poster?: boolean;      // genera el póster: sin animación, buffer conservado, DPR 1
-  movil?: boolean;       // sombras y texturas más pequeñas
+  movil?: boolean;       // sombras más pequeñas y DPR hasta 2
+  encuadre?: Encuadre;
 }
 
-type Pose = { pos: Vector3; mira: Vector3 };
-// A: la fachada entera (ventana con reja y tienda). B: la tienda abierta, más cerca.
-const POSE_A: Pose = { pos: new Vector3(-0.1, 2.25, 10.6), mira: new Vector3(-0.1, 2.1, 0) };
 // El interior de la tienda (metros): fondo, ancho, baldas, mostrador, pantalla y lámpara. Lo usan la geometría y las
 // texturas con la luz pintada (P.paredFondo, P.contactoSuelo).
 const FONDO = -2.8;
 const IX0 = HU.x0 - 0.5, IX1 = HU.x1 + 0.5;
-const BALDAS = { x0: IX0 + 0.15, x1: IX0 + 1.2, ys: [1.0, 1.45, 1.9, 2.35] };
+const BALDAS = { x0: IX0 + 0.15, x1: IX0 + 1.2, ys: [1.0, 1.42, 1.84] };
 const MOSTRADOR = { x0: 0.95, x1: 2.05, z0: -2.0, z1: -1.45 };
 const LAMP_X = HU.x0 + 0.45;
 const PANT = { x: 1.32, y: 1.86, w: 1.55, h: (1.55 * 576) / 1024 };
-const POSE_B: Pose = { pos: new Vector3(0.62, 1.5, 6.4), mira: new Vector3(0.66, 1.42, -0.5) };
+const ASPECTO_INICIAL = ASPECTOS.ancho;
+const LAMPARA_MOSTRADOR = { x: 1.5, z: -1.68 };
+/** El muelle de la persiana (rigidez, en 1/s²), cuánto se pasa la meta del tope arriba y cuánto rebota al llegar. */
+const MUELLE = 30, REBASE = 0.06, REBOTE = 0.32;
+/** A partir de qué apertura se enciende el móvil del mostrador. */
+const AVISO = 0.9;
+/** La pantalla del móvil apagada: casi negra (el cristal), y encendida, blanca (la textura tal cual). */
+const PANTALLA_APAGADA = new Color(0.025, 0.027, 0.03);
+const PANTALLA_ENCENDIDA = new Color(0.9, 0.9, 0.9);
+
+/** Anisotropía de las texturas: la máxima de la GPU hasta 8 (se fija al crear el renderer). Es lo que mantiene nítidos
+ *  los suelos y la pantalla vistos en ángulo. */
+let aniso = 4;
 
 /** Textura de un <canvas> pintado en fachada.ts. */
 const tex = (c: HTMLCanvasElement, color = true) => {
   const t = new CanvasTexture(c);
   if (color) t.colorSpace = SRGBColorSpace;
-  t.anisotropy = 4;
+  t.anisotropy = aniso;
   return t;
 };
+
+/**
+ * UV «de caja» en metros, para la madera: cada cara toma las dos coordenadas de su plano, con la veta siempre a lo
+ * largo de x (o de z en los costados). Así una balda larga no estira la textura y la veta tiene la misma escala en todo.
+ */
+function uvCaja(g: BufferGeometry, escala: number) {
+  const p = g.getAttribute('position') as BufferAttribute;
+  const n = g.getAttribute('normal') as BufferAttribute;
+  const uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) {
+    const ax = Math.abs(n.getX(i)), ay = Math.abs(n.getY(i)), az = Math.abs(n.getZ(i));
+    let u: number, v: number;
+    if (ay >= ax && ay >= az) { u = p.getX(i); v = p.getZ(i); } else if (ax >= az) { u = p.getZ(i); v = p.getY(i); } else { u = p.getX(i); v = p.getY(i); }
+    uv[i * 2] = u / escala;
+    uv[i * 2 + 1] = v / escala;
+  }
+  g.setAttribute('uv', new BufferAttribute(uv, 2));
+  return g;
+}
+
+/** Color por vértice (para juntar en una sola malla objetos de colores distintos). */
+function colorear(g: BufferGeometry, hex: string) {
+  const col = new Color(hex);
+  const n = (g.getAttribute('position') as BufferAttribute).count;
+  const a = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { a[i * 3] = col.r; a[i * 3 + 1] = col.g; a[i * 3 + 2] = col.b; }
+  g.setAttribute('color', new BufferAttribute(a, 3));
+  return g;
+}
+
+/** Plano horizontal (mirando arriba) de w × d con centro en (x, y, z): para las sombras de contacto. */
+function planoSuelo(x: number, y: number, z: number, w: number, d: number) {
+  const g = new PlaneGeometry(w, d);
+  g.rotateX(-Math.PI / 2);
+  g.translate(x, y, z);
+  return g;
+}
 
 /** UV en metros de fachada: u, v de 0 a 1 sobre todo el muro, y la profundidad (z) se suma como si el muro se doblara. */
 function uvFachada(g: BufferGeometry, modo: 'xy' | 'izq' | 'der' | 'techo' | 'suelo') {
@@ -185,16 +252,22 @@ const cronometro = (paso: string) => { if (!MEDIR) return; const t = performance
 export class Persiana {
   renderer: WebGLRenderer;
   scene = new Scene();
-  camara = new PerspectiveCamera(FOV, ASPECTO, 0.1, 60);
+  camara = new PerspectiveCamera(FOV, ASPECTO_INICIAL, 0.1, 60);
   private persiana = new Group();
   private cartel = new Group();
-  private aviso!: Mesh;
+  /** La pantalla del móvil del mostrador (se enciende con el aviso al abrir) y el brillo que deja en la madera. */
+  private pantallaMovil!: MeshBasicMaterial;
+  private brilloMovil!: MeshBasicMaterial;
   private foco!: SpotLight;
   private sol!: DirectionalLight;
   private interior!: PointLight;
-  // estado: lo que se ve (actual) persigue al objetivo con un muelle amortiguado
+  private encuadre: Encuadre;
+  private ancho = 1;
+  private alto = 1;
+  // estado: lo que se ve (abierto) persigue al objetivo con un muelle con masa (ver paso())
   abierto = INICIO;
   objetivo = INICIO;
+  private vAbierto = 0;
   private giro = Math.PI;      // el cartel: π enseña «Cerrado» a la calle; 0, «Abierto»
   private vGiro = 0;
   private avisoT = 0;
@@ -210,6 +283,7 @@ export class Persiana {
   onFrame?: () => void;
 
   constructor(public canvas: HTMLCanvasElement, private op: Opciones = {}) {
+    this.encuadre = op.encuadre ?? 'ancho';
     this.renderer = new WebGLRenderer({
       canvas,
       antialias: true,
@@ -223,6 +297,7 @@ export class Persiana {
     this.renderer.toneMappingExposure = 1.0;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = PCFShadowMap;
+    aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
     this.ajustarDpr();
     // three recupera el render solo tras perder el contexto, pero las sombras tienen autoUpdate=false:
     // hay que pedir que se recalculen o la pared se queda sin la sombra proyectada
@@ -233,9 +308,10 @@ export class Persiana {
     }, { signal: this.fin.signal });
   }
 
-  /** DPR del momento (puede cambiar al mover la ventana a otra pantalla o con el zoom), con el mismo tope de siempre. */
+  /** DPR del momento (puede cambiar al mover la ventana a otra pantalla o con el zoom), con tope: 1,75 en escritorio
+   *  (lienzos grandes) y 2 en el móvil, donde el lienzo es pequeño (390 × 570 a DPR 2 son 0,9 Mpx) y a 1,75 se veía blando. */
   private ajustarDpr() {
-    this.renderer.setPixelRatio(this.op.poster ? 1 : Math.min(window.devicePixelRatio || 1, 1.75));
+    this.renderer.setPixelRatio(this.op.poster ? 1 : Math.min(window.devicePixelRatio || 1, this.op.movil ? 2 : 1.75));
   }
 
   /** Construye la escena por partes, cediendo el hilo entre ellas (sin tareas largas en móviles lentos). */
@@ -246,8 +322,14 @@ export class Persiana {
     const img = await pintar({
       cal: () => P.calColor(1024), relieve: () => P.calRelieve(512), zocalo: () => P.zocalo(1024), acera: () => P.acera(1024),
       empedrado: () => P.empedrado(512), chapa: () => P.chapa(512), hidraulica: () => P.hidraulica(512), estuco: () => P.estuco(256),
-      madera: () => P.madera(256), fondo: () => P.paredFondo(IX0, IX1, 3.0, BALDAS, PANT, LAMP_X),
+      // en el móvil, los lienzos del interior a la mitad: ahí se ven pequeños, y así ninguno es una tarea larga
+      madera: () => P.madera(movil ? 256 : 512), maderaRug: () => P.maderaRugosidad(movil ? 128 : 256), encimera: () => P.encimera(movil ? 512 : 1024),
+      frente: () => P.frenteMostrador(MOSTRADOR.x1 - MOSTRADOR.x0, 0.86, movil ? 256 : 512),
+      fondo: () => P.paredFondo(IX0, IX1, 3.0, BALDAS, PANT, LAMP_X),
       contacto: () => P.contactoSuelo(IX0, IX1, FONDO, MOSTRADOR),
+      web: () => P.web(), movil: () => P.pantallaMovil(movil ? 0.6 : 1), plano: () => P.plano(), reflejo: () => P.reflejo(),
+      abierto: () => P.cartel(true, movil ? 512 : 1024), cerrado: () => P.cartel(false, movil ? 512 : 1024), etiquetas: () => P.etiquetas(),
+      blando: () => P.contactoBlando(), degradado: () => P.degradado(), azulejo: () => P.azulejo(),
     });
 
     cronometro('pintura');
@@ -401,9 +483,9 @@ export class Persiana {
 
     // placa de azulejo con el número, a la derecha de la tienda
     const azu = new Mesh(new BoxGeometry(0.4, 0.2, 0.012), [
-      ...Array(4).fill(piedra), new MeshStandardMaterial({ map: tex(P.azulejo()), roughness: 0.18 }), piedra,
+      ...Array(4).fill(piedra), new MeshStandardMaterial({ map: tex(img.azulejo), roughness: 0.18 }), piedra,
     ]);
-    azu.position.set(HU.x1 + 0.42, 2.05, 0.006);
+    azu.position.set(HU.x1 + 0.36, 2.05, 0.006);
     azu.castShadow = true;
     s.add(azu);
     cronometro("paso 5");
@@ -450,12 +532,12 @@ export class Persiana {
     cronometro("paso 7");
     await pausa();
 
-    // ─── el interior: escaparate, mostrador, baldas, lámparas, la pantalla con la web y el aviso ───
+    // ─── el interior: escaparate, plano, cartel, mostrador con el móvil, baldas, lámparas y la pantalla con la web ───
     const fondo = FONDO, ix0 = IX0, ix1 = IX1;
     const hid = tex(img.hidraulica);
     hid.wrapS = hid.wrapT = RepeatWrapping;
     hid.repeat.set((ix1 - ix0) / 0.8, -fondo / 0.8);
-    const sueloI = new Mesh(new PlaneGeometry(ix1 - ix0, -fondo), new MeshStandardMaterial({ map: hid, roughness: 0.45 }));
+    const sueloI = new Mesh(new PlaneGeometry(ix1 - ix0, -fondo), new MeshStandardMaterial({ map: hid, color: '#C4BBAA', roughness: 0.5 }));
     sueloI.rotation.x = -Math.PI / 2;
     sueloI.position.set((ix0 + ix1) / 2, 0.003, fondo / 2);
     sueloI.receiveShadow = true;
@@ -497,22 +579,30 @@ export class Persiana {
     ])!, marco);
     mMarco.castShadow = mMarco.receiveShadow = true;
     s.add(mMarco);
-    const vidrio = new Mesh(new PlaneGeometry(HU.x1 - HU.x0, HU.y1), new MeshStandardMaterial({ color: '#DDE6E8', transparent: true, opacity: 0.12, roughness: 0.05, metalness: 0, depthWrite: false }));
+    // el cristal: casi no se ve, pero suma un reflejo tenue de la calle en diagonal (si no, el hueco parece vacío)
+    const vidrio = new Mesh(new PlaneGeometry(HU.x1 - HU.x0, HU.y1), new MeshBasicMaterial({
+      map: tex(img.reflejo), transparent: true, opacity: 0.28, blending: AdditiveBlending, depthWrite: false, toneMapped: false,
+    }));
     vidrio.position.set((HU.x0 + HU.x1) / 2, HU.y1 / 2, zV - 0.025);
     s.add(vidrio);
     cronometro('marco');
     await pausa();
-    // vinilos en el fijo de la derecha
-    const vin = new Mesh(new PlaneGeometry(0.5, 0.465), new MeshStandardMaterial({ map: tex(P.vinilos()), transparent: true, roughness: 0.5, alphaTest: 0.05 }));
-    vin.position.set(xm + 0.42, 1.08, zV - 0.02);
-    s.add(vin);
-    cronometro('vinilos');
+    // el plano impreso, pegado con celo por dentro del fijo de la derecha y mirando a la calle. La luz de la tienda lo
+    // atraviesa un poco (el papel se trasluce): un emisivo tenue y cálido.
+    const planoTex = tex(img.plano);
+    const papel = new Mesh(new PlaneGeometry(0.3, 0.42), new MeshStandardMaterial({
+      map: planoTex, emissive: '#5A4630', emissiveIntensity: 0.35, roughness: 0.85,
+    }));
+    papel.position.set(xm + 0.32, 1.13, zV - 0.032);
+    papel.rotation.z = 0.014;
+    s.add(papel);
+    cronometro('plano');
     await pausa();
     // el cartel de la puerta, colgado de un cordel: gira de «Cerrado» a «Abierto»
-    const cMat = (ab: boolean) => new MeshStandardMaterial({ map: tex(P.cartel(ab)), roughness: 0.6 });
+    const cMat = (c: HTMLCanvasElement) => new MeshStandardMaterial({ map: tex(c), roughness: 0.6 });
     const cGeo = new BoxGeometry(0.42, 0.184, 0.008);
     const borde = new MeshStandardMaterial({ color: '#E6E2D8', roughness: 0.6 });
-    const placa = new Mesh(cGeo, [borde, borde, borde, borde, cMat(true), cMat(false)]);
+    const placa = new Mesh(cGeo, [borde, borde, borde, borde, cMat(img.abierto), cMat(img.cerrado)]);
     placa.position.y = -0.2;
     placa.castShadow = true;
     const cordel = new Mesh(mergeGeometries([caja(-0.004, 0.004, -0.11, 0, -0.002, 0.002).rotateZ(0.6), caja(-0.004, 0.004, -0.11, 0, -0.002, 0.002).rotateZ(-0.6)])!, new MeshBasicMaterial({ color: '#2A2A2A' }));
@@ -523,82 +613,177 @@ export class Persiana {
 
     cronometro('cartel');
     await pausa();
-    // mostrador y baldas de madera
+    // ─── madera: la misma veta para baldas y costados del mostrador, con su mapa de rugosidad (las vetas, más ásperas,
+    // brillan menos con la luz de las lámparas) ───
     const mad = tex(img.madera);
     mad.wrapS = mad.wrapT = RepeatWrapping;
-    const madera = new MeshStandardMaterial({ map: mad, roughness: 0.6 });
-    // el mostrador: frente de tablillas verticales, zócalo oscuro y encimera algo más clara
-    const madV = mad.clone();
-    madV.rotation = Math.PI / 2;
-    madV.needsUpdate = true;
-    const maderaV = new MeshStandardMaterial({ map: madV, roughness: 0.55 });
+    const rug = tex(img.maderaRug, false);
+    rug.wrapS = rug.wrapT = RepeatWrapping;
+    const madera = new MeshStandardMaterial({ map: mad, roughnessMap: rug, roughness: 0.9, bumpMap: rug, bumpScale: 0.5 });
+    // el mostrador: costados de madera, frente de tablillas (con la sombra del vuelo de la encimera pintada), encimera
+    // con el barniz gastado delante y un zócalo oscuro
     const M = MOSTRADOR;
-    const tablillas: BufferGeometry[] = [];
-    for (let x = M.x0 + 0.09; x < M.x1 - 0.05; x += 0.11) tablillas.push(caja(x - 0.006, x + 0.006, 0.08, 0.9, M.z1, M.z1 + 0.006));
-    const mostrador = new Mesh(caja(M.x0, M.x1, 0.06, 0.92, M.z0, M.z1), maderaV);
-    const encimera = new Mesh(caja(M.x0 - 0.03, M.x1 + 0.03, 0.92, 0.96, M.z0 - 0.04, M.z1 + 0.04), new MeshStandardMaterial({ map: mad, color: '#E8D2B4', roughness: 0.4 }));
-    const pie = new Mesh(mergeGeometries([caja(M.x0 + 0.02, M.x1 - 0.02, 0, 0.06, M.z0 + 0.02, M.z1 - 0.02), ...tablillas])!, new MeshStandardMaterial({ color: '#3B2A1C', roughness: 0.7 }));
-    encimera.castShadow = mostrador.castShadow = true;
-    encimera.receiveShadow = mostrador.receiveShadow = true;
-    s.add(encimera, pie);
-    mostrador.castShadow = mostrador.receiveShadow = true;
-    s.add(mostrador);
+    const cuerpoM = new Mesh(uvCaja(caja(M.x0, M.x1, 0.06, 0.92, M.z0, M.z1), 0.9), madera);
+    const frente = new Mesh(new PlaneGeometry(M.x1 - M.x0, 0.86), new MeshStandardMaterial({ map: tex(img.frente), roughness: 0.62 }));
+    frente.position.set((M.x0 + M.x1) / 2, 0.49, M.z1 + 0.002);
+    const encimera = new Mesh(caja(M.x0 - 0.03, M.x1 + 0.03, 0.92, 0.96, M.z0 - 0.04, M.z1 + 0.04), new MeshStandardMaterial({ map: tex(img.encimera), roughness: 0.48 }));
+    const pie = new Mesh(caja(M.x0 + 0.02, M.x1 - 0.02, 0, 0.06, M.z0 + 0.02, M.z1 - 0.02), new MeshStandardMaterial({ color: '#2B1D12', roughness: 0.7 }));
+    encimera.castShadow = cuerpoM.castShadow = true;
+    encimera.receiveShadow = cuerpoM.receiveShadow = frente.receiveShadow = true;
+    s.add(cuerpoM, frente, encimera, pie);
     cronometro('mostrador');
     await pausa();
-    const baldas = new Group();
-    const productos: BufferGeometry[] = [];
-    const tonos = ['#5B6B7A', '#B89A5A', '#7D4A3E', '#E4DCCB', '#6B7F64', '#A8744A', '#3A3C44'];
-    const prodMat: MeshStandardMaterial[] = tonos.map((c) => new MeshStandardMaterial({ color: c, roughness: 0.55 }));
-    const porTono: BufferGeometry[][] = tonos.map(() => []);
-    for (const [bx0, bx1] of [[BALDAS.x0, BALDAS.x1]]) {
-      for (const y of BALDAS.ys) {
-        productos.push(caja(bx0, bx1, y - 0.03, y, fondo, fondo + 0.32));
-        let x = bx0 + 0.04;
-        while (x < bx1 - 0.12) {
-          const w = 0.06 + r() * 0.1, h = 0.12 + r() * 0.2;
-          const k = Math.floor(r() * tonos.length);
-          if (r() < 0.45) {
-            const c = new CylinderGeometry(w / 2, w / 2, h, 12);
-            c.translate(x + w / 2, y + h / 2, fondo + 0.17);
-            porTono[k].push(c);
-          } else porTono[k].push(caja(x, x + w, y, y + h, fondo + 0.05, fondo + 0.26));
-          x += w + 0.02 + r() * 0.04;
+
+    // la tableta del negocio (15 × 21 cm, la del cobro y las citas), de pie en su soporte sobre el mostrador y mirando a
+    // la calle: con la persiana arriba se enciende con el WhatsApp de un cliente (ver aplicar())
+    const mx = 1.32, mz = M.z1 + 0.14;
+    const telefono = new Group();
+    const carcasa = new Mesh(caja(-0.075, 0.075, 0, 0.21, -0.009, 0), new MeshStandardMaterial({ color: '#1B1D20', roughness: 0.32, metalness: 0.6 }));
+    this.pantallaMovil = new MeshBasicMaterial({ map: tex(img.movil), color: PANTALLA_APAGADA.clone(), toneMapped: false });
+    const pantallaM = new Mesh(new PlaneGeometry(0.136, 0.194), this.pantallaMovil);
+    pantallaM.position.set(0, 0.105, 0.0006);
+    telefono.add(carcasa, pantallaM);
+    telefono.rotation.set(-0.3, -0.16, 0, 'YXZ');
+    telefono.position.set(mx, 0.968, mz);
+    const soporte = new Mesh(mergeGeometries([
+      caja(mx - 0.06, mx + 0.06, 0.96, 0.968, mz - 0.1, mz + 0.02),
+      caja(mx - 0.02, mx + 0.02, 0.96, 1.12, mz - 0.095, mz - 0.07),
+    ])!, new MeshStandardMaterial({ color: '#A9ADB0', roughness: 0.4, metalness: 0.5 }));
+    this.brilloMovil = new MeshBasicMaterial({
+      color: '#CFEBDD', alphaMap: tex(img.blando, false), transparent: true, opacity: 0, blending: AdditiveBlending, depthWrite: false, toneMapped: false,
+    });
+    const brillo = new Mesh(planoSuelo(mx, 0.9615, mz + 0.09, 0.42, 0.24), this.brilloMovil);
+    s.add(telefono, soporte, brillo);
+    cronometro('móvil');
+    await pausa();
+
+    // la estantería: baldas de madera con escuadras de hierro y, en ellas, botes, frascos, cajas y archivadores de
+    // tamaño real (un bote de 12 cm, una caja de 15), cada uno con su etiqueta. Todo junto son pocas mallas: los
+    // colores van por vértice, las etiquetas salen de un atlas, y cada objeto deja su sombra de contacto en la balda.
+    const B = BALDAS;
+    const tablas: BufferGeometry[] = [];
+    const escuadras: BufferGeometry[] = [];
+    const cuerpos: BufferGeometry[] = [];
+    const etiq: BufferGeometry[] = [];
+    const contactos: BufferGeometry[] = [planoSuelo(mx, 0.9612, mz - 0.035, 0.2, 0.18)];
+    const aoBaldas: BufferGeometry[] = [];
+    const etiqueta = (cx: number, cy: number, z: number, w: number, h: number) => {
+      const g = new PlaneGeometry(w, h);
+      const k = Math.floor(r() * 8), u0 = (k % 4) / 4, v0 = 0.5 - Math.floor(k / 4) / 2;
+      const uv = g.getAttribute('uv') as BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, u0 + uv.getX(i) * 0.25, v0 + uv.getY(i) * 0.5);
+      return g.translate(cx, cy, z);
+    };
+    const de = <T,>(xs: readonly T[]) => xs[Math.floor(r() * xs.length)];
+    const vidrios = ['#7A4A2A', '#D9CDB4', '#6E7F6A', '#E9E4D8', '#5B6B7A'] as const;
+    const tapones = ['#2F3A44', '#B8862F', '#1E2228', '#E9E4D8'] as const;
+    const cartones = ['#C9A87A', '#E9E4D8', '#A6452F', '#2F3A44', '#D9CDB4', '#7D8F6A'] as const;
+    const lomos = ['#2F3A44', '#7D4A3E', '#3C4A3A', '#B8862F', '#5B6B7A', '#1E2228'] as const;
+    for (const y of B.ys) {
+      tablas.push(uvCaja(caja(B.x0, B.x1, y - 0.028, y, fondo, fondo + 0.3), 0.9));
+      for (const ex of [B.x0 + 0.12, B.x1 - 0.12]) {
+        escuadras.push(caja(ex - 0.008, ex + 0.008, y - 0.2, y - 0.028, fondo, fondo + 0.012));
+        escuadras.push(caja(ex - 0.008, ex + 0.008, y - 0.046, y - 0.028, fondo, fondo + 0.22));
+      }
+      aoBaldas.push(planoSuelo((B.x0 + B.x1) / 2, y + 0.0012, fondo + 0.05, B.x1 - B.x0, 0.1));
+      const arriba = y === B.ys[B.ys.length - 1];
+      const tope = B.x1 - 0.06;
+      let x = arriba ? B.x0 + 0.3 : B.x0 + 0.03;
+      while (x < tope) {
+        const t = r();
+        let w: number;
+        if (t < 0.28) {
+          // bote de boca ancha con tapa de rosca
+          const rr = 0.032 + r() * 0.012, h = 0.09 + r() * 0.05, cx = x + rr, cz = fondo + 0.15;
+          w = rr * 2;
+          cuerpos.push(colorear(new CylinderGeometry(rr, rr, h, 16).translate(cx, y + h / 2, cz), de(vidrios)));
+          cuerpos.push(colorear(new CylinderGeometry(rr * 1.04, rr * 1.04, 0.022, 16).translate(cx, y + h + 0.011, cz), de(tapones)));
+          etiq.push(etiqueta(cx, y + h * 0.45, cz + rr + 0.0015, rr * 1.35, h * 0.5));
+          contactos.push(planoSuelo(cx, y + 0.001, cz, w * 1.8, w * 1.6));
+        } else if (t < 0.5) {
+          // frasco: cuerpo, hombro y tapón
+          const rr = 0.025 + r() * 0.008, h = 0.13 + r() * 0.06, cx = x + rr, cz = fondo + 0.15, col = de(vidrios);
+          w = rr * 2;
+          cuerpos.push(colorear(new CylinderGeometry(rr, rr, h, 14).translate(cx, y + h / 2, cz), col));
+          cuerpos.push(colorear(new CylinderGeometry(rr * 0.38, rr, 0.032, 14).translate(cx, y + h + 0.016, cz), col));
+          cuerpos.push(colorear(new CylinderGeometry(rr * 0.36, rr * 0.36, 0.03, 10).translate(cx, y + h + 0.047, cz), de(tapones)));
+          etiq.push(etiqueta(cx, y + h * 0.5, cz + rr + 0.0015, rr * 1.3, h * 0.45));
+          contactos.push(planoSuelo(cx, y + 0.001, cz, w * 1.9, w * 1.7));
+        } else if (t < 0.78) {
+          // caja de cartón con su etiqueta (y a veces otra más pequeña encima)
+          w = 0.09 + r() * 0.08;
+          const h = 0.07 + r() * 0.12, d = 0.12 + r() * 0.1, z1 = fondo + 0.03 + d;
+          cuerpos.push(colorear(caja(x, x + w, y, y + h, fondo + 0.03, z1), de(cartones)));
+          etiq.push(etiqueta(x + w / 2, y + h * 0.5, z1 + 0.0015, w * 0.72, h * 0.62));
+          contactos.push(planoSuelo(x + w / 2, y + 0.001, fondo + 0.03 + d / 2, w * 1.35, d * 1.3));
+          if (h < 0.13 && r() < 0.5) {
+            const w2 = w * 0.8, h2 = 0.05 + r() * 0.05;
+            cuerpos.push(colorear(caja(x + 0.01, x + 0.01 + w2, y + h, y + h + h2, fondo + 0.04, z1 - 0.02), de(cartones)));
+          }
+        } else {
+          // archivadores y libros: de dos a cuatro lomos juntos
+          const k = 2 + Math.floor(r() * 3);
+          w = 0;
+          for (let i = 0; i < k; i++) {
+            const lw = 0.03 + r() * 0.025, h = 0.2 + r() * 0.06;
+            cuerpos.push(colorear(caja(x + w, x + w + lw, y, y + h, fondo + 0.04, fondo + 0.26), de(lomos)));
+            w += lw + 0.002;
+          }
+          contactos.push(planoSuelo(x + w / 2, y + 0.001, fondo + 0.15, w * 1.3, 0.3));
         }
+        x += w + 0.025 + r() * 0.035;
       }
     }
-    const mb = new Mesh(mergeGeometries(productos)!, madera);
-    mb.receiveShadow = true;
-    baldas.add(mb);
-    porTono.forEach((geos, i) => { if (geos.length) { const m = new Mesh(mergeGeometries(geos.map((g) => g.toNonIndexed()))!, prodMat[i]); m.receiveShadow = true; baldas.add(m); } });
-    s.add(baldas);
+    cronometro('baldas: piezas');
+    await pausa();
+    const mTablas = new Mesh(mergeGeometries(tablas)!, madera);
+    mTablas.receiveShadow = true;
+    const mEscuadras = new Mesh(mergeGeometries(escuadras)!, hierro);
+    const productos = new Mesh(mergeGeometries(cuerpos)!, new MeshStandardMaterial({ vertexColors: true, roughness: 0.42 }));
+    productos.receiveShadow = true;
+    cronometro('baldas: productos');
+    await pausa();
+    const mEtiq = new Mesh(mergeGeometries(etiq)!, new MeshStandardMaterial({ map: tex(img.etiquetas), roughness: 0.65 }));
+    // oclusión falsa: el óvalo blando bajo cada objeto y la franja donde la balda toca la pared
+    const sombraMat = (mapa: HTMLCanvasElement, opacidad: number) => new MeshBasicMaterial({
+      color: '#000', alphaMap: tex(mapa, false), transparent: true, opacity: opacidad, depthWrite: false, toneMapped: false,
+      polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+    });
+    const mContactos = new Mesh(mergeGeometries(contactos)!, sombraMat(img.blando, 0.62));
+    const mAo = new Mesh(mergeGeometries(aoBaldas)!, sombraMat(img.degradado, 0.5));
+    s.add(mTablas, mEscuadras, productos, mEtiq, mContactos, mAo);
+    // una planta en la balda de arriba
+    const planta = maceta(r);
+    planta.scale.setScalar(0.85);
+    planta.position.set(B.x0 + 0.14, B.ys[B.ys.length - 1], fondo + 0.15);
+    s.add(planta);
     cronometro('baldas');
     await pausa();
-    // lámparas colgantes
+    // lámparas colgantes: una sobre la estantería y otra sobre el mostrador
     const pantallaL = new MeshStandardMaterial({ color: '#2B2B2B', metalness: 0.5, roughness: 0.4, side: DoubleSide });
     const bombilla = new MeshStandardMaterial({ color: '#000', emissive: '#FFD9A0', emissiveIntensity: 3 });
-    for (const x of [lampX]) {
+    for (const [x, z] of [[LAMP_X, -1.4], [LAMPARA_MOSTRADOR.x, LAMPARA_MOSTRADOR.z]] as const) {
       const pl = new Mesh(new CylinderGeometry(0.07, 0.2, 0.16, 20, 1, true), pantallaL);
-      pl.position.set(x, 2.5, -1.4);
+      pl.position.set(x, 2.5, z);
       const bo = new Mesh(new IcosahedronGeometry(0.045, 2), bombilla);
-      bo.position.set(x, 2.44, -1.4);
+      bo.position.set(x, 2.44, z);
       const cable = new Mesh(new CylinderGeometry(0.004, 0.004, 0.5), pantallaL);
-      cable.position.set(x, 2.83, -1.4);
+      cable.position.set(x, 2.83, z);
       s.add(pl, bo, cable);
     }
-    // la pantalla del fondo con la web y el aviso de WhatsApp que entra al abrir
-    const marcoP = new Mesh(caja(-pantW / 2 - 0.03, pantW / 2 + 0.03, -pantH / 2 - 0.03, pantH / 2 + 0.03, -0.03, 0), new MeshStandardMaterial({ color: '#111', roughness: 0.3, metalness: 0.4 }));
-    marcoP.position.copy(pc);
     cronometro('lamparas');
     await pausa();
-    const webTex = tex(P.web());
-    const pant = new Mesh(new PlaneGeometry(pantW, pantH), new MeshStandardMaterial({ color: '#000', emissive: '#fff', emissiveMap: webTex, emissiveIntensity: 0.95, roughness: 0.2 }));
+    // la pantalla del fondo: marco fino, la web (sin luces ni tono de cámara: brilla como una pantalla de verdad) y el
+    // cristal, que suma encima un reflejo tenue de la calle
+    const marcoP = new Mesh(caja(-pantW / 2 - 0.022, pantW / 2 + 0.022, -pantH / 2 - 0.022, pantH / 2 + 0.03, -0.035, 0), new MeshStandardMaterial({ color: '#121314', roughness: 0.3, metalness: 0.5 }));
+    marcoP.position.copy(pc);
+    const pant = new Mesh(new PlaneGeometry(pantW, pantH), new MeshBasicMaterial({ map: tex(img.web), color: new Color(0.84, 0.84, 0.84), toneMapped: false }));
     pant.position.copy(pc).add(new Vector3(0, 0, 0.002));
-    s.add(marcoP, pant);
-    cronometro('web');
-    await pausa();
-    this.aviso = new Mesh(new PlaneGeometry(0.78, 0.229), new MeshStandardMaterial({ color: '#000', emissive: '#fff', emissiveMap: tex(P.aviso()), emissiveIntensity: 1, transparent: true, opacity: 0, roughness: 0.3 }));
-    this.aviso.position.copy(pc).add(new Vector3(pantW / 2 - 0.44, 0, 0.012));
-    s.add(this.aviso);
+    const cristalP = new Mesh(new PlaneGeometry(pantW, pantH), new MeshBasicMaterial({
+      map: tex(img.reflejo), transparent: true, opacity: 0.6, blending: AdditiveBlending, depthWrite: false, toneMapped: false,
+    }));
+    cristalP.position.copy(pc).add(new Vector3(0, 0, 0.004));
+    s.add(marcoP, pant, cristalP);
     cronometro("paso 8");
     await pausa();
 
@@ -644,9 +829,13 @@ export class Persiana {
     // el interior: una luz cálida general y un foco con sombra que sale por debajo de la persiana a la acera
     this.interior = new PointLight('#FFC584', 4.5, 3.0, 2);
     this.interior.position.set(HU.x0 + 0.45, 2.2, -1.5);
-    const mostradorLuz = new PointLight('#FFD29A', 1.6, 2.2, 2);
-    mostradorLuz.position.set(1.5, 1.9, -1.2);
-    s.add(mostradorLuz);
+    // la lámpara del mostrador, y un relleno bajo y cálido: el rebote de la luz en el suelo y en la madera, que quita la
+    // dureza de las sombras de dentro y se derrama por la puerta a la acera
+    const mostradorLuz = new PointLight('#FFD29A', 2.2, 2.6, 2);
+    mostradorLuz.position.set(LAMPARA_MOSTRADOR.x, 2.3, LAMPARA_MOSTRADOR.z);
+    const reboteInterior = new PointLight('#FFB373', 0.8, 3.6, 2);
+    reboteInterior.position.set((HU.x0 + HU.x1) / 2, 0.9, -1.1);
+    s.add(mostradorLuz, reboteInterior);
     s.add(this.interior);
     this.foco = new SpotLight('#FFC27A', 80, 10, 0.95, 0.75, 1.5);
     this.foco.position.set((HU.x0 + HU.x1) / 2, 2.6, -2.9);
@@ -744,8 +933,9 @@ export class Persiana {
     this.persiana.position.y = a * (HU.y1 - 0.09);
     // la cámara se acerca a la tienda en la segunda mitad de la subida
     const k = MathUtils.smootherstep(a, INTRO, 1);
-    const pos = POSE_A.pos.clone().lerp(POSE_B.pos, k);
-    const mira = POSE_A.mira.clone().lerp(POSE_B.mira, k);
+    const pose = POSES[this.encuadre];
+    const pos = pose.a.pos.clone().lerp(pose.b.pos, k);
+    const mira = pose.a.mira.clone().lerp(pose.b.mira, k);
     pos.x += this.punteroSuave.x * 0.18;
     pos.y += this.punteroSuave.y * 0.08;
     this.camara.position.copy(pos);
@@ -758,24 +948,32 @@ export class Persiana {
       this.giro += this.vGiro * dt;
     }
     this.cartel.rotation.y = this.giro;
-    // el aviso de WhatsApp entra cuando la persiana está casi arriba
-    const metaAviso = a > 0.93 ? 1 : 0;
-    this.avisoT = dt === 0 ? metaAviso : this.avisoT + (metaAviso - this.avisoT) * (1 - Math.exp(-dt * 7));
-    const m = this.aviso.material as MeshStandardMaterial;
-    m.opacity = this.avisoT;
-    this.aviso.position.y = PANT.y + 0.25 + (1 - this.avisoT) * 0.06;
-    this.aviso.visible = this.avisoT > 0.01;
+    // el móvil del mostrador se enciende con el aviso cuando la persiana está casi arriba (y deja un brillo en la madera)
+    const metaAviso = a > AVISO ? 1 : 0;
+    this.avisoT = dt === 0 ? metaAviso : this.avisoT + (metaAviso - this.avisoT) * (1 - Math.exp(-dt * 6));
+    this.pantallaMovil.color.lerpColors(PANTALLA_APAGADA, PANTALLA_ENCENDIDA, this.avisoT);
+    this.brilloMovil.opacity = 0.3 * this.avisoT;
   }
 
-  /** Proporción del lienzo: el encuadre se recorta como object-fit: cover sobre la referencia ASPECTO. */
+  /** Proporción del lienzo: el encuadre se recorta como object-fit: cover sobre la proporción de referencia. */
   medir(w: number, h: number) {
-    const asp = w / h;
+    this.ancho = w;
+    this.alto = h;
+    const asp = w / h, ref = ASPECTOS[this.encuadre];
     this.camara.aspect = asp;
-    this.camara.fov = asp >= ASPECTO ? MathUtils.radToDeg(2 * Math.atan(Math.tan(MathUtils.degToRad(FOV) / 2) * ASPECTO / asp)) : FOV;
+    this.camara.fov = asp >= ref ? MathUtils.radToDeg(2 * Math.atan(Math.tan(MathUtils.degToRad(FOV) / 2) * ref / asp)) : FOV;
     this.camara.updateProjectionMatrix();
     this.ajustarDpr();
     this.renderer.setSize(w, h, false);
     this.pedir();
+  }
+
+  /** Cambia de encuadre (al girar la tableta o cambiar el ancho de la ventana entre móvil y escritorio). */
+  ponerEncuadre(e: Encuadre) {
+    if (e === this.encuadre) return;
+    this.encuadre = e;
+    this.aplicar(0);
+    this.medir(this.ancho, this.alto);
   }
 
   apuntar(x: number, y: number) {
@@ -786,6 +984,7 @@ export class Persiana {
   /** Pinta una vez, ya (póster). */
   pintarYa(abierto: number) {
     this.abierto = this.objetivo = abierto;
+    this.vAbierto = 0;
     this.aplicar(0);
     this.sol.shadow.needsUpdate = this.foco.shadow.needsUpdate = true;
     this.renderer.render(this.scene, this.camara);
@@ -804,8 +1003,22 @@ export class Persiana {
     const dt = this.ultimo ? Math.min((t - this.ultimo) / 1000, 1 / 20) : 1 / 60;
     this.ultimo = t;
     const antes = this.abierto;
-    this.abierto += (this.objetivo - this.abierto) * (1 - Math.exp(-dt * 4.2));
-    if (Math.abs(this.objetivo - this.abierto) < 0.0004) this.abierto = this.objetivo;
+    // La persiana como un muelle con masa: pesa (tarda en arrancar y en frenar) y no oscila a media altura
+    // (amortiguamiento crítico). Cerca de arriba, la meta se pasa un poco del tope: llega con algo de velocidad, choca
+    // con el tope (1), rebota un poco y asienta. Dos subpasos por fotograma, por estabilidad con dt grandes.
+    const meta = this.objetivo + REBASE * MathUtils.smoothstep(this.objetivo, 0.86, 1);
+    for (let i = 0; i < 2; i++) {
+      const h = dt / 2;
+      this.vAbierto += ((meta - this.abierto) * MUELLE - this.vAbierto * 2 * Math.sqrt(MUELLE)) * h;
+      this.abierto += this.vAbierto * h;
+      if (this.abierto > 1) { this.abierto = 1; if (this.vAbierto > 0) this.vAbierto *= -REBOTE; }
+      if (this.abierto < 0) { this.abierto = 0; this.vAbierto = 0; }
+    }
+    const tope = meta >= 1 && this.abierto >= 0.9995;
+    if ((tope || Math.abs(meta - this.abierto) < 0.0004) && Math.abs(this.vAbierto) < 0.02) {
+      this.abierto = tope ? 1 : meta;
+      this.vAbierto = 0;
+    }
     this.punteroSuave.lerp(this.puntero, 1 - Math.exp(-dt * 3));
     this.aplicar(dt);
     if (this.abierto !== antes) this.foco.shadow.needsUpdate = true;
@@ -813,10 +1026,10 @@ export class Persiana {
     this.renderer.render(this.scene, this.camara);
     if (this.onFrame) cronometro('primer fotograma');
     this.onFrame?.();
-    const quieto = this.abierto === this.objetivo
+    const quieto = this.vAbierto === 0
       && this.punteroSuave.distanceTo(this.puntero) < 0.002
       && Math.abs(this.vGiro) < 0.002 && Math.abs(this.giro - (this.abierto > 0.72 ? 0 : Math.PI)) < 0.002
-      && Math.abs(this.avisoT - (this.abierto > 0.93 ? 1 : 0)) < 0.002;
+      && Math.abs(this.avisoT - (this.abierto > AVISO ? 1 : 0)) < 0.002;
     if (!quieto) this.pedir(); else this.ultimo = 0;
   };
 
