@@ -64,6 +64,13 @@
 .pb-fijo .pb-cab{padding-bottom:clamp(2.5rem,5vw,4rem)}
 .pb-fijo .mesa{margin-top:.5rem}
 @media (min-width:768px){.pb-fijo .pb-in{padding-top:.5rem}}
+/* escritorio: con el bloque fijo, el problema activo queda centrado en el alto libre en lugar de pegado arriba (antes sobraban ~280 px vacíos
+   debajo a 1440×900). El aire de debajo del titular se reduce porque el centrado ya aporta el suyo. */
+@media (min-width:768px){
+  .pb-fijo .pb-escena{display:flex;flex-direction:column;justify-content:center}
+  .pb-fijo .pb-escena>.pb-in{width:100%}
+  .pb-fijo .pb-cab{padding-bottom:.5rem}
+}
 /* sin transiciones mientras el script coloca el estado de la primera vez (por ejemplo, al recargar a mitad de la pista) */
 .pb-fijo.pb-quieto *{transition:none !important}
 

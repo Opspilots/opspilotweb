@@ -591,6 +591,11 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 /* contacto */
 .contacto-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2rem,5vw,4rem);align-items:start}
 .canales{display:grid;gap:.7rem;margin-top:1.4rem}
+.contacto-pasos-t{margin-top:2rem;font-weight:740;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;color:#fff}
+.contacto-pasos{list-style:none;counter-reset:paso;display:grid;gap:.8rem;margin-top:1rem}
+.contacto-pasos li{counter-increment:paso;display:grid;grid-template-columns:1.9rem minmax(0,1fr);gap:.8rem;color:var(--texto-claro)}
+.contacto-pasos li::before{content:counter(paso);display:grid;place-items:center;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--verde);color:var(--navy);font:700 var(--t-2)/1 var(--display)}
+.contacto-pasos b{color:#fff}
 .canal{display:block;text-decoration:none}
 .canal small{display:block;color:var(--tar-tx);font-size:var(--t-2);margin-top:.2rem}
 a.canal{transition:background-color .2s}
@@ -740,6 +745,8 @@ a.canal:hover{background:#1D2B3D}
 .hz-otras a:hover{background:#EDEFEA}
 .hz-otras small{display:block;color:var(--tar-tx);font-size:var(--t-2)}
 .hz-otras b{font-size:var(--t-3)}
+.hz-otras .hz-pide{background:transparent;border:1.5px dashed rgb(0 0 0/.22)}
+.hz-otras .hz-pide:hover{background:rgb(0 0 0/.04)}
 /* plantilla de presupuesto: una hoja que se edita en su sitio y se imprime limpia */
 .pz-hoja{background:#fff;color:#16212B;margin:clamp(.8rem,2vw,1.4rem);padding:clamp(1rem,3vw,2rem);border:1px solid var(--ui-line);border-radius:.4rem}
 .pz input,.pz select,.pz textarea{font:inherit;color:inherit;background:transparent;border:1px dashed transparent;border-radius:.25rem;padding:.25rem .35rem;width:100%}
