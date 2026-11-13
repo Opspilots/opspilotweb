@@ -327,7 +327,7 @@ export class Persiana {
       frente: () => P.frenteMostrador(MOSTRADOR.x1 - MOSTRADOR.x0, 0.86, movil ? 256 : 512),
       fondo: () => P.paredFondo(IX0, IX1, 3.0, BALDAS, PANT, LAMP_X),
       contacto: () => P.contactoSuelo(IX0, IX1, FONDO, MOSTRADOR),
-      web: () => P.web(), movil: () => P.pantallaMovil(movil ? 0.6 : 1), plano: () => P.plano(), reflejo: () => P.reflejo(),
+      web: () => P.web(movil ? 0.5 : 1), movil: () => P.pantallaMovil(movil ? 0.6 : 1), plano: () => P.plano(), reflejo: () => P.reflejo(),
       abierto: () => P.cartel(true, movil ? 512 : 1024), cerrado: () => P.cartel(false, movil ? 512 : 1024), etiquetas: () => P.etiquetas(),
       blando: () => P.contactoBlando(), degradado: () => P.degradado(), azulejo: () => P.azulejo(),
     });

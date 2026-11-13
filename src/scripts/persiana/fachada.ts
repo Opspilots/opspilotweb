@@ -308,9 +308,12 @@ function letraQueCabe(ctx: CanvasRenderingContext2D, texto: string, peso: number
  * persiana subida, que es el titular «Pide cita», el botón de reservar y el mapa con el pin. La barra del navegador y la
  * cabecera de la web van sin texto (no se leerían): solo sus formas. Texto de muestra, sin nombres de clientes.
  */
-export function web() {
+export function web(k = 1) {
   const W = 2048, H = 1152;
-  const { c, ctx } = lienzo(W, H);
+  // se dibuja siempre en coordenadas de 2048 × 1152 y se escala: en el móvil (k = 0,5) el lienzo es de 1024 × 576
+  // (en la GPU, ~3 MB con mipmaps en vez de ~12,6), que a DPR 2 sigue doblando lo que ocupa la pantalla
+  const { c, ctx } = lienzo(Math.round(W * k), Math.round(H * k));
+  ctx.scale(k, k);
   ctx.fillStyle = PAPEL;
   ctx.fillRect(0, 0, W, H);
   // barra del navegador: los tres botones y la caja de la dirección

@@ -157,6 +157,8 @@ async function cargar() {
   // el puntero mueve un poco la cámara (solo con ratón)
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
     escena.addEventListener('pointermove', (e) => {
+      // solo el ratón: en un portátil táctil, tocar la escena no debe mover la cámara
+      if (e.pointerType !== 'mouse') return;
       const r = escena.getBoundingClientRect();
       p.apuntar(((e.clientX - r.left) / r.width) * 2 - 1, -(((e.clientY - r.top) / r.height) * 2 - 1));
     }, senal);
