@@ -91,9 +91,10 @@
     var etiqueta = NEC_LABEL[nec];
     if (nec === 'guia') { if (!sub) return; var m = REMAP[sub]; nec = m[0]; sub = m[1]; }
     var r = { etiqueta: etiqueta, problema: null };
-    /* v12: el problema 0 es «te buscan en Google y sale otro»; los de sistema van detrás */
-    if (nec === 'web') r.problema = 0;
-    if (nec === 'sistema') r.problema = sub === 'facturacion' ? 2 : 1;
+    /* el problema se elige por su id (#p-google, #p-sitios, #p-excel) y se traduce a su posición entre los que tiene ESTA página:
+       la portada lleva solo dos y otras páginas, uno o ninguno. Si el que toca no está, no hay aviso (null) */
+    var id = nec === 'web' ? 'p-google' : nec === 'sistema' ? (sub === 'facturacion' ? 'p-excel' : 'p-sitios') : null;
+    if (id) { var k = $('[data-par]').map(function (p) { return p.id; }).indexOf(id); r.problema = k >= 0 ? k : null; }
     /* «automatizar» (y «guía» → manual, que remite aquí) se queda en null y no enseña aviso: ningún problema de la lista encaja; avisoProblema y problemas.js aguantan el null */
     /* los problemas (problemas.js) marcan el suyo con este evento; aquí, el aviso con el enlace que lleva a su tramo */
     document.dispatchEvent(new CustomEvent('opspilot:ruta', { detail: { problema: r.problema } }));
