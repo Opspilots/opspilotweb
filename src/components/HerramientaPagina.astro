@@ -51,11 +51,11 @@ const otras = HERRAMIENTAS.filter((x) => x.slug !== slug && x.grupo === h.grupo)
     </div>
   </section>
 
-  <Faq items={faq} titulo="Preguntas que nos hacen sobre esto." fondo="navy" />
+  <Faq items={faq} titulo="Lo que nos preguntan sobre esto" fondo="navy" />
 
   <section class="s-papel" aria-labelledby="t-otras">
     <div class="wrap">
-      <h2 id="t-otras" class="h2">También te puede servir.</h2>
+      <h2 id="t-otras" class="h2">¿Qué más te puede servir?</h2>
       <ul class="hz-otras">
         {otras.map((o) => (
           <li><a href={`/herramientas/${o.slug}/`}>

@@ -39,7 +39,7 @@ const blog = {
   </CabeceraPagina>
   <section class="s-papel" aria-labelledby="t-gratis">
     <div class="wrap">
-      <h2 id="t-gratis" class="h2">Resuélvelo ahora, en dos minutos.</h2>
+      <h2 id="t-gratis" class="h2">¿Lo quieres resolver ahora, en dos minutos?</h2>
       <div class="rec-grupos">
         {GRUPOS.map((g) => (
           <div>
@@ -65,7 +65,7 @@ const blog = {
   </section>
   <section class="s-navy" aria-labelledby="t-empieza">
     <div class="wrap">
-      <h2 id="t-empieza" class="h2">¿Qué te pasa? Te decimos qué leer primero.</h2>
+      <h2 id="t-empieza" class="h2">¿Qué te pasa? Te decimos qué leer primero</h2>
       <ol class="empieza">
         {EMPIEZA.map(({ sit, r }) => (
           <li><a href={`/recursos/${r.slug}/`}>
@@ -79,7 +79,7 @@ const blog = {
   </section>
   <section class="s-papel" aria-labelledby="t-rec">
     <div class="wrap">
-      <h2 id="t-rec" class="h2">Guías para leer con calma.</h2>
+      <h2 id="t-rec" class="h2">Guías para leer con calma</h2>
       <div class="recursos-filtro" role="group" aria-label="Filtrar por tipo" data-filtro hidden>
         <button type="button" aria-pressed="true" data-cat="">Todo</button>
         {CATS.map((c) => <button type="button" aria-pressed="false" data-cat={c}>{c}</button>)}

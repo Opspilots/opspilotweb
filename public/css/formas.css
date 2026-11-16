@@ -58,3 +58,34 @@
 .avisos-flujo b{color:var(--verde);font-weight:700}
 .avisos-flujo .ico{width:1rem;height:1rem;color:var(--tar-tx)}
 @media (max-width:1020px){.avisos li{grid-template-columns:minmax(0,1fr)}}
+
+/* ─── ¿Qué lleva? (/webs/): la lista con la raya verde y, al lado, la web real en una ventana que se queda fija y baja
+   con el scroll de la sección (animation-timeline; sin soporte, quieta arriba) ─── */
+.anatomia{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(2rem,5vw,4.5rem);align-items:start}
+.anat-lista{list-style:none;display:grid;gap:1.7rem;margin-top:2.4rem}
+.anat-lista li{border-left:3px solid var(--verde);padding-left:clamp(1rem,2vw,1.4rem)}
+.anat-lista h3{font-weight:740;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;color:#fff}
+.anat-lista p{margin-top:.45rem;max-width:44ch;color:#AEB9C7}
+.anat-lista a{color:#fff;font-weight:600}
+.anat-ventana{position:sticky;top:calc(var(--cab) + 1.5rem);margin:0}
+.anat-ventana .ventana{overflow:hidden}
+.anat-vista{aspect-ratio:16/11;overflow:hidden;background:#fff;border-radius:0 0 .8rem .8rem}
+.anat-vista img{display:block;width:100%;height:auto}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    #incluye{view-timeline:--anat block}
+    .anat-vista img{animation:anat linear both;animation-timeline:--anat;animation-range:contain 0% contain 100%}
+    @keyframes anat{to{transform:translateY(-62%)}}
+  }
+}
+@media (max-width:1020px){.anatomia{grid-template-columns:minmax(0,1fr)}.anat-ventana{position:relative;top:auto}}
+
+/* ─── ¿Y si vendes productos? (/webs/): el texto y el móvil con la tienda real (el .tel de cabecera-pagina.css) ─── */
+.tienda{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.tienda .lista-ok li{position:relative;padding-left:1.5rem}
+.tienda .lista-ok li::before{content:"—";position:absolute;left:0;color:var(--verde);font-weight:700}
+.tienda-pie{margin-top:1.6rem;max-width:46ch;color:#AEB9C7}
+.tienda-pie a{color:#fff;font-weight:650}
+.tienda-tel{display:grid;place-items:center}
+.tienda-tel .tel{width:min(17.5rem,72vw)}
+@media (max-width:860px){.tienda{grid-template-columns:minmax(0,1fr)}}
