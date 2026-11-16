@@ -1,17 +1,17 @@
 // Qué lleva la cabecera de cada página interior (16-nov-2026, «el aro con la solución dentro»).
 // La firma de OpsPilot es su logo, el aro (horizonte de un instrumento: arco blanco arriba, verde abajo). En cada página
 // interior el aro va en grande y, dentro, un móvil con la solución de esa página funcionando: el mapa, la web real de
-// un cliente (J.R.), la de PresupuesYa (nuestro programa), el panel de pedidos, el chat o la calculadora.
+// un cliente (J.R.), la de Córdoba Soluciona, la de PresupuesYa (nuestro programa), el panel de pedidos, el chat o la calculadora.
 // Sustituye a «La mesa» (tira de pizarra con un objeto dibujado), que no era de la paleta de la marca\n// y se veía de juguete al lado de la tienda 3D de la portada.
 //   · 'aro'     → solo el aro grande, sin móvil (guías, listado de recursos, 404)
 //   · 'ninguno' → sin aro (legales)
 // Una ruta que no esté en la tabla rompe la construcción (y `astro dev`): nada de cabeceras por defecto sin querer.
 
-export type ClaveObjeto = 'maps' | 'web' | 'presupuesya' | 'panel' | 'chat' | 'calc' | 'aro' | 'ninguno';
+export type ClaveObjeto = 'maps' | 'web' | 'cordoba' | 'presupuesya' | 'panel' | 'chat' | 'calc' | 'aro' | 'ninguno';
 
 export const OBJETO_POR_RUTA: Record<string, ClaveObjeto> = {
   '/posicionamiento-google-maps-cordoba/': 'maps',
-  '/webs/': 'web',
+  '/webs/': 'cordoba',             // la web de Córdoba Soluciona, web nuestra (pedido del fundador, 16-nov)
   '/soluciones/': 'presupuesya',   // la web de PresupuesYa, nuestro programa de presupuestos (pedido del fundador, 16-nov)
   '/contacto/': 'chat',
   '/herramientas/': 'calc',
