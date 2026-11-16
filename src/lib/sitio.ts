@@ -6,11 +6,13 @@ export { BRAND_NAME, CONTACT_EMAIL, PHONE, SITE_URL, ADDRESS, LEGAL_NAME, TAX_ID
 
 export const WA = (texto: string) => `https://wa.me/${PHONE.wa}?text=${encodeURIComponent(texto)}`;
 
-// Menú principal (escritorio y móvil). /recursos sigue publicada pero ya no va en el menú.
+// Menú principal (escritorio y móvil), 16-nov-2026: las soluciones con el nombre que les daría el dueño de un negocio.
+// /recursos sigue publicada pero no va en el menú.
 export const NAV = [
-  { href: '/webs/', label: 'Webs' },
-  { href: '/soluciones/', label: 'Soluciones' },
-  { href: '/herramientas/', label: 'Herramientas' },
+  { href: '/posicionamiento-google-maps-cordoba/', label: 'Salir en Google' },
+  { href: '/webs/', label: 'Página web' },
+  { href: '/soluciones/', label: 'Programa a medida' },
+  { href: '/herramientas/', label: 'Herramientas gratis' },
   { href: '/contacto/', label: 'Contacto' },
 ] as const;
 
@@ -55,11 +57,11 @@ export function migas(items: { nombre: string; path: string }[]) {
 export const SERVICIO_LOCAL = {
   '@type': 'ProfessionalService',
   '@id': `${SITE_URL}/#service`,
-  name: `${BRAND_NAME} · Digitalización y webs en Córdoba`,
+  name: `${BRAND_NAME} · Marketing digital y software a medida en Córdoba`,
   url: `${SITE_URL}/`,
   image: `${SITE_URL}/images/og-horizonte.png`,
   telephone: PHONE.e164,
-  priceRange: '€€',
+  // sin priceRange: la web no habla de precios (decisión del fundador, 16-nov-2026)
   address: { '@type': 'PostalAddress', addressLocality: ADDRESS.locality, addressRegion: ADDRESS.region, addressCountry: ADDRESS.countryCode },
   geo: { '@type': 'GeoCoordinates', latitude: 37.8882, longitude: -4.7794 },
   areaServed: [
@@ -67,7 +69,7 @@ export const SERVICIO_LOCAL = {
     { '@type': 'AdministrativeArea', name: 'Andalucía' },
     { '@type': 'Country', name: 'España' },
   ],
-  serviceType: ['Diseño web', 'Ficha de Google', 'Tiendas online', 'Soluciones a medida', 'Automatización de procesos'],
+  serviceType: ['SEO local y Google Maps', 'Diseño web', 'Software a medida', 'Programa de presupuestos y facturas', 'Gestión de pedidos y stock'],
   provider: { '@id': ORG_ID },
 };
 

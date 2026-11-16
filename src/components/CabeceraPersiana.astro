@@ -40,8 +40,10 @@ const ALT_FINAL = 'Fachada encalada de un comercio de Córdoba, con reja y macet
   {/* .ps-pin: en escritorio se queda fija mientras el scroll sube la persiana (ver persiana.css) */}
   <div class="ps-pin" data-pin>
     <div class="ps-titulo">
-      {/* el titular grande primero y, debajo, qué hacemos y dónde: sin línea pequeña encima del titular (sin «eyebrow») */}
-      <h1 id="titular" class="ps-h1"><span class="ps-sub">Digitalización y webs en Córdoba<span class="sr">:</span></span> <span class="ps-grande">Todo tu negocio, en un solo sitio.</span></h1>
+      {/* el titular grande primero y, debajo, qué hacemos y dónde: sin línea pequeña encima del titular (sin «eyebrow»).
+          16-nov-2026: las dos promesas de «Document 1» (captar clientes y mejorar los procesos) en palabras del dueño; la línea
+          descriptiva lleva la búsqueda que existe («agencia marketing digital córdoba», «software a medida córdoba»). */}
+      <h1 id="titular" class="ps-h1"><span class="ps-sub">Agencia de marketing digital y software a medida en Córdoba<span class="sr">,</span></span> <span class="ps-grande">Más clientes y menos papeleo para tu negocio</span></h1>
     </div>
 
     <div class="ps-escena" data-escena>
@@ -67,11 +69,9 @@ const ALT_FINAL = 'Fachada encalada de un comercio de Córdoba, con reja y macet
     </div>
 
     <div class="ps-apoyo">
-    <p class="ps-servicios">Webs y ficha de Google, soluciones a medida y herramientas gratis.</p>
-    {/* PROMESA: se mantiene (decisión del dueño, 11-nov-2026). Para quitarla, borrar este <ul> (y «.ps-promesa» en public/css/persiana.css).
-        OJO: la meta description de src/pages/index.astro también repite «desde 500 €» y «respuesta en menos de 24 h». */}
+    <p class="ps-servicios">Que te encuentren en Google y te llamen, y que los presupuestos, los pedidos y las facturas estén en un solo sitio.</p>
+    {/* 16-nov-2026: sin precios en la web (decisión del fundador). Queda solo el compromiso de respuesta. */}
     <ul class="ps-promesa">
-      <li><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Desde 500&nbsp;€</li>
       <li><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>Respuesta en menos de 24 h</li>
     </ul>
     </div>

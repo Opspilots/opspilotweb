@@ -76,7 +76,11 @@ main{overflow-x:clip}
 .menu a{text-decoration:none;color:#C3CCD8;padding:.75rem 0}
 .menu a:hover{color:#fff}
 .btn-cab{padding:.75rem 1.05rem;font-size:var(--t-2);white-space:nowrap}
-@media (min-width:768px) and (max-width:900px){.cab-in{gap:1.2rem}.menu{gap:1.1rem}}
+.menu a{white-space:nowrap}
+/* 16-nov-2026: el menú tiene cinco entradas con el nombre de cada solución («Programa a medida», «Herramientas gratis»): en
+   tableta y portátil pequeño no caben en una línea sin aplastar el logo, así que hasta 1180 px va en el desplegable y se queda
+   a la vista el botón verde */
+@media (min-width:768px) and (max-width:1180px){.menu{display:none}.btn-cab{margin-left:auto}.cab-in{gap:.8rem}}
 
 /* ═══ VENTANA: la réplica de pantalla ═══ */
 .ventana{position:relative;background:var(--ui-bg);color:var(--ui-ink);border-radius:.8rem;box-shadow:var(--sombra-v);font-size:.9rem;line-height:1.4;isolation:isolate}
@@ -452,6 +456,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .menu-movil-panel .sub{font-weight:500;color:var(--texto-claro);padding-left:.8rem}
 .menu-movil-panel .sub .ico{color:var(--verde)}
 .menu-movil-panel .btn{margin-top:.5rem;justify-content:center;padding:.95rem 1.3rem}
+/* el desplegable del menú también en tableta y portátil pequeño (ver la nota del menú arriba) */
+@media (min-width:768px) and (max-width:1180px){.menu-movil{display:block}}
 .cab-llamar{display:none}
 @media (max-width:767px){
   .menu-movil{display:block}
@@ -525,6 +531,27 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .puerta ul li::before{content:"—";color:var(--verde);margin-right:.45rem}
 .puerta-ir{display:inline-flex;align-items:center;gap:.4rem;margin-top:auto;padding-top:.4rem;font-weight:700;font-size:var(--t-2);color:var(--verde)}
 @media (max-width:1020px){.puertas{grid-template-columns:minmax(0,1fr)}}
+/* promesas (portada, 16-nov-2026): las dos cosas que hacemos, con la raya verde de los problemas en vez de tarjetas iguales.
+   Cada solución concreta es una fila que lleva a su página. */
+.promesas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(2.2rem,6vw,5rem);margin-top:clamp(2.5rem,5vw,4rem)}
+.promesa{border-left:3px solid var(--verde);padding-left:clamp(1.1rem,2.5vw,1.8rem)}
+.promesa h3{font-weight:760;font-size:clamp(1.5rem,1.1rem + 1.3vw,2.2rem);line-height:1.08;letter-spacing:-.018em;color:#fff;text-wrap:balance;max-width:16ch}
+.promesa>p{margin-top:.9rem;color:#AEB9C7;max-width:40ch}
+.promesa-sol{list-style:none;display:grid;gap:.6rem;margin-top:1.5rem}
+.promesa-sol a{display:flex;align-items:center;gap:.9rem;padding:.9rem 1rem;border-radius:var(--tar-r);background:var(--tar-bg);color:#fff;text-decoration:none;transition:transform .25s var(--curva),background-color .25s}
+.promesa-sol a:hover{transform:translateX(4px);background:#1D2B3D}
+.promesa-sol a:focus-visible{outline:3px solid var(--verde);outline-offset:3px}
+.promesa-sol .ico{flex:none;width:1.3rem;height:1.3rem;color:var(--verde)}
+.promesa-sol span{display:grid;gap:.15rem;flex:1;min-width:0}
+.promesa-sol b{font-weight:700;font-size:var(--t-3);line-height:1.2}
+.promesa-sol small{font-size:var(--t-2);line-height:1.35;color:#AEB9C7}
+.promesa-sol .ir{width:1.1rem;height:1.1rem;color:#AEB9C7;transition:transform .2s var(--curva)}
+.promesa-sol a:hover .ir{transform:translateX(3px);color:var(--verde)}
+.que-gratis{display:flex;gap:.8rem;align-items:flex-start;margin-top:clamp(2.2rem,4vw,3rem);max-width:62ch;color:#AEB9C7}
+.que-gratis .ico{flex:none;width:1.25rem;height:1.25rem;margin-top:.2rem;color:var(--verde)}
+.que-gratis a{color:#fff;font-weight:600;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.25em}
+@media (max-width:860px){.promesas{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){.promesa-sol a,.promesa-sol .ir{transition:none}}
 /* banda: la llamada a la acción de una sección de lectura, a todo el ancho y al final (antes, una cajita en una columna lateral) */
 .banda{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.1rem 2.5rem;margin-top:clamp(2.5rem,5vw,4rem);--tar-bg:var(--navy);--tar-tx:#AEB9C7;--tar-tit:#fff}
 .banda>div{flex:1 1 22rem;max-width:40rem}

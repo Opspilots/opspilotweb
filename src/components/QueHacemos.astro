@@ -1,44 +1,50 @@
 ---
-// «Qué hacemos» (home, bajo la cabecera): las tres puertas del sitio (Webs, Soluciones, Herramientas) y el contacto.
-// Reutiliza .puertas/.puerta de opspilot.css. Sin clientes con nombre, capturas ni cifras de resultados.
+// «Qué hacemos» (portada, bajo la cabecera), 16-nov-2026: las dos promesas de «Document 1» (captar clientes y mejorar los
+// procesos) dichas como las diría el dueño, cada una con las soluciones concretas que la cumplen y su página. Las
+// herramientas gratis van en una línea debajo, no como tercera entrada. Sin precios. Los titulares no empiezan por «Que»:
+// la cola de la Q de Bricolage, a ese tamaño, parece un subrayado bajo «ue».
+// Forma: dos columnas con la raya verde de los problemas (no tarjetas iguales); cada solución es un enlace a su página.
 import { WA } from '../lib/sitio';
+
+const PROMESAS = [
+  {
+    id: 'clientes',
+    titulo: 'Más clientes que te encuentran y te llaman',
+    texto: 'Cuando alguien busca lo que haces en Córdoba, que salgas tú en el mapa y que tu web le explique de un vistazo qué haces, dónde y cómo pedirte presupuesto.',
+    enlaces: [
+      { href: '/posicionamiento-google-maps-cordoba/', icono: 'map-pin', t: 'Salir en Google Maps', d: 'Tu ficha completa, con reseñas y fotos de tus trabajos' },
+      { href: '/webs/', icono: 'globe', t: 'Una página web que traiga clientes', d: 'Una página por cada cosa que haces y por zona' },
+    ],
+  },
+  {
+    id: 'papeles',
+    titulo: 'Menos tiempo perdido en papeles',
+    texto: 'Presupuestos, pedidos, stock y facturas en un solo sitio y hechos a tu manera, para no copiar el mismo dato en tres programas ni buscarlo en el WhatsApp.',
+    enlaces: [
+      { href: '/soluciones/#presupuestos', icono: 'file-text', t: 'Presupuestos y facturas', d: 'El presupuesto aceptado se convierte en factura sin teclear nada' },
+      { href: '/soluciones/#pedidos', icono: 'package', t: 'Pedidos y stock', d: 'Cada pedido en una ficha, con lo que queda en el almacén' },
+    ],
+  },
+];
 ---
-<section class="s-navy" id="que-hacemos" aria-labelledby="t-que">
+<section class="s-navy que" id="que-hacemos" aria-labelledby="t-que">
   <div class="wrap">
-    <h2 id="t-que" class="h2">Te ayudamos a captar clientes y a mejorar cómo trabajas.</h2>
-    <p class="lead">Somos un equipo pequeño de Córdoba. Hacemos webs que traen clientes y sistemas que te quitan trabajo de encima. Con precio cerrado y explicado sin tecnicismos.</p>
-    <div class="puertas">
-      <a class="puerta" href="/webs/">
-        <h3>Webs y ficha de Google</h3>
-        <p>Que te encuentre quien ya te está buscando, y que te escriba a ti y no al de al lado. Desde 500&nbsp;€.</p>
-        <ul>
-          <li>Una página por servicio y por zona</li>
-          <li>Tu ficha de Google al día</li>
-          <li>Tienda online o pedido por WhatsApp</li>
-        </ul>
-        <span class="puerta-ir">Ver webs <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
-      </a>
-      <a class="puerta" href="/soluciones/">
-        <h3>Soluciones a medida</h3>
-        <p>Cuando ningún programa encaja con tu forma de trabajar, lo construimos alrededor de cómo trabajas tú.</p>
-        <ul>
-          <li>Citas, reservas y presupuestos</li>
-          <li>Facturación, inventario y control horario</li>
-          <li>WhatsApp y recordatorios automáticos</li>
-        </ul>
-        <span class="puerta-ir">Ver soluciones <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
-      </a>
-      <a class="puerta" href="/herramientas/">
-        <h3>Herramientas gratis</h3>
-        <p>Respuestas rápidas a lo que te preguntas cada semana. Gratis y sin registrarte.</p>
-        <ul>
-          <li>Por qué no sales en Google Maps</li>
-          <li>IVA, IRPF y margen</li>
-          <li>Presupuesto de obra y Verifactu</li>
-        </ul>
-        <span class="puerta-ir">Ver herramientas <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
-      </a>
+    <h2 id="t-que" class="h2">Te ayudamos con dos cosas</h2>
+    <p class="lead">Somos un equipo pequeño de Córdoba. No te vendemos una web ni un programa: te ayudamos a conseguir clientes y a que el trabajo de cada día te lleve menos tiempo.</p>
+    <div class="promesas">
+      {PROMESAS.map((p) => (
+        <div class="promesa" id={`promesa-${p.id}`}>
+          <h3>{p.titulo}</h3>
+          <p>{p.texto}</p>
+          <ul class="promesa-sol">
+            {p.enlaces.map((e) => (
+              <li><a href={e.href}><svg class="ico" aria-hidden="true"><use href={`#i-${e.icono}`}/></svg><span><b>{e.t}</b><small>{e.d}</small></span><svg class="ico ir" aria-hidden="true"><use href="#i-chevron-right"/></svg></a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
+    <p class="que-gratis"><svg class="ico" aria-hidden="true"><use href="#i-calculator"/></svg><span>¿Prefieres mirarlo tú primero? Tienes <a href="/herramientas/">herramientas gratis</a> para ver <a href="/herramientas/negocio-no-sale-en-google-maps/">por qué no sales en Google Maps</a>, <a href="/herramientas/pedir-resenas-google/">pedir reseñas</a> o <a href="/herramientas/calcular-iva-irpf-factura/">calcular el IVA de una factura</a>.</span></p>
     <div class="porque-pie">
       <a class="btn btn-verde" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
       <p>Respuesta en menos de 24 h. También en <a class="enlace enlace-claro" href="/contacto/">contacto</a>.</p>
