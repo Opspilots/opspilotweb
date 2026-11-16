@@ -11,7 +11,7 @@ import { createRequire } from 'node:module';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import sharp from 'sharp';
 
-const POSTER_V = 'v3';
+const POSTER_V = 'v5';
 // Sobremuestreo: se renderiza un 25 % más grande que el póster mayor y se reduce (bordes más limpios que el antialias
 // del canvas solo). Peso: cada póster tiene un tope en KB (AVIF; el WebP, 1,7 veces más): se codifica con la calidad
 // de partida y, si se pasa, se baja de 4 en 4 hasta que cabe. El grano de la cal y del empedrado es lo que más pesa.
@@ -50,7 +50,8 @@ const navegador = await chromium.launch({
 });
 for (const [encuadre, f] of Object.entries(FORMATOS)) {
   const W = Math.round(Math.max(...f.anchos) * 1.25), H = Math.round(W / f.aspecto);
-  for (const estado of ['inicio', 'final']) {
+  // 16-nov-2026: solo el póster de la persiana bajada (lleva el titular pintado encima); el «final» ya no se usa
+  for (const estado of ['inicio']) {
     const pagina = await navegador.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
     pagina.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.log(`[${encuadre}/${estado}] ${m.text()}`); });
     await pagina.goto(`${BASE}?poster=${estado}&encuadre=${encuadre}`, { waitUntil: 'load' });

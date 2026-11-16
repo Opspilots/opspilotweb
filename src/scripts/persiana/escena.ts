@@ -35,14 +35,22 @@ export const ASPECTOS: Record<Encuadre, number> = { ancho: 0.82, alto: 0.7 };
 type Pose = { pos: Vector3; mira: Vector3 };
 const POSES: Record<Encuadre, { a: Pose; b: Pose }> = {
   ancho: {
-    a: { pos: new Vector3(-0.05, 2.2, 10.6), mira: new Vector3(-0.05, 2.05, 0) },
+    // A (16-nov-2026): más cerca de la persiana, que lleva el titular pintado y ocupa unos dos tercios del ancho
+    a: { pos: new Vector3(0.62, 1.55, 7.0), mira: new Vector3(0.66, 1.42, 0) },
     b: { pos: new Vector3(0.72, 1.5, 4.8), mira: new Vector3(0.74, 1.36, -1) },
   },
   alto: {
-    a: { pos: new Vector3(0.02, 2.05, 11.8), mira: new Vector3(0.02, 1.95, 0) },
+    a: { pos: new Vector3(0.68, 1.42, 8.0), mira: new Vector3(0.7, 1.32, 0) },
     b: { pos: new Vector3(0.75, 1.75, 5.1), mira: new Vector3(0.75, 1.1, -1) },
   },
 };
+
+/**
+ * El rótulo (16-nov-2026): el titular de la portada va pintado en la persiana bajada. Es HTML encima del lienzo; esta es
+ * la caja de chapa donde va (metros, relativa a la persiana: sube con ella) y rotulo() la da en píxeles del lienzo.
+ */
+const ROTULO = { x0: HU.x0 + 0.12, x1: HU.x1 - 0.12, abajo: 0.24, alto: 1.9, z: -0.08 };
+export type Caja = { x: number; y: number; w: number; h: number };
 
 export interface Opciones {
   poster?: boolean;      // genera el póster: sin animación, buffer conservado, DPR 1
@@ -281,6 +289,8 @@ export class Persiana {
   private fin = new AbortController();
   activo = true;
   onFrame?: () => void;
+  /** después de cada fotograma (el rótulo de HTML se recoloca aquí) */
+  alPintar?: () => void;
 
   constructor(public canvas: HTMLCanvasElement, private op: Opciones = {}) {
     this.encuadre = op.encuadre ?? 'ancho';
@@ -989,6 +999,39 @@ export class Persiana {
     this.aplicar(0);
     this.sol.shadow.needsUpdate = this.foco.shadow.needsUpdate = true;
     this.renderer.render(this.scene, this.camara);
+    this.alPintar?.();
+  }
+
+  private aPx(x: number, y: number, z: number): [number, number] {
+    const v = new Vector3(x, y, z).project(this.camara);
+    return [((v.x + 1) / 2) * this.ancho, ((1 - v.y) / 2) * this.alto];
+  }
+  private cajaRotulo(y0: number): Caja {
+    const R = ROTULO;
+    const p = [this.aPx(R.x0, y0 + R.alto, R.z), this.aPx(R.x1, y0 + R.alto, R.z), this.aPx(R.x0, y0, R.z), this.aPx(R.x1, y0, R.z)];
+    const xs = p.map((q) => q[0]), ys = p.map((q) => q[1]);
+    const x = Math.min(...xs), y = Math.min(...ys);
+    return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y };
+  }
+  /**
+   * Dónde está el rótulo ahora (b), dónde estaba en reposo (b0: persiana en INICIO, pose A, sin puntero; es lo que el CSS
+   * dibuja sobre el póster) y el hueco de la tienda (por fuera del dintel la chapa no se ve), en píxeles del lienzo.
+   */
+  rotulo() {
+    const cam = this.camara;
+    cam.updateMatrixWorld();
+    const b = this.cajaRotulo(this.persiana.position.y + ROTULO.abajo);
+    const hueco = ([[HU.x0, HU.y1], [HU.x1, HU.y1], [HU.x1, 0], [HU.x0, 0]] as const).map(([x, y]) => this.aPx(x, y, 0));
+    const pos = cam.position.clone(), q = cam.quaternion.clone();
+    const A = POSES[this.encuadre].a;
+    cam.position.copy(A.pos);
+    cam.lookAt(A.mira);
+    cam.updateMatrixWorld();
+    const b0 = this.cajaRotulo(INICIO * (HU.y1 - 0.09) + ROTULO.abajo);
+    cam.position.copy(pos);
+    cam.quaternion.copy(q);
+    cam.updateMatrixWorld();
+    return { b, b0, hueco, ancho: this.ancho, alto: this.alto };
   }
 
   /** Pide un fotograma; el bucle se apaga solo cuando todo ha llegado a su sitio. */
@@ -1027,6 +1070,7 @@ export class Persiana {
     this.renderer.render(this.scene, this.camara);
     if (this.onFrame) cronometro('primer fotograma');
     this.onFrame?.();
+    this.alPintar?.();
     const quieto = this.vAbierto === 0
       && this.punteroSuave.distanceTo(this.puntero) < 0.002
       && Math.abs(this.vGiro) < 0.002 && Math.abs(this.giro - (this.abierto > 0.72 ? 0 : Math.PI)) < 0.002
