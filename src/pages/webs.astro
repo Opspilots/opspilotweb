@@ -9,6 +9,7 @@ import Faq from '../components/Faq.astro';
 import Cierre from '../components/Cierre.astro';
 import PorQue from '../components/PorQue.astro';
 import CordobaSoluciona from '../components/pantallas/CordobaSoluciona.astro';
+import Movil from '../components/Movil.astro';
 import { version } from '../lib/version';
 import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../lib/sitio';
 
@@ -95,15 +96,7 @@ const servicio = {
         </ul>
         <p class="tienda-pie">Es la tienda de ObraFácil, un almacén de placas con reparto propio: calcula cuántas placas lleva cada pared. <a href="/soluciones/#pedidos">Pruébala en Programa a medida</a>.</p>
       </div>
-      <div class="tienda-tel" role="img" aria-label="Un móvil con la tienda online real de ObraFácil desplazándose de arriba abajo">
-        <div class="tel"><div class="tel-pantalla" aria-hidden="true">
-          <p class="tel-barra"><span>9:41</span><i></i></p>
-          <div class="tw">
-            <p class="tw-url"><svg class="ico"><use href="#i-lock"/></svg>obrafacil2025.es</p>
-            <div class="tw-vista"><img src="/img/casos/obrafacil-movil.webp" width="780" height="3638" alt="" loading="lazy" decoding="async"></div>
-          </div>
-        </div></div>
-      </div>
+      <div class="tienda-tel"><Movil clave="obrafacil" /></div>
     </div>
   </section>
 

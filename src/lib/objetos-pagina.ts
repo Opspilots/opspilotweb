@@ -14,7 +14,7 @@ export const OBJETO_POR_RUTA: Record<string, ClaveObjeto> = {
   '/webs/': 'cordoba',             // la web de Córdoba Soluciona, web nuestra (pedido del fundador, 16-nov)
   '/soluciones/': 'presupuesya',   // la web de PresupuesYa, nuestro programa de presupuestos (pedido del fundador, 16-nov)
   '/contacto/': 'chat',
-  '/herramientas/': 'calc',
+  '/herramientas/': 'aro',             // los móviles van junto a cada grupo (calc y maps)
   '/recursos/': 'aro',
   '/herramientas/calcular-iva-irpf-factura/': 'calc',
   '/herramientas/calcular-margen-y-precio/': 'calc',

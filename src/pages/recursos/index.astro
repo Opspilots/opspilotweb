@@ -3,8 +3,9 @@ import Base from '../../layouts/Base.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
 import Cierre from '../../components/Cierre.astro';
 import { RESOURCES } from '../../lib/resources';
-import { HERRAMIENTAS, GRUPOS } from '../../data/herramientas';
 import { migas, SITE_URL, WA } from '../../lib/sitio';
+import { version } from '../../lib/version';
+const FORMAS = `/css/formas.css?v=${version('/css/formas.css')}`;
 
 const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Recursos gratis', path: '/recursos/' }];
 // Destacados primero y después por fecha, lo más reciente arriba.
@@ -18,8 +19,6 @@ const EMPIEZA = [
   ['Quiero automatizar, pero no sé qué.', 'automatiza-tu-negocio-sin-saber-de-tecnologia'],
   ['Voy a pedir presupuesto y no quiero que me timen.', 'como-pedir-presupuesto-de-software'],
 ].map(([sit, slug]) => ({ sit, r: RESOURCES.find((x) => x.slug === slug)! })).filter((x) => x.r);
-// Las dos columnas de herramientas quedan igual de altas: la más corta termina con una tarjeta para pedir la que falta.
-const MAX_GRUPO = Math.max(...GRUPOS.map((g) => HERRAMIENTAS.filter((h) => h.grupo === g.id).length));
 const CATS = ORDEN.filter((c) => RESOURCES.some((r) => r.cat === c));
 const blog = {
   '@type': 'Blog',
@@ -31,36 +30,19 @@ const blog = {
 <Base title="Recursos gratis para pequeños negocios · OpsPilot"
   description="Herramientas y guías gratis para pequeños negocios: Google Maps, reseñas, WhatsApp, presupuestos, IVA e IRPF, Verifactu y cómo digitalizarte sin tecnicismos."
   path="/recursos/" jsonld={[migas(M), blog]}>
+  <link rel="stylesheet" href={FORMAS}>
   <CabeceraPagina sobre="Recursos" titulo="Herramientas y guías gratis para tu negocio"
     entrada="Lo que explicamos en las primeras conversaciones, por escrito y gratis. Para decidir con criterio antes de gastar un euro.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, tengo una duda que no está en vuestras guías:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>¿Tu duda no está aquí? Pregúntanosla</a>
     </div>
   </CabeceraPagina>
-  <section class="s-papel" aria-labelledby="t-gratis">
-    <div class="wrap">
-      <h2 id="t-gratis" class="h2">¿Lo quieres resolver ahora, en dos minutos?</h2>
-      <div class="rec-grupos">
-        {GRUPOS.map((g) => (
-          <div>
-            <h3 class="rec-grupo-t">{g.titulo}</h3>
-            <ul class="hz-otras">
-              {HERRAMIENTAS.filter((o) => o.grupo === g.id).map((o) => (
-                <li><a href={`/herramientas/${o.slug}/`}>
-                  <span><small>«{o.busqueda}»</small><b>{o.nombre}</b></span>
-                  <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>
-                </a></li>
-              ))}
-              {HERRAMIENTAS.filter((o) => o.grupo === g.id).length < MAX_GRUPO && (
-                <li><a class="hz-pide" href={WA('Hola OpsPilot, me vendría bien una herramienta para:')} rel="noopener">
-                  <span><small>¿Echas una en falta?</small><b>Cuéntanos cuál y la tenemos en cuenta</b></span>
-                  <svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>
-                </a></li>
-              )}
-            </ul>
-          </div>
-        ))}
-      </div>
+  {/* 16-nov-2026 (tarde): las herramientas ya tienen su página en el menú; aquí, una banda verde que lleva a ella (antes,
+      el listado entero repetido, y tres bloques seguidos con la misma forma de filas) */}
+  <section class="corta rec-hz" aria-label="Herramientas gratis">
+    <div class="wrap corta-in">
+      <a href="/herramientas/#que-te-encuentren"><span class="corta-p">¿No te encuentran en Google?</span><span class="corta-r">Cinco herramientas gratis para tu ficha, tus reseñas y tu WhatsApp</span><span class="corta-ir">Ir a las herramientas <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></span></a>
+      <a href="/herramientas/#papeles"><span class="corta-p">¿Papeles, precios y facturas?</span><span class="corta-r">Presupuesto, IVA e IRPF, margen y Verifactu, resueltos en dos minutos</span><span class="corta-ir">Ir a las herramientas <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></span></a>
     </div>
   </section>
   <section class="s-navy" aria-labelledby="t-empieza">
