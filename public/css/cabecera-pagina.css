@@ -1,71 +1,143 @@
-/* Cabecera de las páginas interiores: la tira de pizarra de la portada en compacto, con un objeto a la derecha
-   (debajo del texto en móvil). No usa JS: el único gesto es una animación CSS, solo con movimiento permitido. */
+/* Cabecera de las páginas interiores (16-nov-2026): «el aro con la solución dentro» (CabeceraPagina.astro).
+   Navy de la marca a sangre; a la derecha, el aro del logo en grande (blanco arriba, verde abajo) con un móvil dentro que
+   enseña la solución de la página. Sin JS: el movimiento es CSS (transform y opacity), una vez, y con «reducir movimiento»
+   no hay ninguno: todo queda en su estado final, que es el estilo normal (las animaciones van con fill «both»). */
 
-/* v14 (punto 7): la tira es una pizarra con luz, un escalón MÁS CLARA que las páginas (antes #1F2A3A sobre #0F1620 casi no se distinguía)
-   y se cierra con un canto biselado claro: el filo atrapa la luz y separa la cabecera del contenido, también sobre fondo navy. */
-.cp{--cp-canto:1rem;--cp-pizarra:#2B3B54;position:relative;isolation:isolate;background:var(--cp-pizarra);color:#fff;padding-block:0 var(--cp-canto);box-shadow:inset 0 1px 0 rgb(255 255 255/.1)}
-.cp-veta{position:absolute;inset:0;z-index:-1;width:100%;height:100%}
-.cp-veta path{stroke:#1C283B;opacity:.55}
-
-/* el canto de la mesa (el mismo de la home): aquí la madera acaba y empieza la sección siguiente */
-.cp::after{content:"";position:absolute;z-index:4;left:0;right:0;bottom:0;height:var(--cp-canto);pointer-events:none;background:#495F80;box-shadow:inset 0 2px 0 #9DB2D0,inset 0 -3px 0 #1A2539,0 .5rem 1.4rem rgb(0 0 0/.55)}
-
-.cp-in{display:grid;grid-template-columns:minmax(0,1fr);padding-top:clamp(1.75rem,5svh,3rem)}
-.cp .cp-h1{max-width:none;letter-spacing:-.025em;line-height:1;text-wrap:balance;font-size:var(--t-6)}
-.cp-texto{min-width:0;margin-top:.9rem;padding-bottom:1.4rem}
-.cp .entrada{max-width:38rem;margin-top:0;color:#E6EBF2}
-.cp .acciones{display:flex;flex-wrap:wrap;gap:.7rem 1.4rem;align-items:center;margin-top:1.1rem}
-.cp .hz-gratis,.cp .prosa-meta{margin-top:.9rem}
-.cp-texto > :first-child:not(.entrada){margin-top:0}
-.cp :focus-visible{outline:3px solid var(--ambar);outline-offset:3px}
-/* sobre pizarra oscura: el botón principal en verde y el de línea en blanco */
+.cp{position:relative;isolation:isolate;overflow:hidden;background:var(--navy);color:#fff;padding-block:0}
+.cp-in{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:clamp(2rem,5vw,5rem);align-items:center;padding-block:clamp(2.6rem,6vw,4.75rem)}
+.cp-sin .cp-in{grid-template-columns:minmax(0,1fr);padding-block:clamp(2.4rem,5vw,3.6rem)}
+.cp .cp-h1{max-width:18ch;letter-spacing:-.025em;line-height:1;text-wrap:balance;font-size:var(--t-6)}
+.cp-texto{min-width:0}
+.cp .entrada{max-width:36rem;margin-top:1.2rem;color:#C9D3DF}
+.cp .acciones{display:flex;flex-wrap:wrap;gap:.7rem 1.4rem;align-items:center;margin-top:1.6rem}
+.cp .hz-gratis,.cp .prosa-meta{margin-top:1rem}
+.cp-texto>h1+:not(.entrada){margin-top:1.2rem}
 .cp .btn-tinta{background:var(--verde);color:var(--navy)}
 .cp .btn-tinta:hover{background:#6AD79D}
 .cp .btn-linea{color:#fff;box-shadow:inset 0 0 0 1.5px rgb(255 255 255/.6)}
 .cp .btn-linea:hover{background:rgb(255 255 255/.1)}
+.cp .enlace{color:#fff}
 
-/* el objeto: asoma por el canto de la mesa, así que se recorta abajo y los altos (móvil, calculadora, papel) caben */
-.cp-objeto{position:relative;overflow:hidden;justify-self:end;align-self:end;max-width:100%}
-.cp-defs{position:absolute;width:0;height:0}
-.cp-svg{display:block;overflow:hidden;font-family:var(--display)}
-.cp-ancho{display:none;width:21rem;aspect-ratio:300/190}
-.cp-bajo{width:min(100%,19rem);aspect-ratio:300/116}
+/* ─── la firma: el aro del logo, grande, y el móvil dentro cruzando el aro ─── */
+.cp-firma{position:relative;justify-self:center;width:min(100%,31rem);aspect-ratio:1;display:grid;place-items:center}
+.cp-anillo{position:absolute;inset:0;width:100%;height:100%;--arco-alto:#fff;--arco-bajo:var(--verde)}
+/* sin móvil (guías, recursos, 404), el aro solo, algo más pequeño */
+.cp-aro .cp-firma,.cp-aro.cp-con .cp-firma{width:min(100%,24rem)}
 
-/* tira sin dibujo: solo el texto sobre la madera */
-.cp-sin .cp-texto{padding-bottom:clamp(1.6rem,4svh,2.4rem)}
+.tel{position:relative;z-index:1;width:42%;aspect-ratio:9/18.6;padding:.5rem;border-radius:2.1rem;background:#0A0D12;
+  box-shadow:inset 0 0 0 1.5px #2D3644,0 2.2rem 3.5rem -1.6rem rgb(0 0 0/.85)}
+.tel::after{content:"";position:absolute;left:50%;top:.95rem;width:24%;height:.95rem;margin-left:-12%;border-radius:1rem;background:#0A0D12}
+.tel-pantalla{display:flex;flex-direction:column;height:100%;overflow:hidden;border-radius:1.65rem;background:#F6F7F9;color:#18212C;
+  font:500 clamp(.66rem,.55rem + .28vw,.8rem)/1.3 var(--display)}
+.tel-barra{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.1rem .35rem;font-weight:700;font-size:.92em}
+.tel-barra i{width:1.35em;height:.7em;border-radius:.2em;box-shadow:inset 0 0 0 1.5px currentColor;background:linear-gradient(90deg,currentColor 65%,transparent 65%) content-box;padding:2px}
+.tel .ico{width:1.1em;height:1.1em;flex:none}
 
-@media (max-width:999px){
-  .cp .acciones .btn{flex:1 1 12rem}
-  .cp-con .cp-texto{padding-bottom:.8rem}
-}
+/* maps: tu negocio sube al primer puesto del mapa */
+.tm{display:flex;flex-direction:column;gap:.55em;padding:0 .7em .7em;min-height:0;flex:1}
+.tm-busca{display:flex;align-items:center;gap:.5em;padding:.6em .8em;border-radius:2em;background:#fff;box-shadow:0 1px 5px rgb(20 30 45/.16);color:#3C4652}
+.tm-mapa{display:block;width:100%;height:30%;flex:none;border-radius:.8em}
+.tm-lista{list-style:none;display:grid;gap:.45em}
+.tm-lista li{display:grid;gap:.1em;padding:.6em .75em;border-radius:.7em;background:#fff;box-shadow:0 1px 3px rgb(20 30 45/.1)}
+.tm-lista b{font-weight:750;color:#1A4FB0}
+.tm-lista span{color:#5B6673;font-size:.92em}
+.tm-yo{box-shadow:inset 3px 0 0 var(--verde-h),0 4px 12px -4px rgb(20 30 45/.25)!important}
+.tm-yo b{color:#18212C}
+.tm-yo em{display:flex;gap:.35em;margin-top:.35em;font-style:normal}
+.tm-yo em span{padding:.3em .6em;border-radius:1em;background:var(--verde-s);color:#145A36;font-weight:700;font-size:.9em}
+.tm-yo em span:first-child{background:var(--verde-h);color:#fff}
 
-/* escritorio: titular de lado a lado (dos líneas) y, debajo, la entrada a la izquierda y el objeto a la derecha */
-@media (min-width:1000px){
-  .cp-con .cp-in{grid-template-columns:minmax(0,1fr) auto;column-gap:2.5rem}
-  .cp-con .cp-h1{grid-column:1/-1}
-  .cp-con .cp-texto{grid-column:1;align-self:center}
-  .cp-con .cp-objeto{grid-column:2}
-  .cp-ancho{display:block}
-  .cp-bajo{display:none}
-}
+/* web: la web real de J.R. baja despacio dentro del móvil */
+.tw{display:flex;flex-direction:column;flex:1;min-height:0}
+.tw-url{display:flex;align-items:center;justify-content:center;gap:.4em;margin:0 .7em .5em;padding:.45em;border-radius:.6em;background:#E7EAEE;color:#3C4652;font-size:.92em}
+.tw-vista{position:relative;flex:1;min-height:0;overflow:hidden;background:#fff}
+.tw-vista img{display:block;width:100%;height:auto}
 
+/* panel: pedidos del día y la factura que sale sola */
+.tp{display:flex;flex-direction:column;gap:.6em;padding:.2em .7em .8em;flex:1}
+.tp-cab{display:flex;justify-content:space-between;align-items:center;font-size:1.2em}
+.tp-cab b{font-weight:800}
+.tp-cab span{display:grid;place-items:center;min-width:1.7em;height:1.7em;border-radius:1em;background:var(--navy);color:#fff;font-size:.75em;font-weight:700}
+.tp-lista{list-style:none;display:grid;gap:.45em}
+.tp-lista li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.15em .5em;padding:.65em .7em;border-radius:.7em;background:#fff;box-shadow:0 1px 3px rgb(20 30 45/.1)}
+.tp-lista li span{display:contents}
+.tp-lista li b{grid-column:1/-1}
+.tp-lista b{font-weight:750}
+.tp-lista small{color:#5B6673;font-size:.9em}
+.tp-est{flex:none;padding:.3em .55em;border-radius:1em;font-style:normal;font-weight:700;font-size:.85em}
+.tp-rep{background:#E3ECFB;color:#1F4FA0}
+.tp-ace{background:var(--verde-s);color:#145A36}
+.tp-pre{background:#FBEBD8;color:#8A4B0B}
+.tp-aviso{display:flex;gap:.6em;align-items:flex-start;margin-top:auto;padding:.75em .8em;border-radius:.8em;background:var(--navy);color:#fff}
+.tp-aviso .ico{color:var(--verde);margin-top:.1em}
+.tp-aviso span{display:grid;gap:.15em;color:#C9D3DF}
+.tp-aviso b{color:#fff}
+
+/* chat: WhatsApp con OpsPilot */
+.tc{display:flex;flex-direction:column;flex:1;min-height:0;background:#ECE5DB}
+.tc-cab{display:flex;align-items:center;gap:.55em;padding:.55em .8em;background:var(--navy);color:#fff;font-size:1.05em}
+.tc-av{display:grid;place-items:center;width:1.9em;height:1.9em;border-radius:50%;background:#1F2A37}
+.tc-av svg{width:1.3em;height:1.3em}
+.tc-hilo{display:grid;gap:.5em;align-content:start;padding:.8em .6em}
+.tc-m{max-width:86%;padding:.55em .7em;border-radius:.75em;box-shadow:0 1px 1px rgb(0 0 0/.08)}
+.tc-yo{justify-self:end;background:#D8F7C9;border-top-right-radius:.2em}
+.tc-op{justify-self:start;background:#fff;border-top-left-radius:.2em}
+.tc-escribe{display:flex;gap:.25em;align-self:flex-start;margin:0 .6em;padding:.6em .7em;border-radius:.75em;background:#fff}
+.tc-escribe i{width:.4em;height:.4em;border-radius:50%;background:#8E9BAA}
+
+/* calc: la calculadora de IVA e IRPF */
+.tk{display:flex;flex-direction:column;gap:.7em;padding:.4em .9em 1em;flex:1}
+.tk-t{font-weight:800;font-size:1.15em;line-height:1.15}
+.tk-filas{display:grid;gap:.1em;padding:.4em .8em;border-radius:.8em;background:#fff;box-shadow:0 1px 3px rgb(20 30 45/.1)}
+.tk-filas div{display:flex;justify-content:space-between;gap:.5em;padding:.45em 0;border-bottom:1px solid #EDF0F3}
+.tk-filas div:last-child{border:0}
+.tk-filas dt{color:#5B6673}
+.tk-filas dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.tk-total{display:grid;gap:.2em;padding:.9em;border-radius:.8em;background:var(--verde);color:var(--navy)}
+.tk-total b{font-weight:800;font-size:1.7em;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.tk-nota{color:#5B6673;font-size:.92em}
+
+/* ─── movimiento: una vez al cargar ─── */
 @media (prefers-reduced-motion:no-preference){
-  .cp-svg{animation:cp-posa .8s var(--curva) .1s both}
-  @keyframes cp-posa{from{transform:translateY(16px) rotate(1.2deg)}to{transform:none}}
+  /* el aro se estabiliza como el horizonte de un instrumento */
+  .cp-anillo{animation:cp-nivela 1.5s var(--curva) both}
+  @keyframes cp-nivela{from{transform:rotate(-16deg) scale(.96);opacity:.4}}
+  .tel{animation:cp-sube .9s .15s var(--curva) both}
+  @keyframes cp-sube{from{transform:translateY(1.4rem);opacity:0}}
+  /* maps: los otros bajan y tu negocio entra arriba; el pin cae */
+  .tm-o1,.tm-o2{animation:cp-baja .8s 1.5s var(--curva) both}
+  @keyframes cp-baja{from{transform:translateY(calc(-100% - .45em))}}
+  .tm-yo{animation:cp-entra .8s 1.5s var(--curva) both}
+  @keyframes cp-entra{from{transform:translateX(18%);opacity:0}}
+  .tm-pin{animation:cp-pin .7s 1.9s var(--curva) both}
+  @keyframes cp-pin{from{transform:translateY(-16px);opacity:0}}
+  /* web: baja despacio por la web real y vuelve */
+  .tw-vista img{animation:cp-baja-web 22s 1.4s ease-in-out infinite alternate}
+  @keyframes cp-baja-web{to{transform:translateY(-58%)}}
+  /* panel: los pedidos entran y luego el aviso de la factura */
+  .tp-lista li{animation:cp-sube .6s var(--curva) both}
+  .tp-lista li:nth-child(1){animation-delay:.9s}.tp-lista li:nth-child(2){animation-delay:1.05s}.tp-lista li:nth-child(3){animation-delay:1.2s}
+  .tp-aviso{animation:cp-sube .7s 2.1s var(--curva) both}
+  .tp-ace{animation:cp-pulso .6s 2.1s var(--curva) both}
+  @keyframes cp-pulso{from{transform:scale(.6);opacity:0}}
+  /* chat: los mensajes llegan de uno en uno y queda «escribiendo» */
+  .tc-m{animation:cp-sube .5s var(--curva) both}
+  .tc-m:nth-child(1){animation-delay:.9s}.tc-m:nth-child(2){animation-delay:1.9s}.tc-m:nth-child(3){animation-delay:2.9s}
+  .tc-escribe{animation:cp-sube .4s 3.5s var(--curva) both}
+  .tc-escribe i{animation:cp-punto 1.2s 3.9s ease-in-out 4}
+  .tc-escribe i:nth-child(2){animation-delay:4.05s}.tc-escribe i:nth-child(3){animation-delay:4.2s}
+  @keyframes cp-punto{50%{transform:translateY(-.25em);opacity:.5}}
+  /* calc: el total aparece al final */
+  .tk-filas div{animation:cp-sube .5s var(--curva) both}
+  .tk-filas div:nth-child(1){animation-delay:.9s}.tk-filas div:nth-child(2){animation-delay:1.1s}.tk-filas div:nth-child(3){animation-delay:1.3s}
+  .tk-total{animation:cp-sube .6s 1.7s var(--curva) both}
 }
 
-/* objetivos táctiles de 44 px también en tablet (opspilot.css solo lo hace a ≤ 767 px) */
-@media (pointer:coarse){.cp .enlace{min-height:2.75rem}}
-
-/* móvil apaisado (p. ej. 740 × 360): sin dibujo, y la entrada y los botones lado a lado para que el botón de contacto
-   quede en la primera pantalla */
-@media (max-height:520px) and (orientation:landscape) and (min-width:560px) and (max-width:999px){
-  .cp-in{padding-top:1.1rem}
-  .cp-objeto{display:none}
-  .cp-texto{margin-top:.5rem;padding-bottom:.9rem}
-  .cp-texto:has(> .entrada){display:grid;grid-template-columns:minmax(0,1fr) fit-content(18rem);column-gap:1.5rem;align-items:start}
-  .cp-texto:has(> .entrada) > .entrada{grid-column:1;grid-row:1/span 3}
-  .cp-texto:has(> .entrada) > :not(.entrada){grid-column:2;margin-top:0}
-  .cp-texto:has(> .entrada) .acciones{flex-direction:column;align-items:stretch;gap:.4rem;margin-top:0}
-  .cp-texto:has(> .entrada) .acciones .btn{flex:none}
+/* ─── móvil y tableta: el aro debajo del texto ─── */
+@media (max-width:899px){
+  .cp-in{grid-template-columns:minmax(0,1fr);gap:2.2rem;padding-block:2.2rem 2.6rem}
+  .cp-firma{width:min(92vw,26rem)}
+  .cp-aro .cp-firma,.cp-aro.cp-con .cp-firma{width:min(60vw,15rem)}
+  .tel{width:50%}
+  .cp .acciones .btn{flex:1 1 12rem}
 }

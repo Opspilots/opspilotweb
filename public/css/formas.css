@@ -5,10 +5,12 @@
    Recuperadas de la rama feat/nicho-obra (antes public/css/puertas.css), sin la numeración de pasos. */
 
 /* ─── la respuesta corta, bajo la cabecera: varias preguntas, cada respuesta lleva a su bloque ─── */
-.corta{padding-block:clamp(2rem,4vw,3rem)}
+/* 16-nov (tarde): la banda va en el verde de la marca, a sangre, justo bajo la cabecera navy (antes, papel gris) */
+.corta{padding-block:clamp(2rem,4vw,3rem);background:var(--verde);color:var(--navy)}
 .corta-in{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1.5rem,4vw,3.5rem)}
 .corta a{display:grid;align-content:start;gap:.45rem;text-decoration:none;color:var(--navy)}
-.corta-p{font-size:var(--t-2);color:var(--gris-papel)}
+.corta-p{font-size:var(--t-2);color:#14412A}
+.corta a:focus-visible{outline:3px solid var(--navy);outline-offset:4px}
 .corta-r{font-weight:760;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;text-wrap:balance}
 .corta-ir{display:inline-flex;align-items:center;gap:.35rem;font-weight:650;font-size:var(--t-2);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.3em;margin-top:.2rem}
 .corta a:hover .ico{transform:translateY(2px)}

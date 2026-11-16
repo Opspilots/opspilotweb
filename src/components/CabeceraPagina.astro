@@ -1,15 +1,12 @@
 ---
-// Cabecera de las páginas interiores (5-nov-2026): la misma tira de madera que la de la home, «La mesa»
-// (CabeceraMesa.astro), pero compacta y con UN objeto de la mesa a la derecha (debajo del texto en móvil).
-// Qué objeto lleva cada ruta está en la tabla OBJETO_POR_RUTA de src/lib/objetos-pagina.ts; el prop `objeto`
-// la salta si una página lo necesita. Una ruta que no esté en la tabla y sin prop `objeto` lanza un error (en la construcción
-// y en `astro dev`): por eso la 404, que se sirve en cualquier URL, pasa objeto="aro".
-//   · 'aro'     → el aro grande sobre horizonte de antes (solo la 404). Su CSS vive en opspilot.css.
-//   · 'ninguno' → solo la tira de madera (legales y herramientas sin objeto).
-// El dibujo es decorativo (aria-hidden) y se genera en la construcción. Los estilos están en public/css/cabecera-pagina.css (con
-// ?v=); no usa JS: el único gesto es una animación CSS, solo con movimiento permitido. El H1 sigue siendo .grande-sub
-// (opspilot.css), mayor que el H2 y que el cierre; el de la home (lamesa.css) es mayor aún.
-import { objetoDeRuta, escena, veta, type ClaveObjeto } from '../lib/objetos-pagina';
+// Cabecera de las páginas interiores (16-nov-2026): «el aro con la solución dentro». Fondo navy de la marca a sangre, el
+// texto a la izquierda y, a la derecha (debajo en el móvil), el aro del logo en grande con un móvil dentro que enseña la
+// solución de esa página funcionando. Qué móvil lleva cada ruta: OBJETO_POR_RUTA en src/lib/objetos-pagina.ts (el prop
+// `objeto` la salta). Las pantallas son ejemplos (negocio neutro), salvo la web, que es la captura real de J.R. Rodríguez.
+// Movimiento (solo CSS, transform y opacity, una vez y sin bucles salvo el desplazamiento lento de la web): el aro se
+// nivela como el horizonte de un instrumento y la pantalla hace su gesto. Con «reducir movimiento», todo quieto y en su
+// estado final. Estilos: public/css/cabecera-pagina.css (con ?v=). El H1 sigue siendo .grande-sub (opspilot.css).
+import { objetoDeRuta, type ClaveObjeto } from '../lib/objetos-pagina';
 import { version } from '../lib/version';
 
 interface Props {
@@ -22,46 +19,101 @@ interface Props {
 }
 const { titulo, entrada } = Astro.props;
 const clave = Astro.props.objeto ?? objetoDeRuta(Astro.url.pathname);
-const esc = escena(clave);
-
+const conAro = clave !== 'ninguno';
+const conMovil = conAro && clave !== 'aro';
+// Qué enseña cada móvil, para quien no lo ve (el móvil es una imagen hecha de HTML: role="img" con su descripción)
+const DESC: Record<string, string> = {
+  maps: 'Un móvil con Google Maps: al buscar «carpintería cerca de mí», tu negocio sube al primer puesto con los botones de llamar y cómo llegar.',
+  web: 'Un móvil con la web real de J.R. Rodríguez e Hijos, una empresa de reformas de Córdoba, desplazándose de arriba abajo.',
+  panel: 'Un móvil con el panel de pedidos de un negocio: tres pedidos con su estado y un aviso de que un presupuesto aceptado ya es factura.',
+  chat: 'Un móvil con un chat de WhatsApp con OpsPilot: un dueño cuenta que no sale en Google y le contestan por dónde empezar.',
+  calc: 'Un móvil con la calculadora de IVA e IRPF: base de 1.000 euros, IVA del 21 por ciento, total de 1.210 euros.',
+};
 // nginx sirve .css con «Cache-Control: public, immutable»: la versión va en la URL (ver DEPLOY.md).
 const CSS = `/css/cabecera-pagina.css?v=${version('/css/cabecera-pagina.css')}`;
 ---
-{clave === 'aro' ? (
-  <section class="portada portada-sub" aria-labelledby="titular">
-    <div class="wrap portada-in">
-      <div class="portada-texto">
-        <h1 id="titular" class="grande grande-sub">{titulo}</h1>
-        {entrada && <p class="entrada">{entrada}</p>}
-        <slot />
-      </div>
-      <div class="instrumento instrumento-sub" aria-hidden="true">
-        <div class="actitud">
-          <div class="giro"><div class="suelo"></div></div>
-          <svg class="aro" viewBox="0 0 100 100"><use href="#aro"/></svg>
-        </div>
-      </div>
+<link rel="stylesheet" href={CSS}>
+<section class:list={['cp', conAro ? 'cp-con' : 'cp-sin', `cp-${clave}`]} data-objeto={clave} aria-labelledby="titular">
+  <div class="wrap cp-in">
+    <div class="cp-texto">
+      <h1 id="titular" class="grande grande-sub cp-h1">{titulo}</h1>
+      {entrada && <p class="entrada">{entrada}</p>}
+      <slot />
     </div>
-  </section>
-) : (
-  <>
-    <link rel="stylesheet" href={CSS}>
-    <section class:list={['cp', esc ? 'cp-con' : 'cp-sin']} data-objeto={clave} aria-labelledby="titular">
-      <svg class="cp-veta" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true" focusable="false" set:html={veta()} />
-      <div class="wrap cp-in">
-        <h1 id="titular" class="grande grande-sub cp-h1">{titulo}</h1>
-        <div class="cp-texto">
-          {entrada && <p class="entrada">{entrada}</p>}
-          <slot />
-        </div>
-        {esc && (
-          <div class="cp-objeto" aria-hidden="true">
-            <svg class="cp-defs" width="0" height="0" focusable="false"><defs set:html={esc.defs} /></svg>
-            <svg class="cp-svg cp-ancho" viewBox="0 0 300 190" focusable="false" set:html={esc.ancho} />
-            <svg class="cp-svg cp-bajo" viewBox="0 0 300 116" focusable="false" set:html={esc.bajo} />
+    {conAro && (
+      <div class="cp-firma">
+        <svg class="cp-anillo" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#aro"/></svg>
+        {conMovil && (
+          <div class="tel" role="img" aria-label={DESC[clave]}>
+            <div class="tel-pantalla" aria-hidden="true">
+              <p class="tel-barra"><span>9:41</span><i></i></p>
+
+              {clave === 'maps' && (
+                <div class="tm">
+                  <p class="tm-busca"><svg class="ico"><use href="#i-search"/></svg>carpintería cerca de mí</p>
+                  <svg class="tm-mapa" viewBox="0 0 200 120" preserveAspectRatio="xMidYMid slice">
+                    <rect width="200" height="120" fill="#E8ECE4"/>
+                    <path d="M140 0H200V58Q160 50 140 0Z" fill="#C6E6CC"/>
+                    <path d="M-5 80L205 46M48 -5L76 125M138 -5L120 125M-5 22L205 10" stroke="#fff" stroke-width="9" fill="none"/>
+                    <path d="M0 104C50 96 120 112 200 98" stroke="#BFD6E6" stroke-width="8" fill="none"/>
+                    <g class="tm-pin-otro"><circle cx="30" cy="40" r="5" fill="#D9534A"/><circle cx="165" cy="30" r="5" fill="#D9534A"/><circle cx="150" cy="86" r="5" fill="#D9534A"/></g>
+                    <g class="tm-pin"><path d="M98 34c-9 0-15 6-15 14 0 11 15 25 15 25s15-14 15-25c0-8-6-14-15-14z" fill="#1F7A4A"/><circle cx="98" cy="48" r="5.5" fill="#fff"/></g>
+                  </svg>
+                  <ol class="tm-lista">
+                    <li class="tm-yo"><b>Tu negocio</b><span>Abierto · fotos de tus trabajos</span><em><span>Llamar</span><span>Cómo llegar</span></em></li>
+                    <li class="tm-o1"><b>Otra carpintería</b><span>Abierto · 1,2 km</span></li>
+                    <li class="tm-o2"><b>Otra más</b><span>Abierto · 2,0 km</span></li>
+                  </ol>
+                </div>
+              )}
+
+              {clave === 'web' && (
+                <div class="tw">
+                  <p class="tw-url"><svg class="ico"><use href="#i-lock"/></svg>rodriguezreformas.es</p>
+                  <div class="tw-vista"><img src="/img/casos/jr-movil.webp" width="780" height="3798" alt="" decoding="async" fetchpriority="low"></div>
+                </div>
+              )}
+
+              {clave === 'panel' && (
+                <div class="tp">
+                  <p class="tp-cab"><b>Pedidos de hoy</b><span>3</span></p>
+                  <ul class="tp-lista">
+                    <li><span><b>0412 · Bar La Plaza</b><small>12 cajas · viernes</small></span><i class="tp-est tp-rep">En reparto</i></li>
+                    <li><span><b>0413 · Hotel Ribera</b><small>Presupuesto de la reforma</small></span><i class="tp-est tp-ace">Aceptado</i></li>
+                    <li><span><b>0414 · Café Central</b><small>Quedan 4 en stock</small></span><i class="tp-est tp-pre">Preparando</i></li>
+                  </ul>
+                  <p class="tp-aviso"><svg class="ico"><use href="#i-file-check-2"/></svg><span><b>Factura creada</b>del presupuesto aceptado, sin teclear nada</span></p>
+                </div>
+              )}
+
+              {clave === 'chat' && (
+                <div class="tc">
+                  <p class="tc-cab"><span class="tc-av"><svg viewBox="0 0 100 100"><use href="#aro"/></svg></span><b>OpsPilot</b></p>
+                  <div class="tc-hilo">
+                    <p class="tc-m tc-yo">Hola, tengo una carpintería y no salgo en Google Maps</p>
+                    <p class="tc-m tc-op">Hola. Cuéntanos qué haces y en qué zona, y te decimos por dónde empezaríamos.</p>
+                    <p class="tc-m tc-yo">Puertas y armarios, en Córdoba capital</p>
+                  </div>
+                  <p class="tc-escribe"><i></i><i></i><i></i></p>
+                </div>
+              )}
+
+              {clave === 'calc' && (
+                <div class="tk">
+                  <p class="tk-t">Calculadora de IVA e IRPF</p>
+                  <dl class="tk-filas">
+                    <div><dt>Base imponible</dt><dd>1.000,00&nbsp;€</dd></div>
+                    <div><dt>IVA 21 %</dt><dd>+210,00&nbsp;€</dd></div>
+                    <div><dt>Retención IRPF</dt><dd>0,00&nbsp;€</dd></div>
+                  </dl>
+                  <p class="tk-total"><span>Total de la factura</span><b>1.210,00&nbsp;€</b></p>
+                  <p class="tk-nota">De ahí, 210,00&nbsp;€ son para Hacienda.</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
-    </section>
-  </>
-)}
+    )}
+  </div>
+</section>
