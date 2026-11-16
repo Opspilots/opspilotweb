@@ -1,0 +1,58 @@
+/* Formas de las páginas largas de solución (16-nov-2026): /posicionamiento-google-maps-cordoba/, /webs/ y /soluciones/.
+   Regla de página larga (bitácora 07b): cada bloque responde a una pregunta del cliente, la respuesta corta va arriba
+   y dos bloques seguidos no tienen la misma forma. Aquí están las formas que no existían en opspilot.css.
+   Superficies por escalón de tono, sin filetes ni sombras en reposo; solo se anima transform y opacity.
+   Recuperadas de la rama feat/nicho-obra (antes public/css/puertas.css), sin la numeración de pasos. */
+
+/* ─── la respuesta corta, bajo la cabecera: varias preguntas, cada respuesta lleva a su bloque ─── */
+.corta{padding-block:clamp(2rem,4vw,3rem)}
+.corta-in{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1.5rem,4vw,3.5rem)}
+.corta a{display:grid;align-content:start;gap:.45rem;text-decoration:none;color:var(--navy)}
+.corta-p{font-size:var(--t-2);color:var(--gris-papel)}
+.corta-r{font-weight:760;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;text-wrap:balance}
+.corta-ir{display:inline-flex;align-items:center;gap:.35rem;font-weight:650;font-size:var(--t-2);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.3em;margin-top:.2rem}
+.corta a:hover .ico{transform:translateY(2px)}
+.corta .ico{transition:transform .2s var(--curva)}
+@media (max-width:767px){.corta-in{grid-template-columns:minmax(0,1fr);gap:1.4rem}}
+
+/* ─── bloque con pantalla que se toca: pregunta, respuesta y la réplica a todo el ancho ─── */
+.demo .caso-pantalla{margin-top:clamp(2rem,4vw,3.2rem)}
+.demo .lead{max-width:52ch}
+.demo-pie{margin-top:clamp(2.6rem,5vw,3.6rem);font-size:var(--t-2);color:var(--gris);max-width:60ch}
+.s-papel .demo-pie{color:var(--gris-papel)}
+.demo-pie a{color:inherit;font-weight:650}
+@media (max-width:1020px){.demo-pie{margin-top:1.4rem}}
+
+/* ─── dos columnas: texto y una lista de comprobación en tarjeta ─── */
+.dos{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(2rem,5vw,4.5rem);align-items:start}
+.dos .prosa{max-width:40rem}
+.dos .pf-tar{background:var(--tar-bg);border-radius:var(--tar-r)}
+@media (max-width:1020px){.dos{grid-template-columns:minmax(0,1fr)}}
+
+/* el titular de pregunta dentro de .dos mantiene su tamaño de H2; la lista de comprobación lleva una raya verde */
+.dos .prosa>.h2{font-size:var(--t-5);line-height:1.06;margin-top:0;max-width:18ch}
+.dos .lista-ok li{position:relative;padding-left:1.5rem}
+.dos .lista-ok li::before{content:"—";position:absolute;left:0;color:var(--verde-h);font-weight:700}
+
+/* ─── lo que puedes hacer tú solo: las herramientas gratis como la pregunta que te haces, sin tarjetas ─── */
+.solo{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1.6rem,4vw,3rem) clamp(2rem,5vw,4.5rem);margin-top:clamp(2rem,4vw,3rem)}
+.solo a{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.35rem 1rem;text-decoration:none;color:var(--navy)}
+.solo .ico{grid-row:1/span 3;width:2.6rem;height:2.6rem;padding:.6rem;border-radius:50%;background:var(--verde-s);color:var(--verde-h);transition:transform .25s var(--curva)}
+.solo-q{font-weight:740;font-size:var(--t-4);line-height:1.18;letter-spacing:-.012em;text-wrap:balance}
+.solo-n{font-weight:650;font-size:var(--t-2);color:var(--verde-h);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.3em}
+.solo-f{font-size:var(--t-2);color:var(--gris-papel);max-width:44ch}
+.solo a:hover .ico{transform:translateY(-3px)}
+.solo a:focus-visible{outline:3px solid var(--verde-h);outline-offset:4px;border-radius:.3rem}
+@media (max-width:767px){.solo{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){.solo .ico{transition:none}}
+
+/* ─── lo que se quita de encima: cada tarea es una fila (qué haces hoy → en qué acaba → cómo), no una tarjeta ─── */
+.avisos{list-style:none;display:grid;gap:.7rem;margin-top:clamp(2rem,4vw,3rem)}
+.avisos li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr) minmax(0,1.4fr);gap:.6rem 2rem;align-items:center;padding:var(--tar-p);border-radius:var(--tar-r);background:var(--tar-bg)}
+.avisos h3{font-weight:740;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;color:var(--tar-tit)}
+.avisos p{color:var(--tar-tx)}
+.avisos-flujo{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;font-size:var(--t-2)}
+.avisos-flujo span{color:var(--tar-tx)}
+.avisos-flujo b{color:var(--verde);font-weight:700}
+.avisos-flujo .ico{width:1rem;height:1rem;color:var(--tar-tx)}
+@media (max-width:1020px){.avisos li{grid-template-columns:minmax(0,1fr)}}

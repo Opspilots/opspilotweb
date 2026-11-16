@@ -1,0 +1,141 @@
+/* Réplicas de pantalla de los casos reales (ObraFácil y J.R. Rodríguez) y el recorrido de casos. Recuperadas del sitio
+   anterior al 11-nov-2026 (commit f6cb705). Cada réplica lleva la letra y la paleta de SU marca: son dibujos de interfaz,
+   no texto de la web. Las de Córdoba Soluciona y PresupuesYa siguen en la rama feat/nicho-obra. */
+.ventana,.recorrido{--mono:var(--display)}
+.v-barra-web{background:#E9ECF0;color:#48505C;font:400 .74rem/1.2 var(--mono);gap:.5rem}
+.v-barra-web .ico{width:.9rem;height:.9rem;color:#7B8491}
+.v-barra-web .url{flex:1;min-width:0;background:#fff;border-radius:99rem;padding:.38rem .8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:inset 0 0 0 1px rgb(10 14 20/.07)}
+.toast{position:absolute;z-index:8;left:50%;bottom:1rem;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:#0d0d0d;color:#fff;font:600 .82rem/1.3 var(--display);padding:.6rem .9rem;border-radius:.5rem;box-shadow:0 12px 26px -12px rgb(0 0 0/.6);transition:opacity .3s var(--curva),transform .3s var(--curva);white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.cursor{position:absolute;z-index:9;left:0;top:0;width:1.35rem;height:1.35rem;pointer-events:none;opacity:0;transition:transform .7s var(--curva),opacity .3s;filter:drop-shadow(0 2px 3px rgb(0 0 0/.35))}
+.cursor.on{opacity:1}
+.cursor.clic{animation:clic .25s var(--curva)}
+@keyframes clic{50%{scale:.8}}
+.nota-caso{right:-1rem;top:calc(100% - 1.8rem);max-width:21rem}
+/* ─── ObraFácil ─── */
+.t-obrafacil{--of-y:#F5D800;--of-k:#0d0d0d;--of-m:#57534e;background:#FAFAF8;color:var(--of-k);overflow:hidden}
+.of-nav{display:flex;align-items:center;gap:1rem;background:var(--of-k);color:#FAFAF8;padding:.65rem .9rem;font-size:.8rem}
+.of-marca{display:inline-flex;align-items:center;gap:.45rem;font-weight:800;font-size:.95rem}
+.of-marca i{width:.85rem;height:.85rem;background:var(--of-y);border-radius:.15rem}
+.of-buscar{display:flex;align-items:center;gap:.4rem;flex:1;max-width:15rem;background:#262626;color:#A8A29E;padding:.4rem .7rem;border-radius:99rem;font-size:.75rem}
+.of-buscar .ico{width:.85rem;height:.85rem}
+.of-l{color:#D6D3D1}
+.of-carro{position:relative;margin-left:auto;display:grid;place-items:center;width:2rem;height:2rem;border-radius:50%;background:#262626}
+.of-carro b{position:absolute;right:-.3rem;top:-.3rem;min-width:1.15rem;height:1.15rem;display:grid;place-items:center;padding:0 .2rem;border-radius:99rem;background:var(--of-y);color:var(--of-k);font:800 .66rem/1 var(--display);transition:transform .3s var(--curva)}
+.of-carro.bump b{transform:scale(1.35)}
+.of-miga{padding:.55rem .9rem;font-size:.7rem;color:var(--of-m);border-bottom:1px solid rgb(13 13 13/.08)}
+.of-miga b{color:var(--of-k)}
+.of-cuerpo{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr);gap:1rem;padding:.9rem}
+.of-foto{position:relative;border-radius:.45rem;overflow:hidden;background:#eee;align-self:start}
+.of-foto img{width:100%;aspect-ratio:122/220;object-fit:cover}
+.of-foto figcaption{position:absolute;left:.4rem;bottom:.4rem;background:rgb(13 13 13/.72);color:#fff;font:400 .6rem/1 var(--mono);padding:.3rem .4rem;border-radius:.25rem}
+.of-cat{font:700 .62rem/1.2 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--of-m)}
+.of-nombre{font-weight:800;font-size:1.35rem;letter-spacing:-.02em;margin-top:.15rem}
+.of-spec{font-size:.76rem;color:var(--of-m)}
+.of-precio{display:flex;align-items:baseline;gap:.4rem;margin-top:.45rem}
+.of-precio b{font-size:1.45rem;font-weight:800}
+.of-precio span{font-size:.74rem;color:var(--of-m)}
+.of-stock{display:flex;align-items:center;gap:.35rem;font-size:.72rem;color:var(--of-m)}
+.of-stock i{width:.45rem;height:.45rem;border-radius:50%;background:#16A34A}
+.of-calc{margin-top:.7rem;padding:.7rem;border-radius:.5rem;background:#fff;border:1.5px solid var(--of-k);box-shadow:3px 3px 0 var(--of-y)}
+.of-calc-t{font-weight:800;font-size:.88rem}
+.of-campos{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.45rem}
+.of-campos label{display:grid;gap:.2rem;font-size:.68rem;color:var(--of-m)}
+.of-campos input{width:100%;border:1.5px solid rgb(13 13 13/.2);border-radius:.35rem;padding:.42rem .5rem;font-weight:750;font-size:.92rem;background:#FAFAF8;font-variant-numeric:tabular-nums}
+.of-campos input:focus{outline:2px solid var(--of-y);outline-offset:1px;border-color:var(--of-k)}
+.of-res-fila{display:grid;grid-template-columns:7.5rem 1fr;gap:.7rem;align-items:center;margin-top:.6rem}
+.of-croquis{width:100%;height:auto;max-height:6.5rem}
+.of-res{display:grid;gap:.1rem}
+.of-res strong{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+.of-res span{font-size:.72rem;color:var(--of-m)}
+.of-total{margin-top:.25rem;padding-top:.3rem;border-top:1px dashed rgb(13 13 13/.18)}
+.of-total b{color:var(--of-k);font-size:.9rem}
+.of-bots{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.6rem}
+.of-anadir{display:inline-flex;align-items:center;gap:.4rem;border:0;background:var(--of-y);color:var(--of-k);font-weight:800;font-size:.84rem;padding:.6rem .85rem;border-radius:99rem;transition:transform .15s var(--curva)}
+.of-anadir:active{transform:scale(.97)}
+.of-wa{display:inline-flex;align-items:center;gap:.4rem;border:1.5px solid var(--of-k);color:var(--of-k);font-weight:700;font-size:.82rem;padding:.55rem .8rem;border-radius:99rem;text-decoration:none}
+.of-pie{display:flex;align-items:center;gap:.45rem;padding:.55rem .9rem;background:var(--of-y);font-weight:750;font-size:.76rem}
+
+/* ─── J.R. Rodríguez ─── */
+.t-jr{--jr-k:#2f3130;--jr-s:#7D865D;--jr-p:#e9e7e0;background:#fff;color:var(--jr-k);overflow:hidden}
+.jr-dos{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);min-height:22rem}
+.jr-buscador{padding:.95rem;border-right:1px solid rgb(47 49 48/.12);background:#FCFCFB}
+.jr-caja{display:flex;align-items:center;gap:.5rem;padding:.6rem .85rem;border-radius:99rem;box-shadow:0 1px 6px rgb(32 33 36/.18);font-size:.86rem;background:#fff}
+.caret{width:1px;height:1.05em;background:var(--jr-k);margin-left:-.35rem}
+@media (prefers-reduced-motion:no-preference){.caret{animation:parpadeo 1s steps(1) infinite}@keyframes parpadeo{50%{opacity:0}}}
+.jr-res{margin-top:.9rem;padding:.2rem .1rem;transition:opacity .25s}
+.jr-res.cambia{opacity:.25}
+.jr-url{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:#4d5156}
+.jr-fav{display:grid;place-items:center;width:1.4rem;height:1.4rem;border-radius:50%;background:var(--jr-p);color:var(--jr-k);font:800 .52rem/1 var(--display)}
+.jr-titulo{font-size:1rem;line-height:1.25;color:#1a0dab;margin-top:.3rem;font-weight:500}
+.jr-desc{font-size:.76rem;color:#4d5156;margin-top:.25rem}
+.jr-mapa-t{margin-top:1.1rem;font:700 .62rem/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:#6b6b67}
+.jr-mapa{list-style:none;margin-top:.5rem;display:grid;gap:.3rem;position:relative}
+.jr-mapa li{position:relative;padding-left:1rem}
+.jr-mapa li::before{content:"";position:absolute;left:.35rem;top:-.35rem;bottom:50%;width:.55rem;border-left:1.5px solid #cfcdc6;border-bottom:1.5px solid #cfcdc6;border-bottom-left-radius:.3rem}
+.jr-mapa .jr-raiz{padding-left:0;font:700 .72rem/1 var(--mono)}
+.jr-mapa .jr-raiz::before{display:none}
+.jr-mapa button{width:100%;text-align:left;font:400 .7rem/1.2 var(--mono);background:var(--jr-p);color:var(--jr-k);border:0;border-radius:.3rem;padding:.45rem .55rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jr-mapa button[aria-pressed="true"]{background:var(--jr-k);color:#fff}
+.jr-pagina{position:relative;display:flex;flex-direction:column}
+.jr-nav{display:flex;align-items:center;gap:.75rem;padding:.6rem .8rem;font-size:.7rem;color:#4f4f4c;border-bottom:1px solid rgb(47 49 48/.1)}
+.jr-nav b{margin-right:auto;color:var(--jr-k);font-size:.8rem}
+.jr-hero{background:var(--jr-k);color:#fff;padding:1rem .95rem 1.15rem;border-left:6px solid var(--jr-s);transition:opacity .25s}
+.jr-hero.cambia{opacity:.3}
+.jr-miga{font:400 .64rem/1 var(--mono);color:#cfcfc9;margin-bottom:.5rem}
+.jr-h1{font-weight:800;font-size:1.02rem;line-height:1.22}
+.jr-secs{display:flex;flex-wrap:wrap;gap:.35rem;padding:.7rem .8rem 0}
+.jr-secs span{font-size:.68rem;padding:.3rem .5rem;border-radius:.3rem;background:var(--jr-p)}
+.jr-form{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;padding:.7rem .8rem .9rem}
+.jr-form span{font-size:.7rem;color:#6b6b67;border:1px solid rgb(47 49 48/.18);border-radius:.3rem;padding:.48rem .5rem}
+.jr-form .jr-enviar{grid-column:1/-1;background:var(--jr-k);color:#e9e7e0;text-align:center;font-weight:700;border-color:var(--jr-k)}
+.jr-wa{position:absolute;left:.8rem;bottom:.8rem;display:grid;place-items:center;width:2.4rem;height:2.4rem;border-radius:50%;background:#25D366;color:#fff;box-shadow:0 6px 14px -6px rgb(0 0 0/.5)}
+/* ─── la pantalla de un caso dentro de una página: la nota cuelga del borde, en el flujo ─── */
+.caso-pantalla{position:relative}
+/* v6: en las subpáginas la nota va en el flujo, colgada del borde de la pantalla: absoluta pisaba el caso siguiente entre 768 y 1020 px y asomaba ~120 px en escritorio */
+.caso-pantalla .nota-caso{position:relative;top:auto;right:auto;bottom:auto;display:block;width:max-content;max-width:min(21rem,100%);margin:-2.2rem -1rem 0 auto}
+/* v5: al lado de un texto largo, la pantalla acompaña la lectura en vez de dejar un hueco debajo */
+@media (min-width:1021px) and (min-height:700px){.bloque .caso-pantalla{position:sticky;top:calc(var(--cab) + 1.5rem)}}
+@media (max-width:1020px){.bloque,.bloque-inv{grid-template-columns:minmax(0,1fr)}.bloque-inv>.bloque-texto{order:0}}
+@media (max-width:767px){.caso-pantalla .nota-caso{margin:-.6rem .8rem 0 auto}}
+.recorrido{padding-block:0;background:var(--rc-bg,var(--navy));color:var(--rc-fg,var(--texto-claro));transition:background-color .9s var(--curva),color .9s var(--curva)}
+.recorrido-cab{padding-block:clamp(3.5rem,7vw,5.5rem) clamp(1rem,3vw,2rem)}
+.recorrido .h2{color:inherit}
+.recorrido .lead{opacity:.85}
+.rc{background:var(--bg);color:var(--fg)}
+.rc-vivo .rc{background:transparent;color:inherit}
+.rc-in{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(2rem,5vw,4.5rem);align-items:center;min-height:min(100svh,56rem);padding-block:clamp(3rem,7vh,5rem)}
+@media (max-width:1020px){.rc-in{grid-template-columns:minmax(0,1fr);min-height:0}}
+.rc-texto{transition:opacity .6s var(--curva),transform .6s var(--curva)}
+/* sin atenuar los tramos inactivos: bajaba el contraste por debajo de AA */
+.rc-n{font:700 .74rem/1 var(--mono);letter-spacing:.16em;color:var(--ac);margin-bottom:1rem}
+.rc-vivo .rc-n{color:var(--rc-ac,var(--ac))}
+.rc-nombre{font-weight:800;font-size:clamp(2rem,1rem + 2.3vw,3.2rem);line-height:.98;letter-spacing:-.025em}
+.rc-donde{font:400 .82rem/1.4 var(--mono);opacity:.9;margin-top:.7rem}
+.rc-titulo{font-weight:700;font-size:clamp(1.25rem,1.05rem + .7vw,1.6rem);line-height:1.2;letter-spacing:-.012em;margin-top:1.6rem;max-width:30ch;text-wrap:balance}
+.rc-p{margin-top:.8rem;max-width:46ch;opacity:.86}
+.rc-datos{margin-top:1.5rem;display:grid;gap:.9rem;max-width:30rem}
+.rc-datos div{display:grid;grid-template-columns:auto 1fr;gap:.2rem 1rem;align-items:baseline;padding-top:.9rem;border-top:1px solid color-mix(in srgb,currentColor 22%,transparent)}
+.rc-datos dt{font-weight:800;font-size:clamp(1.8rem,1.3rem + 1.4vw,2.6rem);line-height:1;letter-spacing:-.03em;color:var(--ac);white-space:nowrap}
+.rc-vivo .rc-datos dt{color:var(--rc-ac,var(--ac))}
+.rc-datos dd{margin:0;font-size:.95rem;line-height:1.35}
+.rc-datos small{display:block;font:400 .72rem/1.3 var(--mono);opacity:.85;margin-top:.25rem}
+.rc-ir{margin-top:1.6rem;color:inherit}
+.rc-ventana .ventana{overflow:hidden}
+.rc-vista{position:relative;aspect-ratio:16/10.5;overflow:hidden;background:#fff;border-radius:0 0 .8rem .8rem}
+.rc-vista img{position:absolute;left:0;top:0;width:100%;height:auto;will-change:transform}
+@media (prefers-reduced-motion:reduce){.recorrido,.rc-texto{transition:none}}
+
+/* ─── réplicas en pantallas estrechas (reglas que vivían en el bloque táctil del sitio anterior) ─── */
+@media (max-width:1020px){
+  .of-cuerpo{grid-template-columns:minmax(0,1fr)}
+  .of-foto{display:none}
+  .jr-dos{grid-template-columns:minmax(0,1fr)}
+  .jr-buscador{border-right:0;border-bottom:1px solid rgb(47 49 48/.12)}
+  .jr-wa{display:none}
+  .caso-pantalla .nota-caso{position:relative;right:auto;top:auto;bottom:auto;display:block;margin:-.6rem .8rem 0 auto}
+}
+@media (max-width:767px){
+  .of-nav .of-l,.of-buscar{display:none}
+  .of-res-fila{grid-template-columns:6rem 1fr}
+}
