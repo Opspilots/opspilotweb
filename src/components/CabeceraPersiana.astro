@@ -18,10 +18,10 @@ const CSS = `/css/persiana.css?v=${version('/css/persiana.css')}`;
 // recortan igual (cover). Escritorio («ancho», la columna derecha): hasta 1620 px para pantallas de DPR 2. Móvil
 // («alto», todo el ancho): hasta 1080 px. El corte entre los dos es el mismo que el del CSS (MQ_ANCHO).
 // Las imágenes también son inmutables en nginx: si se regeneran, cambia el sufijo de versión del nombre (POSTER_V).
-const POSTER_V = 'v5';   // v5 (16-nov-2026): la pose A, más cerca de la persiana que lleva el titular pintado
+const POSTER_V = 'v6';   // v6 (16-nov-2026): escena a pantalla completa, con el titular pintado en la persiana
 const MQ_ANCHO = '(min-width: 900px) and (min-aspect-ratio: 1/1)';
 const FORMATOS = {
-  ancho: { aspecto: 0.82, anchos: [810, 1080, 1620] },
+  ancho: { aspecto: 1.6, anchos: [1280, 1920, 2560] },
   alto: { aspecto: 0.7, anchos: [540, 810, 1080] },
 } as const;
 type Formato = keyof typeof FORMATOS;
@@ -29,7 +29,7 @@ const set = (f: Formato, estado: string, fmt: string) =>
   FORMATOS[f].anchos.map((w) => `/images/persiana/${estado}-${f}-${POSTER_V}-${w}.${fmt} ${w}w`).join(', ');
 // Ancho real de la imagen (medido en el CSS): en escritorio, la columna derecha (100vw menos el margen izquierdo, la
 // columna de texto y el hueco: entre ~47 y 50vw según el ancho; se redondea a 52); en el móvil, todo el ancho.
-const SIZES_ANCHO = '52vw';
+const SIZES_ANCHO = '100vw';
 const SIZES_ALTO = '100vw';
 // Qué se ve si no hay escena en vivo (sin WebGL, error o «reducir movimiento»): la persiana bajada con el titular.
 const ALT_INICIO = 'Fachada encalada de un comercio de Córdoba con la persiana metálica bajada; encima, el titular pintado.';
@@ -62,19 +62,15 @@ const ALT_INICIO = 'Fachada encalada de un comercio de Córdoba con la persiana 
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="ps-contacto">
-      <a class="btn btn-tinta" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
-      <a class="btn btn-linea btn-tel" href={`tel:${PHONE.e164}`} aria-label={`Llamar al ${PHONE.display}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span class="tel-num">{PHONE.display}</span></a>
-    </div>
-
-    <div class="ps-apoyo">
-    <p class="ps-servicios">Salir en Google para que te llamen a ti, y tener los presupuestos, los pedidos y las facturas en un solo sitio.</p>
-    {/* 16-nov-2026: sin precios en la web (decisión del fundador). Queda solo el compromiso de respuesta. */}
-    <ul class="ps-promesa">
-      <li><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>Respuesta en menos de 24 h</li>
-    </ul>
+      {/* El mando (16-nov-2026): los botones dentro de la escena, sobre la acera, a pantalla completa. Se pulsan o se sigue
+          bajando y la persiana se abre. No se recortan con el rótulo: están fuera de .ps-marco. */}
+      <div class="ps-mando">
+        <div class="ps-contacto">
+          <a class="btn btn-tinta" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Cuéntanos tu caso</a>
+          <a class="btn btn-linea btn-tel" href={`tel:${PHONE.e164}`} aria-label={`Llamar al ${PHONE.display}`}><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span class="tel-num">{PHONE.display}</span></a>
+        </div>
+        <p class="ps-pista"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg><span>Respuesta en menos de 24 h</span><span class="ps-baja" aria-hidden="true">Baja para abrir<svg class="ico"><use href="#i-chevron-down"/></svg></span></p>
+      </div>
     </div>
   </div>
 </section>

@@ -124,6 +124,8 @@ async function cargar() {
   const progreso = () => Math.min(1, Math.max(0, (scrollY - desde) / recorrido));
   const actualizar = () => {
     p.objetivo = intro === INICIO ? INICIO : INICIO + (1 - INICIO) * progreso();
+    // «Baja para abrir» sobra con la tienda ya abierta
+    raiz.classList.toggle('ps-abierta', intro !== INICIO && progreso() > 0.85);
     p.pedir();
   };
 

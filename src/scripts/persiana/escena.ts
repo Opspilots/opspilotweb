@@ -30,13 +30,15 @@ const FOV = 36;
  * dos poses de cámara: A, la fachada entera (de la reja al azulejo); B, la tienda abierta, más cerca.
  */
 export type Encuadre = 'ancho' | 'alto';
-export const ASPECTOS: Record<Encuadre, number> = { ancho: 0.82, alto: 0.7 };
+// 16-nov-2026 (tarde): en escritorio la escena es a pantalla completa, apaisada (1,6); antes, la columna derecha (0,82)
+export const ASPECTOS: Record<Encuadre, number> = { ancho: 1.6, alto: 0.7 };
 
 type Pose = { pos: Vector3; mira: Vector3 };
 const POSES: Record<Encuadre, { a: Pose; b: Pose }> = {
   ancho: {
-    // A (16-nov-2026): más cerca de la persiana, que lleva el titular pintado y ocupa unos dos tercios del ancho
-    a: { pos: new Vector3(0.62, 1.55, 7.0), mira: new Vector3(0.66, 1.42, 0) },
+    // A (16-nov-2026): la fachada a pantalla completa; la persiana, con el titular pintado, en el centro, la ventana con
+    // reja a la izquierda y la acera abajo (ahí van los botones)
+    a: { pos: new Vector3(0.7, 1.42, 5.9), mira: new Vector3(0.7, 1.26, 0) },
     b: { pos: new Vector3(0.72, 1.5, 4.8), mira: new Vector3(0.74, 1.36, -1) },
   },
   alto: {

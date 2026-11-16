@@ -11,13 +11,13 @@ import { createRequire } from 'node:module';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import sharp from 'sharp';
 
-const POSTER_V = 'v5';
+const POSTER_V = 'v6';
 // Sobremuestreo: se renderiza un 25 % más grande que el póster mayor y se reduce (bordes más limpios que el antialias
 // del canvas solo). Peso: cada póster tiene un tope en KB (AVIF; el WebP, 1,7 veces más): se codifica con la calidad
 // de partida y, si se pasa, se baja de 4 en 4 hasta que cabe. El grano de la cal y del empedrado es lo que más pesa.
 // El de móvil (el LCP en un 4G) se queda por debajo de 60 KB.
 const FORMATOS = {
-  ancho: { aspecto: 0.82, anchos: [810, 1080, 1620], tope: { 810: 60, 1080: 100, 1620: 190 } },
+  ancho: { aspecto: 1.6, anchos: [1280, 1920, 2560], tope: { 1280: 110, 1920: 210, 2560: 320 } },   // pantalla completa (16-nov-2026)
   alto: { aspecto: 0.7, anchos: [540, 810, 1080], tope: { 540: 30, 810: 45, 1080: 58 } },
 };
 const CALIDAD = { avif: 52, webp: 76 };

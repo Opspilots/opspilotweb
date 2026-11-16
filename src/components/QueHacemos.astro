@@ -29,11 +29,11 @@ const PROMESAS = [
 ---
 <section class="s-navy que" id="que-hacemos" aria-labelledby="t-que">
   <div class="wrap">
-    <h2 id="t-que" class="h2">Te ayudamos con dos cosas</h2>
-    <p class="lead">Somos un equipo pequeño de Córdoba. No te vendemos una web ni un programa: te ayudamos a conseguir clientes y a que el trabajo de cada día te lleve menos tiempo.</p>
+    <h2 id="t-que" class="h2" data-entra>Te ayudamos con dos cosas</h2>
+    <p class="lead" data-entra style="--entra-d:8%">Somos un equipo pequeño de Córdoba. No te vendemos una web ni un programa: te ayudamos a conseguir clientes y a que el trabajo de cada día te lleve menos tiempo.</p>
     <div class="promesas">
       {PROMESAS.map((p) => (
-        <div class="promesa" id={`promesa-${p.id}`}>
+        <div class="promesa" id={`promesa-${p.id}`} data-entra style={`--entra-d:${p.id === 'clientes' ? 14 : 22}%`}>
           <h3>{p.titulo}</h3>
           <p>{p.texto}</p>
           <ul class="promesa-sol">
