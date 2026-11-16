@@ -3,7 +3,7 @@
 // Solo datos medidos, con fuente y fecha. Si se refrescan las cifras, se cambia aquí la fecha de la fuente.
 // Las capturas (public/img/casos/) son de la web pública de cada cliente: si se vuelven a tomar, OTRO nombre de fichero
 // (nginx las sirve inmutables).
-// Córdoba Soluciona y PresupuesYa (y sus capturas) siguen en la rama feat/nicho-obra: aquí no se enseñan.
+// Córdoba Soluciona se enseña como web NUESTRA (ejemplo propio, no servicio de pasar obras), por pedido del fundador (16-nov).
 
 export interface Caso {
   id: string;
@@ -24,6 +24,14 @@ export interface Caso {
 }
 
 export const CASOS: readonly Caso[] = [
+  {
+    id: 'cordoba-soluciona', nombre: 'Córdoba Soluciona', donde: 'Web de reformas en Córdoba y provincia · nuestra',
+    bg: '#2F5E3B', fg: '#FBFAF5', ac: '#FFC9A8',
+    titulo: 'Una web de reformas que la gente encuentra cuando busca en Google',
+    texto: 'Es nuestra. La montamos para comprobar en casa lo que luego hacemos en la tuya: una página por cada barrio y pueblo, y guías con precios, ayudas y licencias, que es lo que se busca antes de llamar a nadie.',
+    datos: [{ cifra: '92', que: 'visitas desde Google en 28 días; las guías de ayudas y de licencias, las que más', fuente: 'Search Console, 13-sep a 10-oct-2026' }],
+    url: 'https://cordobasoluciona.es/', dominio: 'cordobasoluciona.es', img: '/img/casos/cordoba-tall.webp', imgMovil: '/img/casos/cordoba-movil.webp', imgMovilAlto: 3759,
+  },
   {
     id: 'jr-rodriguez', nombre: 'J.R. Rodríguez e Hijos', donde: 'Empresa de reformas en Córdoba',
     bg: '#2F3130', fg: '#F3F4EE', ac: '#9CA67B',

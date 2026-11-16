@@ -1,6 +1,6 @@
 ---
 // /webs: reúne lo que estaba en /soluciones/webs-y-tiendas/ y en /diseno-web-cordoba/ (retiradas con 301, ver astro.config.mjs).
-// 16-nov-2026: sin precios; entra el caso de J.R. Rodríguez con su réplica (permiso del fundador) y la ficha de Google
+// 16-nov-2026: sin precios; entra Córdoba Soluciona, web nuestra, con su réplica (pedido del fundador) y la ficha de Google
 // enlaza a su página propia (/posicionamiento-google-maps-cordoba/). Las respuestas salen de los artículos publicados
 // (checklist-tu-web-trabaja-para-ti y como-pedir-presupuesto-de-software) y del proceso de la portada.
 import Base from '../layouts/Base.astro';
@@ -8,7 +8,7 @@ import CabeceraPagina from '../components/CabeceraPagina.astro';
 import Faq from '../components/Faq.astro';
 import Cierre from '../components/Cierre.astro';
 import PorQue from '../components/PorQue.astro';
-import JRRodriguez from '../components/pantallas/JRRodriguez.astro';
+import CordobaSoluciona from '../components/pantallas/CordobaSoluciona.astro';
 import { version } from '../lib/version';
 import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../lib/sitio';
 
@@ -50,9 +50,9 @@ const servicio = {
   <section class="s-papel demo" id="caso" aria-labelledby="t-caso">
     <div class="wrap">
       <h2 id="t-caso" class="h2">¿Cómo es una web que trae clientes?</h2>
-      <p class="lead">Como la de J.R. Rodríguez e Hijos, una empresa de reformas de Córdoba: una página por cada reforma que la gente busca, con sus obras reales y su WhatsApp a mano. Toca una ruta y mira dónde cae cada búsqueda.</p>
-      <div class="caso-pantalla"><JRRodriguez /></div>
-      <p class="demo-pie">Pasamos su web de WordPress a una más rápida, con sus obras reales y una página por tipo de reforma. En un mes, su posición media en Google pasó de 22 a 17,8 (Search Console, 13-sep a 10-oct-2026). <a href="https://rodriguezreformas.es/" rel="noopener">Entra en su web</a>.</p>
+      <p class="lead">Como la de Córdoba Soluciona, una web de reformas nuestra: una página de verdad para cada pueblo, barrio y reforma que la gente busca. Elige un pueblo y una reforma, y mira la página que existe.</p>
+      <div class="caso-pantalla"><CordobaSoluciona /></div>
+      <p class="demo-pie">La montamos para comprobar en casa lo que luego hacemos en la tuya. Desde Google le llegaron 92 visitas en 28 días, sobre todo a las guías de ayudas y de licencias (Search Console, 13-sep a 10-oct-2026). Las páginas de la réplica salen de su mapa del sitio del 25-sep-2026. <a href="https://cordobasoluciona.es/" rel="noopener">Entra en su web</a>.</p>
     </div>
   </section>
 

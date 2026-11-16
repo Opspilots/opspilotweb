@@ -1,5 +1,5 @@
 /* Réplicas de pantalla de los casos reales: cada una responde al tocarla. Las demos arrancan solas al verlas y se paran
-   para siempre en cuanto el visitante toca algo. Con movimiento reducido no hay demos. Recuperado de f6cb705: ObraFácil y J.R. Rodríguez. */
+   para siempre en cuanto el visitante toca algo. Con movimiento reducido no hay demos. Recuperado de f6cb705: ObraFácil, J.R. Rodríguez y Córdoba Soluciona. */
 (function () {
   'use strict';
   var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -107,6 +107,58 @@
       await teclear(inH, '2.50', ctx); await espera(700);
       await cursorA(of, anadir); if (!ctx.vivo()) return;
       anadir.click(); await espera(2600);
+    });
+  })();
+
+  /* ─── Córdoba Soluciona: una página real por pueblo, barrio y reforma (datos/cordobasoluciona.json,
+         leídos de su sitemap el 25-sep). Se cargan solo cuando se abre el caso. ─── */
+  var cs = $('[data-cs]');
+  if (cs) (function () {
+    var SV = { 'reforma-bano': 'reforma-bano', 'reforma-cocina': 'reforma-cocina', 'suelos-laminados': 'suelos-laminados', 'puertas-y-armarios': 'puertas-y-armarios', 'reforma-integral': 'reforma-integral' };
+    var sel = $('[data-cs-lugar]', cs), bots = $$('[data-cs-rf] button', cs), aviso = $('[data-cs-aviso]', cs);
+    var serp = $('[data-cs-serp]', cs), hero = $('[data-cs-hero]', cs), datos = null, cargando = null, lugar = 'puente-genil', sv = 'reforma-bano';
+    function cargar() {
+      if (!cargando) cargando = fetch('/datos/cordobasoluciona.json').then(function (r) { return r.json(); }).then(function (d) {
+        datos = d;
+        var col = new Intl.Collator('es');
+        var pueblos = d.places.filter(function (p) { return p.k === 'p'; }).sort(function (a, b) { return col.compare(a.n, b.n); });
+        var barrios = d.places.filter(function (p) { return p.k === 'b'; }).sort(function (a, b) { return col.compare(a.n, b.n); });
+        var op = function (p) { return '<option value="' + p.s + '"' + (p.s === lugar ? ' selected' : '') + '>' + p.n + '</option>'; };
+        sel.innerHTML = '<optgroup label="Pueblos (' + pueblos.length + ')">' + pueblos.map(op).join('') + '</optgroup><optgroup label="Barrios de Córdoba capital (' + barrios.length + ')">' + barrios.map(op).join('') + '</optgroup>';
+        return d;
+      });
+      return cargando;
+    }
+    function lugarDe(s) { return datos.places.filter(function (p) { return p.s === s; })[0]; }
+    async function pintar(nuevoLugar, nuevoSv) {
+      await cargar();
+      lugar = nuevoLugar || lugar; if (nuevoSv !== undefined) sv = nuevoSv;
+      var p = lugarDe(lugar);
+      if (p.k === 'b') sv = null; else if (!sv || p.sv.indexOf(sv) < 0) sv = p.sv[0] || null;
+      bots.forEach(function (b) {
+        var ok = p.k === 'p' && p.sv.indexOf(b.dataset.sv) >= 0;
+        b.disabled = !ok; b.setAttribute('aria-pressed', b.dataset.sv === sv ? 'true' : 'false');
+      });
+      aviso.hidden = p.k !== 'b';
+      aviso.textContent = p.k === 'b' ? 'En la capital, una página por barrio con lo que más se pide allí.' : '';
+      var ruta = '/reformas-en/' + p.s + '/' + (sv ? sv + '/' : ''), pg = datos.pages[ruta];
+      serp.classList.add('cambia'); hero.classList.add('cambia');
+      await espera(quieto ? 0 : 220);
+      $('[data-cs-url]', cs).textContent = 'cordobasoluciona.es' + ruta;
+      $('[data-cs-serp-u]', cs).textContent = 'cordobasoluciona.es › ' + ruta.split('/').filter(Boolean).join(' › ');
+      $('[data-cs-t]', cs).textContent = pg.t; $('[data-cs-d]', cs).textContent = pg.d; $('[data-cs-h1]', cs).textContent = pg.h1;
+      serp.classList.remove('cambia'); hero.classList.remove('cambia');
+    }
+    sel.addEventListener('change', function () { pintar(sel.value); });
+    bots.forEach(function (b) { b.addEventListener('click', function () { if (!b.disabled) pintar(null, b.dataset.sv); }); });
+    sel.addEventListener('focus', cargar, { once: true });
+    var tabCs = document.getElementById('tab-cs'); if (tabCs) tabCs.addEventListener('click', cargar, { once: true });
+    new IntersectionObserver(function (es, io) { if (es[0].isIntersecting) { io.disconnect(); cargar(); } }, { rootMargin: '200px' }).observe(cs);
+    demo(cs, async function (ctx) {
+      await cargar(); await espera(1600); if (!ctx.vivo()) return;
+      var p = datos.places[Math.floor(Math.random() * datos.places.length)];
+      sel.value = p.s; await pintar(p.s, p.sv.length ? p.sv[Math.floor(Math.random() * p.sv.length)] : null);
+      await espera(2200);
     });
   })();
 

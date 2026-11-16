@@ -1,6 +1,6 @@
-/* Réplicas de pantalla de los casos reales (ObraFácil y J.R. Rodríguez) y el recorrido de casos. Recuperadas del sitio
+/* Réplicas de pantalla de los casos reales (ObraFácil, J.R. Rodríguez y Córdoba Soluciona) y el recorrido de casos. Recuperadas del sitio
    anterior al 11-nov-2026 (commit f6cb705). Cada réplica lleva la letra y la paleta de SU marca: son dibujos de interfaz,
-   no texto de la web. Las de Córdoba Soluciona y PresupuesYa siguen en la rama feat/nicho-obra. */
+   no texto de la web. La de PresupuesYa sigue en la rama feat/nicho-obra. */
 .ventana,.recorrido{--mono:var(--display)}
 .v-barra-web{background:#E9ECF0;color:#48505C;font:400 .74rem/1.2 var(--mono);gap:.5rem}
 .v-barra-web .ico{width:.9rem;height:.9rem;color:#7B8491}
@@ -90,6 +90,48 @@
 .jr-form span{font-size:.7rem;color:#6b6b67;border:1px solid rgb(47 49 48/.18);border-radius:.3rem;padding:.48rem .5rem}
 .jr-form .jr-enviar{grid-column:1/-1;background:var(--jr-k);color:#e9e7e0;text-align:center;font-weight:700;border-color:var(--jr-k)}
 .jr-wa{position:absolute;left:.8rem;bottom:.8rem;display:grid;place-items:center;width:2.4rem;height:2.4rem;border-radius:50%;background:#25D366;color:#fff;box-shadow:0 6px 14px -6px rgb(0 0 0/.5)}
+/* ═══ v4b · Córdoba Soluciona: su paleta (favicon-califal.svg y marcas.json), su letra y sus 114 páginas reales ═══ */
+@font-face{font-family:'Young Serif';src:url('../fonts/young-serif-latin.woff2') format('woff2');font-weight:400;font-display:swap}
+.t-cs{--cs-v:#3F7A4C;--cs-vh:#2C5A38;--cs-r:#B4482F;--cs-c:#FBFAF5;--cs-k:#26332A;background:var(--cs-c);color:var(--cs-k);overflow:hidden}
+.cs-dos{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);min-height:23rem}
+.cs-panel{min-width:0;padding:.95rem;border-right:1px solid rgb(38 51 42/.12);display:flex;flex-direction:column;gap:.5rem}
+.cs-cuenta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.3rem;margin-bottom:.35rem}
+.cs-cuenta span{display:grid;justify-items:center;padding:.45rem .2rem;border-radius:.4rem;background:#fff;border:1px solid rgb(38 51 42/.1);font-size:.64rem;line-height:1.15;text-align:center;color:#5A665D}
+.cs-cuenta b{font:400 1.2rem/1 'Young Serif',Georgia,serif;color:var(--cs-r)}
+.cs-l{font:700 .64rem/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:#5A665D;margin-top:.2rem}
+.cs-sel{width:100%;font:600 .88rem/1.2 var(--display);padding:.55rem .6rem;border-radius:.4rem;border:1.5px solid rgb(38 51 42/.22);background:#fff;color:var(--cs-k)}
+.cs-sel:focus{outline:2px solid var(--cs-v);outline-offset:1px}
+.cs-rf{display:flex;flex-wrap:wrap;gap:.3rem}
+.cs-rf button{font:650 .76rem/1 var(--display);padding:.45rem .6rem;border-radius:99rem;border:1.5px solid rgb(38 51 42/.2);background:#fff;color:var(--cs-k)}
+.cs-rf button[aria-pressed="true"]{background:var(--cs-v);border-color:var(--cs-v);color:#fff}
+.cs-rf button:disabled{opacity:.38;cursor:not-allowed;text-decoration:line-through}
+.cs-aviso{font-size:.72rem;color:#5A665D}
+.cs-serp{margin-top:auto;padding:.7rem .75rem;border-radius:.5rem;background:#fff;box-shadow:0 1px 6px rgb(32 33 36/.14);transition:opacity .25s}
+.cs-serp.cambia,.cs-hero.cambia .cs-hero-t{opacity:.2}
+.cs-serp-u{display:flex;align-items:center;gap:.35rem;font-size:.68rem;color:#4d5156;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.cs-serp-u img{border-radius:.2rem;flex:none}
+.cs-serp-t{font-size:.94rem;line-height:1.25;color:#1a0dab;margin-top:.3rem}
+.cs-serp-d{font-size:.72rem;color:#4d5156;margin-top:.25rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cs-pag{display:flex;flex-direction:column;background:var(--cs-c)}
+.cs-nav{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;font-size:.66rem;color:var(--cs-k);border-bottom:1px solid rgb(38 51 42/.1)}
+.cs-nav b{font:400 .9rem/1 'Young Serif',Georgia,serif;color:var(--cs-v);margin-right:auto}
+.cs-nav b span{color:var(--cs-r)}
+.cs-nav i{font-style:normal;font-weight:700}
+.cs-wa-p{display:inline-flex;align-items:center;gap:.25rem;background:#25D366;color:#0B3D20;font-weight:800;padding:.3rem .5rem;border-radius:.3rem}
+.cs-wa-p .ico{width:.8rem;height:.8rem}
+.cs-hero{position:relative;flex:1;background:var(--cs-vh);display:grid;place-items:end center;overflow:hidden;padding:1rem .8rem 0;min-height:16rem}
+.cs-marco{position:relative;height:clamp(14rem,24vw,17rem);aspect-ratio:48/50;max-width:100%}
+.cs-arco{position:absolute;inset:0;width:100%;height:100%}
+.cs-hero-t{position:absolute;z-index:1;left:21%;right:21%;top:37%;bottom:2%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:opacity .25s}
+.cs-h1{font:400 clamp(.86rem,.7rem + .45vw,1.08rem)/1.12 'Young Serif',Georgia,serif;color:var(--cs-v);text-wrap:balance}
+.cs-cta{display:inline-flex;align-items:center;gap:.3rem;margin-top:.55rem;background:#25D366;color:#0B3D20;font:800 .64rem/1 var(--display);padding:.45rem .55rem;border-radius:.3rem}
+.cs-cta .ico{width:.75rem;height:.75rem}
+.cs-resp{font-size:.54rem;color:#5A665D;margin-top:.3rem}
+.cs-bul{display:flex;flex-wrap:wrap;justify-content:center;gap:.25rem .8rem;padding:.55rem .6rem;font-size:.62rem;color:#5A665D;border-top:1px solid rgb(38 51 42/.08)}
+.cs-bul span::before{content:"";display:inline-block;width:.35rem;height:.35rem;border-radius:50%;background:var(--cs-r);margin-right:.3rem;vertical-align:.1em}
+@media (max-width:1020px){.cs-dos{grid-template-columns:minmax(0,1fr)}.cs-panel{border-right:0;border-bottom:1px solid rgb(38 51 42/.12)}.cs-hero{min-height:15rem}}
+@media (max-width:767px){.cs-cuenta b{font-size:1rem}.cs-nav i{display:none}}
+
 /* ─── la pantalla de un caso dentro de una página: la nota cuelga del borde, en el flujo ─── */
 .caso-pantalla{position:relative}
 /* v6: en las subpáginas la nota va en el flujo, colgada del borde de la pantalla: absoluta pisaba el caso siguiente entre 768 y 1020 px y asomaba ~120 px en escritorio */
