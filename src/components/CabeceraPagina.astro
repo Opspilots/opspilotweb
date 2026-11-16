@@ -2,7 +2,8 @@
 // Cabecera de las páginas interiores (16-nov-2026): «el aro con la solución dentro». Fondo navy de la marca a sangre, el
 // texto a la izquierda y, a la derecha (debajo en el móvil), el aro del logo en grande con un móvil dentro que enseña la
 // solución de esa página funcionando. Qué móvil lleva cada ruta: OBJETO_POR_RUTA en src/lib/objetos-pagina.ts (el prop
-// `objeto` la salta). Las pantallas son ejemplos (negocio neutro), salvo la web, que es la captura real de J.R. Rodríguez.
+// `objeto` la salta). Las pantallas son ejemplos (negocio neutro), salvo las webs, que son capturas reales de su web
+// pública: J.R. Rodríguez (/webs/) y PresupuesYa, nuestro programa de presupuestos (/soluciones/).
 // Movimiento (solo CSS, transform y opacity, una vez y sin bucles salvo el desplazamiento lento de la web): el aro se
 // nivela como el horizonte de un instrumento y la pantalla hace su gesto. Con «reducir movimiento», todo quieto y en su
 // estado final. Estilos: public/css/cabecera-pagina.css (con ?v=). El H1 sigue siendo .grande-sub (opspilot.css).
@@ -21,10 +22,17 @@ const { titulo, entrada } = Astro.props;
 const clave = Astro.props.objeto ?? objetoDeRuta(Astro.url.pathname);
 const conAro = clave !== 'ninguno';
 const conMovil = conAro && clave !== 'aro';
+// Webs reales dentro del móvil: captura de móvil de su web pública (780 px de ancho) que baja despacio
+const WEBS: Record<string, { url: string; img: string; alto: number }> = {
+  web: { url: 'rodriguezreformas.es', img: '/img/casos/jr-movil.webp', alto: 3798 },
+  presupuesya: { url: 'presupuesya.es', img: '/img/casos/presupuesya-movil.webp', alto: 3496 },
+};
+const webReal = WEBS[clave];
 // Qué enseña cada móvil, para quien no lo ve (el móvil es una imagen hecha de HTML: role="img" con su descripción)
 const DESC: Record<string, string> = {
   maps: 'Un móvil con Google Maps: al buscar «carpintería cerca de mí», tu negocio sube al primer puesto con los botones de llamar y cómo llegar.',
   web: 'Un móvil con la web real de J.R. Rodríguez e Hijos, una empresa de reformas de Córdoba, desplazándose de arriba abajo.',
+  presupuesya: 'Un móvil con la web de PresupuesYa, el programa de presupuestos de reforma hecho por OpsPilot, desplazándose de arriba abajo.',
   panel: 'Un móvil con el panel de pedidos de un negocio: tres pedidos con su estado y un aviso de que un presupuesto aceptado ya es factura.',
   chat: 'Un móvil con un chat de WhatsApp con OpsPilot: un dueño cuenta que no sale en Google y le contestan por dónde empezar.',
   calc: 'Un móvil con la calculadora de IVA e IRPF: base de 1.000 euros, IVA del 21 por ciento, total de 1.210 euros.',
@@ -67,10 +75,10 @@ const CSS = `/css/cabecera-pagina.css?v=${version('/css/cabecera-pagina.css')}`;
                 </div>
               )}
 
-              {clave === 'web' && (
+              {webReal && (
                 <div class="tw">
-                  <p class="tw-url"><svg class="ico"><use href="#i-lock"/></svg>rodriguezreformas.es</p>
-                  <div class="tw-vista"><img src="/img/casos/jr-movil.webp" width="780" height="3798" alt="" decoding="async" fetchpriority="low"></div>
+                  <p class="tw-url"><svg class="ico"><use href="#i-lock"/></svg>{webReal.url}</p>
+                  <div class="tw-vista"><img src={webReal.img} width="780" height={webReal.alto} alt="" decoding="async" fetchpriority="low"></div>
                 </div>
               )}
 
