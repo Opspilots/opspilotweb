@@ -15,11 +15,12 @@ import { mesa, NAVY, PAPEL, TINTA, ROJO, rc, ci, pa, ln, tx, G, srect, tapete, c
 /* ───────── qué objeto lleva cada ruta (tabla explícita) ───────── */
 export type ClaveObjeto =
   | 'tapete' | 'pantalla-web' | 'portatil' | 'movil-sale-solo' | 'carpeta' | 'presupuesto'
-  | 'libreta' | 'calculadora' | 'movil-contacto' | 'comanda'
+  | 'libreta' | 'calculadora' | 'movil-contacto' | 'comanda' | 'ficha-maps'
   | 'ninguno'   // solo la tira de madera, sin dibujo
   | 'aro';      // el aro grande sobre horizonte de siempre (404)
 
 export const OBJETO_POR_RUTA: Record<string, ClaveObjeto> = {
+  '/posicionamiento-google-maps-cordoba/': 'ficha-maps',
   '/webs/': 'pantalla-web',
   '/soluciones/': 'portatil',
   '/recursos/': 'libreta',
@@ -154,6 +155,20 @@ const libretaGuia = () =>
   );
 
 /* calculadora de la home sobre un ticket de factura (el ticket es el de la home) */
+/* el móvil con tu ficha de Google Maps (16-nov-2026, página de SEO local): el mapa con tu pin, abierto y los dos botones
+   que traen clientes. Sin estrellas ni reseñas: no se dibuja una nota que no es de nadie */
+const fichaMaps = () =>
+  movil(150, 250,
+    mapa(-63, -103, 126, 92) + tx(-56, 10, 16, 'Tu negocio', '#fff', 800) + tx(-56, 30, 13, 'Abierto ahora', VERDE, 700) +
+      rc(-58, 44, 116, 28, VERDE, 14) + tx(0, 63, 13.5, 'Llamar', NAVY, 800, centro) +
+      rc(-58, 80, 116, 28, '#2B3644', 14) + tx(0, 99, 13.5, 'Cómo llegar', '#E6EBF2', 600, centro),
+  );
+/* versión baja: la ficha como una tarjeta apaisada, el mapa a la izquierda */
+const fichaMapsBaja = () =>
+  srect(-118, -46, 236, 92, 8, 6, 8) + rc(-118, -46, 236, 92, '#fff', 8) + mapa(-118, -46, 100, 92) +
+    tx(-6, -16, 15, 'Tu negocio', NAVY, 800) + tx(-6, 4, 13, 'Abierto ahora', VERDE_O, 700) +
+    rc(-6, 16, 72, 24, VERDE, 12) + tx(30, 32.5, 13, 'Llamar', NAVY, 800, centro);
+
 const factura = () => ticket(104, 190, 'Factura', '');
 
 /* pieza de la tiendita para el tapete: monitor pequeño */
@@ -256,6 +271,13 @@ export function escena(clave: ClaveObjeto): Escena | null {
         defs: piezas({ obj: calc(), fac: factura(), lap: lapiz() }),
         ancho: u('fac', 92, 98, -8, 0.7) + u('obj', 176, 100, 5, 0.7) + u('lap', 268, 128, -62, 0.6),
         bajo: u('fac', 88, 80, -9, 0.7) + u('obj', 186, 91, 4, 0.74),
+      };
+
+    case 'ficha-maps':
+      return {
+        defs: piezas({ obj: fichaMaps(), objb: fichaMapsBaja(), lap: lapiz() }),
+        ancho: u('obj', 160, 114, 4, 0.94) + u('lap', 50, 170, -24, 0.55),
+        bajo: u('objb', 170, 74, -2, 0.95) + u('lap', 36, 96, -14, 0.4),
       };
 
     case 'comanda':
