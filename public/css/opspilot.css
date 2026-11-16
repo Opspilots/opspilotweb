@@ -631,7 +631,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .contacto-pasos-t{margin-top:2rem;font-weight:740;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;color:#fff}
 .contacto-pasos{list-style:none;counter-reset:paso;display:grid;gap:.8rem;margin-top:1rem}
 .contacto-pasos li{counter-increment:paso;display:grid;grid-template-columns:1.9rem minmax(0,1fr);gap:.8rem;color:var(--texto-claro)}
-.contacto-pasos li::before{content:counter(paso);display:grid;place-items:center;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--verde);color:var(--navy);font:700 var(--t-2)/1 var(--display)}
+/* 16-nov-2026: sin números; cada paso lleva el aro de la marca */
+.contacto-pasos .paso-aro{width:1.9rem;height:1.9rem;--arco-alto:#fff;--arco-bajo:var(--verde)}
 .contacto-pasos b{color:#fff}
 .canal{display:block;text-decoration:none}
 .canal small{display:block;color:var(--tar-tx);font-size:var(--t-2);margin-top:.2rem}
