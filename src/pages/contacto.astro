@@ -9,9 +9,9 @@ const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Contacto', path: '/contac
 const contacto = { '@type': 'ContactPage', name: 'Contacto · OpsPilot', url: 'https://opspilot.es/contacto/' };
 ---
 <Base title="Contacto: cuéntanos tu problema · OpsPilot"
-  description="Escríbenos por WhatsApp, llámanos o déjanos tu mensaje. Te respondemos en menos de 24 horas con una propuesta concreta y precio cerrado. Desde Córdoba."
+  description="Escríbenos por WhatsApp, llámanos o déjanos tu mensaje. Te respondemos en menos de 24 horas con una propuesta concreta y por escrito. Desde Córdoba."
   path="/contacto/" jsonld={[migas(M), contacto]}>
-  <CabeceraPagina sobre="Contacto" titulo="Contacto: cuéntanos qué le pasa a tu negocio."
+  <CabeceraPagina sobre="Contacto" titulo="Contacto con OpsPilot en Córdoba"
     entrada="Te respondemos en menos de 24 horas. Primero te escuchamos 30 minutos, sin tecnicismos; después te decimos qué haríamos y cuánto cuesta, por escrito.">
     <div class="acciones">
       <a class="btn btn-tinta" href={WA('Hola OpsPilot, os escribo desde la web. Os cuento mi caso:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Escríbenos por WhatsApp</a>
@@ -23,18 +23,18 @@ const contacto = { '@type': 'ContactPage', name: 'Contacto · OpsPilot', url: 'h
   <section class="s-navy" aria-labelledby="t-canales">
     <div class="wrap contacto-in">
       <div>
-        <h2 id="t-canales" class="h2">Como te venga mejor.</h2>
+        <h2 id="t-canales" class="h2">¿Cómo prefieres hablar con nosotros?</h2>
         <div class="canales">
           <a class="canal" href={WA('Hola OpsPilot, os escribo desde la web.')} rel="noopener"><span><b>WhatsApp</b><small>{PHONE.display}</small></span></a>
           <a class="canal" href={`tel:${PHONE.e164}`}><span><b>Teléfono</b><small>{PHONE.display}</small></span></a>
           <a class="canal" href={`mailto:${CONTACT_EMAIL}`}><span><b>Correo</b><small>{CONTACT_EMAIL}</small></span></a>
           <p class="canal" style="cursor:default"><span><b>Córdoba, Andalucía</b><small>Trabajamos con pymes de toda España</small></span></p>
         </div>
-        <h3 class="contacto-pasos-t">Qué pasa después</h3>
+        <h3 class="contacto-pasos-t">¿Y después?</h3>
         <ol class="contacto-pasos">
-          <li><span><b>Te contestamos en menos de 24 h</b> y buscamos un hueco que te venga bien.</span></li>
-          <li><span><b>Hablamos 30 minutos</b> sobre tu negocio y lo que te frena. Sin compromiso.</span></li>
-          <li><span><b>Te mandamos la propuesta por escrito:</b> qué haríamos, cuánto cuesta y en qué plazo.</span></li>
+          <li><span class="paso-punto" aria-hidden="true"></span><span><b>Te contestamos en menos de 24 h</b> y buscamos un hueco que te venga bien.</span></li>
+          <li><span class="paso-punto" aria-hidden="true"></span><span><b>Hablamos 30 minutos</b> sobre tu negocio y lo que te frena. Sin compromiso.</span></li>
+          <li><span class="paso-punto" aria-hidden="true"></span><span><b>Te mandamos la propuesta por escrito:</b> qué haríamos, cuánto cuesta y en qué plazo.</span></li>
         </ol>
       </div>
       <form class="formu" data-formu action={FORMSUBMIT_ENDPOINT} method="post" novalidate>
@@ -51,7 +51,7 @@ const contacto = { '@type': 'ContactPage', name: 'Contacto · OpsPilot', url: 'h
       </form>
     </div>
   </section>
-  <Propuesta titulo="¿Prefieres que te guiemos? Tres preguntas." entrada="Si aún no sabes cómo contarlo, elige lo que necesitas y te enseñamos qué construiríamos." />
+  <Propuesta titulo="¿Prefieres que te guiemos con tres preguntas?" entrada="Si aún no sabes cómo contarlo, elige lo que necesitas y te enseñamos qué construiríamos." />
   <script is:inline>
     (function () {
       var f = document.querySelector('[data-formu]'); if (!f) return;

@@ -1,37 +1,50 @@
 ---
-// «Cuatro cosas que vemos cada semana en negocios de aquí»: cuatro problemas, cada uno con su réplica de pantalla («Hoy» y la misma
-// con un sistema). Con JS la sección es interactiva y se ve igual que antes (lista a la izquierda y ventana a la derecha; en móvil,
+// Problemas con su réplica de pantalla («Hoy» y la misma con un sistema). Hay cuatro y `ids` elige cuáles se enseñan, siempre
+// en el mismo orden: la portada lleva dos y la página de Google Maps, uno. Con JS la sección es interactiva y se ve igual que antes (lista a la izquierda y ventana a la derecha; en móvil,
 // pestañas fijas y un problema cada vez). Si hay movimiento permitido y alto suficiente, además se queda fija (position:sticky) sobre
-// una pista alta y el scroll nativo va cambiando el activo del 1 al 4. Si no cabe, o con «reducir movimiento», se ve un problema cada
-// vez y se cambia con un toque. Solo sin JS, o si el script falla o se cuelga, se apilan los cuatro, completos.
+// una pista alta y el scroll nativo va cambiando el activo, uno tras otro. Si no cabe, o con «reducir movimiento», se ve un problema cada
+// vez y se cambia con un toque. Solo sin JS, o si el script falla o se cuelga, se apilan todos, completos.
 // La decisión (public/js/problemas.js recalcula al girar o redimensionar) se toma aquí, en línea y antes del primer pintado: con la
 // altura real de la ventana pequeña (svh), no con la que sigue a la barra del navegador. Estilos: public/css/problemas.css.
-// Solo lo usa la home. El configurador de la home (public/js/opspilot.js) avisa de su problema con el evento
-// «opspilot:ruta» y los enlaces #p-google, #p-sitios, #p-excel y #p-pestanas llevan a su apartado.
+// Lo usan la portada y /posicionamiento-google-maps-cordoba/. Si una página lleva además el configurador (public/js/opspilot.js),
+// este avisa de su problema con el evento «opspilot:ruta» (por id, no por posición), y los enlaces #p-google, #p-sitios,
+// #p-excel y #p-pestanas llevan a su apartado. Con un solo problema no hay pestañas: el scroll pasa de «Hoy» a la solución.
 import { version } from '../lib/version';
+
+type IdProblema = 'google' | 'sitios' | 'excel' | 'pestanas';
+interface Props {
+  ids?: IdProblema[];
+  /** se queda fija y cambia con el scroll (17-nov-2026: no por defecto; a Pelayo el efecto le pareció raro) */
+  fijar?: boolean;
+  titulo?: string;
+}
+const { ids = ['google', 'sitios', 'excel', 'pestanas'], fijar = false, titulo = 'Cuatro cosas que vemos cada semana en negocios de aquí' } = Astro.props;
+const ORDEN: IdProblema[] = ['google', 'sitios', 'excel', 'pestanas'];
+const hay = (id: IdProblema) => ids.includes(id);
+const visibles = ORDEN.filter(hay);
+const primero = visibles[0];
+const CHIP: Record<IdProblema, string> = { google: 'No te encuentran', sitios: 'Cuatro sitios', excel: 'El Excel', pestanas: 'Cinco pestañas' };
 
 // nginx sirve .css y .js con «Cache-Control: public, immutable»: la versión va en la URL (ver DEPLOY.md).
 const CSS = `/css/problemas.css?v=${version('/css/problemas.css')}`;
 const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
 ---
 <link rel="stylesheet" href={CSS}>
-<section class="problemas pb" data-pb aria-labelledby="t-problemas">
+<section class="problemas pb" data-pb data-sin-pin={fijar ? undefined : ""} data-n={visibles.length} style={`--pb-n:${visibles.length}`} aria-labelledby="t-problemas">
     <div class="wrap pb-cab">
-      <h2 id="t-problemas" class="h2">Cuatro cosas que vemos cada semana en negocios de aquí.</h2>
+      <h2 id="t-problemas" class="h2">{titulo}</h2>
     </div>
     <div class="pb-pista" data-pb-pista>
      <div class="pb-escena" data-pb-escena>
       <div class="wrap pb-in">
         <div class="chips" role="group" aria-label="Problemas" data-pb-tabs>
-          <button type="button" aria-controls="w-google">No te encuentran</button>
-          <button type="button" aria-controls="w-sitios">Cuatro sitios</button>
-          <button type="button" aria-controls="w-excel">El Excel</button>
-          <button type="button" aria-controls="w-pestanas">Cinco pestañas</button>
+          {visibles.map((id) => <button type="button" aria-controls={`w-${id}`}>{CHIP[id]}</button>)}
         </div>
 
         <div class="mesa">
-        {/* ─── 01 · no te encuentran ─── */}
-        <div class="par activo" id="p-google" data-par>
+        {/* ─── no te encuentran ─── */}
+        {hay('google') && (
+        <div class:list={['par', { activo: primero === 'google' }]} id="p-google" data-par>
           <button class="problema" type="button" aria-controls="w-google">
             <span class="problema-n" aria-hidden="true"></span>
             <span class="problema-t">Te buscan en Google y sale otro</span>
@@ -65,12 +78,14 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
                 </ol>
               </div>
             </div>
-            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Tener web no basta: casi todo el que busca cerca elige entre los tres primeros del mapa.</span><span data-nota-sis>Ficha completa, reseñas al día y una web que dice qué haces y dónde. Así se sube al mapa.</span></figcaption>
+            <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Tener web no basta: en el móvil, el mapa enseña tres negocios antes que ninguna web.</span><span data-nota-sis>Ficha completa, reseñas al día y una web que dice qué haces y dónde. Es lo que mira Google para decidir a quién enseña.</span></figcaption>
           </figure>
         </div>
+        )}
 
-        {/* ─── 02 · cuatro sitios ─── */}
-        <div class="par" id="p-sitios" data-par>
+        {/* ─── cuatro sitios ─── */}
+        {hay('sitios') && (
+        <div class:list={['par', { activo: primero === 'sitios' }]} id="p-sitios" data-par>
           <button class="problema" type="button" aria-controls="w-sitios">
             <span class="problema-n" aria-hidden="true"></span>
             <span class="problema-t">Tu información vive en cuatro sitios</span>
@@ -123,9 +138,11 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
             <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>El mismo pedido y tres respuestas distintas. ¿Cuál es la buena?</span><span data-nota-sis>Un solo dato. El correo, el chat y la hoja lo leen del mismo sitio.</span></figcaption>
           </figure>
         </div>
+        )}
 
-        {/* ─── 03 · el Excel que se rompe ─── */}
-        <div class="par" id="p-excel" data-par>
+        {/* ─── el Excel que se rompe ─── */}
+        {hay('excel') && (
+        <div class:list={['par', { activo: primero === 'excel' }]} id="p-excel" data-par>
           <button class="problema" type="button" aria-controls="w-excel">
             <span class="problema-n" aria-hidden="true"></span>
             <span class="problema-t">Lo que factura lo llevas en un Excel que se rompe</span>
@@ -175,9 +192,11 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
             <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Alguien borró una fila de «Comisiones» y se llevó por delante todas las fórmulas.</span><span data-nota-sis>Los mismos cuatro clientes. Los totales cuadran porque no los escribe nadie a mano.</span></figcaption>
           </figure>
         </div>
+        )}
 
-        {/* ─── 04 · cinco pestañas ─── */}
-        <div class="par" id="p-pestanas" data-par>
+        {/* ─── cinco pestañas ─── */}
+        {hay('pestanas') && (
+        <div class:list={['par', { activo: primero === 'pestanas' }]} id="p-pestanas" data-par>
           <button class="problema" type="button" aria-controls="w-pestanas">
             <span class="problema-n" aria-hidden="true"></span>
             <span class="problema-t">Tu equipo cambia de pestaña cada cinco minutos</span>
@@ -220,6 +239,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
             <figcaption class="nota"><b data-nota-t>Ejemplo · hoy</b><span data-nota-hoy>Cinco pestañas abiertas para contestar una sola llamada.</span><span data-nota-sis>Suena el teléfono y ya tienes delante todo lo de ese cliente.</span></figcaption>
           </figure>
         </div>
+        )}
         </div>
       </div>
      </div>
@@ -277,7 +297,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
     if (k === clave) return false;
     clave = k;
     var t = null, n = -1;
-    if (!rm && h > 0) {
+    if (!rm && h > 0 && !s.hasAttribute('data-sin-pin')) {
       var bandas = an ? UM.d : UM.m;
       for (i = 0; i < bandas.length; i++) if (wf >= bandas[i][0]) { t = bandas[i][1]; break; }
       if (t) for (i = 0; i < t.length; i++) if (h >= t[i]) { n = i; break; }

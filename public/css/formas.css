@@ -1,0 +1,103 @@
+/* Formas de las páginas largas de solución (16-nov-2026): /posicionamiento-google-maps-cordoba/, /webs/ y /soluciones/.
+   Regla de página larga (bitácora 07b): cada bloque responde a una pregunta del cliente, la respuesta corta va arriba
+   y dos bloques seguidos no tienen la misma forma. Aquí están las formas que no existían en opspilot.css.
+   Superficies por escalón de tono, sin filetes ni sombras en reposo; solo se anima transform y opacity.
+   Recuperadas de la rama feat/nicho-obra (antes public/css/puertas.css), sin la numeración de pasos. */
+
+/* ─── la respuesta corta, bajo la cabecera: varias preguntas, cada respuesta lleva a su bloque ─── */
+/* 16-nov (tarde): la banda va en el verde de la marca, a sangre, justo bajo la cabecera navy (antes, papel gris) */
+.corta{padding-block:clamp(2rem,4vw,3rem);background:var(--verde);color:var(--navy)}
+.corta-in{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1.5rem,4vw,3.5rem)}
+.corta a{display:grid;align-content:start;gap:.45rem;text-decoration:none;color:var(--navy)}
+.corta-p{font-size:var(--t-2);color:#14412A}
+.corta a:focus-visible{outline:3px solid var(--navy);outline-offset:4px}
+.corta-r{font-weight:760;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;text-wrap:balance}
+.corta-ir{display:inline-flex;align-items:center;gap:.35rem;font-weight:650;font-size:var(--t-2);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.3em;margin-top:.2rem}
+.corta a:hover .ico{transform:translateY(2px)}
+.corta .ico{transition:transform .2s var(--curva)}
+@media (max-width:767px){.corta-in{grid-template-columns:minmax(0,1fr);gap:1.4rem}}
+
+/* ─── bloque con pantalla que se toca: pregunta, respuesta y la réplica a todo el ancho ─── */
+.demo .caso-pantalla{margin-top:clamp(2rem,4vw,3.2rem)}
+.demo .lead{max-width:52ch}
+.demo-pie{margin-top:clamp(2.6rem,5vw,3.6rem);font-size:var(--t-2);color:var(--gris);max-width:60ch}
+.s-papel .demo-pie{color:var(--gris-papel)}
+.demo-pie a{color:inherit;font-weight:650}
+@media (max-width:1020px){.demo-pie{margin-top:1.4rem}}
+
+/* ─── dos columnas: texto y una lista de comprobación en tarjeta ─── */
+.dos{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(2rem,5vw,4.5rem);align-items:start}
+.dos .prosa{max-width:40rem}
+.dos .pf-tar{background:var(--tar-bg);border-radius:var(--tar-r)}
+@media (max-width:1020px){.dos{grid-template-columns:minmax(0,1fr)}}
+
+/* el titular de pregunta dentro de .dos mantiene su tamaño de H2; la lista de comprobación lleva una raya verde */
+.dos .prosa>.h2{font-size:var(--t-5);line-height:1.06;margin-top:0;max-width:18ch}
+.dos .lista-ok li{position:relative;padding-left:1.5rem}
+.dos .lista-ok li::before{content:"—";position:absolute;left:0;color:var(--verde-h);font-weight:700}
+
+/* ─── lo que puedes hacer tú solo: las herramientas gratis como la pregunta que te haces, sin tarjetas ─── */
+.solo{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1.6rem,4vw,3rem) clamp(2rem,5vw,4.5rem);margin-top:clamp(2rem,4vw,3rem)}
+.solo a{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.35rem 1rem;text-decoration:none;color:var(--navy)}
+.solo .ico{grid-row:1/span 3;width:2.6rem;height:2.6rem;padding:.6rem;border-radius:50%;background:var(--verde-s);color:var(--verde-h);transition:transform .25s var(--curva)}
+.solo-q{font-weight:740;font-size:var(--t-4);line-height:1.18;letter-spacing:-.012em;text-wrap:balance}
+.solo-n{font-weight:650;font-size:var(--t-2);color:var(--verde-h);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.3em}
+.solo-f{font-size:var(--t-2);color:var(--gris-papel);max-width:44ch}
+.solo a:hover .ico{transform:translateY(-3px)}
+.solo a:focus-visible{outline:3px solid var(--verde-h);outline-offset:4px;border-radius:.3rem}
+@media (max-width:767px){.solo{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){.solo .ico{transition:none}}
+
+/* ─── lo que se quita de encima: cada tarea es una fila (qué haces hoy → en qué acaba → cómo), no una tarjeta ─── */
+.avisos{list-style:none;display:grid;gap:.7rem;margin-top:clamp(2rem,4vw,3rem)}
+.avisos li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr) minmax(0,1.4fr);gap:.6rem 2rem;align-items:center;padding:var(--tar-p);border-radius:var(--tar-r);background:var(--tar-bg)}
+.avisos h3{font-weight:740;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;color:var(--tar-tit)}
+.avisos p{color:var(--tar-tx)}
+.avisos-flujo{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;font-size:var(--t-2)}
+.avisos-flujo span{color:var(--tar-tx)}
+.avisos-flujo b{color:var(--verde);font-weight:700}
+.avisos-flujo .ico{width:1rem;height:1rem;color:var(--tar-tx)}
+@media (max-width:1020px){.avisos li{grid-template-columns:minmax(0,1fr)}}
+
+/* ─── ¿Qué lleva? (/webs/): la lista con la raya verde y, al lado, la web real en una ventana que se queda fija y baja
+   con el scroll de la sección (animation-timeline; sin soporte, quieta arriba) ─── */
+.anatomia{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(2rem,5vw,4.5rem);align-items:start}
+.anat-lista{list-style:none;display:grid;gap:1.7rem;margin-top:2.4rem}
+.anat-lista li{border-left:3px solid var(--verde);padding-left:clamp(1rem,2vw,1.4rem)}
+.anat-lista h3{font-weight:740;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;color:#fff}
+.anat-lista p{margin-top:.45rem;max-width:44ch;color:#AEB9C7}
+.anat-lista a{color:#fff;font-weight:600}
+.anat-ventana{position:sticky;top:calc(var(--cab) + 1.5rem);margin:0}
+.anat-ventana .ventana{overflow:hidden}
+.anat-vista{aspect-ratio:16/11;overflow:hidden;background:#fff;border-radius:0 0 .8rem .8rem}
+.anat-vista img{display:block;width:100%;height:auto}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    #incluye{view-timeline:--anat block}
+    .anat-vista img{animation:anat linear both;animation-timeline:--anat;animation-range:contain 0% contain 100%}
+    @keyframes anat{to{transform:translateY(-62%)}}
+  }
+}
+@media (max-width:1020px){.anatomia{grid-template-columns:minmax(0,1fr)}.anat-ventana{position:relative;top:auto}}
+
+/* ─── ¿Y si vendes productos? (/webs/): el texto y el móvil con la tienda real (el .tel de cabecera-pagina.css) ─── */
+.tienda{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.tienda .lista-ok li{position:relative;padding-left:1.5rem}
+.tienda .lista-ok li::before{content:"—";position:absolute;left:0;color:var(--verde);font-weight:700}
+.tienda-pie{margin-top:1.6rem;max-width:46ch;color:#AEB9C7}
+.tienda-pie a{color:#fff;font-weight:650}
+.tienda-tel{display:grid;place-items:center}
+.tienda-tel .tel{width:min(17.5rem,72vw)}
+@media (max-width:860px){.tienda{grid-template-columns:minmax(0,1fr)}}
+
+/* ─── /herramientas/: un bloque por grupo, el móvil dentro del aro a un lado y la lista al otro (en .hz-inv, al revés) ─── */
+.hz-bloque-in{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.hz-tel{display:grid;place-items:center}
+.hz-tel .tel{width:min(16.5rem,70vw)}
+.hz-inv .hz-tel{order:2}
+.hz-bloque .empieza{margin-top:clamp(1.4rem,3vw,2rem)}
+@media (min-width:768px){.hz-bloque .empieza a{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr) auto}}
+.hz-inv .hz-bloque-in{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}
+.hz-guias .wrap>a{max-width:44rem}
+/* en móvil y tableta, una sola columna también en el bloque invertido (su regla de dos columnas pesa más: 17-nov, se solapaba) */
+@media (max-width:1020px){.hz-bloque-in,.hz-inv .hz-bloque-in{grid-template-columns:minmax(0,1fr)}.hz-inv .hz-tel{order:0}.hz-tel .tel{width:min(14rem,62vw)}}

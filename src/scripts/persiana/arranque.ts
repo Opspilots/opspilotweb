@@ -18,20 +18,12 @@ const quieto = matchMedia('(prefers-reduced-motion: reduce)');
 // el mismo corte que el CSS (persiana.css) y que los <source> del póster: escritorio y apaisado ancho, o móvil
 const anchoMQ = matchMedia('(min-width: 900px) and (min-aspect-ratio: 1/1)');
 
-/** Pasa la cabecera a «quieta»: sin escena en vivo ni fijación, y con el póster de la persiana subida (interior a la vista).
- *  Sin JS se queda el póster de inicio, así que el cambio solo se hace aquí, cuando ya se sabe que no habrá escena. */
+/** Pasa la cabecera a «quieta»: sin escena en vivo ni fijación. Se queda el póster de la persiana bajada con el titular
+ *  pintado (16-nov-2026: antes cambiaba al póster con la persiana subida, pero entonces el titular no tendría dónde ir). */
 function ponerQuieta() {
   if (!raiz) return;
   raiz.classList.remove('ps-viva', 'ps-fija');
   raiz.classList.add('ps-quieta');
-  const img = raiz.querySelector<HTMLImageElement>('img.ps-poster');
-  if (img?.dataset.altFinal) img.alt = img.dataset.altFinal;
-  // con «reducir movimiento» el <picture> ya ha elegido el póster final: no se vuelve a pedir nada
-  if (quieto.matches) return;
-  for (const el of raiz.querySelectorAll<HTMLElement>('[data-final]')) {
-    if (el instanceof HTMLSourceElement) el.srcset = el.dataset.final!;
-    else if (el instanceof HTMLImageElement) { el.srcset = el.dataset.final!; el.src = el.dataset.srcFinal ?? el.src; }
-  }
 }
 
 /** ¿Se puede crear un contexto WebGL2 de verdad (sin el modo por software)? Se comprueba antes de bajar three.js y sin
@@ -75,7 +67,13 @@ async function cargar() {
     p.medir(innerWidth, innerHeight);
     p.pintarYa(modoPoster === 'final' ? 1 : INICIO);
     // dos fotogramas más para que las sombras (que se calculan en el primero) ya estén en el que se captura
-    requestAnimationFrame(() => { p.pintarYa(modoPoster === 'final' ? 1 : INICIO); requestAnimationFrame(() => { document.documentElement.dataset.posterListo = '1'; }); });
+    requestAnimationFrame(() => {
+      p.pintarYa(modoPoster === 'final' ? 1 : INICIO);
+      // la caja del rótulo en reposo, en fracciones del encuadre de referencia: va a persiana.css (--rx, --ry, --rw, --rh)
+      const r = p.rotulo();
+      document.documentElement.dataset.rotulo = JSON.stringify({ x: r.b0.x / r.ancho, y: r.b0.y / r.alto, w: r.b0.w / r.ancho, h: r.b0.h / r.alto });
+      requestAnimationFrame(() => { document.documentElement.dataset.posterListo = '1'; });
+    });
     return;
   }
 
@@ -99,7 +97,8 @@ async function cargar() {
   // El recorrido fijo es de ~1 pantalla en el móvil y ~0,8 en escritorio (ver persiana.css).
   if (scrollY < 8) raiz.classList.add('ps-fija');
 
-  // el objetivo de la persiana: la subida breve del arranque y, encima, lo que diga el scroll
+  // el objetivo de la persiana: lo que diga el scroll (16-nov-2026: sin la subida breve del arranque, que se llevaba media
+  // frase del titular pintado detrás del dintel nada más cargar). Hasta que termina el fundido, quieta en INICIO.
   let intro = INICIO;
   // la primera pantalla de la cabecera está fija (sticky) mientras dura la subida: el recorrido es lo que le sobra a la
   // sección por encima del alto de la parte fija (ver persiana.css). Si no está fija, sube en los primeros ~380 px.
@@ -124,7 +123,9 @@ async function cargar() {
   anchoMQ.addEventListener('change', () => { p.ponerEncuadre(anchoMQ.matches ? 'ancho' : 'alto'); medirRecorrido(); }, senal);
   const progreso = () => Math.min(1, Math.max(0, (scrollY - desde) / recorrido));
   const actualizar = () => {
-    p.objetivo = intro === INICIO ? INICIO : INTRO + (1 - INTRO) * progreso();
+    p.objetivo = intro === INICIO ? INICIO : INICIO + (1 - INICIO) * progreso();
+    // «Baja para abrir» sobra con la tienda ya abierta
+    raiz.classList.toggle('ps-abierta', intro !== INICIO && progreso() > 0.85);
     p.pedir();
   };
 
@@ -138,6 +139,19 @@ async function cargar() {
 
   let liberada = false;
 
+  // el titular pintado sigue a la persiana: solo transform (sin relayout) y el recorte por el hueco de la tienda (lo que
+  // pasa por encima del dintel deja de verse, como la chapa)
+  const marco = raiz.querySelector<HTMLElement>('[data-rotulo-marco]');
+  const rotulo = raiz.querySelector<HTMLElement>('[data-rotulo]');
+  if (marco && rotulo) {
+    p.alPintar = () => {
+      const r = p.rotulo();
+      const s = r.b0.w ? r.b.w / r.b0.w : 1;
+      rotulo.style.transform = `translate(${(r.b.x - r.b0.x).toFixed(1)}px,${(r.b.y - r.b0.y).toFixed(1)}px) scale(${s.toFixed(4)})`;
+      marco.style.clipPath = `polygon(${r.hueco.map(([x, y]) => `${x.toFixed(1)}px ${y.toFixed(1)}px`).join(',')})`;
+    };
+  }
+
   // el primer fotograma, en el mismo estado que el póster; y entonces el fundido
   p.abierto = p.objetivo = INICIO;
   escena.append(canvas);
@@ -146,7 +160,7 @@ async function cargar() {
     requestAnimationFrame(() => {
       if (liberada) return;
       raiz.classList.add('ps-viva');
-      // la subida breve, cuando el fundido ya ha terminado
+      // desde aquí manda el scroll, cuando el fundido ya ha terminado
       setTimeout(() => { if (!liberada) { intro = INTRO; actualizar(); } }, 650);
     });
   };
@@ -186,6 +200,9 @@ async function cargar() {
     enPantalla.disconnect();
     tamano.disconnect();
     p.onFrame = undefined;
+    p.alPintar = undefined;
+    if (rotulo) rotulo.style.transform = '';
+    if (marco) marco.style.clipPath = '';
     p.liberar();
     canvas.remove();
     ponerQuieta();

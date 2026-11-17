@@ -1,11 +1,11 @@
 ---
 // «Por qué con nosotros»: lo que suele pasar con una agencia frente a cómo lo hacemos, fila a fila.
-// Solo compromisos que ya cumplimos (vigilancia cada minuto, precio cerrado, sin promesas de puestos en Google).
+// Solo compromisos que ya cumplimos (vigilancia cada minuto, todo por escrito, sin promesas de puestos en Google).
+// 16-nov-2026: sin la fila del precio (la web no habla de precios). Se queda en /webs/ y /soluciones/; ya no va en la portada.
 import { WA } from '../lib/sitio';
 const filas = [
-  { corto: 'Precio cerrado y por escrito, desde 500 €.', tema: 'El precio', suele: '«Depende», y la cifra llega después de varias llamadas.', nos: 'Precio cerrado y por escrito antes de empezar. Una web, desde 500 €.' },
   { corto: 'Sin promesas imposibles.', tema: 'Lo que prometen', suele: 'Primeros puestos en Google y resultados garantizados.', nos: 'No te prometemos un puesto en Google: nadie honesto puede. Te decimos qué haremos, cuándo y cuánto cuesta.' },
-  { corto: 'Web, ficha de Google y soluciones a medida.', tema: 'Lo que hacen', suele: 'La web y poco más.', nos: 'Web, ficha de Google y soluciones a medida: citas, presupuestos, facturación, avisos.' },
+  { corto: 'Google, web y menos papeleo, en un solo equipo.', tema: 'Lo que hacen', suele: 'La web y poco más.', nos: 'Tu ficha de Google, tu web y el programa de presupuestos, pedidos y facturas, con las mismas personas.' },
   { corto: 'Nos quedamos: vigilamos tu web cada minuto.', tema: 'Después', suele: 'Te la entregan y no vuelves a saber de ellos hasta la siguiente factura.', nos: 'Nos quedamos: vigilamos tu web cada minuto y te contamos cómo va.' },
   { corto: 'Sin palabras raras.', tema: 'Cómo hablan', suele: 'Jerga y paquetes cerrados.', nos: 'Sin palabras raras. Y si algo no lo necesitas, te lo decimos.' },
   { corto: 'En Córdoba, y hablas con quien hace tu proyecto.', tema: 'Con quién hablas', suele: 'Con un comercial, y luego con alguien distinto cada vez.', nos: 'Con quien hace tu proyecto, desde Córdoba. Siempre las mismas personas.' },
@@ -14,7 +14,7 @@ const filas = [
 <section class="porque s-hondo" id="por-que" aria-labelledby="t-porque">
   <div class="wrap">
     <div class="porque-cab">
-      <h2 id="t-porque" class="h2">Lo que suele pasar con una agencia, y cómo lo hacemos nosotros.</h2>
+      <h2 id="t-porque" class="h2">¿Qué cambia si lo hacemos nosotros?</h2>
     </div>
     <div class="porque-tabla" role="table" aria-label="Comparación">
       <div class="pq-fila pq-cab" role="row"><span role="columnheader"></span><span role="columnheader">Lo que suele pasar</span><span role="columnheader"><svg class="v-aro" viewBox="0 0 100 100" aria-hidden="true"><use href="#aro"/></svg>Con OpsPilot</span></div>

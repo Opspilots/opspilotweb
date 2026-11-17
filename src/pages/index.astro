@@ -1,22 +1,23 @@
 ---
+// Portada (16-nov-2026, «soluciones concretas»): cinco bloques y dos promesas, las de «Document 1» (captar clientes y
+// mejorar los procesos). Salen el configurador (sigue en /contacto/) y la tabla «Por qué» (sigue en /webs/). Sin precios.
+// 17-nov (AIDA): atención (cabecera) → interés (problema y promesa juntos en «Qué hacemos») → deseo (casos) → acción (cómo
+// trabajamos y cierre). Fuera «¿Te pasa alguna de estas dos cosas?»: repetía las dos promesas como problema.
 import Base from '../layouts/Base.astro';
 import CabeceraPersiana from '../components/CabeceraPersiana.astro';
 import QueHacemos from '../components/QueHacemos.astro';
-import Propuesta from '../components/Propuesta.astro';
-import Problemas from '../components/Problemas.astro';
+import Recorrido from '../components/Recorrido.astro';
 import PlanVuelo from '../components/PlanVuelo.astro';
 import Cierre from '../components/Cierre.astro';
-import PorQue from '../components/PorQue.astro';
 import { SERVICIO_LOCAL } from '../lib/sitio';
 ---
-<Base title="Agencia de digitalización y webs en Córdoba · OpsPilot"
-  description="Webs y ficha de Google desde 500 €, soluciones a medida y herramientas gratis para negocios de Córdoba. Respuesta en menos de 24 h."
+<Base title="Agencia de marketing digital en Córdoba · OpsPilot"
+  description="Más clientes y menos papeleo para tu negocio: salir en Google Maps, una web que trae clientes y programas para presupuestos, pedidos y facturas."
   path="/" jsonld={[SERVICIO_LOCAL]}>
   <CabeceraPersiana />
   <QueHacemos />
-  <Problemas />
-  <Propuesta />
-  <PorQue />
+  <Recorrido ids={['cordoba-soluciona', 'obrafacil']}
+    lead="Uno por cada promesa: una web de reformas nuestra que la gente encuentra en Google y un almacén que lleva pedidos, reparto y facturas en un solo panel." />
   <PlanVuelo />
   <Cierre />
 </Base>

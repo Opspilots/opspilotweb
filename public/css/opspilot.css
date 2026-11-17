@@ -76,7 +76,11 @@ main{overflow-x:clip}
 .menu a{text-decoration:none;color:#C3CCD8;padding:.75rem 0}
 .menu a:hover{color:#fff}
 .btn-cab{padding:.75rem 1.05rem;font-size:var(--t-2);white-space:nowrap}
-@media (min-width:768px) and (max-width:900px){.cab-in{gap:1.2rem}.menu{gap:1.1rem}}
+.menu a{white-space:nowrap}
+/* 16-nov-2026: el menú tiene cinco entradas con el nombre de cada solución («Programa a medida», «Herramientas gratis»): en
+   tableta y portátil pequeño no caben en una línea sin aplastar el logo, así que hasta 1180 px va en el desplegable y se queda
+   a la vista el botón verde */
+@media (min-width:768px) and (max-width:1180px){.menu{display:none}.btn-cab{margin-left:auto}.cab-in{gap:.8rem}}
 
 /* ═══ VENTANA: la réplica de pantalla ═══ */
 .ventana{position:relative;background:var(--ui-bg);color:var(--ui-ink);border-radius:.8rem;box-shadow:var(--sombra-v);font-size:.9rem;line-height:1.4;isolation:isolate}
@@ -328,24 +332,25 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 
 /* ═══ 3 · PLAN DE VUELO ═══ */
 .plan{background-color:var(--papel);color:var(--navy)}
-.ruta{--m:3.4rem;--gap:clamp(1.25rem,3vw,2.75rem);position:relative;list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap);margin-top:clamp(3rem,6vw,4.75rem)}
+.ruta{--m:1.3rem;--gap:clamp(1.25rem,3vw,2.75rem);position:relative;list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap);margin-top:clamp(3rem,6vw,4.75rem)}
 .punto{position:relative;--arco-alto:var(--navy)}
 .punto:not(:last-child)::after{content:"";position:absolute;z-index:0;left:calc(var(--m)/2);top:calc(var(--m)/2 - 1.5px);width:calc(100% + var(--gap));height:3px;background:var(--navy);transform-origin:0 50%}
-.punto-aro{position:relative;z-index:1;width:var(--m);height:var(--m);background:var(--papel);border-radius:50%;box-shadow:0 0 0 .45rem var(--papel)}
-.punto-destino .punto-aro{transform:scale(1.3);transform-origin:50% 50%}
+/* 17-nov-2026: el marcador de cada paso es un punto verde, no el logo (a Pelayo, el aro como viñeta le pareció raro) */
+.punto-marca{position:relative;z-index:1;display:block;width:var(--m);height:var(--m);border-radius:50%;background:var(--verde);box-shadow:0 0 0 .4rem var(--papel)}
+.punto-destino .punto-marca{background:var(--navy);box-shadow:0 0 0 .4rem var(--papel),inset 0 0 0 .3rem var(--verde)}
 .punto h3{font-weight:720;font-size:var(--t-4);line-height:1.12;letter-spacing:-.02em;margin-top:1.5rem;text-wrap:balance}
 .punto p{color:var(--gris-papel);margin-top:.6rem;max-width:30ch;font-size:var(--t-3)}
 @media (prefers-reduced-motion:no-preference){
   .espera.ruta .punto::after{transform:scaleX(0);transition:transform .5s var(--curva)}
-  .espera.ruta .punto-aro{opacity:0;transform:scale(.6);transition:opacity .5s var(--curva),transform .5s var(--curva)}
+  .espera.ruta .punto-marca{opacity:0;transform:scale(.6);transition:opacity .5s var(--curva),transform .5s var(--curva)}
   .espera.ya.ruta .punto::after{transform:none}
   .espera.ya.ruta .punto:nth-child(2)::after{transition-delay:.35s}
   .espera.ya.ruta .punto:nth-child(3)::after{transition-delay:.7s}
-  .espera.ya.ruta .punto-aro{opacity:1;transform:none}
-  .espera.ya.ruta .punto-destino .punto-aro{transform:scale(1.3)}
-  .espera.ya.ruta .punto:nth-child(2) .punto-aro{transition-delay:.35s}
-  .espera.ya.ruta .punto:nth-child(3) .punto-aro{transition-delay:.7s}
-  .espera.ya.ruta .punto:nth-child(4) .punto-aro{transition-delay:1.05s}
+  .espera.ya.ruta .punto-marca{opacity:1;transform:none}
+  .espera.ya.ruta .punto-destino .punto-marca{transform:none}
+  .espera.ya.ruta .punto:nth-child(2) .punto-marca{transition-delay:.35s}
+  .espera.ya.ruta .punto:nth-child(3) .punto-marca{transition-delay:.7s}
+  .espera.ya.ruta .punto:nth-child(4) .punto-marca{transition-delay:1.05s}
 }
 
 /* ═══ 5 · CIERRE ═══ */
@@ -420,7 +425,7 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .ph-grid{grid-template-columns:minmax(0,1fr)}
   .ruta{grid-template-columns:minmax(0,1fr);--gap:2.25rem;padding-left:calc(var(--m) + 1.25rem)}
   .punto:not(:last-child)::after{left:calc(-1 * var(--m)/2 - 1.25rem - 1.5px);top:calc(var(--m)/2);width:3px;height:calc(100% + var(--gap));transform-origin:50% 0}
-  .punto-aro{position:absolute;left:calc(-1 * var(--m) - 1.25rem);top:0}
+  .punto-marca{position:absolute;left:calc(-1 * var(--m) - 1.25rem);top:0}
   .punto h3{margin-top:.2rem}
   @media (prefers-reduced-motion:no-preference){.espera.ruta .punto::after{transform:scaleY(0)}}
   .cierre-in{grid-template-columns:minmax(0,1fr)}
@@ -452,6 +457,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .menu-movil-panel .sub{font-weight:500;color:var(--texto-claro);padding-left:.8rem}
 .menu-movil-panel .sub .ico{color:var(--verde)}
 .menu-movil-panel .btn{margin-top:.5rem;justify-content:center;padding:.95rem 1.3rem}
+/* el desplegable del menú también en tableta y portátil pequeño (ver la nota del menú arriba) */
+@media (min-width:768px) and (max-width:1180px){.menu-movil{display:block}}
 .cab-llamar{display:none}
 @media (max-width:767px){
   .menu-movil{display:block}
@@ -525,6 +532,43 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .puerta ul li::before{content:"—";color:var(--verde);margin-right:.45rem}
 .puerta-ir{display:inline-flex;align-items:center;gap:.4rem;margin-top:auto;padding-top:.4rem;font-weight:700;font-size:var(--t-2);color:var(--verde)}
 @media (max-width:1020px){.puertas{grid-template-columns:minmax(0,1fr)}}
+/* la sección que sigue a la persiana (16-nov-2026, tarde): titular más grande y una entrada ligada al scroll. Solo con
+   animation-timeline (sin soporte, todo se ve quieto: nada queda oculto si algo falla) y con movimiento permitido. */
+.que .h2{font-size:var(--t-6);line-height:1;letter-spacing:-.02em;max-width:16ch}
+.que{padding-top:clamp(4rem,10vw,7.5rem)}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    [data-entra]{animation:entra linear both;animation-timeline:view();animation-range:entry calc(5% + var(--entra-d,0%)) entry calc(65% + var(--entra-d,0%))}
+    @keyframes entra{from{opacity:0;transform:translateY(2.6rem)}}
+  }
+}
+/* promesas (portada). 17-nov-2026: en claro, sin las tarjetas oscuras (a Pelayo le sonaban a la web antigua). Cada
+   promesa lleva su móvil (el de las cabeceras: el mapa y el panel de pedidos) y sus soluciones como filas de enlace. */
+.que.s-papel .h2{color:var(--navy)}
+.promesas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(2.2rem,6vw,5rem);margin-top:clamp(2.5rem,5vw,4rem)}
+.promesa{display:grid;grid-template-columns:minmax(0,11.5rem) minmax(0,1fr);gap:clamp(1.2rem,3vw,2rem);align-items:start}
+.promesa-tel .tel{width:100%}
+.promesa-dolor{font-weight:600;font-size:var(--t-3);line-height:1.3;color:var(--gris-papel);margin-bottom:.35rem;padding-left:.85rem;border-left:3px solid rgb(15 22 32/.22)}
+.promesa h3{font-weight:760;font-size:clamp(1.45rem,1.1rem + 1.1vw,2rem);line-height:1.08;letter-spacing:-.018em;color:var(--navy);text-wrap:balance}
+.promesa-texto>p{margin-top:.8rem;color:var(--gris-papel);max-width:40ch}
+.promesa-sol{list-style:none;display:grid;margin-top:1.2rem;border-top:1px solid rgb(15 22 32/.12)}
+.promesa-sol a{display:flex;align-items:center;gap:.8rem;padding:.85rem 0;border-bottom:1px solid rgb(15 22 32/.12);color:var(--navy);text-decoration:none}
+.promesa-sol a:focus-visible{outline:3px solid var(--verde-h);outline-offset:3px}
+.promesa-sol .ico{flex:none;width:1.25rem;height:1.25rem;color:var(--verde-h)}
+.promesa-sol span{display:grid;gap:.1rem;flex:1;min-width:0}
+.promesa-sol b{font-weight:700;font-size:var(--t-3);line-height:1.2}
+.promesa-sol small{font-size:var(--t-2);line-height:1.35;color:var(--gris-papel)}
+.promesa-sol .ir{width:1.1rem;height:1.1rem;color:var(--gris-papel);transition:transform .2s var(--curva)}
+.promesa-sol a:hover b{text-decoration:underline;text-underline-offset:.2em}
+.promesa-sol a:hover .ir{transform:translateX(3px);color:var(--verde-h)}
+.que-gratis{display:flex;gap:.8rem;align-items:flex-start;margin-top:clamp(2.2rem,4vw,3rem);max-width:62ch;color:var(--gris-papel)}
+.que-gratis .ico{flex:none;width:1.25rem;height:1.25rem;margin-top:.2rem;color:var(--verde-h)}
+.que-gratis a{color:var(--navy);font-weight:650;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.25em}
+.que .porque-pie p{color:var(--gris-papel)}
+.que .enlace-claro{color:var(--verde-h)}
+@media (max-width:1100px){.promesas{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.promesa{grid-template-columns:minmax(0,1fr)}.promesa-tel{width:min(13rem,62vw);justify-self:center}}
+@media (prefers-reduced-motion:reduce){.promesa-sol .ir{transition:none}}
 /* banda: la llamada a la acción de una sección de lectura, a todo el ancho y al final (antes, una cajita en una columna lateral) */
 .banda{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.1rem 2.5rem;margin-top:clamp(2.5rem,5vw,4rem);--tar-bg:var(--navy);--tar-tx:#AEB9C7;--tar-tit:#fff}
 .banda>div{flex:1 1 22rem;max-width:40rem}
@@ -594,7 +638,8 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .contacto-pasos-t{margin-top:2rem;font-weight:740;font-size:var(--t-4);line-height:1.15;letter-spacing:-.015em;color:#fff}
 .contacto-pasos{list-style:none;counter-reset:paso;display:grid;gap:.8rem;margin-top:1rem}
 .contacto-pasos li{counter-increment:paso;display:grid;grid-template-columns:1.9rem minmax(0,1fr);gap:.8rem;color:var(--texto-claro)}
-.contacto-pasos li::before{content:counter(paso);display:grid;place-items:center;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--verde);color:var(--navy);font:700 var(--t-2)/1 var(--display)}
+/* 16-nov-2026: sin números; cada paso lleva el aro de la marca */
+.contacto-pasos .paso-punto{width:.8rem;height:.8rem;margin:.45rem .55rem 0;border-radius:50%;background:var(--verde)}
 .contacto-pasos b{color:#fff}
 .canal{display:block;text-decoration:none}
 .canal small{display:block;color:var(--tar-tx);font-size:var(--t-2);margin-top:.2rem}

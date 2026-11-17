@@ -1,0 +1,117 @@
+---
+// /posicionamiento-google-maps-cordoba/ (16-nov-2026, plan «soluciones concretas»). Búsquedas que existen (autocompletado de
+// Google España, 16-nov): «mi negocio no aparece en google maps», «aparecer primero en google maps», «cómo salir en google
+// maps empresa», «mejorar posicionamiento google maps», «seo local córdoba». Las preguntas frecuentes las usan literalmente.
+// Regla de página larga (bitácora 07b): cada titular es una pregunta del cliente, la respuesta corta va arriba con enlaces y
+// dos bloques seguidos no tienen la misma forma. Sin precios, sin prometer puestos ni plazos.
+// Lo que se afirma de Google sale de su ayuda oficial (relevancia, distancia y prominencia: support.google.com/business/answer/7091)
+// y de sus normas del Perfil de Empresa (el nombre, sin palabras añadidas; la dirección, oculta si solo vas a casa del cliente).
+import Base from '../layouts/Base.astro';
+import CabeceraPagina from '../components/CabeceraPagina.astro';
+import Problemas from '../components/Problemas.astro';
+import Recorrido from '../components/Recorrido.astro';
+import Faq from '../components/Faq.astro';
+import Cierre from '../components/Cierre.astro';
+import { herramienta } from '../data/herramientas';
+import { migas, faqSchema, SITE_URL, ORG_ID, WA } from '../lib/sitio';
+import { version } from '../lib/version';
+
+const PATH = '/posicionamiento-google-maps-cordoba/';
+const M = [{ nombre: 'Inicio', path: '/' }, { nombre: 'Salir en Google Maps', path: PATH }];
+const FORMAS = `/css/formas.css?v=${version('/css/formas.css')}`;
+
+const MIRAMOS = [
+  'La categoría principal es la de lo que más vendes, y las secundarias cubren el resto.',
+  'El nombre es el de tu rótulo, sin palabras añadidas: las normas de Google no lo permiten.',
+  'La dirección se ve si atiendes en tu local; si vas a casa del cliente, se marca tu zona de trabajo.',
+  'El horario está al día, también festivos y vacaciones.',
+  'El teléfono y la web son los mismos en la ficha, en tu web y en los directorios.',
+  'Hay fotos reales de tu local y de tus trabajos, no de banco de imágenes.',
+  'Pedir reseñas es fácil (un enlace o un QR) y todas tienen respuesta.',
+  'Tus servicios están en la ficha, cada uno con su descripción.',
+  'Tu web tiene una página por servicio que dice dónde trabajas, con tu dirección y tu teléfono.',
+];
+
+const SOLO = ['negocio-no-sale-en-google-maps', 'poner-negocio-en-google-maps', 'pedir-resenas-google', 'responder-resenas'].map(herramienta);
+
+const FAQ = [
+  { q: '¿Por qué mi negocio no aparece en Google Maps?', a: 'Las causas más habituales son cuatro: la ficha no está verificada, la categoría no es la de lo que buscan, los datos están a medias o no cuadran con tu web, o hay negocios con más reseñas y más cerca de quien busca. La herramienta gratis «¿Por qué tu negocio no sale en Google Maps?» te dice en siete preguntas cuál es la tuya.' },
+  { q: '¿Cómo aparecer primero en Google Maps?', a: 'Nadie puede garantizarte el primer puesto, y desconfía de quien lo haga. Google dice que ordena los resultados locales por relevancia (si tu ficha responde a lo que se busca), distancia (lo cerca que estás de quien busca) y prominencia (lo conocido que es tu negocio: reseñas, menciones y tu web). La distancia no se puede cambiar; la relevancia y la prominencia, sí.' },
+  { q: '¿Cómo salir en Google Maps con mi empresa?', a: 'Creando o reclamando tu Perfil de Empresa en Google y verificándolo. Google decide cómo se verifica en cada caso (por vídeo, teléfono o correo, entre otros). Después hay que completarlo: categoría, horario, fotos, servicios y el enlace a tu web. Lo tienes paso a paso en la herramienta «Poner tu negocio en Google Maps».' },
+  { q: '¿Cómo mejorar el posicionamiento en Google Maps?', a: 'Con la ficha completa y al día, reseñas que llegan de forma constante y con respuesta, fotos reales y una web con una página por servicio que diga dónde trabajas. Y con el mismo nombre, dirección y teléfono en todas partes: si cada directorio dice una cosa, Google se fía menos de tu ficha.' },
+  { q: '¿Cuánto se tarda en notarlo?', a: 'Depende de tu zona y de cuánta competencia tengas, así que no te vamos a dar un plazo. Lo que sí puedes ver en tu propia ficha es cuántas veces sale, cuántas personas te llaman y cuántas piden cómo llegar: ahí se nota si lo que se ha hecho funciona.' },
+  { q: '¿Necesito una página web para salir en Google Maps?', a: 'No es obligatorio, pero ayuda. Quien ve tu ficha suele entrar en tu web antes de llamar, y una web que dice qué haces y dónde refuerza lo que dice la ficha. Si no tienes, te lo explicamos en la página de diseño web.' },
+  { q: '¿Trabajáis solo en Córdoba capital?', a: 'No. Estamos en Córdoba y trabajamos con negocios de la provincia y del resto de Andalucía. Casi todo se hace a distancia; si hace falta, vamos a verte.' },
+];
+
+const servicio = {
+  '@type': 'Service',
+  name: 'SEO local y posicionamiento en Google Maps en Córdoba',
+  serviceType: 'SEO local',
+  provider: { '@id': ORG_ID },
+  areaServed: [{ '@type': 'City', name: 'Córdoba' }, { '@type': 'AdministrativeArea', name: 'Andalucía' }],
+  url: `${SITE_URL}${PATH}`,
+};
+---
+<Base title="Aparecer en Google Maps en Córdoba, SEO local · OpsPilot"
+  description="SEO local en Córdoba: revisamos tu ficha de Google y tu web para que tu negocio aparezca en Google Maps cuando te buscan cerca. Sin prometer puestos."
+  path={PATH} jsonld={[migas(M), servicio, faqSchema(FAQ)]}>
+  <link rel="stylesheet" href={FORMAS}>
+  <CabeceraPagina titulo="SEO local en Córdoba para que tu negocio aparezca en Google Maps"
+    entrada="Cuando alguien busca lo que haces cerca, Google le enseña primero un mapa con tres negocios. Dejamos tu ficha completa y hacemos que tu web diga lo mismo, para que uno de esos tres seas tú.">
+    <div class="acciones">
+      <a class="btn btn-tinta" href={WA('Hola OpsPilot, quiero salir en Google Maps. Mi negocio es:')} rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-message-circle"/></svg>Revisar mi ficha</a>
+      <a class="enlace" href="/herramientas/negocio-no-sale-en-google-maps/">Míralo gratis tú primero <svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    </div>
+  </CabeceraPagina>
+
+  <section class="corta" aria-label="Respuestas cortas">
+    <div class="wrap corta-in">
+      <a href="#p-google"><span class="corta-p">¿Por qué sale otro y tú no?</span><span class="corta-r">Suele ser la ficha, con la categoría mal puesta, datos a medias o pocas reseñas</span><span class="corta-ir">Verlo en el mapa <svg class="ico" aria-hidden="true"><use href="#i-chevron-down"/></svg></span></a>
+      <a href="#que-miramos"><span class="corta-p">¿Qué revisáis?</span><span class="corta-r">Nueve puntos de tu ficha y de tu web, y que los dos digan lo mismo</span><span class="corta-ir">Ver la lista <svg class="ico" aria-hidden="true"><use href="#i-chevron-down"/></svg></span></a>
+      <a href="#tu-solo"><span class="corta-p">¿Lo puedo hacer yo?</span><span class="corta-r">Buena parte sí, con cuatro herramientas gratis</span><span class="corta-ir">Ir a las herramientas <svg class="ico" aria-hidden="true"><use href="#i-chevron-down"/></svg></span></a>
+    </div>
+  </section>
+
+  <Problemas ids={['google']} titulo="¿Por qué sale otro y tú no?" />
+
+  <section class="s-papel" id="que-miramos" aria-labelledby="t-miramos">
+    <div class="wrap dos">
+      <div class="prosa">
+        <h2 id="t-miramos" class="h2">¿Qué miramos en tu ficha y en tu web?</h2>
+        <p>Google explica en su ayuda que ordena los resultados del mapa por tres cosas: <b>relevancia</b>, si tu ficha responde a lo que se busca; <b>distancia</b>, lo cerca que estás de quien busca; y <b>prominencia</b>, lo conocido que es tu negocio por sus reseñas, sus menciones y su web.</p>
+        <p>La distancia no se puede cambiar. Las otras dos, sí, y casi todo depende de cosas que se pueden comprobar una a una. Es lo que revisamos, y lo que dejamos hecho.</p>
+        <p>Trabajamos en Córdoba capital, en la provincia y en el resto de Andalucía. Lo que no hacemos es prometerte un puesto: <a href={'https://support.google.com/business/answer/7091?hl=es'} rel="noopener">el propio Google dice</a> que no se puede pagar ni pedir una posición mejor en el mapa.</p>
+      </div>
+      <div class="pf-tar">
+        <h3>Lo que tiene que cumplir tu ficha</h3>
+        <ul class="lista-ok">
+          {MIRAMOS.map((m) => <li>{m}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <Recorrido ids={['cordoba-soluciona', 'maderas-yeadel']} titulo="¿Quién lo ha probado?"
+    lead="Dos webs nuestras: una de reformas que la gente encuentra cuando busca en Google y una carpintería que empezó de cero. Entra y compara." />
+
+  <section class="s-papel" id="tu-solo" aria-labelledby="t-solo">
+    <div class="wrap">
+      <h2 id="t-solo" class="h2">¿Qué puedes hacer hoy tú solo?</h2>
+      <p class="lead">Cuatro herramientas gratis, sin registrarte. Si después prefieres que lo hagamos nosotros, nos escribes con lo que te haya salido.</p>
+      <ul class="solo">
+        {SOLO.map((h) => (
+          <li><a href={`/herramientas/${h.slug}/`}>
+            <svg class="ico" aria-hidden="true"><use href={`#i-${h.icono}`}/></svg>
+            <span class="solo-q">«{h.busqueda}»</span>
+            <span class="solo-n">{h.nombre}</span>
+            <span class="solo-f">{h.frase}</span>
+          </a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <Faq items={FAQ} titulo="Lo que más se pregunta sobre Google Maps" fondo="navy" />
+  <Cierre />
+</Base>

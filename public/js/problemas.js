@@ -1,12 +1,12 @@
-/* «Cuatro cosas que vemos cada semana». Con JS, la sección es interactiva: un problema cada vez, como antes (lista a la izquierda y ventana a
+/* Problemas con su réplica (Problemas.astro). Con JS, la sección es interactiva: un problema cada vez, como antes (lista a la izquierda y ventana a
    la derecha; en móvil, pestañas y un problema). El modo lo decide el script en línea del componente (el pin, con la svh pequeña medida con
    una sonda); este fichero gobierna lo que se ve y solo recalcula el modo al cambiar el ancho, la svh, la fuente o «reducir movimiento».
-   En modo fijo, el scroll nativo recorre los cuatro problemas: el bloque es sticky dentro de una pista alta y aquí solo se lee cuánto se ha
+   En modo fijo, el scroll nativo recorre los problemas: el bloque es sticky dentro de una pista alta y aquí solo se lee cuánto se ha
    avanzado por ella y se marca el activo. Sin wheel, sin touch, sin preventDefault sobre el scroll ni saltos: el único bucle es un
    requestAnimationFrame por cada scroll (listener pasivo) y solo mientras la pista se ve. Solo se escriben clases y transform/opacity.
    Ningún temporizador avanza nada. Fuera del modo fijo se cambia de problema al tocarlo (y al pasar el ratón por la lista).
    Al cambiar de modo se conserva lo que se veía: el problema, si se estaba dentro de la pista, o lo que había en pantalla, si se estaba debajo.
-   Si este script falla, el componente retira todo y los cuatro problemas se apilan completos. */
+   Si este script falla, el componente retira todo y los problemas se apilan completos. */
 (function () {
   'use strict';
   var sec = document.querySelector('[data-pb]');
