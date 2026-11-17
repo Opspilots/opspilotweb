@@ -41,9 +41,16 @@ function hayWebGL(): boolean {
   }
 }
 
+// La fijación se decide YA, al cargar el script y con la página arriba, no cuando termina de llegar la escena: en el
+// móvil three.js tarda varios segundos y, si para entonces ya se había bajado un poco, la cabecera no se fijaba y la
+// persiana subía mientras la página se iba hacia arriba, sin que se viera el efecto (17-nov-2026, Pelayo). Mientras
+// llega la escena, lo fijo es el póster; si al final no hay escena (error o «reducir movimiento»), ponerQuieta() la suelta.
+const webgl = !modoPoster && !!raiz && !quieto.matches && hayWebGL();
+if (webgl && scrollY < 8) raiz!.classList.add('ps-fija');
+
 async function cargar() {
   if (!raiz || !escena) return;
-  if (!modoPoster && !hayWebGL()) { ponerQuieta(); return; }
+  if (!modoPoster && !webgl) { ponerQuieta(); return; }
   const fuentes = document.fonts?.load ? Promise.all([
     document.fonts.load('800 64px Bricolage'), document.fonts.load('500 24px Bricolage'),
   ]).catch(() => undefined) : Promise.resolve();
@@ -92,9 +99,8 @@ async function cargar() {
   }
   if (quieto.matches) { p.liberar(); ponerQuieta(); return; } // se pidió «reducir movimiento» mientras se construía
 
-  // la fijación solo se activa ahora que la escena está lista y solo si la página sigue arriba: así la sección crece por
-  // abajo sin mover nada de lo que se ve. Si ya se ha bajado, no se fija (la persiana sube en los primeros ~380 px).
-  // El recorrido fijo es de ~1 pantalla en el móvil y ~0,8 en escritorio (ver persiana.css).
+  // la fijación ya se puso al cargar el script (arriba, «webgl»); esto solo la pone si entonces aún no se podía saber.
+  // Si no hay fijación, la persiana sube en los primeros ~380 px. El recorrido fijo es ~1 pantalla (ver persiana.css).
   if (scrollY < 8) raiz.classList.add('ps-fija');
 
   // el objetivo de la persiana: lo que diga el scroll (16-nov-2026: sin la subida breve del arranque, que se llevaba media

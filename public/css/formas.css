@@ -19,8 +19,12 @@
 
 /* ─── bloque con pantalla que se toca: pregunta, respuesta y la réplica a todo el ancho ─── */
 .demo .caso-pantalla{margin-top:clamp(2rem,4vw,3.2rem)}
-.demo .lead{max-width:52ch}
-.demo-pie{margin-top:clamp(2.6rem,5vw,3.6rem);font-size:var(--t-2);color:var(--gris);max-width:60ch}
+/* 17-nov-2026 (Pelayo): la entrada y la nota del pie se quedaban en media columna bajo una réplica a todo el ancho, con
+   un hueco grande debajo de la réplica. Ahora la entrada es más ancha y la nota ocupa el ancho de la réplica, con una
+   raya encima, pegada a ella */
+.demo .lead{max-width:68ch}
+.demo-pie{margin-top:clamp(1.6rem,3vw,2.2rem);padding-top:1rem;border-top:1px solid rgb(15 22 32/.12);font-size:var(--t-2);color:var(--gris)}
+.s-navy .demo-pie,.s-hondo .demo-pie{border-top-color:rgb(255 255 255/.14)}
 .s-papel .demo-pie{color:var(--gris-papel)}
 .demo-pie a{color:inherit;font-weight:650}
 @media (max-width:1020px){.demo-pie{margin-top:1.4rem}}

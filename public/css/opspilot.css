@@ -355,11 +355,14 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 
 /* ═══ 5 · CIERRE ═══ */
 .cierre{position:relative;overflow:hidden;isolation:isolate;background:var(--verde);color:var(--navy);padding-bottom:0}
-.cierre-in{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start;gap:2rem;padding-bottom:clamp(4rem,9vw,7rem)}
-.cierre-texto{position:relative;z-index:2}
+.cierre-in{position:relative;z-index:1;padding-bottom:clamp(1.5rem,3vw,2.5rem)}
+/* 17-nov-2026 (Pelayo): sin el aro ni el horizonte en diagonal; en escritorio, la pregunta a la izquierda y el chat a la derecha */
+.cierre-texto{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,30rem);gap:clamp(2rem,5vw,5rem);align-items:center}
 .h2-cierre{font-weight:800;font-size:var(--t-6);line-height:1.04;letter-spacing:-.012em;max-width:16ch;text-wrap:balance}
-.cierre-aro{position:relative;width:min(30vw,24rem);aspect-ratio:1;justify-self:center;margin-top:clamp(12rem,22vw,18rem)}
-.chat{max-width:30rem;margin-top:2rem;background:#EFEAE2}
+.chat{max-width:30rem;background:#EFEAE2}
+/* el nombre al fondo, como el del pie (.pie::after): un dibujo de CSS, no se lee ni se selecciona */
+.cierre::after{content:"OpsPilot";display:block;text-align:center;font-weight:800;font-size:clamp(4rem,17.5vw,15.5rem);line-height:.82;letter-spacing:-.04em;color:rgb(15 22 32/.09);white-space:nowrap;transform:translateY(.06em);pointer-events:none;user-select:none}
+@media (max-width:1020px){.cierre-texto{grid-template-columns:minmax(0,1fr);gap:2rem;align-items:start}}
 .chat-barra{background:var(--navy)}
 .chat-av{display:grid;place-items:center;width:2.1rem;height:2.1rem;border-radius:50%;background:#1F2A37}
 .chat-av svg{width:1.35rem;height:1.35rem}
@@ -428,8 +431,6 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
   .punto-marca{position:absolute;left:calc(-1 * var(--m) - 1.25rem);top:0}
   .punto h3{margin-top:.2rem}
   @media (prefers-reduced-motion:no-preference){.espera.ruta .punto::after{transform:scaleY(0)}}
-  .cierre-in{grid-template-columns:minmax(0,1fr)}
-  .cierre-aro{width:min(72vw,20rem);margin:3rem auto 0}
   .pie-in{grid-template-columns:minmax(0,1fr);gap:2rem}
 }
 @media (max-width:400px){
@@ -561,12 +562,22 @@ mark.choque{background:none;color:inherit;font-weight:750;box-shadow:inset 0 -.5
 .promesa-sol .ir{width:1.1rem;height:1.1rem;color:var(--gris-papel);transition:transform .2s var(--curva)}
 .promesa-sol a:hover b{text-decoration:underline;text-underline-offset:.2em}
 .promesa-sol a:hover .ir{transform:translateX(3px);color:var(--verde-h)}
-.que-gratis{display:flex;gap:.8rem;align-items:flex-start;margin-top:clamp(2.2rem,4vw,3rem);max-width:62ch;color:var(--gris-papel)}
+.que-gratis{display:flex;gap:.8rem;align-items:flex-start;margin-top:clamp(2.2rem,4vw,3rem);padding-top:1rem;border-top:1px solid rgb(15 22 32/.12);color:var(--gris-papel)}
 .que-gratis .ico{flex:none;width:1.25rem;height:1.25rem;margin-top:.2rem;color:var(--verde-h)}
 .que-gratis a{color:var(--navy);font-weight:650;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.25em}
 .que .porque-pie p{color:var(--gris-papel)}
 .que .enlace-claro{color:var(--verde-h)}
 @media (max-width:1100px){.promesas{grid-template-columns:minmax(0,1fr)}}
+/* 17-nov-2026 (Pelayo, «al mismo nivel»): con las dos promesas lado a lado, el problema, el titular, el texto y la lista
+   de cada una comparten fila (subgrid), aunque un titular ocupe tres líneas y el otro dos */
+@media (min-width:1101px){
+  .promesas{row-gap:0}
+  .promesa{grid-row:span 4;grid-template-rows:subgrid;row-gap:0}
+  .promesa-tel{grid-row:1/-1}
+  .promesa-texto{grid-row:1/-1;display:grid;grid-template-rows:subgrid}
+  .promesa-texto>*{align-self:start}
+  .promesa-dolor{align-self:end}
+}
 @media (max-width:560px){.promesa{grid-template-columns:minmax(0,1fr)}.promesa-tel{width:min(13rem,62vw);justify-self:center}}
 @media (prefers-reduced-motion:reduce){.promesa-sol .ir{transition:none}}
 /* banda: la llamada a la acción de una sección de lectura, a todo el ancho y al final (antes, una cajita en una columna lateral) */
@@ -702,11 +713,9 @@ a.canal:hover{background:#1D2B3D}
 }
 
 /* La portada de la home (antes aquí, con el aro) es ahora «La mesa»: public/css/lamesa.css. */
-/* v12 · cierre: en el móvil, las cuatro respuestas del chat en 2 y 2 */
-@media (max-width:767px){
-  .chat-resp{display:grid;grid-template-columns:1fr 1fr}
-  .chat-resp span{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:.7rem;padding:.55rem .5rem;line-height:1.2}
-}
+/* v12 · cierre: las cuatro respuestas del chat en 2 y 2 (17-nov-2026, Pelayo: también en escritorio, que salían 3 y 1) */
+.chat-resp{display:grid;grid-template-columns:1fr 1fr}
+.chat-resp span{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:.7rem;padding:.55rem .5rem;line-height:1.2}
 
 /* ═══ v12 · recursos: «empieza por aquí», la situación del dueño y la guía que le toca ═══ */
 .empieza{list-style:none;margin-top:clamp(1.8rem,4vw,2.8rem);border-top:2px solid var(--verde)}
@@ -717,6 +726,10 @@ a.canal:hover{background:#1D2B3D}
 .empieza .ico{width:1.4rem;height:1.4rem;color:var(--verde);transition:transform .2s var(--curva)}
 .empieza a:hover .ico{transform:translateX(4px)}
 .empieza a:hover .empieza-sit{color:var(--verde)}
+/* en claro (17-nov-2026: el primer bloque de /herramientas/, para que no se funda con la cabecera navy) */
+.s-papel .empieza a{color:var(--navy);border-bottom-color:rgb(15 22 32/.12)}
+.s-papel .empieza-guia{color:var(--gris-papel)}
+.s-papel .empieza-guia small,.s-papel .empieza .ico,.s-papel .empieza a:hover .empieza-sit{color:var(--verde-h)}
 @media (max-width:767px){.empieza a{grid-template-columns:minmax(0,1fr) auto}.empieza-guia{grid-column:1}.empieza .ico{grid-row:1 / span 2;grid-column:2}}
 
 /* v14 · «qué incluye»: texto en columnas, título y frase; ni icono, ni filete, ni caja (antes, 13 filas con el mismo icono delante) */
