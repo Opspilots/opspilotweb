@@ -99,4 +99,5 @@
 @media (min-width:768px){.hz-bloque .empieza a{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr) auto}}
 .hz-inv .hz-bloque-in{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}
 .hz-guias .wrap>a{max-width:44rem}
-@media (max-width:1020px){.hz-bloque-in{grid-template-columns:minmax(0,1fr)}.hz-inv .hz-tel{order:0}}
+/* en móvil y tableta, una sola columna también en el bloque invertido (su regla de dos columnas pesa más: 17-nov, se solapaba) */
+@media (max-width:1020px){.hz-bloque-in,.hz-inv .hz-bloque-in{grid-template-columns:minmax(0,1fr)}.hz-inv .hz-tel{order:0}.hz-tel .tel{width:min(14rem,62vw)}}

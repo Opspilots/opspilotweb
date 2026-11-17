@@ -144,3 +144,7 @@
   .pb .ficha-datos div{padding-block:.4rem}
   .pb .linea{gap:0}
 }
+
+/* tableta (768-1100 px, 17-nov-2026): la nota va debajo de la réplica, en el flujo, como en el móvil; flotando tapaba la
+   última línea de la réplica (en Google Maps, «Tu negocio no sale entre los primeros») */
+@media (min-width:768px) and (max-width:1100px){.pb .pv .nota{position:relative;right:auto;bottom:auto;top:auto;display:block;margin:-.6rem .8rem 0 auto}}

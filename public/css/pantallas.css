@@ -96,7 +96,7 @@
 .cs-dos{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);min-height:23rem}
 .cs-panel{min-width:0;padding:.95rem;border-right:1px solid rgb(38 51 42/.12);display:flex;flex-direction:column;gap:.5rem}
 .cs-cuenta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.3rem;margin-bottom:.35rem}
-.cs-cuenta span{display:grid;justify-items:center;padding:.45rem .2rem;border-radius:.4rem;background:#fff;border:1px solid rgb(38 51 42/.1);font-size:.64rem;line-height:1.15;text-align:center;color:#5A665D}
+.cs-cuenta span{display:grid;justify-items:center;gap:.2rem;padding:.45rem .2rem;border-radius:.4rem;background:#fff;border:1px solid rgb(38 51 42/.1);font-size:.64rem;line-height:1.15;text-align:center;color:#5A665D}
 .cs-cuenta b{font:400 1.2rem/1 'Young Serif',Georgia,serif;color:var(--cs-r)}
 .cs-l{font:700 .64rem/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:#5A665D;margin-top:.2rem}
 .cs-sel{width:100%;font:600 .88rem/1.2 var(--display);padding:.55rem .6rem;border-radius:.4rem;border:1.5px solid rgb(38 51 42/.22);background:#fff;color:var(--cs-k)}
