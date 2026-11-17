@@ -1,6 +1,6 @@
 ---
-// /herramientas/ (16-nov-2026, tarde): un bloque por grupo, cada uno con su móvil dentro del aro (el mismo de las
-// cabeceras), alternando lado y fondo; la cabecera lleva el aro solo. Antes, una sola lista larga. Los titulares son la
+// /herramientas/ (16-nov-2026, tarde): un bloque por grupo, cada uno con su móvil (el mismo de las cabeceras),
+// alternando lado y fondo. 17-nov: sin el aro detrás ni en la cabecera («se ve mucho el logo»). Antes, una sola lista larga. Los titulares son la
 // pregunta del dueño (la Q de «Que…» no va en un titular grande: su cola parece un subrayado).
 import Base from '../../layouts/Base.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
@@ -35,10 +35,7 @@ const nombre = (n: string) => (/[?!.]$/.test(n) ? n : `${n}.`);
   {BLOQUES.map((b, k) => (
     <section class:list={['hz-bloque', k % 2 ? 's-hondo hz-inv' : 's-navy']} id={b.id} aria-labelledby={`t-${b.id}`}>
       <div class="wrap hz-bloque-in">
-        <div class="cp-firma hz-firma">
-          <svg class="cp-anillo" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#aro"/></svg>
-          <Movil clave={b.movil} />
-        </div>
+        <div class="hz-tel"><Movil clave={b.movil} /></div>
         <div class="hz-bloque-texto">
           <h2 id={`t-${b.id}`} class="h2">{b.titulo}</h2>
           <ol class="empieza">

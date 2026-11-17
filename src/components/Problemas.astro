@@ -14,9 +14,11 @@ import { version } from '../lib/version';
 type IdProblema = 'google' | 'sitios' | 'excel' | 'pestanas';
 interface Props {
   ids?: IdProblema[];
+  /** se queda fija y cambia con el scroll (17-nov-2026: no por defecto; a Pelayo el efecto le pareció raro) */
+  fijar?: boolean;
   titulo?: string;
 }
-const { ids = ['google', 'sitios', 'excel', 'pestanas'], titulo = 'Cuatro cosas que vemos cada semana en negocios de aquí' } = Astro.props;
+const { ids = ['google', 'sitios', 'excel', 'pestanas'], fijar = false, titulo = 'Cuatro cosas que vemos cada semana en negocios de aquí' } = Astro.props;
 const ORDEN: IdProblema[] = ['google', 'sitios', 'excel', 'pestanas'];
 const hay = (id: IdProblema) => ids.includes(id);
 const visibles = ORDEN.filter(hay);
@@ -28,7 +30,7 @@ const CSS = `/css/problemas.css?v=${version('/css/problemas.css')}`;
 const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
 ---
 <link rel="stylesheet" href={CSS}>
-<section class="problemas pb" data-pb data-n={visibles.length} style={`--pb-n:${visibles.length}`} aria-labelledby="t-problemas">
+<section class="problemas pb" data-pb data-sin-pin={fijar ? undefined : ""} data-n={visibles.length} style={`--pb-n:${visibles.length}`} aria-labelledby="t-problemas">
     <div class="wrap pb-cab">
       <h2 id="t-problemas" class="h2">{titulo}</h2>
     </div>
@@ -295,7 +297,7 @@ const JS = `/js/problemas.js?v=${version('/js/problemas.js')}`;
     if (k === clave) return false;
     clave = k;
     var t = null, n = -1;
-    if (!rm && h > 0) {
+    if (!rm && h > 0 && !s.hasAttribute('data-sin-pin')) {
       var bandas = an ? UM.d : UM.m;
       for (i = 0; i < bandas.length; i++) if (wf >= bandas[i][0]) { t = bandas[i][1]; break; }
       if (t) for (i = 0; i < t.length; i++) if (h >= t[i]) { n = i; break; }

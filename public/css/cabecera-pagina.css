@@ -140,4 +140,11 @@
   .cp-aro .cp-firma,.cp-aro.cp-con .cp-firma{width:min(60vw,15rem)}
   .tel{width:50%}
   .cp .acciones .btn{flex:1 1 12rem}
+  /* el orden en el móvil: titular, entrada, el aro con el teléfono y, debajo, los botones (17-nov-2026, Pelayo) */
+  .cp-con .cp-texto{display:contents}
+  .cp-con .cp-h1{order:1}
+  .cp-con .entrada{order:2;margin-top:-1rem}
+  .cp-con .cp-firma{order:3}
+  .cp-con .cp-acc{order:4;margin-top:-.6rem}
+  .cp-con .cp-acc>:first-child{margin-top:0}
 }

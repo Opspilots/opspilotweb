@@ -32,7 +32,8 @@ const CSS = `/css/cabecera-pagina.css?v=${version('/css/cabecera-pagina.css')}`;
     <div class="cp-texto">
       <h1 id="titular" class="grande grande-sub cp-h1">{titulo}</h1>
       {entrada && <p class="entrada">{entrada}</p>}
-      <slot />
+      {/* los botones y enlaces: en el móvil van debajo del aro con el teléfono (17-nov-2026, Pelayo); ver cabecera-pagina.css */}
+      <div class="cp-acc"><slot /></div>
     </div>
     {conAro && (
       <div class="cp-firma">
