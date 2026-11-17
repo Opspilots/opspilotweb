@@ -33,7 +33,7 @@ const nombre = (n: string) => (/[?!.]$/.test(n) ? n : `${n}.`);
   </CabeceraPagina>
 
   {BLOQUES.map((b, k) => (
-    <section class:list={['hz-bloque', k % 2 ? 's-hondo hz-inv' : 's-navy']} id={b.id} aria-labelledby={`t-${b.id}`}>
+    <section class:list={['hz-bloque', k % 2 ? 's-navy hz-inv' : 's-papel']} id={b.id} aria-labelledby={`t-${b.id}`}>
       <div class="wrap hz-bloque-in">
         <div class="hz-tel"><Movil clave={b.movil} /></div>
         <div class="hz-bloque-texto">
