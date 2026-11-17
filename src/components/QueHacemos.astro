@@ -5,6 +5,8 @@
 // la cola de la Q de Bricolage, a ese tamaño, parece un subrayado bajo «ue».
 // Forma (17-nov-2026): en claro, cada promesa con su móvil (mapa y panel de pedidos) y sus soluciones como filas de enlace.
 // Antes, sobre navy con tarjetas oscuras: a Pelayo le sonaba a la web antigua.
+// 17-nov-2026 (AIDA): la portada ya no lleva aparte «¿Te pasa alguna de estas dos cosas?», que repetía estas dos promesas
+// vistas como problema. Cada promesa abre con su problema («Si te buscan en Google y sale otro,») y sigue con lo que ganas.
 import { WA } from '../lib/sitio';
 import { version } from '../lib/version';
 import Movil from './Movil.astro';
@@ -14,6 +16,7 @@ const CSS_TEL = `/css/cabecera-pagina.css?v=${version('/css/cabecera-pagina.css'
 const PROMESAS = [
   {
     id: 'clientes',
+    dolor: 'Si te buscan en Google y sale otro,',
     movil: 'maps' as const,
     titulo: 'Más clientes que te encuentran y te llaman',
     texto: 'Cuando alguien busca lo que haces en Córdoba, que salgas tú en el mapa y que tu web le explique de un vistazo qué haces, dónde y cómo pedirte presupuesto.',
@@ -24,6 +27,7 @@ const PROMESAS = [
   },
   {
     id: 'papeles',
+    dolor: 'Si pasas la tarde entre papeles,',
     movil: 'panel' as const,
     titulo: 'Menos tiempo perdido en papeles',
     texto: 'Presupuestos, pedidos, stock y facturas en un solo sitio y hechos a tu manera, para no copiar el mismo dato en tres programas ni buscarlo en el WhatsApp.',
@@ -37,13 +41,14 @@ const PROMESAS = [
 <link rel="stylesheet" href={CSS_TEL}>
 <section class="s-papel que" id="que-hacemos" aria-labelledby="t-que">
   <div class="wrap">
-    <h2 id="t-que" class="h2" data-entra>Te ayudamos con dos cosas</h2>
-    <p class="lead" data-entra style="--entra-d:8%">Somos un equipo pequeño de Córdoba. No te vendemos una web ni un programa: te ayudamos a conseguir clientes y a que el trabajo de cada día te lleve menos tiempo.</p>
+    <h2 id="t-que" class="h2" data-entra>Dos cosas que arreglamos en negocios de Córdoba</h2>
+    <p class="lead" data-entra style="--entra-d:8%">Somos un equipo pequeño de Córdoba. No vendemos una web ni un programa porque sí, te ayudamos a conseguir clientes y a que el trabajo de cada día te lleve menos tiempo.</p>
     <div class="promesas">
       {PROMESAS.map((p) => (
         <div class="promesa" id={`promesa-${p.id}`} data-entra style={`--entra-d:${p.id === 'clientes' ? 14 : 22}%`}>
           <div class="promesa-tel"><Movil clave={p.movil} /></div>
           <div class="promesa-texto">
+          <p class="promesa-dolor">{p.dolor}</p>
           <h3>{p.titulo}</h3>
           <p>{p.texto}</p>
           <ul class="promesa-sol">
